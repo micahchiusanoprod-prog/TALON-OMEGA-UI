@@ -18,7 +18,8 @@ class AllyApiService {
       userStatus: null,
     };
     this.messageQueue = [];
-    this.isOnline = false;
+    // In mock mode, consider ourselves "online" (using mock data successfully)
+    this.isOnline = config.features.enableMockData;
     this.lastError = null;
     this.retryTimer = null;
   }
