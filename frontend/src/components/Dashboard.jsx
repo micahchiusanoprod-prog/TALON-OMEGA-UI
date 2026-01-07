@@ -99,6 +99,11 @@ export default function Dashboard({ theme, onToggleTheme }) {
           <MusicTile />
         </div>
 
+        {/* Power Tile - Mission Critical */}
+        <div className="animate-fade-in" style={{ animationDelay: '375ms' }}>
+          <PowerTile />
+        </div>
+
         {/* Entertainment */}
         <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
           <EntertainmentSection />
