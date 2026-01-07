@@ -49,12 +49,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
           {/* Center: Metrics Pills (desktop only, or compact on mobile) */}
           {!useCompactHeader && (
             <div className="hidden md:flex items-center gap-2 flex-wrap">
-              {/* Device Status - Priority 1 */}
-              <div className={`metric-pill ${deviceStatus.color}`}>
-                <span className="font-semibold">{deviceStatus.label}</span>
-              </div>
-              
-              {/* CPU % - Priority 2 */}
+              {/* CPU % - Priority 1 */}
               {metrics && metrics.cpu !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground">CPU</span>
