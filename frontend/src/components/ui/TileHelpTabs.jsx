@@ -16,7 +16,8 @@ import {
   BookOpen,
   Lightbulb,
   Shield,
-  ChevronRight
+  ChevronRight,
+  ChevronDown
 } from 'lucide-react';
 
 // Reusable step component
