@@ -60,10 +60,14 @@ export default function AllyCommunicationsHub() {
   
   // Broadcast alert tracking
   const [alertsBadgeCount, setAlertsBadgeCount] = useState(0);
+  
+  // Connection status
+  const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, lastError: null });
 
   useEffect(() => {
     fetchNodes();
     fetchGlobalChat();
+    fetchUserStatus();
     
     const nodeInterval = setInterval(fetchNodes, config.polling.allyNodes);
     const chatInterval = setInterval(fetchGlobalChat, config.polling.allyChat);
