@@ -109,6 +109,17 @@ const powerQuickTips = [
   "Solar works best when panel faces the sun directly"
 ];
 
+// "If runtime is collapsing" emergency checklist
+const runtimeCollapsingChecklist = [
+  "Reduce screen brightness to minimum",
+  "Disable Mesh/LoRa if not actively needed",
+  "Close GPS if position isn't critical",
+  "Switch to LAN-only comms if available",
+  "Check for runaway CPU processes in Health",
+  "Warm device if cold (below 50°F / 10°C)",
+  "Connect ANY charge source immediately"
+];
+
 // Mock power data - will be replaced with real Pi data
 const getMockPowerData = () => ({
   battery: {
