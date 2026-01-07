@@ -1,19 +1,37 @@
 import config from '../config';
+import {
+  normalizeHealth,
+  normalizeMetrics,
+  normalizeSensors,
+  normalizeBackups,
+  normalizeKeys,
+  normalizeDMs,
+} from './dataAdapter';
 
 /**
  * API Service with graceful degradation and exponential backoff
+ * Integrates with real OMEGA backend on port 8093
  */
 
 class APIService {
   constructor() {
     this.retryDelays = new Map();
+    this.cache = new Map();
   }
 
   /**
    * Generic fetch with error handling and retry logic
    */
   async fetch(url, options = {}) {
-    const { retry = true, timeout = 5000 } = options;
+    const { retry = true, timeout = 5000, useCache = false, cacheTime = 5000 } = options;
+
+    // Check cache first
+    if (useCache) {
+      const cached = this.cache.get(url);
+      if (cached && Date.now() - cached.timestamp < cacheTime) {
+        return cached.data;
+      }
+    }
 
     try {
       const controller = new AbortController();
@@ -33,7 +51,14 @@ class APIService {
       // Reset retry delay on success
       this.retryDelays.delete(url);
 
-      return await response.json();
+      const data = await response.json();
+
+      // Cache successful response
+      if (useCache) {
+        this.cache.set(url, { data, timestamp: Date.now() });
+      }
+
+      return data;
     } catch (error) {
       console.warn(`API fetch failed for ${url}:`, error.message);
 
@@ -69,138 +94,124 @@ class APIService {
   }
 
   /**
-   * Health Check
+   * Health Check - GET /cgi-bin/health.py
    */
   async getHealth() {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.health}`);
-    } catch {
-      return this.getMockHealth();
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.health}`);
+      return normalizeHealth(raw);
+    } catch (error) {
+      console.error('Health check failed:', error);
+      return normalizeHealth(null);
     }
   }
 
   /**
-   * System Metrics (CPU, RAM, Disk, Temp)
+   * System Metrics - GET /cgi-bin/metrics.py
    */
   async getMetrics() {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.metrics}`);
-    } catch {
-      return this.getMockMetrics();
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.metrics}`, {
+        useCache: true,
+        cacheTime: 2000, // 2 second cache for metrics
+      });
+      return normalizeMetrics(raw);
+    } catch (error) {
+      console.error('Metrics fetch failed:', error);
+      return normalizeMetrics(null);
     }
   }
 
   /**
-   * Sensor Data (Temperature, etc.)
+   * Sensor Data (BME680) - GET /cgi-bin/sensors.py
    */
   async getSensors() {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.sensors}`);
-    } catch {
-      return this.getMockSensors();
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.sensors}`);
+      return normalizeSensors(raw);
+    } catch (error) {
+      console.error('Sensors fetch failed:', error);
+      return normalizeSensors(null);
     }
   }
 
   /**
-   * GPS Location
+   * Backups - GET /cgi-bin/backup.py
    */
-  async getGPS() {
+  async getBackups() {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.gps}`);
-    } catch {
-      return this.getMockGPS();
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.backup}`);
+      return normalizeBackups(raw);
+    } catch (error) {
+      console.error('Backups fetch failed:', error);
+      return normalizeBackups(null);
     }
   }
 
   /**
-   * Community Posts
+   * Trigger Backup - POST /cgi-bin/backup.py
    */
-  async getCommunityPosts() {
+  async triggerBackup() {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.communityPosts}`);
-    } catch {
-      return this.getMockCommunityPosts();
-    }
-  }
-
-  /**
-   * Toggle Hotspot
-   */
-  async toggleHotspot() {
-    try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotToggle}`, {
+      return await this.fetch(`${config.endpoints.backend}${config.endpoints.backup}`, {
         method: 'POST',
       });
-    } catch {
-      return { success: false, message: 'Hotspot service unavailable' };
+    } catch (error) {
+      return { success: false, error: error.message };
     }
   }
 
-  // ============= MOCK DATA FALLBACKS =============
-
-  getMockHealth() {
-    return {
-      status: 'healthy',
-      services: {
-        kiwix: Math.random() > 0.2 ? 'up' : 'down',
-        backend: 'up',
-        hotspot: Math.random() > 0.5 ? 'on' : 'off',
-      },
-      timestamp: new Date().toISOString(),
-    };
+  /**
+   * Keys Status - GET /cgi-bin/keys.py
+   */
+  async getKeys() {
+    try {
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.keys}`);
+      return normalizeKeys(raw);
+    } catch (error) {
+      console.error('Keys fetch failed:', error);
+      return normalizeKeys(null);
+    }
   }
 
-  getMockMetrics() {
-    return {
-      cpu: Math.floor(Math.random() * 60 + 20),
-      ram: Math.floor(Math.random() * 70 + 20),
-      disk: Math.floor(Math.random() * 30 + 50),
-      temperature: Math.floor(Math.random() * 15 + 45),
-      network: {
-        mode: Math.random() > 0.5 ? 'hotspot' : 'client',
-        connected: true,
-      },
-    };
+  /**
+   * Key Sync Status - GET /cgi-bin/keysync.py
+   */
+  async getKeySync() {
+    try {
+      return await this.fetch(`${config.endpoints.backend}${config.endpoints.keysync}`);
+    } catch (error) {
+      console.error('KeySync fetch failed:', error);
+      return { status: 'unknown', available: false };
+    }
   }
 
-  getMockSensors() {
-    return {
-      temperature: Math.floor(Math.random() * 15 + 45),
-      humidity: Math.floor(Math.random() * 30 + 40),
-      pressure: Math.floor(Math.random() * 50 + 1000),
-    };
+  /**
+   * Direct Messages - GET /cgi-bin/dm.py
+   */
+  async getDMs() {
+    try {
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.dm}`);
+      return normalizeDMs(raw);
+    } catch (error) {
+      console.error('DMs fetch failed:', error);
+      return normalizeDMs(null);
+    }
   }
 
-  getMockGPS() {
-    return {
-      latitude: 37.7749 + (Math.random() - 0.5) * 0.01,
-      longitude: -122.4194 + (Math.random() - 0.5) * 0.01,
-      altitude: 50,
-      accuracy: Math.floor(Math.random() * 10 + 3),
-      satellites: Math.floor(Math.random() * 5 + 8),
-      timestamp: new Date().toISOString(),
-    };
-  }
-
-  getMockCommunityPosts() {
-    return {
-      posts: [
-        {
-          id: 1,
-          author: 'OMEGA User',
-          content: 'Just deployed the new firmware update!',
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-          likes: 5,
-        },
-        {
-          id: 2,
-          author: 'Cyberdeck Admin',
-          content: 'Reminder: Kiwix library updated with new Wikipedia archives.',
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
-          likes: 12,
-        },
-      ],
-    };
+  /**
+   * Send DM - POST /cgi-bin/dm.py
+   */
+  async sendDM(to, content) {
+    try {
+      return await this.fetch(`${config.endpoints.backend}${config.endpoints.dm}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, content, encrypted: true }),
+      });
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }
 }
 
