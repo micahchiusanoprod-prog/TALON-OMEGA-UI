@@ -83,12 +83,9 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           )}
 
-          {/* Mobile: Show only status and temp */}
+          {/* Mobile: Show only temp */}
           {useCompactHeader && (
             <div className="flex md:hidden items-center gap-2">
-              <div className={`metric-pill ${deviceStatus.color}`}>
-                <span className="font-semibold text-xs">{deviceStatus.label}</span>
-              </div>
               {metrics && metrics.temp !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground text-xs">Temp</span>
