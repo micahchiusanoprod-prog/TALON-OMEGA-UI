@@ -142,21 +142,21 @@ export function useHotkeys() {
   return { pinned, pinnedIds, addHotkey, removeHotkey, moveHotkey, resetToDefault };
 }
 
-// Clean, tap-friendly hotkey button
+// Clean, minimal tap-friendly hotkey button - optimized for glove use
 function HotkeyButton({ hotkey, onClick }) {
   const Icon = hotkey.icon;
   
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-3 py-2.5 rounded-xl glass hover:bg-primary/10 active:bg-primary/20 transition-all min-w-fit"
+      className="flex items-center gap-3 px-4 py-3 rounded-xl glass-strong hover:bg-primary/10 active:bg-primary/20 transition-all min-w-fit group"
       title={hotkey.description}
       data-testid={`hotkey-${hotkey.id}`}
     >
-      <div className={`w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center`}>
-        <Icon className={`w-5 h-5 ${hotkey.color || 'text-primary'}`} />
+      <div className={`w-10 h-10 rounded-xl bg-secondary/30 flex items-center justify-center group-hover:bg-primary/20 transition-colors`}>
+        <Icon className={`w-6 h-6 ${hotkey.color || 'text-primary'}`} />
       </div>
-      <span className="text-sm font-medium whitespace-nowrap">{hotkey.name}</span>
+      <span className="text-sm font-semibold whitespace-nowrap">{hotkey.name}</span>
     </button>
   );
 }
