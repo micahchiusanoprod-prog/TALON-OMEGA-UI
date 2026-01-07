@@ -46,6 +46,12 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **Help Button** | ✅ | "?" in header opens help modal |
 | **Tab Descriptions** | ✅ | Context + legend visible for each tab |
 | **Map Controls** | ✅ | "All Nodes" + "My Location" (placeholder) buttons |
+| **Comms Availability Panel** | ✅ | 4 transport cards (LAN, Mesh, SMS, HF) with status indicators |
+| **Transport Selection** | ✅ | Click to select, info bar shows selected method + warnings |
+| **Codes Tab (Codebook)** | ✅ | 49 codes, search, 5 category filters, compose helper |
+| **Compose with Codes** | ✅ | Build multi-code messages, send to chat |
+| **Comms Knowledge Tab** | ✅ | Field manual with Quick Decision Guide + accordion sections |
+| **Transport Failure Modes** | ✅ | Each method shows how it works, when to use, failure modes, specs |
 
 ### Integration Layer (Production-Ready)
 
@@ -97,7 +103,7 @@ url.searchParams.set('key', this.apiKey);
 ```
 /app/frontend/src/
 ├── components/
-│   ├── AllyCommunicationsHub.jsx    # Main hub with tabs (Chat/Map/Guide), Help button, Status Dropdown
+│   ├── AllyCommunicationsHub.jsx    # Main hub with 5 tabs, Comms Panel, Help button
 │   └── ally/
 │       ├── NodeCard.jsx             # Individual node card with status badges
 │       ├── NodeDetailsDrawer.jsx    # Full node details drawer
@@ -107,7 +113,10 @@ url.searchParams.set('key', this.apiKey);
 │       ├── LazyMapContent.jsx       # Leaflet map with markers and popups
 │       ├── GpsStatusBar.jsx         # GPS fix status bar with metrics
 │       ├── GpsGuide.jsx             # Educational GPS guide with accordions
-│       └── AllyHubHelp.jsx          # Help modal and tab descriptions
+│       ├── AllyHubHelp.jsx          # Help modal and tab descriptions (5 tabs)
+│       ├── CommsAvailabilityPanel.jsx # Transport method cards (LAN, Mesh, SMS, HF)
+│       ├── CommsKnowledge.jsx       # Field manual for comms systems
+│       └── Codebook.jsx             # Searchable codebook with compose helper
 ├── services/
 │   └── allyApi.js                   # API service with mock/live support, GPS data
 ├── utils/
@@ -203,6 +212,7 @@ POST /api/ally/node/{node_id}/refresh
 - `/app/test_reports/iteration_1.json` - Ally Hub comprehensive test (100% pass)
 - `/app/test_reports/iteration_2.json` - Chat size increase + Map tab test (100% pass)
 - `/app/test_reports/iteration_3.json` - GPS Status Bar, GPS Guide, Help pattern test (100% pass)
+- `/app/test_reports/iteration_4.json` - Comms Panel, Codes Tab, Knowledge Tab test (100% pass)
 
 ---
 
@@ -213,10 +223,12 @@ POST /api/ally/node/{node_id}/refresh
 - Configure `REACT_APP_PI_API_URL` and `REACT_APP_PI_API_KEY`
 - Test live connectivity
 - Wire GPS status to real GPS data from Pi
+- Wire Comms status to actual transport availability
 
 ### P2 - Feature Completion
 - Full GPS Map enhancements (mesh lines, signal circles, route drawing)
 - "My Location" button to use device's actual GPS
+- Signal History mini-chart for GPS Status Bar (when real data available)
 - Full Hero Search implementation
 - Backups feature
 - KeySync feature
@@ -231,5 +243,5 @@ POST /api/ally/node/{node_id}/refresh
 ---
 
 *Last Updated: January 7, 2026*
-*Current Status: Ally Communications Hub COMPLETE with GPS Status Bar, GPS Guide Tab, and Help System (Preview Phase)*
+*Current Status: Ally Communications Hub COMPLETE with Comms Console (5 tabs, Transport Panel, Codebook) (Preview Phase)*
 *Next: Deploy to Pi and test with live backend*
