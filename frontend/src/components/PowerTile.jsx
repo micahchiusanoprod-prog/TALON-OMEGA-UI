@@ -525,6 +525,26 @@ export default function PowerTile() {
         {/* Consumption Breakdown */}
         <ConsumptionBar breakdown={consumption.breakdown} total={consumption.total} />
         
+        {/* RUNTIME COLLAPSING CHECKLIST - Shows when runtime is critical */}
+        {isRuntimeCritical && (
+          <div className="glass rounded-xl p-4 border-2 border-destructive/50 bg-destructive/10 animate-pulse-slow" data-testid="runtime-critical">
+            <div className="flex items-center gap-2 mb-3">
+              <Lightbulb className="w-5 h-5 text-destructive" />
+              <span className="text-sm font-bold text-destructive">⚠️ Runtime Critical - Act Now!</span>
+            </div>
+            <div className="space-y-1.5 text-xs">
+              {runtimeCollapsingChecklist.map((item, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="w-5 h-5 rounded-full bg-destructive/20 text-destructive flex items-center justify-center font-bold flex-shrink-0 text-xs">
+                    {i + 1}
+                  </span>
+                  <span className="text-foreground">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
         {/* Alerts */}
         {alerts.length > 0 && (
           <div className="space-y-2">
