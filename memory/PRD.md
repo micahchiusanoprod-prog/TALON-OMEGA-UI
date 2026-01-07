@@ -23,7 +23,7 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **Missing field handling** | ✅ | Graceful N/A display without breaking layout |
 | **Direct Messaging Modal** | ✅ | Thread UI, delivery states (Sent/Queued/Failed) |
 | **Urgent toggle + templates** | ✅ | 6 quick templates, urgent flag |
-| **Global Chat** | ✅ | Visible in tile, instant posting |
+| **Global Chat** | ✅ | Visible in tile, instant posting, **increased height (h-64/h-72/h-80)** |
 | **Broadcast pinning** | ✅ | Red styling, flashing animation |
 | **Broadcast Modal** | ✅ | Severity selection + confirmation step |
 | **Alerts badge update** | ✅ | Increments on broadcast |
@@ -36,6 +36,10 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **Scroll position preservation** | ✅ | Modals don't change page scroll |
 | **Offline-first UI** | ✅ | No jank, clear loading/empty states |
 | **Integration adapter** | ✅ | API_BASE_URL + auth + graceful fallback |
+| **Map Tab** | ✅ | Interactive Leaflet map with node locations |
+| **Map Markers** | ✅ | Status-colored pins (green/amber/red/gray) |
+| **Map Popups** | ✅ | Node name, status, last seen, location, role |
+| **No GPS Panel** | ✅ | Lists nodes without GPS coordinates |
 
 ### Integration Layer (Production-Ready)
 
@@ -87,14 +91,16 @@ url.searchParams.set('key', this.apiKey);
 ```
 /app/frontend/src/
 ├── components/
-│   ├── AllyCommunicationsHub.jsx    # Main hub with Global Chat, Status Dropdown
+│   ├── AllyCommunicationsHub.jsx    # Main hub with tabs (Chat/Map), Status Dropdown
 │   └── ally/
 │       ├── NodeCard.jsx             # Individual node card with status badges
 │       ├── NodeDetailsDrawer.jsx    # Full node details drawer
 │       ├── MessagingModal.jsx       # DM modal with templates
-│       └── BroadcastModal.jsx       # Broadcast with confirmation
+│       ├── BroadcastModal.jsx       # Broadcast with confirmation
+│       ├── AllyMapView.jsx          # Map view wrapper with legend, lazy loading
+│       └── LazyMapContent.jsx       # Leaflet map with markers and popups
 ├── services/
-│   └── allyApi.js                   # API service with mock/live support
+│   └── allyApi.js                   # API service with mock/live support, GPS data
 ├── utils/
 │   └── scrollLock.js                # Scroll position management
 └── config.js                        # Central configuration
@@ -186,6 +192,7 @@ POST /api/ally/node/{node_id}/refresh
 
 ## Test Reports
 - `/app/test_reports/iteration_1.json` - Ally Hub comprehensive test (100% pass)
+- `/app/test_reports/iteration_2.json` - Chat size increase + Map tab test (100% pass)
 
 ---
 
@@ -197,7 +204,7 @@ POST /api/ally/node/{node_id}/refresh
 - Test live connectivity
 
 ### P2 - Feature Completion
-- Full GPS Map implementation
+- Full GPS Map enhancements (mesh lines, signal circles, route drawing)
 - Full Hero Search implementation
 - Backups feature
 - KeySync feature
@@ -211,5 +218,5 @@ POST /api/ally/node/{node_id}/refresh
 ---
 
 *Last Updated: January 7, 2026*
-*Current Status: Ally Communications Hub COMPLETE (Preview Phase)*
+*Current Status: Ally Communications Hub COMPLETE with Map Tab (Preview Phase)*
 *Next: Deploy to Pi and test with live backend*
