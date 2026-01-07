@@ -177,9 +177,16 @@ export default function EnvironmentTile() {
                     </span>
                     <span className="text-xs text-muted-foreground">{metric.unit}</span>
                   </div>
-                  <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${status.bg}`} title={`Status: ${status.label}`}>
-                    <StatusIcon className={`w-3.5 h-3.5 ${status.color}`} />
-                    <span className={`text-xs font-medium ${status.color}`}>{status.label}</span>
+                  <div 
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full ${status.bg} ${
+                      status.status === 'critical' ? 'animate-critical-flash' : ''
+                    }`} 
+                    title={`Status: ${status.label}`}
+                  >
+                    <StatusIcon className={`w-4 h-4 ${status.color} ${
+                      status.status === 'critical' ? 'animate-critical-glow' : ''
+                    }`} />
+                    <span className={`text-xs font-semibold ${status.color}`}>{status.label}</span>
                   </div>
                 </div>
               </div>

@@ -130,8 +130,15 @@ export default function DeviceInfoTile() {
                     {metric.label}
                     <span className="block text-[10px] opacity-70">{metric.description}</span>
                   </div>
-                  <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full ${status.bg}`} title={`Status: ${status.label}`}>
-                    <StatusIcon className={`w-3 h-3 ${status.color}`} />
+                  <div 
+                    className={`flex items-center gap-1 px-2 py-1 rounded-full ${status.bg} ${
+                      status.status === 'critical' ? 'animate-critical-flash' : ''
+                    }`} 
+                    title={`Status: ${status.label}`}
+                  >
+                    <StatusIcon className={`w-4 h-4 ${status.color} ${
+                      status.status === 'critical' ? 'animate-critical-glow' : ''
+                    }`} />
                   </div>
                 </div>
                 <div className="flex items-baseline gap-1">

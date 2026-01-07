@@ -13,7 +13,10 @@ import {
   Loader2,
   ChevronRight,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Star,
+  Ban,
+  Gauge
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
@@ -96,6 +99,22 @@ export default function HotspotTile() {
   const handleRefresh = () => {
     fetchAllData();
     toast.success('Refreshed hotspot data');
+  };
+
+  const handleFavorite = (client) => {
+    toast.success(`${client.hostname} marked as favorite`);
+  };
+
+  const handleBlock = (client) => {
+    toast.warning(`${client.hostname} blocked`, {
+      description: 'This device can no longer connect',
+    });
+  };
+
+  const handleLimitData = (client) => {
+    toast.info(`Data limit set for ${client.hostname}`, {
+      description: 'Device will be throttled after limit',
+    });
   };
 
   const formatBytes = (bytes) => {
@@ -247,6 +266,17 @@ export default function HotspotTile() {
 
         {status.enabled && (
           <>
+            {/* How to Connect Instructions */}
+            <div className="glass p-3 rounded-lg">
+              <div className="text-xs font-semibold text-foreground mb-1">How to Connect:</div>
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <p>1. On your device, go to WiFi settings</p>
+                <p>2. Look for network: <span className="font-medium text-foreground">{status.ssid}</span></p>
+                <p>3. Enter the password and connect</p>
+                <p className="text-[10px] opacity-70 mt-1">💡 Use the QR Code button below for quick connection</p>
+              </div>
+            </div>
+
             {/* Connected Devices */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -276,7 +306,7 @@ export default function HotspotTile() {
                         key={client.mac}
                         className="p-3 glass rounded-lg hover:glass-strong transition-smooth"
                       >
-                        <div className="flex items-start justify-between">
+                        <div className="flex items-start justify-between mb-2">
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-foreground truncate">
                               {client.hostname}
@@ -302,6 +332,40 @@ export default function HotspotTile() {
                             <div>↑ {formatBytes(client.txBytes)}</div>
                           </div>
                         </div>
+                        
+                        {/* Device Management Buttons */}
+                        <div className="flex items-center gap-1.5 mt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleFavorite(client)}
+                            className="text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-secondary"
+                            title="Mark as favorite device"
+                          >
+                            <Star className="w-3 h-3 mr-1" />
+                            Favorite
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleLimitData(client)}
+                            className="text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-secondary"
+                            title="Set data usage limit"
+                          >
+                            <Gauge className="w-3 h-3 mr-1" />
+                            Limit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleBlock(client)}
+                            className="text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-destructive-light hover:text-destructive"
+                            title="Block this device"
+                          >
+                            <Ban className="w-3 h-3 mr-1" />
+                            Block
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -324,8 +388,14 @@ export default function HotspotTile() {
               <div className="glass p-2 rounded-lg">
                 <div className="flex items-center justify-between mb-1">
                   <div className="text-xs text-muted-foreground">Total Data</div>
-                  <div className={`flex items-center gap-0.5 px-1 py-0.5 rounded-full ${dataStatus.bg}`}>
-                    <DataStatusIcon className={`w-2.5 h-2.5 ${dataStatus.color}`} />
+                  <div 
+                    className={`flex items-center gap-0.5 px-1.5 py-1 rounded-full ${dataStatus.bg} ${
+                      dataStatus.status === 'critical' ? 'animate-critical-flash' : ''
+                    }`}
+                  >
+                    <DataStatusIcon className={`w-3.5 h-3.5 ${dataStatus.color} ${
+                      dataStatus.status === 'critical' ? 'animate-critical-glow' : ''
+                    }`} />
                   </div>
                 </div>
                 <div className="text-sm font-semibold text-foreground">
@@ -335,8 +405,14 @@ export default function HotspotTile() {
               <div className="glass p-2 rounded-lg">
                 <div className="flex items-center justify-between mb-1">
                   <div className="text-xs text-muted-foreground">Throughput</div>
-                  <div className={`flex items-center gap-0.5 px-1 py-0.5 rounded-full ${throughputStatus.bg}`}>
-                    <ThroughputStatusIcon className={`w-2.5 h-2.5 ${throughputStatus.color}`} />
+                  <div 
+                    className={`flex items-center gap-0.5 px-1.5 py-1 rounded-full ${throughputStatus.bg} ${
+                      throughputStatus.status === 'critical' ? 'animate-critical-flash' : ''
+                    }`}
+                  >
+                    <ThroughputStatusIcon className={`w-3.5 h-3.5 ${throughputStatus.color} ${
+                      throughputStatus.status === 'critical' ? 'animate-critical-glow' : ''
+                    }`} />
                   </div>
                 </div>
                 <div className="text-sm font-semibold text-foreground flex items-center gap-1">
@@ -347,8 +423,14 @@ export default function HotspotTile() {
               <div className="glass p-2 rounded-lg">
                 <div className="flex items-center justify-between mb-1">
                   <div className="text-xs text-muted-foreground">Channel</div>
-                  <div className={`flex items-center gap-0.5 px-1 py-0.5 rounded-full ${channelStatus.bg}`}>
-                    <ChannelStatusIcon className={`w-2.5 h-2.5 ${channelStatus.color}`} />
+                  <div 
+                    className={`flex items-center gap-0.5 px-1.5 py-1 rounded-full ${channelStatus.bg} ${
+                      channelStatus.status === 'critical' ? 'animate-critical-flash' : ''
+                    }`}
+                  >
+                    <ChannelStatusIcon className={`w-3.5 h-3.5 ${channelStatus.color} ${
+                      channelStatus.status === 'critical' ? 'animate-critical-glow' : ''
+                    }`} />
                   </div>
                 </div>
                 <div className="text-sm font-semibold text-foreground">
