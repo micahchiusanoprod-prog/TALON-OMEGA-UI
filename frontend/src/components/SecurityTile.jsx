@@ -296,35 +296,26 @@ export default function SecurityTile() {
   return (
     <Card className="glass-strong border-border-strong" data-testid="security-tile">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Shield className="w-5 h-5 text-primary" />
-          Security
+        <CardTitle className="flex items-center justify-between text-base">
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-primary" />
+            Security
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setActiveTab('help')}
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+            title="Help & Troubleshooting"
+            data-testid="security-help-btn"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Tabs */}
-        <div className="flex gap-1 glass rounded-lg p-1 mb-4">
-          <button
-            onClick={() => { setActiveTab('people'); setSelectedPerson(null); }}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-              activeTab === 'people' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary/50'
-            }`}
-            data-testid="tab-people"
-          >
-            <Users className="w-4 h-4" />
-            People
-          </button>
-          <button
-            onClick={() => { setActiveTab('education'); setSelectedPerson(null); }}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-              activeTab === 'education' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary/50'
-            }`}
-            data-testid="tab-education"
-          >
-            <HelpCircle className="w-4 h-4" />
-            Help
-          </button>
-        </div>
+        {/* Quick Tips */}
+        <QuickHelpTips tips={securityQuickTips} />
         
         {/* Content */}
         {activeTab === 'people' && (
