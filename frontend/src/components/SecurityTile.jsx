@@ -347,8 +347,6 @@ export default function SecurityTile() {
             </div>
           )
         )}
-        
-        {activeTab === 'education' && <EducationTab />}
       </CardContent>
     </Card>
   );
