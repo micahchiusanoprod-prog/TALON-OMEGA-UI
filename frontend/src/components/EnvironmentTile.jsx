@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Thermometer, Droplets, Gauge, Wind, AlertTriangle } from 'lucide-react';
+import { Thermometer, Droplets, Gauge, Wind, CheckCircle, AlertTriangle, AlertCircle } from 'lucide-react';
 import api from '../services/api';
 import config from '../config';
 
@@ -35,6 +35,42 @@ export default function EnvironmentTile() {
     offline: !sensors?.available,
   };
 
+  // Helper function to determine status based on thresholds
+  const getStatus = (type, value) => {
+    if (value === null) return { status: 'unknown', icon: AlertCircle, color: 'text-muted-foreground', bg: 'bg-muted' };
+
+    let status = 'good';
+    
+    switch(type) {
+      case 'temperature':
+        if (value < 15 || value > 28) status = 'critical';
+        else if (value < 18 || value > 24) status = 'warning';
+        break;
+      case 'humidity':
+        if (value < 20 || value > 70) status = 'critical';
+        else if (value < 30 || value > 60) status = 'warning';
+        break;
+      case 'pressure':
+        if (value < 1000 || value > 1030) status = 'critical';
+        else if (value < 1010 || value > 1020) status = 'warning';
+        break;
+      case 'iaq':
+        if (value < 100) status = 'critical';
+        else if (value < 150) status = 'warning';
+        break;
+      default:
+        break;
+    }
+
+    if (status === 'good') {
+      return { status: 'good', icon: CheckCircle, color: 'text-success', bg: 'bg-success-light', label: 'Normal' };
+    } else if (status === 'warning') {
+      return { status: 'warning', icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning-light', label: 'Attention' };
+    } else {
+      return { status: 'critical', icon: AlertCircle, color: 'text-destructive', bg: 'bg-destructive-light', label: 'Critical' };
+    }
+  };
+
   if (loading) {
     return (
       <Card className="glass-strong border-border">
@@ -63,6 +99,7 @@ export default function EnvironmentTile() {
       unit: '°C',
       icon: Thermometer,
       color: 'text-red-400',
+      type: 'temperature',
     },
     {
       label: 'Humidity',
@@ -71,6 +108,7 @@ export default function EnvironmentTile() {
       unit: '%',
       icon: Droplets,
       color: 'text-blue-400',
+      type: 'humidity',
     },
     {
       label: 'Pressure',
@@ -79,6 +117,7 @@ export default function EnvironmentTile() {
       unit: 'hPa',
       icon: Gauge,
       color: 'text-purple-400',
+      type: 'pressure',
     },
     {
       label: 'Air Quality',
@@ -87,6 +126,7 @@ export default function EnvironmentTile() {
       unit: 'IAQ',
       icon: Wind,
       color: 'text-green-400',
+      type: 'iaq',
     },
   ];
 
@@ -109,6 +149,9 @@ export default function EnvironmentTile() {
         <div className="space-y-3">
           {metrics.map((metric) => {
             const Icon = metric.icon;
+            const status = getStatus(metric.type, metric.value);
+            const StatusIcon = status.icon;
+            
             return (
               <div
                 key={metric.label}
@@ -118,7 +161,7 @@ export default function EnvironmentTile() {
                   <div className="p-2 glass rounded-lg">
                     <Icon className={`w-4 h-4 ${metric.color}`} />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col flex-1">
                     <span className="text-sm font-medium text-foreground">
                       {metric.label}
                     </span>
@@ -127,11 +170,17 @@ export default function EnvironmentTile() {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-bold text-foreground">
-                    {metric.value !== null ? metric.value.toFixed(1) : '—'}
-                  </span>
-                  <span className="text-xs text-muted-foreground">{metric.unit}</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-bold text-foreground">
+                      {metric.value !== null ? metric.value.toFixed(1) : '—'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{metric.unit}</span>
+                  </div>
+                  <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${status.bg}`} title={`Status: ${status.label}`}>
+                    <StatusIcon className={`w-3.5 h-3.5 ${status.color}`} />
+                    <span className={`text-xs font-medium ${status.color}`}>{status.label}</span>
+                  </div>
                 </div>
               </div>
             );
