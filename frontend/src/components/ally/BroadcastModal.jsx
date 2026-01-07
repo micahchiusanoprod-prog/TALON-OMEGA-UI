@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -21,6 +21,21 @@ export default function BroadcastModal({ onClose, onSent }) {
   const [severity, setSeverity] = useState('warning');
   const [sending, setSending] = useState(false);
   const [step, setStep] = useState('compose'); // 'compose' | 'confirm' | 'success'
+
+  // Lock body scroll when modal opens
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
 
   const handleProceedToConfirm = () => {
     if (!title.trim() || !message.trim()) {
