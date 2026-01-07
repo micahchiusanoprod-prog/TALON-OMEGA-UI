@@ -128,16 +128,58 @@ const SongRow = ({ title, artist, isPlaying, isLiked }) => (
 export default function MusicTile() {
   const [activeSection, setActiveSection] = useState('mostPlayed');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  
+  // Help view
+  if (showHelp) {
+    return (
+      <Card className="glass-strong border-border-strong" data-testid="music-tile">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-2">
+              <Music className="w-5 h-5 text-primary" />
+              Music Help
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setShowHelp(false)}>
+              ← Back
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TileHelpTabs
+            helpContent={musicHelpContent}
+            troubleshootingContent={musicTroubleshootingContent}
+            legendItems={musicLegendItems}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
   
   return (
     <Card className="glass-strong border-border-strong" data-testid="music-tile">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Music className="w-5 h-5 text-primary" />
-          Music
+        <CardTitle className="flex items-center justify-between text-base">
+          <div className="flex items-center gap-2">
+            <Music className="w-5 h-5 text-primary" />
+            Music
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowHelp(true)}
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+            title="Help & Troubleshooting"
+            data-testid="music-help-btn"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Quick Tips */}
+        <QuickHelpTips tips={musicQuickTips} />
+        
         {/* Mini Player */}
         <div className="glass rounded-lg p-3">
           <div className="flex items-center gap-3 mb-3">
