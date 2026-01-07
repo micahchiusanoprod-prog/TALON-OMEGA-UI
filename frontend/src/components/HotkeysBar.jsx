@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import { 
   Settings,
@@ -9,6 +9,8 @@ import {
   Minus,
   ChevronUp,
   ChevronDown,
+  ChevronRight,
+  MoreHorizontal,
   Users,
   Map,
   Flashlight,
@@ -43,15 +45,15 @@ import {
 
 // All available hotkeys
 const allHotkeys = [
-  // Default Pinned
+  // Default Pinned (first 6 shown by default)
   { id: 'comms', name: 'Comms Hub', icon: Users, category: 'default', description: 'Ally Communications Hub' },
   { id: 'map', name: 'Map', icon: Map, category: 'default', description: 'GPS / location / node map' },
   { id: 'flashlight', name: 'Flashlight', icon: Flashlight, category: 'default', description: 'Screen white-out + strobe' },
-  { id: 'sos', name: 'SOS / Beacon', icon: AlertTriangle, category: 'default', description: 'Emergency beacon', color: 'text-destructive' },
-  { id: 'notes', name: 'Notes', icon: FileText, category: 'default', description: 'Quick field log + timestamps' },
+  { id: 'sos', name: 'SOS Beacon', icon: AlertTriangle, category: 'default', description: 'Emergency beacon', color: 'text-destructive' },
+  { id: 'notes', name: 'Field Notes', icon: FileText, category: 'default', description: 'Quick field log + timestamps' },
+  { id: 'battery', name: 'Power', icon: Battery, category: 'default', description: 'Battery & charging status' },
   { id: 'scanner', name: 'Scanner', icon: Radio, category: 'default', description: 'RF/Signal scan summary' },
-  { id: 'files', name: 'Files Drop', icon: FolderOpen, category: 'default', description: 'Quick file share access' },
-  { id: 'battery', name: 'Battery', icon: Battery, category: 'default', description: 'Power status + low-power mode' },
+  { id: 'files', name: 'Files', icon: FolderOpen, category: 'default', description: 'Quick file share access' },
   
   // Navigation & Situational
   { id: 'compass', name: 'Compass', icon: Compass, category: 'navigation', description: 'Digital compass' },
@@ -85,7 +87,8 @@ const allHotkeys = [
   { id: 'video', name: 'Video', icon: Tv, category: 'entertainment', description: 'Jellyfin video player' },
 ];
 
-const defaultPinned = ['comms', 'map', 'flashlight', 'sos', 'notes', 'scanner', 'files', 'battery'];
+const defaultPinned = ['comms', 'map', 'flashlight', 'sos', 'notes', 'battery'];
+const VISIBLE_COUNT = 6; // Show 6 by default, rest in "More"
 
 const categoryNames = {
   default: 'Default',
@@ -139,37 +142,84 @@ export function useHotkeys() {
   return { pinned, pinnedIds, addHotkey, removeHotkey, moveHotkey, resetToDefault };
 }
 
-export function HotkeyButton({ hotkey, onClick, size = 'normal' }) {
+// Clean, tap-friendly hotkey button
+function HotkeyButton({ hotkey, onClick }) {
   const Icon = hotkey.icon;
-  
-  if (size === 'small') {
-    return (
-      <button
-        onClick={onClick}
-        className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-secondary/50 transition-colors group"
-        title={hotkey.description}
-        data-testid={`hotkey-${hotkey.id}`}
-      >
-        <div className={`w-8 h-8 rounded-lg glass flex items-center justify-center group-hover:bg-primary/10 transition-colors`}>
-          <Icon className={`w-4 h-4 ${hotkey.color || 'text-primary'}`} />
-        </div>
-        <span className="text-xs text-muted-foreground group-hover:text-foreground truncate max-w-[60px]">
-          {hotkey.name}
-        </span>
-      </button>
-    );
-  }
   
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg glass hover:bg-secondary/50 transition-colors"
+      className="flex items-center gap-2 px-3 py-2.5 rounded-xl glass hover:bg-primary/10 active:bg-primary/20 transition-all min-w-fit"
       title={hotkey.description}
       data-testid={`hotkey-${hotkey.id}`}
     >
-      <Icon className={`w-4 h-4 ${hotkey.color || 'text-primary'}`} />
-      <span className="text-sm">{hotkey.name}</span>
+      <div className={`w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center`}>
+        <Icon className={`w-5 h-5 ${hotkey.color || 'text-primary'}`} />
+      </div>
+      <span className="text-sm font-medium whitespace-nowrap">{hotkey.name}</span>
     </button>
+  );
+}
+
+// "More" dropdown for overflow hotkeys
+function MoreDropdown({ hotkeys, onHotkeyClick }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
+  if (hotkeys.length === 0) return null;
+  
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2.5 rounded-xl glass hover:bg-primary/10 active:bg-primary/20 transition-all"
+        data-testid="hotkey-more-btn"
+      >
+        <div className="w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center">
+          <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
+        </div>
+        <span className="text-sm font-medium">More</span>
+        <span className="text-xs px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+          {hotkeys.length}
+        </span>
+      </button>
+      
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-2 w-56 glass-strong rounded-xl shadow-lg z-50 overflow-hidden animate-fade-in" data-testid="more-dropdown">
+          <div className="p-2 space-y-1 max-h-64 overflow-y-auto scrollbar-thin">
+            {hotkeys.map((hotkey) => {
+              const Icon = hotkey.icon;
+              return (
+                <button
+                  key={hotkey.id}
+                  onClick={() => {
+                    onHotkeyClick?.(hotkey.id);
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-colors"
+                >
+                  <Icon className={`w-4 h-4 ${hotkey.color || 'text-primary'}`} />
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-medium">{hotkey.name}</div>
+                    <div className="text-xs text-muted-foreground truncate">{hotkey.description}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -177,32 +227,39 @@ export function HotkeysBar({ onHotkeyClick }) {
   const { pinned } = useHotkeys();
   const [showCustomize, setShowCustomize] = useState(false);
   
+  const visibleHotkeys = pinned.slice(0, VISIBLE_COUNT);
+  const overflowHotkeys = pinned.slice(VISIBLE_COUNT);
+  
   return (
     <>
-      <div className="glass rounded-lg p-2" data-testid="hotkeys-bar">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-semibold text-muted-foreground">QUICK ACCESS</span>
+      <div className="glass-strong rounded-2xl p-3" data-testid="hotkeys-bar">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Quick Access</span>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => setShowCustomize(true)}
-            className="h-6 px-2 text-xs"
+            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
             data-testid="customize-hotkeys-btn"
           >
-            <Settings className="w-3 h-3 mr-1" />
+            <Settings className="w-3.5 h-3.5 mr-1" />
             Customize
           </Button>
         </div>
         
-        <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-thin">
-          {pinned.map((hotkey) => (
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-thin pb-1">
+          {visibleHotkeys.map((hotkey) => (
             <HotkeyButton
               key={hotkey.id}
               hotkey={hotkey}
-              size="small"
               onClick={() => onHotkeyClick?.(hotkey.id)}
             />
           ))}
+          
+          <MoreDropdown 
+            hotkeys={overflowHotkeys} 
+            onHotkeyClick={onHotkeyClick}
+          />
         </div>
       </div>
       
@@ -228,19 +285,24 @@ export function HotkeysCustomizeModal({ onClose }) {
       <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
       
       {/* Modal */}
-      <div className="relative glass-strong rounded-xl w-full max-w-lg max-h-[80vh] overflow-hidden animate-fade-in">
+      <div className="relative glass-strong rounded-2xl w-full max-w-lg max-h-[80vh] overflow-hidden animate-fade-in">
         {/* Header */}
         <div className="sticky top-0 glass-strong border-b border-border px-4 py-3 flex items-center justify-between z-10">
-          <h2 className="font-semibold">Customize Hotkeys</h2>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary">
+          <h2 className="font-semibold">Customize Quick Access</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary">
             <X className="w-5 h-5" />
           </button>
         </div>
         
         {/* Content */}
         <div className="p-4 overflow-y-auto max-h-[calc(80vh-120px)]">
+          {/* Info */}
+          <p className="text-xs text-muted-foreground mb-4">
+            First {VISIBLE_COUNT} tools show in the bar. Additional tools appear in "More" dropdown.
+          </p>
+          
           {/* Current Pinned */}
-          <div className="mb-4">
+          <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold">Pinned ({pinnedIds.length})</h3>
               <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={resetToDefault}>
@@ -253,16 +315,20 @@ export function HotkeysCustomizeModal({ onClose }) {
                 const hotkey = allHotkeys.find(h => h.id === id);
                 if (!hotkey) return null;
                 const Icon = hotkey.icon;
+                const isVisible = index < VISIBLE_COUNT;
                 
                 return (
                   <div
                     key={id}
-                    className="flex items-center gap-2 p-2 glass rounded-lg"
+                    className={`flex items-center gap-2 p-2 rounded-lg ${isVisible ? 'glass' : 'glass opacity-60'}`}
                     data-testid={`pinned-${id}`}
                   >
                     <GripVertical className="w-4 h-4 text-muted-foreground" />
                     <Icon className={`w-4 h-4 ${hotkey.color || 'text-primary'}`} />
                     <span className="flex-1 text-sm">{hotkey.name}</span>
+                    {!isVisible && (
+                      <span className="text-xs text-muted-foreground">in More</span>
+                    )}
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => moveHotkey(id, 'up')}
@@ -293,7 +359,7 @@ export function HotkeysCustomizeModal({ onClose }) {
           
           {/* Available Hotkeys */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Available Hotkeys</h3>
+            <h3 className="text-sm font-semibold">Available Tools</h3>
             
             {categorizedHotkeys.map(({ category, name, hotkeys }) => (
               <div key={category}>
@@ -317,7 +383,6 @@ export function HotkeysCustomizeModal({ onClose }) {
                         <Icon className={`w-4 h-4 flex-shrink-0 ${hotkey.color || 'text-primary'}`} />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium truncate">{hotkey.name}</p>
-                          <p className="text-xs text-muted-foreground truncate">{hotkey.description}</p>
                         </div>
                         {isPinned ? (
                           <Check className="w-4 h-4 text-primary flex-shrink-0" />
