@@ -6,7 +6,10 @@ let lockCount = 0;
 
 export const lockBodyScroll = () => {
   if (lockCount === 0) {
-    scrollPosition = window.scrollY;
+    // Use pre-captured position if available (from mousedown), otherwise use current
+    scrollPosition = window.__pendingScrollPosition ?? window.scrollY;
+    delete window.__pendingScrollPosition;
+    
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollPosition}px`;
     document.body.style.width = '100%';
