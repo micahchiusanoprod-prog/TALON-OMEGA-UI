@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -116,8 +116,9 @@ const NodePopupContent = ({ node }) => {
   );
 };
 
-export default function LazyMapContent({ nodesWithGps, defaultCenter, defaultZoom }) {
+export default function LazyMapContent({ nodesWithGps, defaultCenter, defaultZoom, onMapReady }) {
   const [isReady, setIsReady] = useState(false);
+  const mapRef = useRef(null);
   
   useEffect(() => {
     // Small delay to ensure CSS is loaded
@@ -125,9 +126,16 @@ export default function LazyMapContent({ nodesWithGps, defaultCenter, defaultZoo
     return () => clearTimeout(timer);
   }, []);
   
+  // Expose map reference to parent
+  useEffect(() => {
+    if (mapRef.current && onMapReady) {
+      onMapReady(mapRef.current);
+    }
+  }, [isReady, onMapReady]);
+  
   if (!isReady) {
     return (
-      <div className="h-[350px] glass rounded-lg flex items-center justify-center">
+      <div className="h-[320px] glass rounded-lg flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">Initializing map...</p>
@@ -138,9 +146,10 @@ export default function LazyMapContent({ nodesWithGps, defaultCenter, defaultZoo
   
   return (
     <MapContainer
+      ref={mapRef}
       center={defaultCenter}
       zoom={defaultZoom}
-      className="h-[350px] w-full rounded-lg z-0"
+      className="h-[320px] w-full rounded-lg z-0"
       style={{ background: 'hsl(var(--muted))' }}
       data-testid="ally-map-container"
     >
