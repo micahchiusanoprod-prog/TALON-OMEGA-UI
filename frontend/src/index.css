@@ -15,27 +15,56 @@ code {
 
 @layer base {
     :root {
-        /* Light mode (fallback) */
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
+        /* Light mode */
+        --background: 0 0% 98%;
+        --foreground: 222 47% 11%;
+        
+        /* Cards with subtle elevation */
         --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
+        --card-foreground: 222 47% 11%;
+        
+        /* Elevated surfaces */
         --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 199 89% 48%;
+        --popover-foreground: 222 47% 11%;
+        
+        /* Electric cyan accent (same as dark) */
+        --primary: 187 100% 42%;
         --primary-foreground: 0 0% 98%;
+        
+        /* Muted surfaces */
         --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
+        --secondary-foreground: 222 47% 11%;
+        
         --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 199 89% 48%;
+        --muted-foreground: 217 10% 45%;
+        
+        /* Accent */
+        --accent: 187 100% 42%;
         --accent-foreground: 0 0% 98%;
+        
+        /* Status colors */
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
+        
+        --success: 142 76% 36%;
+        --success-foreground: 0 0% 98%;
+        
+        --warning: 38 92% 50%;
+        --warning-foreground: 222 47% 11%;
+        
+        /* Borders and inputs */
         --border: 0 0% 89.8%;
         --input: 0 0% 89.8%;
-        --ring: 199 89% 48%;
+        --ring: 187 100% 42%;
+        
         --radius: 0.75rem;
+        
+        /* Chart colors */
+        --chart-1: 187 100% 42%;
+        --chart-2: 142 76% 36%;
+        --chart-3: 38 92% 50%;
+        --chart-4: 280 65% 60%;
+        --chart-5: 340 75% 55%;
     }
     
     .dark {
@@ -101,7 +130,7 @@ code {
 
 /* OMEGA Design System */
 @layer components {
-    /* Glass morphism effect */
+    /* Glass morphism effect - adapts to light/dark mode */
     .glass {
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(20px);
@@ -109,11 +138,31 @@ code {
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
+    .dark .glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    :root:not(.dark) .glass {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
     .glass-strong {
         background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
         border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .dark .glass-strong {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    :root:not(.dark) .glass-strong {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.15);
     }
     
     /* Status indicators */
