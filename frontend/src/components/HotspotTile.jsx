@@ -11,7 +11,9 @@ import {
   TrendingUp,
   AlertTriangle,
   Loader2,
-  ChevronRight
+  ChevronRight,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
@@ -129,6 +131,30 @@ export default function HotspotTile() {
     return `${mbps} Mbps`;
   };
 
+  // Helper function to get status for performance metrics
+  const getThroughputStatus = (bps) => {
+    const mbps = bps / 1048576;
+    if (mbps > 20) return { status: 'critical', icon: AlertCircle, color: 'text-destructive', bg: 'bg-destructive-light', label: 'Overload' };
+    if (mbps > 10) return { status: 'warning', icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning-light', label: 'High' };
+    return { status: 'good', icon: CheckCircle, color: 'text-success', bg: 'bg-success-light', label: 'Normal' };
+  };
+
+  const getDataUsageStatus = (bytes) => {
+    const gb = bytes / 1073741824;
+    if (gb > 5) return { status: 'critical', icon: AlertCircle, color: 'text-destructive', bg: 'bg-destructive-light', label: 'Very High' };
+    if (gb > 2) return { status: 'warning', icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning-light', label: 'High' };
+    return { status: 'good', icon: CheckCircle, color: 'text-success', bg: 'bg-success-light', label: 'Normal' };
+  };
+
+  const getChannelStatus = (channel) => {
+    // Channels 1, 6, 11 are optimal for 2.4GHz to avoid interference
+    if (!channel) return { status: 'good', icon: CheckCircle, color: 'text-success', bg: 'bg-success-light', label: 'Auto' };
+    if (channel === 1 || channel === 6 || channel === 11) {
+      return { status: 'good', icon: CheckCircle, color: 'text-success', bg: 'bg-success-light', label: 'Optimal' };
+    }
+    return { status: 'warning', icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning-light', label: 'Interference' };
+  };
+
   if (loading) {
     return (
       <Card className="glass-strong border-border">
@@ -151,6 +177,16 @@ export default function HotspotTile() {
 
   const isNearCapacity = status.connectedCount >= status.maxClients * 0.8;
   const visibleClients = showAllClients ? clients : clients.slice(0, 3);
+  
+  // Get status indicators for performance metrics
+  const totalBytes = usage.rxBytesTotal + usage.txBytesTotal;
+  const dataStatus = getDataUsageStatus(totalBytes);
+  const throughputStatus = getThroughputStatus(usage.rxRateBps);
+  const channelStatus = getChannelStatus(status.channel);
+  
+  const DataStatusIcon = dataStatus.icon;
+  const ThroughputStatusIcon = throughputStatus.icon;
+  const ChannelStatusIcon = channelStatus.icon;
 
   return (
     <Card className="glass-strong border-border">
@@ -286,20 +322,35 @@ export default function HotspotTile() {
             {/* Performance Summary */}
             <div className="grid grid-cols-2 gap-2">
               <div className="glass p-2 rounded-lg">
-                <div className="text-xs text-muted-foreground">Total Data</div>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-xs text-muted-foreground">Total Data</div>
+                  <div className={`flex items-center gap-0.5 px-1 py-0.5 rounded-full ${dataStatus.bg}`}>
+                    <DataStatusIcon className={`w-2.5 h-2.5 ${dataStatus.color}`} />
+                  </div>
+                </div>
                 <div className="text-sm font-semibold text-foreground">
-                  {formatBytes(usage.rxBytesTotal + usage.txBytesTotal)}
+                  {formatBytes(totalBytes)}
                 </div>
               </div>
               <div className="glass p-2 rounded-lg">
-                <div className="text-xs text-muted-foreground">Throughput</div>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-xs text-muted-foreground">Throughput</div>
+                  <div className={`flex items-center gap-0.5 px-1 py-0.5 rounded-full ${throughputStatus.bg}`}>
+                    <ThroughputStatusIcon className={`w-2.5 h-2.5 ${throughputStatus.color}`} />
+                  </div>
+                </div>
                 <div className="text-sm font-semibold text-foreground flex items-center gap-1">
                   <TrendingUp className="w-3 h-3 text-primary" />
                   {formatThroughput(usage.rxRateBps)}
                 </div>
               </div>
               <div className="glass p-2 rounded-lg">
-                <div className="text-xs text-muted-foreground">Channel</div>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-xs text-muted-foreground">Channel</div>
+                  <div className={`flex items-center gap-0.5 px-1 py-0.5 rounded-full ${channelStatus.bg}`}>
+                    <ChannelStatusIcon className={`w-2.5 h-2.5 ${channelStatus.color}`} />
+                  </div>
+                </div>
                 <div className="text-sm font-semibold text-foreground">
                   {status.channel || 'Auto'}
                 </div>
@@ -307,7 +358,7 @@ export default function HotspotTile() {
               <div className="glass p-2 rounded-lg">
                 <div className="text-xs text-muted-foreground">Range</div>
                 <div className="text-sm font-semibold text-foreground" title="Varies by environment, device, and interference">
-                  ~30-50m
+                  ~100-165 ft
                 </div>
                 <div className="text-[10px] text-muted-foreground opacity-70">estimate</div>
               </div>
@@ -342,6 +393,25 @@ export default function HotspotTile() {
                 <RefreshCw className="w-3 h-3 mr-1" />
                 Refresh
               </Button>
+            </div>
+
+            {/* Legend */}
+            <div className="pt-4 border-t border-border">
+              <div className="text-xs font-semibold text-muted-foreground mb-2">Performance Guide:</div>
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-success" />
+                  <span className="text-xs text-muted-foreground">Normal - Healthy operation</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-warning" />
+                  <span className="text-xs text-muted-foreground">High - Monitor usage</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-destructive" />
+                  <span className="text-xs text-muted-foreground">Critical - May affect performance</span>
+                </div>
+              </div>
             </div>
           </>
         )}
