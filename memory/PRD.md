@@ -10,6 +10,80 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: P0 UI/UX Revisions (January 7, 2026)
+
+### Standardized Help/Troubleshooting/Legend System
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **TileHelpTabs Component** | ✅ | Reusable component with Help/Troubleshoot/Legend tabs |
+| **QuickHelpTips Component** | ✅ | Collapsible inline tips at top of tiles |
+| **InlineLegend Component** | ✅ | Compact inline status legend |
+| **HelpButton Component** | ✅ | Small ? button with hover popover |
+| **Camera Tile Help** | ✅ | Standardized Help/Troubleshoot/Legend integrated |
+| **Security Tile Help** | ✅ | Standardized Help/Troubleshoot/Legend integrated |
+| **Music Tile Help** | ✅ | Standardized Help/Troubleshoot/Legend integrated |
+
+### Comms Availability Panel Enhancements
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Radio/SDR Transport** | ✅ | New transport method added |
+| **Status Color Clarity** | ✅ | Green=Available, Yellow=Degraded, Red=Unavailable |
+| **Status Badges** | ✅ | "2 UP", "1 WEAK", "2 DOWN" summary badges |
+| **"Sending via X" Bar** | ✅ | Clear indicator of selected transport |
+| **Degraded Explanation** | ✅ | Inline panel with "What Degraded means", causes, fixes |
+| **Unavailable Explanation** | ✅ | Inline panel with causes and fixes |
+| **Helper Text** | ✅ | "Select a transport... Green=ready, Yellow=limited, Red=offline" |
+
+### Node Detail View Upgrades
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Mini Map Panel** | ✅ | Shows node location on OpenStreetMap |
+| **Node Pin** | ✅ | Status-colored marker with node name |
+| **Accuracy Circle** | ✅ | Visual accuracy radius on map |
+| **Fix Status Badge** | ✅ | 3D Fix / 2D Fix / No Fix indicator |
+| **GPS Status Bar** | ✅ | Fix status, satellites below map |
+| **Open in Maps Button** | ✅ | Links to Google Maps |
+| **US Units** | ✅ | Accuracy in feet, speed in mph |
+
+---
+
+## ✅ COMPLETED: P0 Power Tile (January 7, 2026)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Battery Display** | ✅ | Percentage, voltage, current, temperature, health |
+| **Runtime Estimate** | ✅ | Time remaining at current draw |
+| **Battery Bar** | ✅ | Visual bar with color-coded status |
+| **Net Flow Indicator** | ✅ | +/- watts showing charging/discharging |
+| **Charge Sources Grid** | ✅ | Solar, AC, Vehicle 12V, USB-C with active status |
+| **Consumption Breakdown** | ✅ | Bar chart showing CPU/Display/Radios/Other |
+| **Alerts Section** | ✅ | Warning/critical alerts with timestamps |
+| **Help/Troubleshoot/Legend** | ✅ | Standardized help system integrated |
+
+---
+
+## ✅ COMPLETED: P1 Community Tile (January 7, 2026)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Social Feed** | ✅ | Twitter-like scrollable post feed |
+| **Post Types** | ✅ | Regular posts, Alerts (urgent), Polls |
+| **Alert Posts** | ✅ | Red badge, red border, high priority |
+| **Poll Posts** | ✅ | Yellow badge, voting options with percentages |
+| **Reactions** | ✅ | 👍❤️😮😢🎉 emoji reactions with counts |
+| **Reaction Picker** | ✅ | Click to open emoji selector |
+| **Comments** | ✅ | Expandable comment threads, add new comments |
+| **New Post Composer** | ✅ | Post/Alert/Poll type selector |
+| **Poll Composer** | ✅ | Add options (2-4), remove options |
+| **Filter Tabs** | ✅ | All / Alerts / Polls filters |
+| **Sync Status** | ✅ | "Synced" vs "Pending sync" indicators |
+| **Help/Troubleshoot/Legend** | ✅ | Standardized help system integrated |
+
+---
+
 ## ✅ COMPLETED: Ally Communications Hub (Preview Phase)
 
 ### Status: COMPLETE FOR PREVIEW
@@ -46,7 +120,7 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **Help Button** | ✅ | "?" in header opens help modal |
 | **Tab Descriptions** | ✅ | Context + legend visible for each tab |
 | **Map Controls** | ✅ | "All Nodes" + "My Location" (placeholder) buttons |
-| **Comms Availability Panel** | ✅ | 4 transport cards (LAN, Mesh, SMS, HF) with status indicators |
+| **Comms Availability Panel** | ✅ | 5 transport cards (LAN, Mesh, SDR, SMS, HF) with status indicators |
 | **Transport Selection** | ✅ | Click to select, info bar shows selected method + warnings |
 | **Comms Availability Clarity** | ✅ | Helper text, RED for unavailable, explanation areas for degraded/unavailable |
 | **Codes Tab (Codebook)** | ✅ | 49 codes, search, 5 category filters, compose helper |
@@ -70,6 +144,8 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **Security Education Tab** | ✅ | How to add fingerprints, permissions, troubleshooting |
 | **Music Tile** | ✅ | Mini player, Most Played, Liked, Albums sections |
 | **Music Placeholders** | ✅ | Lyrics + Music Videos structure (coming soon) |
+| **Power Tile** | ✅ | Battery monitoring, charge sources, consumption breakdown |
+| **Community Tile** | ✅ | Social feed with posts, alerts, polls, reactions, comments |
 
 ---
 
@@ -83,66 +159,26 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **27 Available Hotkeys** | ✅ | 6 categories: Default, Navigation, Comms, System, Tools, Entertainment |
 | **Reset to Default** | ✅ | One-click restore to default 8 |
 
-### Integration Layer (Production-Ready)
+---
 
-The integration layer in `allyApi.js` is ready for Pi deployment:
+## Files Implemented
 
-#### Configuration (`config.js`)
-```javascript
-api: {
-  baseUrl: process.env.REACT_APP_PI_API_URL || 'http://127.0.0.1:8093/cgi-bin',
-  apiKey: process.env.REACT_APP_PI_API_KEY || '',
-  timeout: 5000,
-},
-features: {
-  enableMockData: true,  // Set false for Pi deployment
-},
-```
-
-#### Environment Variables for Pi Deployment
-```bash
-REACT_APP_PI_API_URL=http://<PI_IP>:8093/cgi-bin
-REACT_APP_PI_API_KEY=your-api-key-here
-```
-
-#### Authentication Support
-Two authentication methods supported:
-1. **X-API-Key header** (primary) - Added to all requests automatically
-2. **?key= query param** (fallback) - Added when header may not pass through
-
-```javascript
-// Headers (primary auth)
-headers: {
-  'Content-Type': 'application/json',
-  'X-API-Key': config.api.apiKey,
-}
-
-// URL (fallback auth)
-url.searchParams.set('key', this.apiKey);
-```
-
-#### Offline-First Features
-- ✅ "Disconnected" warning when API unreachable
-- ✅ "Last updated" timestamp for offline state
-- ✅ Message queue for outbound messages when offline
-- ✅ Automatic retry with exponential backoff
-- ✅ Local cache for all data
-- ✅ localStorage persistence for user status
-
-### Files Implemented
 ```
 /app/frontend/src/
 ├── components/
-│   ├── Dashboard.jsx                # Main dashboard with HotkeysBar and new tiles
+│   ├── Dashboard.jsx                # Main dashboard with all tiles
 │   ├── AllyCommunicationsHub.jsx    # Main hub with 5 tabs, Comms Panel, Help button
-│   ├── CameraTile.jsx               # Camera with Diary, Photos, Videos, Voice Memo
-│   ├── SecurityTile.jsx             # People + Fingerprints + Permissions + Education
-│   ├── MusicTile.jsx                # Music player with sections
+│   ├── CameraTile.jsx               # Camera with Help/Troubleshoot/Legend
+│   ├── SecurityTile.jsx             # Security with Help/Troubleshoot/Legend
+│   ├── MusicTile.jsx                # Music with Help/Troubleshoot/Legend
+│   ├── PowerTile.jsx                # Power monitoring with all features
+│   ├── CommunityTile.jsx            # Social feed with posts/alerts/polls
 │   ├── HotkeysBar.jsx               # Customizable hotkeys with localStorage
 │   └── ally/
 │       ├── NodeCard.jsx             # Individual node card with status badges
-│       ├── NodeDetailsDrawer.jsx    # Full node details drawer
+│       ├── NodeDetailsDrawer.jsx    # Full node details with mini-map
 │       ├── NodeAvatarStrip.jsx      # Compact horizontal node list
+│       ├── NodeMiniMap.jsx          # Mini map for node detail view
 │       ├── MessagingModal.jsx       # DM modal with templates
 │       ├── BroadcastModal.jsx       # Broadcast with confirmation
 │       ├── AllyMapView.jsx          # Map view with GPS status bar and controls
@@ -150,9 +186,11 @@ url.searchParams.set('key', this.apiKey);
 │       ├── GpsStatusBar.jsx         # GPS fix status bar (US units: feet)
 │       ├── GpsGuide.jsx             # Educational GPS guide (US units)
 │       ├── AllyHubHelp.jsx          # Help modal and tab descriptions (5 tabs)
-│       ├── CommsAvailabilityPanel.jsx # Transport cards with explanations
+│       ├── CommsAvailabilityPanel.jsx # Enhanced transport cards with Radio/SDR
 │       ├── CommsKnowledge.jsx       # Field manual (US units: miles)
 │       └── Codebook.jsx             # Searchable codebook with compose helper
+├── components/ui/
+│   └── TileHelpTabs.jsx             # Standardized Help/Troubleshoot/Legend template
 ├── services/
 │   └── allyApi.js                   # API service with mock/live support
 ├── utils/
@@ -162,100 +200,21 @@ url.searchParams.set('key', this.apiKey);
 
 ---
 
-## API Endpoint Contract (For Pi Backend)
-
-All endpoints use base URL from `REACT_APP_PI_API_URL` (default: `http://127.0.0.1:8093/cgi-bin`)
-
-### Node Discovery
-```
-GET /api/ally/nodes
-GET /api/ally/node/{node_id}/status
-```
-
-### Messaging
-```
-GET /api/ally/chat/global?since={timestamp}
-POST /api/ally/chat/global  { text, priority }
-
-GET /api/ally/chat/dm/{node_id}?since={timestamp}
-POST /api/ally/chat/dm/{node_id}  { text, priority }
-```
-
-### Broadcast
-```
-POST /api/ally/broadcast  { title, message, severity }
-```
-
-### User Status
-```
-GET /api/ally/status/me
-PUT /api/ally/status/me  { status, note }
-```
-
-### Actions
-```
-POST /api/ally/node/{node_id}/ping
-POST /api/ally/node/{node_id}/refresh
-```
-
----
-
-## Other Existing Features
-
-### Header Bar
-- Fixed position with OMEGA logo
-- Theme toggle (dark/light)
-
-### Quality of Life Tools
-- Translator, Tasks, Notes, Hotspot QR, System Logs, Tools
-
-### Community Section
-- Posts, Polls, Chat, Files tabs
-
-### Entertainment
-- Placeholder for media features
-
-### Environment Tile
-- Temperature, Humidity, Pressure, Air Quality sensors
-- Color-coded status indicators with legends
-
-### Device Info Tile
-- CPU, RAM, Disk, Temperature metrics
-- Health status indicators
-
-### Hotspot Manager Tile
-- WiFi hotspot controls
-- Connected devices list
-- Performance metrics
-
----
-
-## Design System
-
-### Themes
-- **Dark Mode**: Deep dark (#0a0f18), cyan accents, glassmorphism
-- **Light Mode**: Baby blue gradient, clean white cards
-
-### Key Components
-- Glassmorphism cards (`.glass`, `.glass-strong`)
-- Status indicators with color coding
-- Flashing animations for critical alerts
-- Responsive layout with mobile support
-
----
-
 ## Test Reports
+
 - `/app/test_reports/iteration_1.json` - Ally Hub comprehensive test (100% pass)
 - `/app/test_reports/iteration_2.json` - Chat size increase + Map tab test (100% pass)
 - `/app/test_reports/iteration_3.json` - GPS Status Bar, GPS Guide, Help pattern test (100% pass)
 - `/app/test_reports/iteration_4.json` - Comms Panel, Codes Tab, Knowledge Tab test (100% pass)
-- `/app/test_reports/iteration_5.json` - P0 revisions (US units, compact nodes, comms clarity) + P1 tiles (Camera, Security, Music, Hotkeys) (100% pass)
+- `/app/test_reports/iteration_5.json` - P0 revisions (US units, compact nodes, comms clarity) + P1 tiles (100% pass)
+- `/app/test_reports/iteration_6.json` - P0 UI Revisions: TileHelpTabs, Radio/SDR, Node Mini Map, Power Tile (100% pass)
+- `/app/test_reports/iteration_7.json` - P1 Community Tile: Posts, Alerts, Polls, Reactions, Comments (100% pass)
 
 ---
 
-## Backlog / Future Work
+## P2 Backlog / Future Work
 
-### P1 - Pi Backend Integration (When Deployed)
+### Pi Backend Integration (When Deployed)
 - Set `enableMockData: false`
 - Configure `REACT_APP_PI_API_URL` and `REACT_APP_PI_API_KEY`
 - Test live connectivity
@@ -264,8 +223,10 @@ POST /api/ally/node/{node_id}/refresh
 - Wire Camera to actual camera hardware
 - Wire Security to fingerprint sensor
 - Wire Music to audio player backend
+- Wire Power to real battery/charging data
+- Wire Community to mesh network sync
 
-### P2 - Feature Completion
+### Feature Completion
 - Full GPS Map enhancements (mesh lines, signal circles, route drawing)
 - "My Location" button to use device's actual GPS
 - Signal History mini-chart for GPS Status Bar (when real data available)
@@ -274,15 +235,17 @@ POST /api/ally/node/{node_id}/refresh
 - KeySync feature
 - Encrypted DMs
 - Hotkey actions (navigation, modal opening, etc.)
+- GIF picker for Community posts (UI-stubbed)
 
-### P3 - Enhancements
+### Enhancements
 - Push notifications for broadcasts
 - Offline message sync on reconnect
 - Advanced node statistics and graphs
 - Cluster markers when zoomed out (optional)
+- Community post media attachments
 
 ---
 
 *Last Updated: January 7, 2026*
-*Current Status: Full Preview Phase COMPLETE (Ally Hub, Camera, Security, Music, Hotkeys)*
-*Next: Deploy to Pi and test with live backend*
+*Current Status: Full Preview Phase COMPLETE (P0 + P1)*
+*All UI/UX complete with mock data. Ready for Pi backend integration.*
