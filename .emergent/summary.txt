@@ -2,130 +2,135 @@
 The user wants to build a single-page, offline-first web dashboard called OMEGA Dashboard for a Raspberry Pi “cyberdeck” device. The UI must have a premium, Apple-like design, be responsive, and default to a polished dark mode.
 
 PRODUCT REQUIREMENTS:
-1.  **Core Layout:**
-    *   **Header Bar:** Fixed, with system status and real-time metrics (CPU, RAM, Disk, etc.).
-    *   **Search Bar:** An omnibox for searching various content types (Kiwix, files, etc.).
-    *   **Feature Tiles:** Modular cards for GPS, Entertainment, Community, Quality of Life, Device Info, Environment, and Hotspot control.
-2.  **Backend Integration:**
-    *   The frontend should be built to integrate with a pre-existing backend API on port 8093.
-    *   The UI must handle offline or missing backend services gracefully, showing Offline or Disconnected states without crashing.
-    *   A  layer should normalize backend data for the UI.
-3.  **Design and UX:**
-    *   **Apple-Grade Design:** Clean typography, generous spacing, glass/blur surfaces (glassmorphism), subtle animations, and a polished dark/light mode.
-    - **User-Friendly:** Must be easily understandable by non-technical users, featuring descriptions, tooltips, and clear visual indicators for system statuses.
-    - **Status Indicators:** Attention-grabbing indicators (e.g., flashing red for Critical) with legends to explain their meaning.
-4.  **New High-Priority Feature: Ally Communications Hub**
-    *   A new tile for coordinating with other Ally OMEGA devices on the local network.
-    *   Features include: viewing all nodes and their real-time status, direct messaging, group chat, and emergency broadcasts.
-    *   Must be built with mock data fallbacks, following the established offline-first and Apple-grade design principles.
+1.  **Core Layout:** Header Bar, Search Bar, and modular Feature Tiles.
+2.  **Backend Integration:** The frontend must integrate with a pre-existing backend API on port 8093, handle offline states gracefully, and use a  layer.
+3.  **Design and UX:** An Apple-Grade polished dark/light mode, with user-friendly tooltips and status indicators.
+4.  **High-Priority Feature: Ally Communications Hub:** A tile for coordinating with other OMEGA devices on the local network, featuring node status, direct messaging, group chat, and emergency broadcasts. It must be built with mock data first.
+5.  **New Requests:**
+    *   Make the Global Chat window within the Ally Hub larger.
+    *   Add a Map tab to the Ally Hub to display the locations of all nodes.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A React-based single-page application, the OMEGA Dashboard, with a sophisticated, Apple-inspired design system. It features both a polished dark mode and a light mode with a baby blue gradient background. The UI is component-based and composed of several interactive tiles, including Quality of Life tools, Community, Entertainment, Environment, Device Info, and a comprehensive Hotspot manager. The entire data layer is mocked, with API service files (, ) and a data adapter () prepared for future integration with a live backend. The application includes user-friendly elements like descriptive tooltips and a color-coded status indicator system with flashing critical alerts. The latest feature, the Ally Communications Hub, has been added to the top of the dashboard and its initial UI shell has been built with mock data.
+A React-based single-page application (OMEGA Dashboard) with a sophisticated, Apple-inspired dark/light mode design system. The UI is built with modular tiles, and the data layer is mocked. The main feature, the Ally Communications Hub, is fully implemented with mock data, featuring a global chat, node list, status filters, search, a detailed node information drawer, direct messaging, and a broadcast system. A production-ready backend integration layer () has been built to support a base URL and API key authentication (header or query param), but it is currently configured to run in mock mode. The application correctly displays a Disconnected status when it can't reach the backend, falling back gracefully to mock data.
 
 **Last working item**:
-*   **Last item agent was working:** The agent was performing the initial implementation of the Ally Communications Hub tile. This involved creating the main component (), several supporting child components for node cards and modals (), adding API stubs (), and integrating the new tile into the main  at the top.
-*   **Status:** IN PROGRESS
-*   **Agent Testing Done:** Y (via screenshot to confirm visibility)
-*   **Which testing method agent to use?** Frontend testing agent
-*   **User Testing Done:** N
+    - Last item agent was working: The user made two new requests after the Ally Communications Hub was completed with mock data. The agent was preparing to start work on them.
+        1. Increase the size of the Global Chat window.
+        2. Add a new Map tab to the Ally Communications Hub to show node locations.
+    - Status: NOT STARTED
+    - Agent Testing Done: N
+    - Which testing method agent to use? Frontend testing agent
+    - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-*   **Issue 1: Complete Ally Communications Hub implementation (P0)**
-    *   The UI shell for the Hub is visible, but its features are not fully interactive yet. The modals for messaging and the details drawer are placeholders.
-    *   **Status:** IN PROGRESS
-    *   **Is recurring issue?** N
+  - No pending issues. The major page snapping auto-scroll bug was resolved.
 
 **In progress Task List**:
-*   **Task 1: Flesh out Ally Communications Hub Functionality (P0)**
-    *   **Where to resume:** The component structure is in place in . The next step is to add the interactive logic to the child components: , , and . This includes implementing the state management for showing/hiding these modals, handling form inputs, and ensuring the filter/search functionality works on the mock node list.
-    *   **What will be achieved with this?** A fully functional UI prototype of the Ally Communications Hub, with all buttons, modals, and filters working as per the user's detailed request.
-    *   **Status:** IN PROGRESS
-    *   **Should Test frontend/backend/both after fix?** Frontend
+  - No tasks are currently in progress.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks:**
-    *   **Wire up to live backend (P1):** Replace all mock data across the dashboard (Header, Device Info, Environment, Hotspot, Ally Hub) with live API calls to the specified endpoints on port 8093. This will involve populating  and  with actual  requests and handling the responses in the components.
+    *   **(P0)** Increase the size of the Global Chat container in .
+    *   **(P0)** Add a Map tab to the  component to display node locations. This will likely involve creating a new component for the map view.
+    *   **(P1)** Wire up the entire dashboard to the live backend (port 8093). This involves implementing  calls in  and  and replacing all mock data with live data.
 *   **Future Tasks:**
-    *   **Implement full GPS Map functionality (P2):** The current  component is a placeholder card. This needs to be built out to display a map, breadcrumb trail, and GPS quality indicators.
-    *   **Implement full Hero Search functionality (P2):** The search bar UI exists, but the logic for autosuggestions and executing searches needs to be implemented.
-    *   **Build out remaining backend-dependent features (P2):** Implement UIs for features mentioned in the original prompt, such as Backups, KeySync, and encrypted DMs, by integrating with their respective backend APIs.
+    *   **(P2)** Implement full GPS Map functionality in the main  component.
+    *   **(P2)** Implement the logic for the Hero Search omnibox.
+    *   **(P2)** Build out UIs for remaining backend-dependent features like Backups, KeySync, and encrypted DMs.
 
 **Completed work in this session**
-- **Dashboard Layout Rework:** Re-arranged tiles (QoL, Search, Community, Entertainment) to the user's specification.
-- **Light/Dark Mode Toggle & Design System:** Added a theme toggle and significantly enhanced the design system with a light mode gradient and improved button styling in dark mode.
-- **User-Friendliness Enhancements:** Added descriptive text, tooltips, and an advanced status indicator system (with legends and flashing critical alerts) across the Environment, Device Info, and Hotspot tiles.
-- **Hotspot Tile:** Built a full-featured Hotspot management tile from scratch, including status controls, a connected device list with management buttons, performance metrics, and connection instructions.
-- **Ally Communications Hub (Initial Implementation):** Created the component structure and initial UI for the hub, adding it to the main dashboard with mock data.
+- **Ally Communications Hub (Mock Data):** Fully implemented the interactive UI as per the user's detailed Definition of Done. This included the Node Details Drawer, Direct Messaging, Global Chat, Broadcast Modal, advanced filters, and a user status dropdown.
+- **Auto-Scroll Bug Fix:** Resolved a critical page snapping issue where the page would auto-scroll to the Ally Hub. The fix involved creating a global  utility to prevent body scroll when modals are open and implementing a smart auto-scroll for chat windows that only scrolls when the user is near the bottom. A Jump to latest button was also added.
+- **UI/Layout Adjustments:**
+    - Moved the Ally Communications Hub to be positioned directly under the Community tile in .
+    - Removed the Down status indicator pill from the .
+- **Backend Integration Layer:** Refactored  to be production-ready with support for  from , API key authentication (header or query param), and graceful fallback to mock data with a Disconnected UI state.
+- **Verification:** Created a comprehensive screen recording demo to showcase the full functionality of the Ally Communications Hub, which the user approved to mark the feature complete.
 
 **Earlier issues found/mentioned but not fixed**
-- None. The agent successfully debugged and fixed a white screen bug caused by null reference errors during the development of the backend integration.
+   - None.
 
 **Known issue recurrence from previous fork**
-- N/A
+  - N/A
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend:** React.js, React Hooks (, ).
-- **Styling:** A custom, token-based design system using Tailwind CSS and global variables in . Key concepts include HSL color variables, CSS animations ( for glowing/flashing), and glassmorphism.
-- **Architecture:** A modular, component-based architecture with a clear separation of concerns between UI (components), business logic (services), and configuration (). It's designed for graceful degradation when APIs are offline.
-- **Data Handling:** All data is currently mocked within the components or service files, preparing for future backend integration. A  file is in place to normalize data.
+- **Frontend:** React.js, React Hooks (, , ).
+- **Styling:** Custom design system using Tailwind CSS and HSL variables in .
+- **Architecture:** Modular components with a mocked data layer designed for graceful degradation.
+- **State Management:** Local component state () is used extensively.
+- **Scroll Management:** A global  utility was created to programmatically lock and restore the body scroll position to prevent layout shifts when modals open. This pattern is used across  and its modal children.
 
 **key DB schema**
-- N/A. The agent is responsible for the frontend only and interacts with a pre-existing API.
+  - N/A (Frontend only).
 
 **changes in tech stack**
-- None.
+  - None.
 
 **All files of reference**
-- : Main component that defines the overall dashboard layout.
-- : The heart of the design system; defines all colors, animations, and global styles.
-- : The main component for the last feature request.
-- : Directory containing the sub-components for the Ally Hub.
-- : A complete, complex component that serves as a good reference for new features.
-- : The new service file for Ally Hub API calls (currently mocked).
-- : Central configuration for API endpoints and application settings.
+- : The main component for the hub. It was heavily modified to add features, fix the scroll bug, and handle connection state.
+- : All sub-components for the hub (, , , ) were created or significantly updated.
+- : Rewritten to be a production-ready data adapter, supporting both mock and live modes, API key auth, and offline queuing.
+- : New utility file created to handle body scroll locking.
+- : Updated with , , and  feature flag.
+- : Edited to change the position of the Ally Communications Hub.
+- : Edited to remove the Down status indicator.
 
-**Critical Info for New Agent**
-- **Design is Paramount:** The user has a very high standard for UI/UX, repeatedly emphasizing an Apple-grade look and feel. Adherence to the established design system in  is critical. Do not hard-code styles.
-- **Build UI with Mocks First:** The workflow is to build the complete, interactive UI with mock data and graceful fallbacks *before* wiring it to a live backend. This is a core requirement. Always label simulated data clearly.
-- **User-Friendliness is a Key Goal:** Continue the pattern of adding descriptive text, tooltips, and clear status indicators to all new UI elements to make the dashboard intuitive for non-technical users.
-- **Follow Existing Patterns:** The project has established patterns for component structure (e.g., the  subdirectory), state management, and API service files. Follow these patterns for consistency.
-
-**documents and test reports created in this job**
+**Areas that need refactoring**:
 - None.
 
+**key api endpoints**
+The following endpoints are defined in  and expected from the backend on port 8093:
+- : Get list of all ally nodes.
+- : Get detailed status for a single node.
+- : Get global chat history.
+- : Post a message to global chat.
+- : Get DM history with a node.
+- : Post a DM to a node.
+- : Send a broadcast alert.
+- : Get the current user's status.
+- : Update the current user's status.
+- : Ping a node.
+- : Request a node to refresh its data.
+
+**Critical Info for New Agent**
+- **Development Workflow:** The user's required workflow is to build and finalize UI/UX with mock data in the preview environment first. Backend wiring is a distinct, later phase. **Keep the app in mock mode** ( in ) until explicitly told to connect to the live backend.
+- **Scroll Lock Pattern:** A complex page-scrolling bug was fixed by creating a  utility. This utility is now the standard way to handle modals to prevent unexpected page scroll. Refer to its usage in  when creating new modals.
+- **Immediate Priority:** The next tasks are two UI enhancements to the : making the global chat bigger and adding a map tab. Do not start backend wiring until these are complete.
+
+**documents and test reports created in this job**
+  - 
+  - 
+
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (Msg 212):** Requested a new high-priority Ally Communications Hub tile with extensive requirements. (IN PROGRESS)
-2.  **User (Msg 199):** Requested larger indicators, flashing critical alerts, device management buttons on the Hotspot tile, and connection instructions. (COMPLETED)
-3.  **User (Msg 192):** Requested a light baby blue gradient for the light mode theme. (COMPLETED)
-4.  **User (Msg 182):** Requested the Hotspot range be in feet and for it to have performance indicators with a legend. (COMPLETED)
-5.  **User (Msg 162):** Requested the removal of the Open Kiwix Library button and the creation of a new, detailed Hotspot tile. (COMPLETED)
-6.  **User (Msg 155):** Requested legends be added to the status indicators on the Environment and Device Info tiles. (COMPLETED)
-7.  **User (Msg 147):** Requested status indicators for Environment and Device info to show if metrics are in a good range. (COMPLETED)
-8.  **User (Msg 130):** Requested small descriptions next to sensor/device info titles to make them user-friendly. (COMPLETED)
-9.  **User (Msg 112):** Requested placeholder data for tiles and improved styling for dark mode buttons to have an Apple.com feel. (COMPLETED)
-10. **User (Msg 56):** Provided a detailed list of backend endpoints to integrate with and requested improved color depth for both themes. (COMPLETED - UI/color part, PENDING - backend integration)
+1.  **User (LATEST):** Requested making the Global Chat bigger and adding a Map tab for node locations. (NOT STARTED)
+2.  **User:** Confirmed the agent should proceed with backend wiring after updating the  file. (SUPERSEDED by latest request)
+3.  **User:** Approved the DoD summary, confirming Ally Hub is complete with mock data. (COMPLETED)
+4.  **User:** Requested a screen recording of the full Ally Hub flow to verify completion, and to skip a comprehensive Playwright test. (COMPLETED)
+5.  **User:** Provided detailed acceptance criteria for the auto-scroll bug fix. (COMPLETED)
+6.  **User:** Reported that the page keeps snapping to the Ally Communications Hub when scrolling. (COMPLETED - Bug Fixed)
+7.  **User:** Requested the removal of the red Down button from the header. (COMPLETED)
+8.  **User:** Confirmed the new placement of the Ally Hub under the Community tile is correct. (COMPLETED)
+9.  **User:** Requested to move the Ally Communications Hub under the Community Tile. (COMPLETED)
+10. **User:** Asked for the agent to proceed after the agent presented the DoD checklist. (COMPLETED)
 
 **Project Health Check:**
 - **Broken:** None.
-- **Mocked:** The entire dashboard's data layer is mocked by design. All components that require data (, , , , ) are currently using placeholder data.
+- **Mocked:** The entire application's data layer is mocked, as per the user's explicit instructions for this phase of development.
 
 **3rd Party Integrations**
-- **lucide-react:** Used for icons throughout the application.
-- **react-hot-toast:** Used for user-facing notifications (e.g., Favorite device).
+- **lucide-react:** Used for icons.
+- **react-hot-toast:** Used for user notifications.
 
 **Testing status**
-- **Testing agent used after significant changes:** NO (Agent used screenshot tool for the last change).
+- **Testing agent used after significant changes:** YES, for the initial implementation of Ally Hub features.
 - **Troubleshoot agent used after agent stuck in loop:** NO
 - **Test files created:** None.
-- **Known regressions:** None.
+- **Known regressions:** None. The auto-scroll bug was fixed. While some automated tests failed due to test-runner-specific behavior, real user scenarios were verified to be working correctly, and the user accepted this resolution.
 
 **Credentials to test flow:**
-- N/A
-
-**What agent forgot to execute**
-The agent initially created the files for the Ally Communications Hub but forgot to add the component to the main  file, which led to the user reporting I dont see it. This was quickly corrected in the following steps.</analysis>
+- N/A</analysis>
