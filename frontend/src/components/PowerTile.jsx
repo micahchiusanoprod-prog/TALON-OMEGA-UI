@@ -328,6 +328,20 @@ export default function PowerTile() {
     return 'text-destructive';
   };
   
+  // Get the top active charge source
+  const getTopChargeSource = () => {
+    const sources = [
+      { name: 'Solar', watts: charging.sources.solar.watts, status: charging.sources.solar.status },
+      { name: 'AC', watts: charging.sources.ac.watts, status: charging.sources.ac.status },
+      { name: 'Vehicle', watts: charging.sources.vehicle.watts, status: charging.sources.vehicle.status },
+      { name: 'USB-C', watts: charging.sources.usb.watts, status: charging.sources.usb.status },
+    ];
+    return sources.filter(s => s.status === 'active').sort((a, b) => b.watts - a.watts)[0] || null;
+  };
+  
+  // Check if runtime is critically low
+  const isRuntimeCritical = !isCharging && estimates.runtimeMinutes < 60;
+  
   return (
     <Card className="glass-strong border-border-strong" data-testid="power-tile">
       <CardHeader className="pb-3">
