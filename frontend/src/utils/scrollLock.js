@@ -4,11 +4,18 @@
 let scrollPosition = 0;
 let lockCount = 0;
 
+// Call this BEFORE any action that might trigger scrolling
+export const captureScrollPosition = () => {
+  if (lockCount === 0) {
+    window.__capturedScrollPosition = window.scrollY;
+  }
+};
+
 export const lockBodyScroll = () => {
   if (lockCount === 0) {
-    // Use pre-captured position if available (from mousedown), otherwise use current
-    scrollPosition = window.__pendingScrollPosition ?? window.scrollY;
-    delete window.__pendingScrollPosition;
+    // Use pre-captured position if available, otherwise use current
+    scrollPosition = window.__capturedScrollPosition ?? window.scrollY;
+    delete window.__capturedScrollPosition;
     
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollPosition}px`;
