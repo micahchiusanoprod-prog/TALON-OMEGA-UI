@@ -12,6 +12,7 @@ import DiagnosticsPanel from './DiagnosticsPanel';
 import CameraTile from './CameraTile';
 import SecurityTile from './SecurityTile';
 import MusicTile from './MusicTile';
+import PowerTile from './PowerTile';
 import HotkeysBar from './HotkeysBar';
 import api from '../services/api';
 import config from '../config';
