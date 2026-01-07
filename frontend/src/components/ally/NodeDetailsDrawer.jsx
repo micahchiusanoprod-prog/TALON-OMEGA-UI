@@ -438,15 +438,44 @@ export default function NodeDetailsDrawer({ node, onClose, onMessage }) {
                               {details.gps.fix || 'No'} Fix • {details.gps.sats || 0} Satellites
                             </span>
                           </div>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-6 px-2 text-xs"
-                            onClick={() => window.open(`https://www.google.com/maps?q=${details.gps.lat},${details.gps.lon}`, '_blank')}
-                          >
-                            <ExternalLink className="w-3 h-3 mr-1" />
-                            Open in Maps
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-6 px-2 text-xs"
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${details.gps.lat}, ${details.gps.lon}`);
+                                toast.success('Coordinates copied!');
+                              }}
+                              title="Copy coordinates"
+                              data-testid="copy-coords-btn"
+                            >
+                              <Copy className="w-3 h-3 mr-1" />
+                              Copy
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-6 px-2 text-xs"
+                              onClick={() => window.open(`https://www.google.com/maps?q=${details.gps.lat},${details.gps.lon}`, '_blank')}
+                              title="Open in Google Maps"
+                              data-testid="open-maps-btn"
+                            >
+                              <ExternalLink className="w-3 h-3 mr-1" />
+                              Maps
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-6 px-2 text-xs"
+                              onClick={() => toast.info('Full map view coming soon - will open in Ally Hub Map tab')}
+                              title="Expand to full map"
+                              data-testid="expand-map-btn"
+                            >
+                              <Maximize2 className="w-3 h-3 mr-1" />
+                              Expand
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     )}
