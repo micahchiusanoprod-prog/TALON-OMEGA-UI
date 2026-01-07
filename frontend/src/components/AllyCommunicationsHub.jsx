@@ -830,6 +830,19 @@ export default function AllyCommunicationsHub() {
             <GpsGuide />
           )}
 
+          {/* Comms Knowledge Tab Content */}
+          {activeTab === 'knowledge' && (
+            <CommsKnowledge />
+          )}
+
+          {/* Codebook Tab Content */}
+          {activeTab === 'codes' && (
+            <Codebook onSendMessage={(msg) => {
+              setChatMessage(msg);
+              setActiveTab('chat');
+            }} />
+          )}
+
           {/* Search and Filter */}
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex-1 min-w-[200px] relative">
