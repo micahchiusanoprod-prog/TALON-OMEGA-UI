@@ -105,7 +105,7 @@ const config = {
   // Feature flags
   features: {
     enableDiagnostics: true,
-    enableMockData: false,  // Set to false to attempt real backend connection
+    enableMockData: true,   // Preview: use mock data. Set false + env vars for Pi deployment
     enableAnimations: true,
   },
 
