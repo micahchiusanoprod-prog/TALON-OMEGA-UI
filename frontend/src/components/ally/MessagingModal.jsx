@@ -230,7 +230,13 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
         )}
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin" data-testid="message-list">
+        <div className="flex-1 relative">
+          <div 
+            ref={messagesContainerRef}
+            onScroll={handleScroll}
+            className="absolute inset-0 overflow-y-auto p-4 space-y-3 scrollbar-thin" 
+            data-testid="message-list"
+          >
           {loading ? (
             <div className="space-y-2">
               {[1, 2, 3].map((i) => (
