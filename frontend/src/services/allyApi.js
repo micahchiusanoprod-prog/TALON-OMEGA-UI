@@ -1,204 +1,459 @@
+// Ally Communications API Service
+// Supports both mock data and live backend (port 8093)
+// Controlled via config.features.enableMockData
+
 import config from '../config';
 
-/**
- * Ally Communications API Service
- * Handles all family node communications with offline-first support
- */
-
-class AllyAPIService {
+class AllyApiService {
   constructor() {
+    this.baseUrl = config.ally.apiBase;
     this.cache = {
-      nodes: [],
+      nodes: null,
+      nodesTimestamp: null,
       globalChat: [],
+      globalChatTimestamp: null,
       dmChats: {},
-      lastUpdate: null,
+      userStatus: null,
     };
     this.messageQueue = [];
+    this.isOnline = false;
+    this.lastError = null;
   }
 
-  /**
-   * Generic fetch with caching
-   */
-  async fetch(url, options = {}) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+  // ============= HELPERS =============
 
+  async fetchWithTimeout(url, options = {}, timeout = 5000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    try {
       const response = await fetch(url, {
         ...options,
         signal: controller.signal,
       });
-
       clearTimeout(timeoutId);
-
+      
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
-      return await response.json();
+      
+      this.isOnline = true;
+      this.lastError = null;
+      return response;
     } catch (error) {
-      console.warn(`Ally API fetch failed for ${url}:`, error.message);
+      clearTimeout(timeoutId);
+      this.isOnline = false;
+      this.lastError = error.message;
       throw error;
     }
   }
 
-  /**
-   * Get All Nodes
-   */
+  async retryFetch(url, options = {}, retries = config.retry.maxAttempts) {
+    let lastError;
+    let delay = config.retry.baseDelay;
+    
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await this.fetchWithTimeout(url, options);
+      } catch (error) {
+        lastError = error;
+        if (i < retries - 1) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay = Math.min(delay * config.retry.backoffFactor, config.retry.maxDelay);
+        }
+      }
+    }
+    throw lastError;
+  }
+
+  shouldUseMock() {
+    return config.features.enableMockData || !this.isOnline;
+  }
+
+  getConnectionStatus() {
+    return {
+      isOnline: this.isOnline,
+      lastError: this.lastError,
+      lastUpdated: this.cache.nodesTimestamp,
+    };
+  }
+
+  // ============= NODE DISCOVERY =============
+
   async getNodes() {
-    try {
-      const nodes = await this.fetch(`${config.ally.apiBase}${config.endpoints.allyNodes}`);
-      this.cache.nodes = nodes;
-      this.cache.lastUpdate = new Date().toISOString();
-      return nodes;
-    } catch (error) {
-      // Return cached data if available
-      if (this.cache.nodes.length > 0) {
+    // Try live backend first
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.retryFetch(`${this.baseUrl}/api/ally/nodes`);
+        const data = await response.json();
+        
+        // Cache the result
+        this.cache.nodes = data.nodes || data;
+        this.cache.nodesTimestamp = new Date();
+        
         return this.cache.nodes;
+      } catch (error) {
+        console.warn('Failed to fetch nodes from backend, using cache/mock:', error.message);
+        // Fall through to cached/mock data
       }
-      return this.getMockNodes();
     }
+    
+    // Return cached data if available
+    if (this.cache.nodes) {
+      return this.cache.nodes;
+    }
+    
+    // Fall back to mock data
+    return this.getMockNodes();
   }
 
-  /**
-   * Get Node Status (full telemetry)
-   */
   async getNodeStatus(nodeId) {
-    try {
-      return await this.fetch(`${config.ally.apiBase}${config.endpoints.allyNodeStatus}/${nodeId}/status`);
-    } catch (error) {
-      return this.getMockNodeStatus(nodeId);
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.retryFetch(`${this.baseUrl}/api/ally/node/${nodeId}/status`);
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.warn('Failed to fetch node status, using mock:', error.message);
+      }
     }
+    return this.getMockNodeStatus(nodeId);
   }
 
-  /**
-   * Ping Node
-   */
-  async pingNode(nodeId) {
-    try {
-      return await this.fetch(`${config.ally.apiBase}${config.endpoints.allyPing}/${nodeId}/ping`, {
-        method: 'POST',
-      });
-    } catch (error) {
-      return { success: true, rtt_ms: Math.floor(Math.random() * 100 + 20) };
-    }
-  }
+  // ============= GLOBAL CHAT =============
 
-  /**
-   * Request Node Refresh
-   */
-  async refreshNode(nodeId) {
-    try {
-      return await this.fetch(`${config.ally.apiBase}${config.endpoints.allyRefresh}/${nodeId}/refresh`, {
-        method: 'POST',
-      });
-    } catch (error) {
-      return { success: true, message: 'Refresh queued' };
-    }
-  }
-
-  /**
-   * Get Global Chat Messages
-   */
   async getGlobalChat() {
-    try {
-      const messages = await this.fetch(`${config.ally.apiBase}${config.endpoints.allyGlobalChat}`);
-      this.cache.globalChat = messages;
-      return messages;
-    } catch (error) {
-      if (this.cache.globalChat.length > 0) {
+    if (!config.features.enableMockData) {
+      try {
+        const since = this.cache.globalChatTimestamp 
+          ? `?since=${this.cache.globalChatTimestamp.toISOString()}`
+          : '';
+        const response = await this.retryFetch(`${this.baseUrl}/api/ally/chat/global${since}`);
+        const data = await response.json();
+        
+        // Merge new messages with cache
+        const newMessages = data.messages || data;
+        if (newMessages.length > 0) {
+          const existingIds = new Set(this.cache.globalChat.map(m => m.id));
+          const uniqueNew = newMessages.filter(m => !existingIds.has(m.id));
+          this.cache.globalChat = [...this.cache.globalChat, ...uniqueNew];
+        }
+        this.cache.globalChatTimestamp = new Date();
+        
         return this.cache.globalChat;
+      } catch (error) {
+        console.warn('Failed to fetch global chat, using cache/mock:', error.message);
       }
-      return this.getMockGlobalChat();
     }
+    
+    if (this.cache.globalChat.length > 0) {
+      return this.cache.globalChat;
+    }
+    
+    return this.getMockGlobalChat();
   }
 
-  /**
-   * Send Global Chat Message
-   */
   async sendGlobalMessage(text, priority = 'normal') {
-    try {
-      return await this.fetch(`${config.ally.apiBase}${config.endpoints.allyGlobalChat}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, priority }),
-      });
-    } catch (error) {
-      // Queue message for retry
-      this.queueMessage('global', text, priority);
-      return { success: false, queued: true };
-    }
-  }
-
-  /**
-   * Get Direct Messages with Node
-   */
-  async getDM(nodeId) {
-    try {
-      const messages = await this.fetch(`${config.ally.apiBase}${config.endpoints.allyDM}/${nodeId}`);
-      this.cache.dmChats[nodeId] = messages;
-      return messages;
-    } catch (error) {
-      if (this.cache.dmChats[nodeId]) {
-        return this.cache.dmChats[nodeId];
-      }
-      return this.getMockDM(nodeId);
-    }
-  }
-
-  /**
-   * Send Direct Message to Node
-   */
-  async sendDM(nodeId, text, urgent = false) {
-    try {
-      return await this.fetch(`${config.ally.apiBase}${config.endpoints.allyDM}/${nodeId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, priority: urgent ? 'urgent' : 'normal' }),
-      });
-    } catch (error) {
-      this.queueMessage('dm', text, urgent ? 'urgent' : 'normal', nodeId);
-      return { success: false, queued: true };
-    }
-  }
-
-  /**
-   * Broadcast Emergency Alert
-   */
-  async broadcastAlert(title, text, severity = 'warning') {
-    try {
-      return await this.fetch(`${config.ally.apiBase}${config.endpoints.allyBroadcast}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, text, severity }),
-      });
-    } catch (error) {
-      this.queueMessage('broadcast', text, severity, null, title);
-      return { success: false, queued: true };
-    }
-  }
-
-  /**
-   * Queue Message for Retry
-   */
-  queueMessage(type, text, priority, nodeId = null, title = null) {
-    this.messageQueue.push({
-      type,
+    const tempMessage = {
+      id: `temp-${Date.now()}`,
+      sender: 'me',
+      sender_name: 'This Device',
       text,
-      priority,
-      nodeId,
-      title,
       timestamp: new Date().toISOString(),
-    });
+      priority,
+      status: 'sending',
+    };
+    
+    // Add to local cache immediately (optimistic update)
+    this.cache.globalChat.push(tempMessage);
+    
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.fetchWithTimeout(
+          `${this.baseUrl}/api/ally/chat/global`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, priority }),
+          }
+        );
+        const result = await response.json();
+        
+        // Update temp message with server response
+        const idx = this.cache.globalChat.findIndex(m => m.id === tempMessage.id);
+        if (idx !== -1) {
+          this.cache.globalChat[idx] = {
+            ...tempMessage,
+            id: result.id || tempMessage.id,
+            status: result.status || 'sent',
+          };
+        }
+        
+        return { queued: result.status === 'queued', id: result.id };
+      } catch (error) {
+        console.warn('Failed to send global message, queuing:', error.message);
+        // Mark as queued and add to retry queue
+        const idx = this.cache.globalChat.findIndex(m => m.id === tempMessage.id);
+        if (idx !== -1) {
+          this.cache.globalChat[idx].status = 'queued';
+        }
+        this.messageQueue.push({ type: 'global', text, priority, tempId: tempMessage.id });
+        return { queued: true };
+      }
+    }
+    
+    // Mock mode
+    setTimeout(() => {
+      const idx = this.cache.globalChat.findIndex(m => m.id === tempMessage.id);
+      if (idx !== -1) {
+        this.cache.globalChat[idx].status = 'sent';
+      }
+    }, 500);
+    
+    return { queued: false };
   }
 
-  /**
-   * Retry Queued Messages
-   */
+  // ============= DIRECT MESSAGES =============
+
+  async getDM(nodeId) {
+    if (!config.features.enableMockData) {
+      try {
+        const since = this.cache.dmChats[nodeId]?.timestamp
+          ? `?since=${this.cache.dmChats[nodeId].timestamp.toISOString()}`
+          : '';
+        const response = await this.retryFetch(`${this.baseUrl}/api/ally/chat/dm/${nodeId}${since}`);
+        const data = await response.json();
+        
+        // Initialize cache for this node if needed
+        if (!this.cache.dmChats[nodeId]) {
+          this.cache.dmChats[nodeId] = { messages: [], timestamp: null };
+        }
+        
+        // Merge new messages
+        const newMessages = data.messages || data;
+        if (newMessages.length > 0) {
+          const existingIds = new Set(this.cache.dmChats[nodeId].messages.map(m => m.id));
+          const uniqueNew = newMessages.filter(m => !existingIds.has(m.id));
+          this.cache.dmChats[nodeId].messages = [...this.cache.dmChats[nodeId].messages, ...uniqueNew];
+        }
+        this.cache.dmChats[nodeId].timestamp = new Date();
+        
+        return this.cache.dmChats[nodeId].messages;
+      } catch (error) {
+        console.warn('Failed to fetch DMs, using cache/mock:', error.message);
+      }
+    }
+    
+    if (this.cache.dmChats[nodeId]?.messages.length > 0) {
+      return this.cache.dmChats[nodeId].messages;
+    }
+    
+    return this.getMockDM(nodeId);
+  }
+
+  async sendDM(nodeId, text, urgent = false) {
+    const priority = urgent ? 'urgent' : 'normal';
+    const tempMessage = {
+      id: `temp-${Date.now()}`,
+      sender: 'me',
+      text,
+      timestamp: new Date().toISOString(),
+      status: 'sending',
+      priority,
+    };
+    
+    // Initialize cache for this node if needed
+    if (!this.cache.dmChats[nodeId]) {
+      this.cache.dmChats[nodeId] = { messages: [], timestamp: null };
+    }
+    
+    // Add to local cache immediately
+    this.cache.dmChats[nodeId].messages.push(tempMessage);
+    
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.fetchWithTimeout(
+          `${this.baseUrl}/api/ally/chat/dm/${nodeId}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, priority }),
+          }
+        );
+        const result = await response.json();
+        
+        // Update temp message
+        const idx = this.cache.dmChats[nodeId].messages.findIndex(m => m.id === tempMessage.id);
+        if (idx !== -1) {
+          this.cache.dmChats[nodeId].messages[idx] = {
+            ...tempMessage,
+            id: result.id || tempMessage.id,
+            status: result.status || 'sent',
+          };
+        }
+        
+        return { queued: result.status === 'queued', id: result.id };
+      } catch (error) {
+        console.warn('Failed to send DM, queuing:', error.message);
+        const idx = this.cache.dmChats[nodeId].messages.findIndex(m => m.id === tempMessage.id);
+        if (idx !== -1) {
+          this.cache.dmChats[nodeId].messages[idx].status = 'queued';
+        }
+        this.messageQueue.push({ type: 'dm', nodeId, text, priority, tempId: tempMessage.id });
+        return { queued: true };
+      }
+    }
+    
+    // Mock mode
+    setTimeout(() => {
+      const idx = this.cache.dmChats[nodeId]?.messages.findIndex(m => m.id === tempMessage.id);
+      if (idx !== -1) {
+        this.cache.dmChats[nodeId].messages[idx].status = 'sent';
+      }
+    }, 500);
+    
+    return { queued: false };
+  }
+
+  // ============= BROADCAST =============
+
+  async broadcastAlert(title, message, severity = 'warning') {
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.fetchWithTimeout(
+          `${this.baseUrl}/api/ally/broadcast`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, message, severity }),
+          }
+        );
+        const result = await response.json();
+        return { queued: result.status === 'queued', id: result.id };
+      } catch (error) {
+        console.warn('Failed to send broadcast, queuing:', error.message);
+        this.messageQueue.push({ type: 'broadcast', title, message, severity });
+        return { queued: true };
+      }
+    }
+    
+    // Mock mode - simulate sending
+    return { queued: false, id: `broadcast-${Date.now()}` };
+  }
+
+  // ============= USER STATUS =============
+
+  async getCurrentUserStatus() {
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.retryFetch(`${this.baseUrl}/api/ally/status/me`);
+        const data = await response.json();
+        this.cache.userStatus = data;
+        // Also save to localStorage for offline access
+        localStorage.setItem('omega_user_status', JSON.stringify(data));
+        return data;
+      } catch (error) {
+        console.warn('Failed to fetch user status, using cache:', error.message);
+      }
+    }
+    
+    // Return cached or localStorage status
+    if (this.cache.userStatus) {
+      return this.cache.userStatus;
+    }
+    
+    const stored = localStorage.getItem('omega_user_status');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        // Invalid JSON, ignore
+      }
+    }
+    
+    return { status: 'good', note: null, set_at: null };
+  }
+
+  async setCurrentUserStatus(status, note = null) {
+    const statusData = {
+      status,
+      note: status === 'need_help' ? note : null,
+      set_at: new Date().toISOString(),
+    };
+    
+    // Update local cache and localStorage immediately
+    this.cache.userStatus = statusData;
+    localStorage.setItem('omega_user_status', JSON.stringify(statusData));
+    
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.fetchWithTimeout(
+          `${this.baseUrl}/api/ally/status/me`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status, note: statusData.note }),
+          }
+        );
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.warn('Failed to update user status on server:', error.message);
+        // Status is already saved locally, will sync later
+      }
+    }
+    
+    return statusData;
+  }
+
+  // ============= PING/REFRESH =============
+
+  async pingNode(nodeId) {
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.fetchWithTimeout(
+          `${this.baseUrl}/api/ally/node/${nodeId}/ping`,
+          { method: 'POST' }
+        );
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.warn('Ping failed:', error.message);
+        throw error;
+      }
+    }
+    
+    // Mock ping response
+    const mockRtt = Math.floor(Math.random() * 50) + 10;
+    return { rtt_ms: mockRtt, status: 'success' };
+  }
+
+  async refreshNode(nodeId) {
+    if (!config.features.enableMockData) {
+      try {
+        const response = await this.fetchWithTimeout(
+          `${this.baseUrl}/api/ally/node/${nodeId}/refresh`,
+          { method: 'POST' }
+        );
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.warn('Refresh failed:', error.message);
+        throw error;
+      }
+    }
+    
+    return { status: 'requested', timestamp: new Date().toISOString() };
+  }
+
+  // ============= MESSAGE QUEUE RETRY =============
+
   async retryQueuedMessages() {
+    if (this.messageQueue.length === 0 || config.features.enableMockData) return;
+    
     const queue = [...this.messageQueue];
     this.messageQueue = [];
-
+    
     for (const msg of queue) {
       try {
         if (msg.type === 'global') {
@@ -206,13 +461,26 @@ class AllyAPIService {
         } else if (msg.type === 'dm') {
           await this.sendDM(msg.nodeId, msg.text, msg.priority === 'urgent');
         } else if (msg.type === 'broadcast') {
-          await this.broadcastAlert(msg.title, msg.text, msg.priority);
+          await this.broadcastAlert(msg.title, msg.message, msg.severity);
         }
       } catch (error) {
-        // Re-queue if still failing
+        // Re-queue failed messages
         this.messageQueue.push(msg);
       }
     }
+  }
+
+  // ============= QUICK TEMPLATES =============
+
+  getMessageTemplates() {
+    return [
+      { id: 'omw', text: "On my way!", icon: '🚶' },
+      { id: 'ok', text: "All good here", icon: '✓' },
+      { id: 'help', text: "Need assistance", icon: '🆘' },
+      { id: 'wait', text: "Wait for me", icon: '⏳' },
+      { id: 'loc', text: "Share your location", icon: '📍' },
+      { id: 'call', text: "Call when you can", icon: '📞' },
+    ];
   }
 
   // ============= MOCK DATA =============
@@ -226,7 +494,7 @@ class AllyAPIService {
         ip: '192.168.4.2',
         url: 'http://192.168.4.2:3000',
         status: 'online',
-        user_status: 'good', // good, okay, need_help
+        user_status: 'good',
         user_status_note: null,
         user_status_set_at: null,
         last_seen: new Date().toISOString(),
@@ -284,58 +552,54 @@ class AllyAPIService {
 
   getMockNodeStatus(nodeId) {
     return {
+      node_id: nodeId,
       identity: {
-        name: 'Dad\'s OMEGA',
-        node_id: nodeId,
-        hostname: 'omega-talon',
+        hostname: 'omega-primary',
         version: '1.0.0',
-        uptime: 86420,
-        last_reboot: new Date(Date.now() - 86420000).toISOString(),
+        uptime: 86400,
+        last_reboot: new Date(Date.now() - 86400000).toISOString(),
       },
       system: {
-        cpu: 32,
-        ram: 45,
-        disk: 58,
-        temp: 51,
-        load: [0.5, 0.6, 0.7],
-        services: { backend: 'up', kiwix: 'up', jellyfin: 'up', gps: 'up', sensors: 'up' },
+        cpu: Math.floor(Math.random() * 40) + 20,
+        ram: Math.floor(Math.random() * 30) + 40,
+        disk: Math.floor(Math.random() * 20) + 50,
+        temp: Math.floor(Math.random() * 15) + 45,
+        services: {
+          backend: 'up',
+          kiwix: 'up',
+          jellyfin: 'up',
+          gps: 'up',
+          sensors: 'up',
+        },
       },
       power: {
-        battery_pct: 87,
+        battery_pct: Math.floor(Math.random() * 30) + 70,
         volts: 12.4,
         amps: 0.8,
         watts: 9.9,
         charge_state: 'discharging',
-        runtime_s: 21600,
+        runtime_s: 7200,
       },
       gps: {
         fix: '3D',
+        sats: 12,
         lat: 37.7749,
         lon: -122.4194,
         acc: 3.2,
-        sats: 12,
         speed: 0,
-        heading: 0,
       },
       sensors: {
         temp: 22.5,
         hum: 45.2,
-        iaq: 95,
         pressure: 1013.2,
-        gas: 50000,
-      },
-      comms: {
-        meshtastic_status: 'connected',
-        node_name: 'OMEGA-01',
-        last_msg: new Date(Date.now() - 5000).toISOString(),
-      },
-      mesh: {
-        peers: 2,
-        last_sync: new Date(Date.now() - 10000).toISOString(),
-        queue_depth: 0,
+        iaq: 95,
       },
       alerts: [
-        { severity: 'warning', message: 'Low battery warning', timestamp: new Date().toISOString() },
+        {
+          message: 'Low battery warning',
+          severity: 'warning',
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+        },
       ],
     };
   }
@@ -418,50 +682,8 @@ class AllyAPIService {
       },
     ];
   }
-
-  /**
-   * Get Current User's Status
-   */
-  getCurrentUserStatus() {
-    // In real implementation, this would come from local storage or API
-    const stored = localStorage.getItem('omega_user_status');
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    return {
-      status: 'good',
-      note: null,
-      set_at: null,
-    };
-  }
-
-  /**
-   * Set Current User's Status
-   */
-  setCurrentUserStatus(status, note = null) {
-    const statusData = {
-      status,
-      note: status === 'need_help' ? note : null,
-      set_at: new Date().toISOString(),
-    };
-    localStorage.setItem('omega_user_status', JSON.stringify(statusData));
-    // In real implementation, this would also notify other nodes
-    return statusData;
-  }
-
-  /**
-   * Quick Message Templates
-   */
-  getMessageTemplates() {
-    return [
-      { id: 'omw', text: "On my way!", icon: '🚶' },
-      { id: 'ok', text: "All good here", icon: '✓' },
-      { id: 'help', text: "Need assistance", icon: '🆘' },
-      { id: 'wait', text: "Wait for me", icon: '⏳' },
-      { id: 'loc', text: "Share your location", icon: '📍' },
-      { id: 'call', text: "Call when you can", icon: '📞' },
-    ];
-  }
 }
 
-export default new AllyAPIService();
+// Export singleton instance
+const allyApi = new AllyApiService();
+export default allyApi;
