@@ -363,6 +363,42 @@ export default function PowerTile() {
         {/* Quick Tips */}
         <QuickHelpTips tips={powerQuickTips} />
         
+        {/* FIELD-USE SUMMARY ROW - Most critical info at a glance */}
+        <div className="glass-strong rounded-xl p-3 border-2 border-primary/30" data-testid="field-summary">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <Battery className={`w-4 h-4 ${getBatteryColor()}`} />
+                <span className={`font-bold ${getBatteryColor()}`}>{battery.percentage}%</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                <span className="font-semibold">{formatDuration(estimates.runtimeMinutes)}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {isCharging ? (
+                  <TrendingUp className="w-4 h-4 text-success" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 text-warning" />
+                )}
+                <span className={`font-semibold ${isCharging ? 'text-success' : 'text-warning'}`}>
+                  {estimates.netFlowWatts > 0 ? '+' : ''}{estimates.netFlowWatts.toFixed(1)}W
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-muted-foreground" />
+                <span className="font-semibold">{consumption.total.toFixed(1)}W</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-muted-foreground">Top:</span>
+              <span className={`font-bold ${getTopChargeSource()?.watts > 0 ? 'text-success' : 'text-muted-foreground'}`}>
+                {getTopChargeSource()?.name || 'None'}
+              </span>
+            </div>
+          </div>
+        </div>
+        
         {/* Main Battery Display */}
         <div className="glass rounded-xl p-4" data-testid="battery-main">
           <div className="flex items-center justify-between mb-3">
@@ -405,11 +441,11 @@ export default function PowerTile() {
             />
           </div>
           
-          {/* Battery Stats */}
+          {/* Battery Stats - US units (Fahrenheit) */}
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{battery.voltage.toFixed(1)}V</span>
             <span>{Math.abs(battery.current).toFixed(2)}A {battery.current < 0 ? 'draw' : 'charge'}</span>
-            <span>{battery.temperature}°C</span>
+            <span>{Math.round(battery.temperature * 9/5 + 32)}°F</span>
             <span className={`font-medium ${battery.health === 'good' ? 'text-success' : 'text-warning'}`}>
               {battery.health.toUpperCase()}
             </span>
