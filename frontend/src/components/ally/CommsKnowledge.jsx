@@ -152,7 +152,7 @@ const commsMethodsData = [
     `,
     whenToUse: [
       'All other methods unavailable',
-      'Need to reach 100+ km distances',
+      'Need to reach 60+ mi distances',
       'Grid-down scenarios',
       'Requires proper licensing and equipment',
     ],
@@ -163,7 +163,7 @@ const commsMethodsData = [
       { issue: 'Regulatory issues', fix: 'Ensure proper licensing, follow band plans' },
     ],
     specs: {
-      range: '100-10,000+ km',
+      range: '60-6,000+ mi',
       speed: '~50 bps (digital modes)',
       latency: 'Minutes (store-and-forward)',
       power: 'High (5-100W)',
