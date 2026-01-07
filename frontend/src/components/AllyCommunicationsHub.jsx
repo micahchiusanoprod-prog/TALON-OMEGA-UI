@@ -69,8 +69,11 @@ export default function AllyCommunicationsHub() {
   // Connection status
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, lastError: null });
   
-  // Tab state for Chat/Map view
+  // Tab state for Chat/Map/Guide view
   const [activeTab, setActiveTab] = useState('chat');
+  
+  // Help modal state
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     fetchNodes();
