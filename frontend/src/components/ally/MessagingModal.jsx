@@ -28,20 +28,23 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const messagesContainerRef = useRef(null);
   const prevMessageCountRef = useRef(0);
+  const scrollPositionRef = useRef(0);
   const templates = allyApi.getMessageTemplates();
 
   // Lock body scroll when modal opens to prevent page jumping
   useEffect(() => {
-    const scrollY = window.scrollY;
+    scrollPositionRef.current = window.scrollY;
     document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
+    document.body.style.top = `-${scrollPositionRef.current}px`;
     document.body.style.width = '100%';
+    document.body.style.overflowY = 'scroll'; // Prevent layout shift
     
     return () => {
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      window.scrollTo(0, scrollY);
+      document.body.style.overflowY = '';
+      window.scrollTo(0, scrollPositionRef.current);
     };
   }, []);
 
