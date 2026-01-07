@@ -188,10 +188,7 @@ export default function NodeCard({ node, onMessage, onDetails, onPing }) {
       <div className="flex items-center gap-2">
         <Button
           size="sm"
-          onMouseDown={() => {
-            // Capture scroll position before click event processing
-            window.__pendingScrollPosition = window.scrollY;
-          }}
+          onMouseDown={captureScrollPosition}
           onClick={(e) => {
             e.preventDefault();
             onMessage(node.node_id);
@@ -216,10 +213,7 @@ export default function NodeCard({ node, onMessage, onDetails, onPing }) {
         <Button
           size="sm"
           variant="outline"
-          onMouseDown={() => {
-            // Capture scroll position before click event processing
-            window.__pendingScrollPosition = window.scrollY;
-          }}
+          onMouseDown={captureScrollPosition}
           onClick={(e) => {
             e.preventDefault();
             onDetails(node);
