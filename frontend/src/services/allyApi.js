@@ -448,10 +448,8 @@ class AllyApiService {
   async pingNode(nodeId) {
     if (!config.features.enableMockData) {
       try {
-        const response = await this.fetchWithTimeout(
-          `${this.baseUrl}/api/ally/node/${nodeId}/ping`,
-          { method: 'POST' }
-        );
+        const url = this.buildUrl(`/api/ally/node/${nodeId}/ping`);
+        const response = await this.fetchWithTimeout(url, { method: 'POST' });
         const result = await response.json();
         return result;
       } catch (error) {
@@ -468,10 +466,8 @@ class AllyApiService {
   async refreshNode(nodeId) {
     if (!config.features.enableMockData) {
       try {
-        const response = await this.fetchWithTimeout(
-          `${this.baseUrl}/api/ally/node/${nodeId}/refresh`,
-          { method: 'POST' }
-        );
+        const url = this.buildUrl(`/api/ally/node/${nodeId}/refresh`);
+        const response = await this.fetchWithTimeout(url, { method: 'POST' });
         const result = await response.json();
         return result;
       } catch (error) {
