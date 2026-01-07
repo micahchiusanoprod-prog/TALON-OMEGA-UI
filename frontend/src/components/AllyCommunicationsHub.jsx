@@ -148,8 +148,10 @@ export default function AllyCommunicationsHub() {
       const data = await allyApi.getNodes();
       setNodes(data);
       setLastSync(new Date());
+      setConnectionStatus(allyApi.getConnectionStatus());
     } catch (error) {
       console.error('Failed to fetch nodes:', error);
+      setConnectionStatus(allyApi.getConnectionStatus());
     } finally {
       setLoading(false);
     }
@@ -162,10 +164,21 @@ export default function AllyCommunicationsHub() {
       // Count emergency broadcasts for badge
       const emergencyCount = data.filter(m => m.priority === 'emergency' || m.broadcast_severity === 'emergency').length;
       setAlertsBadgeCount(emergencyCount);
+      setConnectionStatus(allyApi.getConnectionStatus());
     } catch (error) {
       console.error('Failed to fetch global chat:', error);
+      setConnectionStatus(allyApi.getConnectionStatus());
     } finally {
       setChatLoading(false);
+    }
+  };
+
+  const fetchUserStatus = async () => {
+    try {
+      const status = await allyApi.getCurrentUserStatus();
+      setCurrentUserStatus(status);
+    } catch (error) {
+      console.error('Failed to fetch user status:', error);
     }
   };
 
