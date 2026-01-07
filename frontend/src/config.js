@@ -30,6 +30,15 @@ const config = {
     maxClients: 10, // Default max clients
   },
 
+  // Ally Communications configuration
+  ally: {
+    apiBase: 'http://127.0.0.1:8093',
+    nodeOfflineThreshold: 60, // seconds
+    messageRetryInterval: 10000, // 10 seconds
+    pollingOnline: 5000, // 5 seconds for online nodes
+    pollingOffline: 20000, // 20 seconds for offline nodes
+  },
+
   // Polling intervals (milliseconds)
   polling: {
     metrics: 3000,        // 3 seconds for system metrics (real-time feel)
@@ -38,6 +47,8 @@ const config = {
     community: 30000,     // 30 seconds for community updates
     hotspotOn: 4000,      // 4 seconds when hotspot is ON
     hotspotOff: 12000,    // 12 seconds when hotspot is OFF
+    allyNodes: 5000,      // 5 seconds for Ally node status
+    allyChat: 3000,       // 3 seconds for chat messages
   },
 
   // Retry configuration
