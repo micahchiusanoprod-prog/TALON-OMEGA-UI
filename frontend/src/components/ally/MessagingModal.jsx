@@ -106,6 +106,7 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
       priority: urgent ? 'urgent' : 'normal',
     };
     setMessages(prev => [...prev, optimisticMsg]);
+    setShouldAutoScroll(true); // Scroll to show sent message
     
     const msgText = newMessage;
     const isUrgent = urgent;
