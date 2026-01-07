@@ -232,22 +232,24 @@ export function HotkeysBar({ onHotkeyClick }) {
   
   return (
     <>
-      <div className="glass-strong rounded-2xl p-3" data-testid="hotkeys-bar">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Quick Access</span>
+      <div className="glass-strong rounded-2xl p-4" data-testid="hotkeys-bar">
+        {/* Minimal header */}
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm font-semibold text-muted-foreground">Quick Access</span>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => setShowCustomize(true)}
-            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
             data-testid="customize-hotkeys-btn"
           >
-            <Settings className="w-3.5 h-3.5 mr-1" />
+            <Settings className="w-4 h-4 mr-1.5" />
             Customize
           </Button>
         </div>
         
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-thin pb-1">
+        {/* Minimal hotkeys row with generous spacing */}
+        <div className="flex items-center gap-3 overflow-x-auto scrollbar-thin pb-1">
           {visibleHotkeys.map((hotkey) => (
             <HotkeyButton
               key={hotkey.id}
