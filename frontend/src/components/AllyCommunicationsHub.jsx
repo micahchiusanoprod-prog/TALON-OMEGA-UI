@@ -35,6 +35,7 @@ import AllyHubHelp, { StatusLegend } from './ally/AllyHubHelp';
 import CommsAvailabilityPanel from './ally/CommsAvailabilityPanel';
 import CommsKnowledge from './ally/CommsKnowledge';
 import Codebook from './ally/Codebook';
+import NodeAvatarStrip from './ally/NodeAvatarStrip';
 import { lockBodyScroll, unlockBodyScroll, captureScrollPosition } from '../utils/scrollLock';
 
 export default function AllyCommunicationsHub() {
