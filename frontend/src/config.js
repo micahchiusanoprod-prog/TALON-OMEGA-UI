@@ -7,21 +7,22 @@ const config = {
     kiwix: 'http://127.0.0.1:8090',
     kiwixAlt: 'http://talon.local:8090',
     backend: 'http://127.0.0.1:8093',
+    // Backend CGI endpoints (existing API)
     health: '/cgi-bin/health.py',
     metrics: '/cgi-bin/metrics.py',
     sensors: '/cgi-bin/sensors.py',
-    gps: '/cgi-bin/gps.py',
-    communityPosts: '/api/community/posts',
-    hotspotToggle: '/api/hotspot/toggle',
+    backup: '/cgi-bin/backup.py',
+    keys: '/cgi-bin/keys.py',
+    keysync: '/cgi-bin/keysync.py',
+    dm: '/cgi-bin/dm.py',
   },
 
   // Polling intervals (milliseconds)
   polling: {
-    metrics: 5000,        // 5 seconds for system metrics
-    sensors: 10000,       // 10 seconds for temperature/sensors
-    gps: 3000,           // 3 seconds for GPS
-    health: 15000,       // 15 seconds for health check
-    community: 30000,    // 30 seconds for community posts
+    metrics: 3000,        // 3 seconds for system metrics (real-time feel)
+    sensors: 5000,        // 5 seconds for BME680 sensors
+    health: 15000,        // 15 seconds for health check
+    community: 30000,     // 30 seconds for community updates
   },
 
   // Retry configuration

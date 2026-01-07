@@ -15,105 +15,127 @@ code {
 
 @layer base {
     :root {
-        /* Light mode */
-        --background: 0 0% 98%;
+        /* Light mode - Enhanced depth with multiple shades */
+        --background: 210 20% 98%;
         --foreground: 222 47% 11%;
         
-        /* Cards with subtle elevation */
+        /* Cards with elevation layers */
         --card: 0 0% 100%;
         --card-foreground: 222 47% 11%;
+        --card-elevated: 210 30% 99%;
         
         /* Elevated surfaces */
         --popover: 0 0% 100%;
         --popover-foreground: 222 47% 11%;
         
-        /* Electric cyan accent (same as dark) */
-        --primary: 187 100% 42%;
-        --primary-foreground: 0 0% 98%;
+        /* Primary - Vibrant cyan with depth */
+        --primary: 187 85% 45%;
+        --primary-hover: 187 85% 40%;
+        --primary-light: 187 75% 88%;
+        --primary-foreground: 0 0% 100%;
         
-        /* Muted surfaces */
-        --secondary: 0 0% 96.1%;
+        /* Secondary - Layered grays */
+        --secondary: 210 25% 94%;
+        --secondary-hover: 210 25% 90%;
         --secondary-foreground: 222 47% 11%;
         
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 217 10% 45%;
+        /* Muted surfaces with depth */
+        --muted: 210 20% 96%;
+        --muted-hover: 210 20% 92%;
+        --muted-foreground: 215 15% 45%;
         
-        /* Accent */
-        --accent: 187 100% 42%;
-        --accent-foreground: 0 0% 98%;
+        /* Accent - Matching primary */
+        --accent: 187 85% 45%;
+        --accent-hover: 187 85% 40%;
+        --accent-foreground: 0 0% 100%;
         
-        /* Status colors */
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
+        /* Status colors with light backgrounds */
+        --destructive: 0 72% 51%;
+        --destructive-light: 0 72% 95%;
+        --destructive-foreground: 0 0% 100%;
         
-        --success: 142 76% 36%;
-        --success-foreground: 0 0% 98%;
+        --success: 142 71% 45%;
+        --success-light: 142 71% 95%;
+        --success-foreground: 0 0% 100%;
         
         --warning: 38 92% 50%;
+        --warning-light: 38 92% 95%;
         --warning-foreground: 222 47% 11%;
         
-        /* Borders and inputs */
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 187 100% 42%;
+        /* Borders with subtle color */
+        --border: 210 20% 88%;
+        --border-strong: 210 25% 80%;
+        --input: 210 20% 90%;
+        --ring: 187 85% 45%;
         
         --radius: 0.75rem;
         
         /* Chart colors */
-        --chart-1: 187 100% 42%;
-        --chart-2: 142 76% 36%;
+        --chart-1: 187 85% 45%;
+        --chart-2: 142 71% 45%;
         --chart-3: 38 92% 50%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
     }
     
     .dark {
-        /* OMEGA Dark Mode - Apple-inspired cyberdeck palette */
+        /* OMEGA Dark Mode - Enhanced depth with layered surfaces */
         --background: 222 47% 4%;
         --foreground: 210 40% 98%;
         
-        /* Glass cards with subtle tint */
+        /* Cards with multiple elevation levels */
         --card: 222 47% 8%;
         --card-foreground: 210 40% 98%;
+        --card-elevated: 222 47% 11%;
         
         /* Elevated surfaces */
         --popover: 222 47% 6%;
         --popover-foreground: 210 40% 98%;
         
-        /* Electric cyan accent - cyberdeck signature */
+        /* Primary - Vibrant cyan with hover states */
         --primary: 187 100% 50%;
+        --primary-hover: 187 100% 55%;
+        --primary-light: 187 100% 20%;
         --primary-foreground: 222 47% 4%;
         
-        /* Muted surfaces */
+        /* Secondary - Layered dark surfaces */
         --secondary: 222 47% 12%;
+        --secondary-hover: 222 47% 16%;
         --secondary-foreground: 210 40% 98%;
         
+        /* Muted surfaces with depth */
         --muted: 222 47% 12%;
+        --muted-hover: 222 47% 16%;
         --muted-foreground: 217 10% 64.9%;
         
-        /* Accent (same as primary for cyberdeck theme) */
+        /* Accent - Matching primary with depth */
         --accent: 187 100% 50%;
+        --accent-hover: 187 100% 55%;
         --accent-foreground: 222 47% 4%;
         
-        /* Status colors */
-        --destructive: 0 62.8% 50.6%;
+        /* Status colors with dark backgrounds */
+        --destructive: 0 72% 55%;
+        --destructive-light: 0 72% 15%;
         --destructive-foreground: 210 40% 98%;
         
-        --success: 142 76% 36%;
+        --success: 142 76% 45%;
+        --success-light: 142 76% 15%;
         --success-foreground: 210 40% 98%;
         
-        --warning: 38 92% 50%;
+        --warning: 38 92% 55%;
+        --warning-light: 38 92% 15%;
         --warning-foreground: 222 47% 4%;
         
-        /* Borders and inputs */
+        /* Borders with subtle glow */
         --border: 222 47% 15%;
+        --border-strong: 222 47% 20%;
         --input: 222 47% 15%;
         --ring: 187 100% 50%;
         
         /* Chart colors */
         --chart-1: 187 100% 50%;
-        --chart-2: 142 76% 36%;
-        --chart-3: 38 92% 50%;
+        --chart-2: 142 76% 45%;
+        --chart-3: 38 92% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
     }
