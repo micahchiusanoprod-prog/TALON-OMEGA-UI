@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Sun, Moon, Server } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import config from '../config';
 import { toast } from 'sonner';
 
@@ -18,10 +18,6 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
       return { label: 'Down', color: 'bg-destructive-light text-destructive', dotColor: 'status-down' };
     }
   }, [health]);
-
-  const openKiwix = () => {
-    window.open(config.endpoints.kiwix, '_blank');
-  };
 
   // Check if header would be too cluttered (mobile/tablet)
   const [useCompactHeader, setUseCompactHeader] = React.useState(false);
@@ -119,13 +115,6 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               ) : (
                 <Moon className="w-4 h-4" />
               )}
-            </button>
-            <button
-              onClick={openKiwix}
-              className="glass px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm"
-              title="Open Kiwix Library"
-            >
-              <Server className="w-4 h-4" />
             </button>
           </div>
         </div>
