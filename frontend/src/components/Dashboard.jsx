@@ -10,7 +10,7 @@ import api from '../services/api';
 import config from '../config';
 import { Activity } from 'lucide-react';
 
-export default function Dashboard() {
+export default function Dashboard({ theme, onToggleTheme }) {
   const [metrics, setMetrics] = useState(null);
   const [health, setHealth] = useState(null);
   const [gps, setGps] = useState(null);
@@ -71,29 +71,33 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen pb-12">
       {/* Header */}
-      <Header metrics={metrics} health={health} />
+      <Header metrics={metrics} health={health} theme={theme} onToggleTheme={onToggleTheme} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-24 space-y-8">
-        {/* Hero Search */}
+        {/* Quality of Life - Minimal Compact Version */}
         <div className="animate-fade-in">
+          <QualityOfLifeSection compact />
+        </div>
+
+        {/* Hero Search */}
+        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
           <SearchBar />
         </div>
 
-        {/* GPS Map */}
-        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-          <GPSMap gpsData={gps} />
+        {/* Community */}
+        <div className="animate-fade-in mt-12" style={{ animationDelay: '200ms' }}>
+          <CommunitySection />
         </div>
 
         {/* Entertainment */}
-        <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
           <EntertainmentSection />
         </div>
 
-        {/* Community & Quality of Life */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '300ms' }}>
-          <CommunitySection />
-          <QualityOfLifeSection />
+        {/* GPS Map */}
+        <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
+          <GPSMap gpsData={gps} />
         </div>
       </main>
 

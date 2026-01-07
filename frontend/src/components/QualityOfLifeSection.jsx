@@ -42,11 +42,34 @@ const QOL_ITEMS = [
   },
 ];
 
-export default function QualityOfLifeSection() {
+export default function QualityOfLifeSection({ compact = false }) {
   const handleClick = (item) => {
     toast.info(`${item.title} - Coming soon`);
   };
 
+  if (compact) {
+    // Compact minimal version
+    return (
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        {QOL_ITEMS.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleClick(item)}
+              className="glass px-4 py-2 rounded-full hover:glass-strong transition-smooth group flex items-center gap-2"
+              title={item.title}
+            >
+              <Icon className={`w-4 h-4 ${item.color}`} />
+              <span className="text-sm font-medium text-foreground">{item.title}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Full card version
   return (
     <Card className="glass-strong border-border h-full flex flex-col">
       <CardHeader>

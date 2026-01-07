@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import api from '../services/api';
 import config from '../config';
 
-export default function CommunitySection() {
+export default function CommunitySection({ fullWidth = true }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,23 +44,24 @@ export default function CommunitySection() {
   };
 
   return (
-    <Card className="glass-strong border-border h-full flex flex-col">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-primary" />
-            Community
-          </CardTitle>
-          <Button
-            size="sm"
-            onClick={handleNewPost}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            New Post
-          </Button>
-        </div>
-      </CardHeader>
+    <div className={fullWidth ? 'max-w-4xl mx-auto' : ''}>
+      <Card className="glass-strong border-border flex flex-col">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-primary" />
+              Community
+            </CardTitle>
+            <Button
+              size="sm"
+              onClick={handleNewPost}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              New Post
+            </Button>
+          </div>
+        </CardHeader>
       <CardContent className="flex-1 space-y-4">
         {loading ? (
           <div className="space-y-3">
@@ -131,6 +132,7 @@ export default function CommunitySection() {
           </Button>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </div>
   );
 }

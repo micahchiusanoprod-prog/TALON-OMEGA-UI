@@ -1,10 +1,10 @@
 import React from 'react';
-import { Wifi, WifiOff, Server } from 'lucide-react';
+import { Wifi, WifiOff, Server, Sun, Moon } from 'lucide-react';
 import config from '../config';
 import api from '../services/api';
 import { toast } from 'sonner';
 
-export default function Header({ metrics, health }) {
+export default function Header({ metrics, health, theme, onToggleTheme }) {
   const getStatusColor = () => {
     if (!health) return 'status-degraded';
     if (health.status === 'healthy') return 'status-healthy';
@@ -89,6 +89,17 @@ export default function Header({ metrics, health }) {
 
           {/* Right: Quick Actions */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={onToggleTheme}
+              className="glass px-4 py-2 rounded-lg hover:glass-strong transition-smooth text-sm font-medium"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </button>
             <button
               onClick={handleToggleHotspot}
               className="glass px-4 py-2 rounded-lg hover:glass-strong transition-smooth text-sm font-medium"
