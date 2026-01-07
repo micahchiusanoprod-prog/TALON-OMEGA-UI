@@ -187,7 +187,10 @@ export default function NodeCard({ node, onMessage, onDetails, onPing }) {
       <div className="flex items-center gap-2">
         <Button
           size="sm"
-          onClick={() => onMessage(node.node_id)}
+          onClick={(e) => {
+            e.preventDefault();
+            onMessage(node.node_id);
+          }}
           className="flex-1 h-8 text-xs bg-primary hover:bg-primary-hover"
           data-testid={`message-btn-${node.node_id}`}
         >
@@ -208,7 +211,10 @@ export default function NodeCard({ node, onMessage, onDetails, onPing }) {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => onDetails(node)}
+          onClick={(e) => {
+            e.preventDefault();
+            onDetails(node);
+          }}
           className="flex-1 h-8 text-xs border-border-strong bg-secondary/30"
           data-testid={`details-btn-${node.node_id}`}
         >
