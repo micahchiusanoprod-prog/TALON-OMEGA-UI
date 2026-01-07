@@ -40,6 +40,12 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **Map Markers** | ✅ | Status-colored pins (green/amber/red/gray) |
 | **Map Popups** | ✅ | Node name, status, last seen, location, role |
 | **No GPS Panel** | ✅ | Lists nodes without GPS coordinates |
+| **GPS Status Bar** | ✅ | Fix/No Fix indicator, timestamp, accuracy, satellites, altitude |
+| **Quick Help Tips** | ✅ | Collapsible checklist when "No Fix" (SHTF-focused) |
+| **GPS Guide Tab** | ✅ | Educational content with accordions (How GPS Works, Troubleshooting, etc.) |
+| **Help Button** | ✅ | "?" in header opens help modal |
+| **Tab Descriptions** | ✅ | Context + legend visible for each tab |
+| **Map Controls** | ✅ | "All Nodes" + "My Location" (placeholder) buttons |
 
 ### Integration Layer (Production-Ready)
 
@@ -91,14 +97,17 @@ url.searchParams.set('key', this.apiKey);
 ```
 /app/frontend/src/
 ├── components/
-│   ├── AllyCommunicationsHub.jsx    # Main hub with tabs (Chat/Map), Status Dropdown
+│   ├── AllyCommunicationsHub.jsx    # Main hub with tabs (Chat/Map/Guide), Help button, Status Dropdown
 │   └── ally/
 │       ├── NodeCard.jsx             # Individual node card with status badges
 │       ├── NodeDetailsDrawer.jsx    # Full node details drawer
 │       ├── MessagingModal.jsx       # DM modal with templates
 │       ├── BroadcastModal.jsx       # Broadcast with confirmation
-│       ├── AllyMapView.jsx          # Map view wrapper with legend, lazy loading
-│       └── LazyMapContent.jsx       # Leaflet map with markers and popups
+│       ├── AllyMapView.jsx          # Map view with GPS status bar and controls
+│       ├── LazyMapContent.jsx       # Leaflet map with markers and popups
+│       ├── GpsStatusBar.jsx         # GPS fix status bar with metrics
+│       ├── GpsGuide.jsx             # Educational GPS guide with accordions
+│       └── AllyHubHelp.jsx          # Help modal and tab descriptions
 ├── services/
 │   └── allyApi.js                   # API service with mock/live support, GPS data
 ├── utils/
@@ -193,6 +202,7 @@ POST /api/ally/node/{node_id}/refresh
 ## Test Reports
 - `/app/test_reports/iteration_1.json` - Ally Hub comprehensive test (100% pass)
 - `/app/test_reports/iteration_2.json` - Chat size increase + Map tab test (100% pass)
+- `/app/test_reports/iteration_3.json` - GPS Status Bar, GPS Guide, Help pattern test (100% pass)
 
 ---
 
@@ -202,9 +212,11 @@ POST /api/ally/node/{node_id}/refresh
 - Set `enableMockData: false`
 - Configure `REACT_APP_PI_API_URL` and `REACT_APP_PI_API_KEY`
 - Test live connectivity
+- Wire GPS status to real GPS data from Pi
 
 ### P2 - Feature Completion
 - Full GPS Map enhancements (mesh lines, signal circles, route drawing)
+- "My Location" button to use device's actual GPS
 - Full Hero Search implementation
 - Backups feature
 - KeySync feature
@@ -214,9 +226,10 @@ POST /api/ally/node/{node_id}/refresh
 - Push notifications for broadcasts
 - Offline message sync on reconnect
 - Advanced node statistics and graphs
+- Cluster markers when zoomed out (optional)
 
 ---
 
 *Last Updated: January 7, 2026*
-*Current Status: Ally Communications Hub COMPLETE with Map Tab (Preview Phase)*
+*Current Status: Ally Communications Hub COMPLETE with GPS Status Bar, GPS Guide Tab, and Help System (Preview Phase)*
 *Next: Deploy to Pi and test with live backend*
