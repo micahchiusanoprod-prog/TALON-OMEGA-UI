@@ -25,6 +25,16 @@ export default function EnvironmentTile() {
     return () => clearInterval(interval);
   }, []);
 
+  // Use placeholder data if sensors are offline or unavailable
+  const displayData = sensors?.available ? sensors : {
+    temperature: 22.5,
+    humidity: 45.2,
+    pressure: 1013.2,
+    iaq: 95,
+    available: false,
+    offline: !sensors?.available,
+  };
+
   if (loading) {
     return (
       <Card className="glass-strong border-border">
@@ -45,54 +55,32 @@ export default function EnvironmentTile() {
     );
   }
 
-  if (!sensors || sensors.offline) {
-    return (
-      <Card className="glass-strong border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Thermometer className="w-5 h-5 text-primary" />
-            Environment
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <AlertTriangle className="w-12 h-12 text-warning mb-3" />
-            <p className="text-sm font-medium text-foreground">Sensor Offline</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              BME680 sensor is not responding
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   const metrics = [
     {
       label: 'Temperature',
-      value: sensors.temperature,
+      value: displayData.temperature,
       unit: '°C',
       icon: Thermometer,
       color: 'text-red-400',
     },
     {
       label: 'Humidity',
-      value: sensors.humidity,
+      value: displayData.humidity,
       unit: '%',
       icon: Droplets,
       color: 'text-blue-400',
     },
     {
       label: 'Pressure',
-      value: sensors.pressure,
+      value: displayData.pressure,
       unit: 'hPa',
       icon: Gauge,
       color: 'text-purple-400',
     },
     {
       label: 'Air Quality',
-      value: sensors.iaq || sensors.gas,
-      unit: sensors.iaq ? 'IAQ' : 'Ω',
+      value: displayData.iaq,
+      unit: 'IAQ',
       icon: Wind,
       color: 'text-green-400',
     },
@@ -101,10 +89,17 @@ export default function EnvironmentTile() {
   return (
     <Card className="glass-strong border-border">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Thermometer className="w-5 h-5 text-primary" />
-          Environment
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Thermometer className="w-5 h-5 text-primary" />
+            Environment
+          </CardTitle>
+          {displayData.offline && (
+            <span className="text-xs px-2 py-1 rounded-full bg-warning-light text-warning">
+              Simulated
+            </span>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

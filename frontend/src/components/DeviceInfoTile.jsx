@@ -27,6 +27,25 @@ export default function DeviceInfoTile() {
     return () => clearInterval(interval);
   }, []);
 
+  // Use placeholder data if not available
+  const displayMetrics = metrics?.available ? metrics : {
+    cpu: 24,
+    ram: 38,
+    disk: 52,
+    temp: 48,
+    uptime: 345678,
+    available: false,
+  };
+
+  const displayHealth = health?.services ? health : {
+    services: {
+      kiwix: 'up',
+      backend: 'up',
+      mesh: 'degraded',
+    },
+    available: false,
+  };
+
   const formatUptime = (seconds) => {
     if (!seconds) return 'N/A';
     const days = Math.floor(seconds / 86400);
@@ -35,13 +54,22 @@ export default function DeviceInfoTile() {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
+  const showSimulated = !metrics?.available || !health?.services;
+
   return (
     <Card className="glass-strong border-border">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-primary" />
-          Device Info
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary" />
+            Device Info
+          </CardTitle>
+          {showSimulated && (
+            <span className="text-xs px-2 py-1 rounded-full bg-warning-light text-warning">
+              Simulated
+            </span>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* System Metrics */}
@@ -49,49 +77,49 @@ export default function DeviceInfoTile() {
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">CPU Usage</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics && metrics.cpu !== null ? `${metrics.cpu}%` : '—'}
+              {displayMetrics.cpu}%
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">RAM Usage</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics && metrics.ram !== null ? `${metrics.ram}%` : '—'}
+              {displayMetrics.ram}%
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">Disk Usage</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics && metrics.disk !== null ? `${metrics.disk}%` : '—'}
+              {displayMetrics.disk}%
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">CPU Temp</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics && metrics.temp !== null ? `${metrics.temp}°C` : '—'}
+              {displayMetrics.temp}°C
             </div>
           </div>
         </div>
 
         {/* Uptime */}
-        {metrics && metrics.uptime && (
+        {displayMetrics.uptime && (
           <div className="flex items-center gap-2 p-3 glass rounded-lg">
             <Clock className="w-4 h-4 text-primary" />
             <div className="flex-1">
               <div className="text-xs text-muted-foreground">Uptime</div>
               <div className="text-sm font-medium text-foreground">
-                {formatUptime(metrics.uptime)}
+                {formatUptime(displayMetrics.uptime)}
               </div>
             </div>
           </div>
         )}
 
         {/* Service Statuses */}
-        {health && health.services && Object.keys(health.services).length > 0 && (
+        {displayHealth.services && Object.keys(displayHealth.services).length > 0 && (
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase">
               Services
             </div>
-            {Object.entries(health.services).map(([name, status]) => (
+            {Object.entries(displayHealth.services).map(([name, status]) => (
               <div
                 key={name}
                 className="flex items-center justify-between p-2 glass rounded-lg"
