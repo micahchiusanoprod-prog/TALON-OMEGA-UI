@@ -49,31 +49,31 @@ export default function DeviceInfoTile() {
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">CPU Usage</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics?.cpu !== null ? `${metrics.cpu}%` : '—'}
+              {metrics && metrics.cpu !== null ? `${metrics.cpu}%` : '—'}
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">RAM Usage</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics?.ram !== null ? `${metrics.ram}%` : '—'}
+              {metrics && metrics.ram !== null ? `${metrics.ram}%` : '—'}
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">Disk Usage</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics?.disk !== null ? `${metrics.disk}%` : '—'}
+              {metrics && metrics.disk !== null ? `${metrics.disk}%` : '—'}
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">CPU Temp</div>
             <div className="text-2xl font-bold text-foreground">
-              {metrics?.temp !== null ? `${metrics.temp}°C` : '—'}
+              {metrics && metrics.temp !== null ? `${metrics.temp}°C` : '—'}
             </div>
           </div>
         </div>
 
         {/* Uptime */}
-        {metrics?.uptime && (
+        {metrics && metrics.uptime && (
           <div className="flex items-center gap-2 p-3 glass rounded-lg">
             <Clock className="w-4 h-4 text-primary" />
             <div className="flex-1">
@@ -86,7 +86,7 @@ export default function DeviceInfoTile() {
         )}
 
         {/* Service Statuses */}
-        {health?.services && Object.keys(health.services).length > 0 && (
+        {health && health.services && Object.keys(health.services).length > 0 && (
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase">
               Services
