@@ -53,6 +53,9 @@ export default function AllyCommunicationsHub() {
   // Track if user sent a message (only auto-scroll then)
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
   const chatContainerRef = useRef(null);
+  
+  // Broadcast alert tracking
+  const [alertsBadgeCount, setAlertsBadgeCount] = useState(0);
 
   useEffect(() => {
     fetchNodes();
