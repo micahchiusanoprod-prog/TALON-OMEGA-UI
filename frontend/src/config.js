@@ -84,7 +84,7 @@ const config = {
   // Feature flags
   features: {
     enableDiagnostics: true,
-    enableMockData: true,  // Use mock data when endpoints unavailable
+    enableMockData: false,  // Set to false to attempt real backend connection
     enableAnimations: true,
   },
 
