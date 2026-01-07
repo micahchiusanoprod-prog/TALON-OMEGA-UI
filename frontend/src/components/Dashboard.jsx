@@ -9,6 +9,10 @@ import EntertainmentSection from './EntertainmentSection';
 import CommunitySection from './CommunitySection';
 import QualityOfLifeSection from './QualityOfLifeSection';
 import DiagnosticsPanel from './DiagnosticsPanel';
+import CameraTile from './CameraTile';
+import SecurityTile from './SecurityTile';
+import MusicTile from './MusicTile';
+import HotkeysBar from './HotkeysBar';
 import api from '../services/api';
 import config from '../config';
 import { Activity } from 'lucide-react';
@@ -53,6 +57,13 @@ export default function Dashboard({ theme, onToggleTheme }) {
     return () => clearInterval(interval);
   }, []);
 
+  // Handle hotkey clicks
+  const handleHotkeyClick = (hotkeyId) => {
+    // For now, log the click - will wire to actual navigation/actions later
+    console.log('Hotkey clicked:', hotkeyId);
+    // Could scroll to sections, open modals, etc.
+  };
+
   return (
     <div className="min-h-screen pb-12">
       {/* Header */}
@@ -60,9 +71,9 @@ export default function Dashboard({ theme, onToggleTheme }) {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-24 space-y-8">
-        {/* Quality of Life - Minimal Compact Version */}
+        {/* Hotkeys Bar - QoL Quick Access */}
         <div className="animate-fade-in">
-          <QualityOfLifeSection compact />
+          <HotkeysBar onHotkeyClick={handleHotkeyClick} />
         </div>
 
         {/* Hero Search */}
@@ -78,6 +89,13 @@ export default function Dashboard({ theme, onToggleTheme }) {
         {/* Ally Communications Hub - Under Community */}
         <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
           <AllyCommunicationsHub />
+        </div>
+
+        {/* New Tiles Row: Camera, Security, Music */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '350ms' }}>
+          <CameraTile />
+          <SecurityTile />
+          <MusicTile />
         </div>
 
         {/* Entertainment */}
