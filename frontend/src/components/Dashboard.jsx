@@ -60,24 +60,24 @@ export default function Dashboard({ theme, onToggleTheme }) {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-24 space-y-8">
-        {/* Ally Communications Hub - HIGH PRIORITY */}
-        <div className="animate-fade-in">
-          <AllyCommunicationsHub />
-        </div>
-
         {/* Quality of Life - Minimal Compact Version */}
-        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <div className="animate-fade-in">
           <QualityOfLifeSection compact />
         </div>
 
         {/* Hero Search */}
-        <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
           <SearchBar />
         </div>
 
         {/* Community */}
-        <div className="animate-fade-in mt-12" style={{ animationDelay: '300ms' }}>
+        <div className="animate-fade-in mt-12" style={{ animationDelay: '200ms' }}>
           <CommunitySection />
+        </div>
+
+        {/* Ally Communications Hub - Under Community */}
+        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <AllyCommunicationsHub />
         </div>
 
         {/* Entertainment */}
