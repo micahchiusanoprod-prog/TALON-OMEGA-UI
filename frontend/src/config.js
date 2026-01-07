@@ -53,11 +53,17 @@ const config = {
     maxClients: 10, // Default max clients
   },
 
-  // Ally Communications configuration
+  // Ally Communications Hub API
   ally: {
-    apiBase: 'http://127.0.0.1:8093',
+    // Ally-specific API base (can be same as main or different)
+    apiBase: process.env.REACT_APP_PI_API_URL || 'http://127.0.0.1:8093/cgi-bin',
+    
+    // Message retry configuration
+    messageRetryInterval: 30000,  // 30 seconds
+    maxQueueSize: 100,
+    
+    // Additional ally configuration
     nodeOfflineThreshold: 60, // seconds
-    messageRetryInterval: 10000, // 10 seconds
     pollingOnline: 5000, // 5 seconds for online nodes
     pollingOffline: 20000, // 20 seconds for offline nodes
   },
