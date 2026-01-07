@@ -753,6 +753,7 @@ export default function AllyCommunicationsHub() {
           node={selectedNode}
           onClose={() => setShowDetails(false)}
           onMessage={handleMessage}
+          savedScrollPosition={savedScrollPosition}
         />
       )}
 
@@ -762,6 +763,7 @@ export default function AllyCommunicationsHub() {
           nodeId={dmNodeId}
           nodeName={nodes.find(n => n.node_id === dmNodeId)?.name}
           onClose={() => setShowDM(false)}
+          savedScrollPosition={savedScrollPosition}
         />
       )}
 
@@ -769,6 +771,7 @@ export default function AllyCommunicationsHub() {
         <BroadcastModal
           onClose={() => setShowBroadcast(false)}
           onSent={handleBroadcastSent}
+          savedScrollPosition={savedScrollPosition}
         />
       )}
     </>
