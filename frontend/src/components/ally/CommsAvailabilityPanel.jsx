@@ -193,16 +193,39 @@ export default function CommsAvailabilityPanel({ onMethodSelect, selectedMethod 
       
       {/* Cards */}
       {expanded && (
-        <div className="flex gap-2 flex-wrap animate-fade-in" data-testid="comms-methods">
-          {methods.map((method) => (
-            <CommsCard
-              key={method.id}
-              method={method}
-              isSelected={selectedMethod === method.id}
-              onSelect={onMethodSelect}
-            />
-          ))}
-        </div>
+        <>
+          {/* Helper Text */}
+          <p className="text-xs text-muted-foreground mb-2">
+            Select a communication method. Available methods highlight automatically.
+          </p>
+          
+          <div className="flex gap-2 flex-wrap animate-fade-in" data-testid="comms-methods">
+            {methods.map((method) => (
+              <CommsCard
+                key={method.id}
+                method={method}
+                isSelected={selectedMethod === method.id}
+                onSelect={onMethodSelect}
+              />
+            ))}
+          </div>
+          
+          {/* Status Legend */}
+          <div className="flex items-center gap-4 mt-2 text-xs">
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-success" />
+              <span className="text-muted-foreground">Available</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-warning" />
+              <span className="text-muted-foreground">Degraded</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
+              <span className="text-muted-foreground">Unavailable</span>
+            </div>
+          </div>
+        </>
       )}
       
       {/* Selected Method Info */}
@@ -211,10 +234,74 @@ export default function CommsAvailabilityPanel({ onMethodSelect, selectedMethod 
           <Info className="w-3.5 h-3.5 text-primary flex-shrink-0" />
           <span className="text-muted-foreground">
             Sending via <strong className="text-foreground">{commsStatus[selectedMethod]?.name}</strong>. 
-            {commsStatus[selectedMethod]?.status !== 'available' && (
-              <span className="text-warning"> Note: This transport is {commsStatus[selectedMethod]?.status}.</span>
+            {commsStatus[selectedMethod]?.status === 'unavailable' && (
+              <span className="text-destructive"> This transport is unavailable.</span>
+            )}
+            {commsStatus[selectedMethod]?.status === 'degraded' && (
+              <span className="text-warning"> This transport is degraded.</span>
             )}
           </span>
+        </div>
+      )}
+      
+      {/* Degraded Explanation Area */}
+      {expanded && selectedMethod && commsStatus[selectedMethod]?.status === 'degraded' && (
+        <div className="mt-2 glass rounded-lg p-3 border border-warning/30 animate-fade-in" data-testid="degraded-explanation">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
+            <div className="text-xs space-y-2">
+              <div>
+                <strong className="text-warning">What "Degraded" means:</strong>
+                <p className="text-muted-foreground mt-0.5">
+                  The transport is working but experiencing issues. Messages may be delayed, partially delivered, or require retries.
+                </p>
+              </div>
+              <div>
+                <strong className="text-foreground">Typical causes:</strong>
+                <ul className="text-muted-foreground mt-0.5 space-y-0.5">
+                  <li>• Weak signal strength or interference</li>
+                  <li>• Some nodes unreachable</li>
+                  <li>• High latency or packet loss</li>
+                  <li>• Antenna positioning issues</li>
+                </ul>
+              </div>
+              <div>
+                <strong className="text-foreground">How to fix:</strong>
+                <ul className="text-muted-foreground mt-0.5 space-y-0.5">
+                  <li>• Move to higher ground or clear line of sight</li>
+                  <li>• Check antenna connections</li>
+                  <li>• Reduce distance between nodes</li>
+                  <li>• Try a different transport if critical</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Unavailable Explanation Area */}
+      {expanded && selectedMethod && commsStatus[selectedMethod]?.status === 'unavailable' && (
+        <div className="mt-2 glass rounded-lg p-3 border border-destructive/30 animate-fade-in" data-testid="unavailable-explanation">
+          <div className="flex items-start gap-2">
+            <XCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="text-xs space-y-2">
+              <div>
+                <strong className="text-destructive">Why this is unavailable:</strong>
+                <p className="text-muted-foreground mt-0.5">
+                  {commsStatus[selectedMethod]?.statusReason || 'Cannot establish connection with this transport.'}
+                </p>
+              </div>
+              <div>
+                <strong className="text-foreground">What to try:</strong>
+                <ul className="text-muted-foreground mt-0.5 space-y-0.5">
+                  <li>• Check hardware connections</li>
+                  <li>• Verify the transport is enabled</li>
+                  <li>• Use an alternative transport method</li>
+                  <li>• See Knowledge tab for detailed troubleshooting</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
