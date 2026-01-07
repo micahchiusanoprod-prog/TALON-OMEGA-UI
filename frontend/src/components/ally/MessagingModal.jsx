@@ -10,7 +10,8 @@ import {
   Clock, 
   XCircle,
   Zap,
-  Pin
+  Pin,
+  ChevronDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
@@ -22,7 +23,11 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
   const [urgent, setUrgent] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(true);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
+  const messagesContainerRef = useRef(null);
+  const prevMessageCountRef = useRef(0);
   const templates = allyApi.getMessageTemplates();
 
   useEffect(() => {
@@ -31,9 +36,46 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
     return () => clearInterval(interval);
   }, [type, nodeId]);
 
+  // Smart auto-scroll for modal chat
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (!messagesContainerRef.current) return;
+    
+    const newMessageCount = messages.length;
+    const hadNewMessages = newMessageCount > prevMessageCountRef.current;
+    prevMessageCountRef.current = newMessageCount;
+    
+    if (shouldAutoScroll) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      setShouldAutoScroll(false);
+      setHasNewMessages(false);
+      return;
+    }
+    
+    if (hadNewMessages && isNearBottom) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      setHasNewMessages(false);
+    } else if (hadNewMessages && !isNearBottom) {
+      setHasNewMessages(true);
+    }
+  }, [messages, shouldAutoScroll, isNearBottom]);
+
+  const handleScroll = () => {
+    if (!messagesContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    setIsNearBottom(distanceFromBottom < 50);
+    if (distanceFromBottom < 50) {
+      setHasNewMessages(false);
+    }
+  };
+
+  const handleJumpToLatest = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      setHasNewMessages(false);
+      setIsNearBottom(true);
+    }
+  };
 
   const fetchMessages = async () => {
     try {
