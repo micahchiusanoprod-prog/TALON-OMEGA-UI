@@ -158,15 +158,15 @@ export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) 
               }`}
               data-testid={`node-avatar-${node.node_id}`}
             >
-              {/* Avatar Card - Larger, Cleaner */}
-              <div className={`w-24 glass rounded-xl p-3 flex flex-col items-center gap-2 border-2 transition-all ${
+              {/* Avatar Card - LARGER for glove-friendly tap targets */}
+              <div className={`w-28 glass rounded-2xl p-4 flex flex-col items-center gap-3 border-2 transition-all ${
                 isSelected 
-                  ? `border-primary ${status.ringColor} ring-2` 
+                  ? `border-primary ${status.ringColor} ring-2 shadow-lg` 
                   : 'border-transparent hover:border-primary/30'
               }`}>
-                {/* Avatar Circle - Larger */}
+                {/* Avatar Circle - LARGER for clear visibility */}
                 <div className="relative">
-                  <div className={`w-14 h-14 rounded-full overflow-hidden ${getAvatarColor(node.node_id)} flex items-center justify-center ring-2 ring-background shadow-lg`}>
+                  <div className={`w-16 h-16 rounded-full overflow-hidden ${getAvatarColor(node.node_id)} flex items-center justify-center ring-3 ring-background shadow-xl`}>
                     {node.avatar ? (
                       <img 
                         src={node.avatar} 
@@ -188,33 +188,36 @@ export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) 
                         }}
                       />
                     )}
-                    <span className="text-white text-lg font-bold hidden items-center justify-center w-full h-full">
+                    <span className="text-white text-xl font-bold hidden items-center justify-center w-full h-full">
                       {getInitials(node.name)}
                     </span>
                   </div>
                   
-                  {/* Status Badge - Clear and Visible */}
-                  <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${status.color} border-2 border-background flex items-center justify-center shadow-md`}>
-                    <StatusIcon className="w-3.5 h-3.5 text-white" />
+                  {/* Status Badge - LARGER and more prominent */}
+                  <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full ${status.color} border-3 border-background flex items-center justify-center shadow-lg`}>
+                    <StatusIcon className="w-4 h-4 text-white" />
                   </div>
                 </div>
                 
-                {/* Name */}
-                <span className="text-xs font-semibold text-foreground truncate w-full text-center">
+                {/* Name - LARGER text */}
+                <span className="text-sm font-bold text-foreground truncate w-full text-center">
                   {node.name.split(' ')[0].replace("'s", '')}
                 </span>
                 
-                {/* Connection & GPS Indicators */}
-                <div className="flex items-center justify-center gap-2">
+                {/* Connection & GPS Indicators - More visible */}
+                <div className="flex items-center justify-center gap-3">
                   <ConnectionIndicator node={node} />
                   {hasGps && (
-                    <div className="w-2 h-2 rounded-full bg-success" title="GPS Fix" />
+                    <div className="flex items-center gap-1">
+                      <div className="w-2.5 h-2.5 rounded-full bg-success" />
+                      <span className="text-xs text-success font-medium">GPS</span>
+                    </div>
                   )}
                 </div>
               </div>
               
-              {/* Status Label (on hover) */}
-              <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-1 rounded-lg text-xs font-bold ${status.color} text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg z-10`}>
+              {/* Status Label (always visible, not just on hover) */}
+              <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-lg text-xs font-bold ${status.color} text-white shadow-lg z-10`}>
                 {status.label}
               </div>
             </button>
