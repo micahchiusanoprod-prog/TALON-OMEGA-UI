@@ -59,7 +59,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               </div>
               
               {/* CPU % - Priority 2 */}
-              {metrics?.cpu !== null && (
+              {metrics && metrics.cpu !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground">CPU</span>
                   <span className="font-semibold">{metrics.cpu}%</span>
@@ -67,7 +67,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               )}
               
               {/* CPU Temp - Priority 3 */}
-              {metrics?.temp !== null && (
+              {metrics && metrics.temp !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground">Temp</span>
                   <span className="font-semibold">{metrics.temp}°C</span>
@@ -75,7 +75,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               )}
               
               {/* RAM % - Priority 4 */}
-              {metrics?.ram !== null && (
+              {metrics && metrics.ram !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground">RAM</span>
                   <span className="font-semibold">{metrics.ram}%</span>
@@ -83,7 +83,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               )}
               
               {/* Disk % - Priority 5 */}
-              {metrics?.disk !== null && (
+              {metrics && metrics.disk !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground">Disk</span>
                   <span className="font-semibold">{metrics.disk}%</span>
@@ -98,7 +98,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               <div className={`metric-pill ${deviceStatus.color}`}>
                 <span className="font-semibold text-xs">{deviceStatus.label}</span>
               </div>
-              {metrics?.temp !== null && (
+              {metrics && metrics.temp !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground text-xs">Temp</span>
                   <span className="font-semibold text-xs">{metrics.temp}°C</span>
