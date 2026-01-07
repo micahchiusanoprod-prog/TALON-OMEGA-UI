@@ -20,6 +20,14 @@ const config = {
     hotspotToggle: '/api/hotspot/toggle',
     hotspotClients: '/api/hotspot/clients',
     hotspotUsage: '/api/hotspot/usage',
+    // Ally Communications endpoints
+    allyNodes: '/api/ally/nodes',
+    allyNodeStatus: '/api/ally/node',
+    allyGlobalChat: '/api/ally/chat/global',
+    allyDM: '/api/ally/chat/dm',
+    allyBroadcast: '/api/ally/broadcast',
+    allyPing: '/api/ally/node',
+    allyRefresh: '/api/ally/node',
   },
 
   // Hotspot configuration
