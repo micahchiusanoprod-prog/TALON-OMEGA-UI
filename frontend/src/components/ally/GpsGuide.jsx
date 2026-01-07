@@ -252,7 +252,7 @@ export default function GpsGuide() {
               </Section>
               
               <Section icon={ThermometerSun} title="Environmental Care" color="primary">
-                <Tip>GPS works -40°C to +85°C (module dependent)</Tip>
+                <Tip>GPS works -40°F to +185°F (module dependent)</Tip>
                 <Tip>Protect antenna from direct impact/abrasion</Tip>
                 <Tip>Waterproof connections for outdoor use</Tip>
               </Section>
@@ -286,7 +286,7 @@ export default function GpsGuide() {
           </div>
           <div>
             <div className="text-muted-foreground mb-1">Typical accuracy:</div>
-            <div className="font-medium">3-15 meters</div>
+            <div className="font-medium">10-50 ft</div>
           </div>
         </div>
       </div>
