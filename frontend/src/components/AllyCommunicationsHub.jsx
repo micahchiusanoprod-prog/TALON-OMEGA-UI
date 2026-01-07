@@ -497,7 +497,7 @@ export default function AllyCommunicationsHub() {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => setShowBroadcast(true)}
+                onClick={handleOpenBroadcast}
                 className="border-border-strong bg-secondary/50 hover:bg-secondary relative"
                 data-testid="broadcast-alert-btn"
               >
