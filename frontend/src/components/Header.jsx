@@ -24,7 +24,17 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
   };
 
   // Check if header would be too cluttered (mobile/tablet)
-  const useCompactHeader = typeof window !== 'undefined' && window.innerWidth < 1024;
+  const [useCompactHeader, setUseCompactHeader] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkWidth = () => {
+      setUseCompactHeader(window.innerWidth < 1024);
+    };
+    
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    return () => window.removeEventListener('resize', checkWidth);
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
