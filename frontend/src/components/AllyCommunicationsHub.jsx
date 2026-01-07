@@ -25,6 +25,7 @@ import NodeCard from './ally/NodeCard';
 import NodeDetailsDrawer from './ally/NodeDetailsDrawer';
 import MessagingModal from './ally/MessagingModal';
 import BroadcastModal from './ally/BroadcastModal';
+import { lockBodyScroll, unlockBodyScroll } from '../utils/scrollLock';
 
 export default function AllyCommunicationsHub() {
   // Node state
