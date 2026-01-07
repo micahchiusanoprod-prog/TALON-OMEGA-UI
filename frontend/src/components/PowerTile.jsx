@@ -22,7 +22,8 @@ import {
   HelpCircle,
   Gauge,
   Thermometer,
-  RefreshCw
+  RefreshCw,
+  Lightbulb
 } from 'lucide-react';
 import TileHelpTabs, { QuickHelpTips, InlineLegend } from './ui/TileHelpTabs';
 
@@ -74,6 +75,12 @@ const powerTroubleshootingContent = {
       symptom: "Runtime estimate inaccurate",
       causes: ["Variable power usage", "Battery needs calibration", "Temperature affecting capacity"],
       fixes: ["Let device stabilize for accurate reading", "Fully charge then discharge to calibrate", "Keep device at moderate temperature"],
+    },
+    {
+      symptom: "Runtime collapsing rapidly",
+      causes: ["Heavy radio/CPU activity", "Cold temperature reducing capacity", "Battery cell degradation", "Parasitic drain from accessory"],
+      fixes: ["Disable non-essential radios", "Keep device warm (body pocket)", "Check for rogue processes in Health tile", "Disconnect external accessories"],
+      fallback: "Switch to minimum essential mode"
     },
     {
       symptom: "Solar not charging",
