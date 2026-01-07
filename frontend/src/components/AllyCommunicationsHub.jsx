@@ -82,7 +82,6 @@ export default function AllyCommunicationsHub() {
       setShouldAutoScroll(false);
     }
   }, [globalMessages, shouldAutoScroll]);
-  }, [globalMessages]);
 
   // Close status dropdown on click outside
   useEffect(() => {
