@@ -15,29 +15,12 @@ import {
 import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
 
-export default function BroadcastModal({ onClose, onSent, savedScrollPosition = 0 }) {
+export default function BroadcastModal({ onClose, onSent }) {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState('warning');
   const [sending, setSending] = useState(false);
   const [step, setStep] = useState('compose'); // 'compose' | 'confirm' | 'success'
-
-  // Lock body scroll when modal opens
-  useEffect(() => {
-    const scrollY = savedScrollPosition || window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.style.overflowY = 'scroll';
-    
-    return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflowY = '';
-      window.scrollTo(0, scrollY);
-    };
-  }, [savedScrollPosition]);
 
   const handleProceedToConfirm = () => {
     if (!title.trim() || !message.trim()) {
