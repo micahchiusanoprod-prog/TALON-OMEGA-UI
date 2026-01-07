@@ -563,7 +563,6 @@ export default function AllyCommunicationsHub() {
                       </div>
                     );
                   })}
-                  <div ref={chatEndRef} />
                 </>
               )}
             </div>
