@@ -13,6 +13,7 @@ import CameraTile from './CameraTile';
 import SecurityTile from './SecurityTile';
 import MusicTile from './MusicTile';
 import PowerTile from './PowerTile';
+import CommunityTile from './CommunityTile';
 import HotkeysBar from './HotkeysBar';
 import api from '../services/api';
 import config from '../config';
