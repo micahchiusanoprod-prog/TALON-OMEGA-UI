@@ -186,6 +186,25 @@ export default function EnvironmentTile() {
             );
           })}
         </div>
+
+        {/* Legend */}
+        <div className="mt-4 pt-4 border-t border-border">
+          <div className="text-xs font-semibold text-muted-foreground mb-2">Status Guide:</div>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle className="w-3.5 h-3.5 text-success" />
+              <span className="text-xs text-muted-foreground">Normal - Everything is fine</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-warning" />
+              <span className="text-xs text-muted-foreground">Attention - Outside ideal range</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5 text-destructive" />
+              <span className="text-xs text-muted-foreground">Critical - Needs immediate attention</span>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
