@@ -17,7 +17,8 @@ import {
   CheckCircle,
   Circle,
   Pin,
-  Map
+  Map,
+  BookOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
 import allyApi from '../services/allyApi';
@@ -27,6 +28,8 @@ import NodeDetailsDrawer from './ally/NodeDetailsDrawer';
 import MessagingModal from './ally/MessagingModal';
 import BroadcastModal from './ally/BroadcastModal';
 import AllyMapView from './ally/AllyMapView';
+import GpsGuide from './ally/GpsGuide';
+import AllyHubHelp, { StatusLegend } from './ally/AllyHubHelp';
 import { lockBodyScroll, unlockBodyScroll, captureScrollPosition } from '../utils/scrollLock';
 
 export default function AllyCommunicationsHub() {
