@@ -110,7 +110,7 @@ export default function CommunitySection({ fullWidth = true }) {
             variant="outline"
             size="sm"
             onClick={() => toast.info('Polls - Coming soon')}
-            className="text-xs"
+            className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:shadow-sm transition-all duration-200"
           >
             Polls
           </Button>
@@ -118,7 +118,7 @@ export default function CommunitySection({ fullWidth = true }) {
             variant="outline"
             size="sm"
             onClick={() => toast.info('Chat - Coming soon')}
-            className="text-xs"
+            className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:shadow-sm transition-all duration-200"
           >
             Chat
           </Button>
@@ -126,7 +126,7 @@ export default function CommunitySection({ fullWidth = true }) {
             variant="outline"
             size="sm"
             onClick={() => toast.info('Files - Coming soon')}
-            className="text-xs"
+            className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:shadow-sm transition-all duration-200"
           >
             Files
           </Button>
