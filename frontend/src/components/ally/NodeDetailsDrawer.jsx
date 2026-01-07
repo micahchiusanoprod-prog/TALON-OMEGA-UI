@@ -27,7 +27,9 @@ import {
   Circle,
   Loader2,
   Navigation,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Maximize2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
