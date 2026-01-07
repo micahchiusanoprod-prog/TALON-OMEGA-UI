@@ -15,7 +15,7 @@ import {
 import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
 
-export default function BroadcastModal({ onClose, onSent }) {
+export default function BroadcastModal({ onClose, onSent, savedScrollPosition = 0 }) {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState('warning');
@@ -24,7 +24,7 @@ export default function BroadcastModal({ onClose, onSent }) {
 
   // Lock body scroll when modal opens
   useEffect(() => {
-    const scrollY = window.scrollY;
+    const scrollY = savedScrollPosition || window.scrollY;
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
     document.body.style.width = '100%';
@@ -37,7 +37,7 @@ export default function BroadcastModal({ onClose, onSent }) {
       document.body.style.overflowY = '';
       window.scrollTo(0, scrollY);
     };
-  }, []);
+  }, [savedScrollPosition]);
 
   const handleProceedToConfirm = () => {
     if (!title.trim() || !message.trim()) {
