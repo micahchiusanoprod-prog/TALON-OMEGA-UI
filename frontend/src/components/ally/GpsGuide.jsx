@@ -88,9 +88,9 @@ export default function GpsGuide() {
               <div className="glass p-3 rounded-lg mt-2">
                 <div className="font-medium mb-1">Signal Quality Indicators:</div>
                 <ul className="space-y-1">
-                  <li>• <strong>3-4 sats:</strong> Basic fix, 25-50m accuracy</li>
-                  <li>• <strong>5-7 sats:</strong> Good fix, 10-25m accuracy</li>
-                  <li>• <strong>8+ sats:</strong> Excellent fix, &lt;10m accuracy</li>
+                  <li>• <strong>3-4 sats:</strong> Basic fix, 80-165 ft accuracy</li>
+                  <li>• <strong>5-7 sats:</strong> Good fix, 33-80 ft accuracy</li>
+                  <li>• <strong>8+ sats:</strong> Excellent fix, &lt;33 ft accuracy</li>
                 </ul>
               </div>
             </div>
