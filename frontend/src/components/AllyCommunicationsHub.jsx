@@ -500,6 +500,13 @@ export default function AllyCommunicationsHub() {
 
             {/* Status Summary Pills */}
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Connection Status */}
+              {!connectionStatus.isOnline && (
+                <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 bg-warning-light border border-warning">
+                  <AlertTriangle className="w-3 h-3 text-warning" />
+                  <span className="text-warning font-semibold">Disconnected</span>
+                </div>
+              )}
               <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2">
                 <Activity className="w-3 h-3 text-success" />
                 <span className="text-muted-foreground">Online:</span>
@@ -519,7 +526,7 @@ export default function AllyCommunicationsHub() {
               )}
               <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2">
                 <RefreshCw className="w-3 h-3 text-muted-foreground" />
-                <span className="text-muted-foreground">Synced:</span>
+                <span className="text-muted-foreground">{connectionStatus.isOnline ? 'Synced:' : 'Last updated:'}</span>
                 <span className="font-semibold">{formatLastSync()}</span>
               </div>
               <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2">
