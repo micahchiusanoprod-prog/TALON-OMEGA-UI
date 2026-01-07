@@ -101,7 +101,7 @@ export default function Dashboard() {
       {config.features.enableDiagnostics && (
         <button
           onClick={() => setShowDiagnostics(!showDiagnostics)}
-          className="fixed bottom-6 right-6 glass p-3 rounded-full hover:glass-strong transition-smooth glow-cyan"
+          className="fixed bottom-6 right-6 glass p-3 rounded-full hover:glass-strong transition-smooth glow-cyan z-40"
           title="Diagnostics"
         >
           <Activity className="w-5 h-5 text-primary" />
