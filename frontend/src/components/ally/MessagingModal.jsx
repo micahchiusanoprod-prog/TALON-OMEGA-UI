@@ -42,6 +42,19 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
     
     const newMessageCount = messages.length;
     const hadNewMessages = newMessageCount > prevMessageCountRef.current;
+    
+    // Skip initial load - don't auto-scroll when modal first opens
+    if (prevMessageCountRef.current === 0 && newMessageCount > 0) {
+      prevMessageCountRef.current = newMessageCount;
+      // Scroll to bottom on initial load without animation
+      setTimeout(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+      }, 0);
+      return;
+    }
+    
     prevMessageCountRef.current = newMessageCount;
     
     if (shouldAutoScroll) {
