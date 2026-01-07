@@ -15,6 +15,19 @@ const config = {
     keys: '/cgi-bin/keys.py',
     keysync: '/cgi-bin/keysync.py',
     dm: '/cgi-bin/dm.py',
+    // Hotspot endpoints
+    hotspotStatus: '/api/hotspot/status',
+    hotspotToggle: '/api/hotspot/toggle',
+    hotspotClients: '/api/hotspot/clients',
+    hotspotUsage: '/api/hotspot/usage',
+  },
+
+  // Hotspot configuration
+  hotspot: {
+    ssid: 'OMEGA-Hotspot', // Default SSID for display/QR
+    password: '', // Leave empty for security - don't store passwords in config
+    localUrl: 'http://talon.local/',
+    maxClients: 10, // Default max clients
   },
 
   // Polling intervals (milliseconds)
@@ -23,6 +36,8 @@ const config = {
     sensors: 5000,        // 5 seconds for BME680 sensors
     health: 15000,        // 15 seconds for health check
     community: 30000,     // 30 seconds for community updates
+    hotspotOn: 4000,      // 4 seconds when hotspot is ON
+    hotspotOff: 12000,    // 12 seconds when hotspot is OFF
   },
 
   // Retry configuration
