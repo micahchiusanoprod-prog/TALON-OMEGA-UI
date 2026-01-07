@@ -172,7 +172,8 @@ export default function AllyCommunicationsHub() {
   };
 
   const handleMessage = (nodeId) => {
-    lockBodyScroll(); // Lock scroll BEFORE state update
+    captureScrollPosition(); // Capture BEFORE lock
+    lockBodyScroll();
     setDmNodeId(nodeId);
     setShowDM(true);
   };
@@ -183,7 +184,8 @@ export default function AllyCommunicationsHub() {
   };
 
   const handleDetails = (node) => {
-    lockBodyScroll(); // Lock scroll BEFORE state update
+    captureScrollPosition(); // Capture BEFORE lock
+    lockBodyScroll();
     setSelectedNode(node);
     setShowDetails(true);
   };
@@ -194,7 +196,8 @@ export default function AllyCommunicationsHub() {
   };
 
   const handleOpenBroadcast = () => {
-    lockBodyScroll(); // Lock scroll BEFORE state update
+    captureScrollPosition(); // Capture BEFORE lock
+    lockBodyScroll();
     setShowBroadcast(true);
   };
 
