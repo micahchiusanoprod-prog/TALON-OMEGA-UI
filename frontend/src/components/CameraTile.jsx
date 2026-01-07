@@ -311,6 +311,7 @@ const VoiceMemoView = ({ onBack }) => {
 
 export default function CameraTile() {
   const [activeSection, setActiveSection] = useState(null);
+  const [showHelp, setShowHelp] = useState(false);
   
   const renderSection = () => {
     switch (activeSection) {
@@ -327,27 +328,68 @@ export default function CameraTile() {
     }
   };
   
+  // Help view
+  if (showHelp) {
+    return (
+      <Card className="glass-strong border-border-strong" data-testid="camera-tile">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-2">
+              <CameraIcon className="w-5 h-5 text-primary" />
+              Camera Help
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setShowHelp(false)}>
+              ← Back
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TileHelpTabs
+            helpContent={cameraHelpContent}
+            troubleshootingContent={cameraTroubleshootingContent}
+            legendItems={cameraLegendItems}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+  
   return (
     <Card className="glass-strong border-border-strong" data-testid="camera-tile">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <CameraIcon className="w-5 h-5 text-primary" />
-          Camera
+        <CardTitle className="flex items-center justify-between text-base">
+          <div className="flex items-center gap-2">
+            <CameraIcon className="w-5 h-5 text-primary" />
+            Camera
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowHelp(true)}
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+            title="Help & Troubleshooting"
+            data-testid="camera-help-btn"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>
         {activeSection ? (
           renderSection()
         ) : (
-          <div className="grid grid-cols-2 gap-3" data-testid="camera-sections">
-            {sections.map((section) => (
-              <SectionCard
-                key={section.id}
-                section={section}
-                onSelect={setActiveSection}
-              />
-            ))}
-          </div>
+          <>
+            <QuickHelpTips tips={cameraQuickTips} />
+            <div className="grid grid-cols-2 gap-3" data-testid="camera-sections">
+              {sections.map((section) => (
+                <SectionCard
+                  key={section.id}
+                  section={section}
+                  onSelect={setActiveSection}
+                />
+              ))}
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
