@@ -262,119 +262,36 @@ const PersonDetail = ({ person, onBack, onUpdate }) => {
   );
 };
 
-const EducationTab = () => (
-  <div className="space-y-4" data-testid="security-education">
-    <Accordion type="multiple" className="space-y-2" defaultValue={['add-fingerprint']}>
-      <AccordionItem value="add-fingerprint" className="glass rounded-lg border-0">
-        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <Fingerprint className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">How to add fingerprints</span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4">
-          <div className="text-xs text-muted-foreground space-y-2">
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-3 h-3 text-success mt-0.5 flex-shrink-0" />
-              <p>Select a person from the People list</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-3 h-3 text-success mt-0.5 flex-shrink-0" />
-              <p>Click "Add Fingerprint" button</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-3 h-3 text-success mt-0.5 flex-shrink-0" />
-              <p>Place finger firmly on the sensor</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-3 h-3 text-success mt-0.5 flex-shrink-0" />
-              <p>Repeat 3-4 times for best recognition</p>
-            </div>
-            <div className="flex items-start gap-2 mt-3">
-              <AlertTriangle className="w-3 h-3 text-warning mt-0.5 flex-shrink-0" />
-              <p>Keep finger clean and dry for best results</p>
-            </div>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-      
-      <AccordionItem value="permissions" className="glass rounded-lg border-0">
-        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">How permissions work</span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4">
-          <div className="text-xs text-muted-foreground space-y-3">
-            <div className="glass p-2 rounded">
-              <div className="flex items-center gap-2 mb-1">
-                <Crown className="w-3 h-3 text-warning" />
-                <span className="font-medium text-foreground">Admin</span>
-              </div>
-              <p>Full control: manage users, change settings, access all features</p>
-            </div>
-            <div className="glass p-2 rounded">
-              <div className="flex items-center gap-2 mb-1">
-                <Users className="w-3 h-3 text-primary" />
-                <span className="font-medium text-foreground">Member</span>
-              </div>
-              <p>Standard access: use all features, cannot manage other users</p>
-            </div>
-            <div className="glass p-2 rounded">
-              <div className="flex items-center gap-2 mb-1">
-                <Eye className="w-3 h-3 text-muted-foreground" />
-                <span className="font-medium text-foreground">Guest</span>
-              </div>
-              <p>Limited access: view-only, cannot modify settings</p>
-            </div>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-      
-      <AccordionItem value="troubleshooting" className="glass rounded-lg border-0">
-        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <HelpCircle className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">Troubleshooting</span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4">
-          <div className="text-xs text-muted-foreground space-y-3">
-            <div className="glass p-2 rounded">
-              <div className="font-medium text-foreground mb-1">Fingerprint not recognized</div>
-              <ul className="space-y-0.5">
-                <li>• Clean finger and sensor</li>
-                <li>• Try different angle/position</li>
-                <li>• Re-enroll if persistent</li>
-              </ul>
-            </div>
-            <div className="glass p-2 rounded">
-              <div className="font-medium text-foreground mb-1">Sensor not responding</div>
-              <ul className="space-y-0.5">
-                <li>• Check USB connection</li>
-                <li>• Restart fingerprint service</li>
-                <li>• Verify sensor power</li>
-              </ul>
-            </div>
-            <div className="glass p-2 rounded">
-              <div className="font-medium text-foreground mb-1">Cannot add new person</div>
-              <ul className="space-y-0.5">
-                <li>• Check you have Admin permission</li>
-                <li>• Verify device storage space</li>
-              </ul>
-            </div>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  </div>
-);
-
 export default function SecurityTile() {
   const [activeTab, setActiveTab] = useState('people');
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [people] = useState(mockPeople);
+  
+  // Help view using standardized component
+  if (activeTab === 'help') {
+    return (
+      <Card className="glass-strong border-border-strong" data-testid="security-tile">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              Security Help
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab('people')}>
+              ← Back
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TileHelpTabs
+            helpContent={securityHelpContent}
+            troubleshootingContent={securityTroubleshootingContent}
+            legendItems={securityLegendItems}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
   
   return (
     <Card className="glass-strong border-border-strong" data-testid="security-tile">
