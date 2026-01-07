@@ -58,6 +58,7 @@ export default function EnvironmentTile() {
   const metrics = [
     {
       label: 'Temperature',
+      description: 'Room temperature',
       value: displayData.temperature,
       unit: '°C',
       icon: Thermometer,
@@ -65,6 +66,7 @@ export default function EnvironmentTile() {
     },
     {
       label: 'Humidity',
+      description: 'Moisture in air',
       value: displayData.humidity,
       unit: '%',
       icon: Droplets,
@@ -72,6 +74,7 @@ export default function EnvironmentTile() {
     },
     {
       label: 'Pressure',
+      description: 'Air pressure',
       value: displayData.pressure,
       unit: 'hPa',
       icon: Gauge,
@@ -79,6 +82,7 @@ export default function EnvironmentTile() {
     },
     {
       label: 'Air Quality',
+      description: 'Indoor air health (higher is better)',
       value: displayData.iaq,
       unit: 'IAQ',
       icon: Wind,
@@ -110,13 +114,18 @@ export default function EnvironmentTile() {
                 key={metric.label}
                 className="flex items-center justify-between p-3 glass rounded-lg hover:glass-strong transition-smooth"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-1">
                   <div className="p-2 glass rounded-lg">
                     <Icon className={`w-4 h-4 ${metric.color}`} />
                   </div>
-                  <span className="text-sm font-medium text-muted-foreground">
-                    {metric.label}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-foreground">
+                      {metric.label}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {metric.description}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl font-bold text-foreground">

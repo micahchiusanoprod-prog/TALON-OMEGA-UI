@@ -148,6 +148,7 @@ export default function CommunitySection({ fullWidth = true }) {
             size="sm"
             onClick={() => toast.info('Polls - Coming soon')}
             className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:shadow-sm transition-all duration-200"
+            title="Create or vote on community polls"
           >
             Polls
           </Button>
@@ -156,6 +157,7 @@ export default function CommunitySection({ fullWidth = true }) {
             size="sm"
             onClick={() => toast.info('Chat - Coming soon')}
             className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:shadow-sm transition-all duration-200"
+            title="Real-time messaging with other users"
           >
             Chat
           </Button>
@@ -164,6 +166,7 @@ export default function CommunitySection({ fullWidth = true }) {
             size="sm"
             onClick={() => toast.info('Files - Coming soon')}
             className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary hover:border-primary/30 hover:shadow-sm transition-all duration-200"
+            title="Share and download files"
           >
             Files
           </Button>

@@ -75,25 +75,37 @@ export default function DeviceInfoTile() {
         {/* System Metrics */}
         <div className="grid grid-cols-2 gap-3">
           <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">CPU Usage</div>
+            <div className="text-xs text-muted-foreground mb-1">
+              CPU Usage
+              <span className="block text-[10px] opacity-70">How hard the brain is working</span>
+            </div>
             <div className="text-2xl font-bold text-foreground">
               {displayMetrics.cpu}%
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">RAM Usage</div>
+            <div className="text-xs text-muted-foreground mb-1">
+              RAM Usage
+              <span className="block text-[10px] opacity-70">Active memory in use</span>
+            </div>
             <div className="text-2xl font-bold text-foreground">
               {displayMetrics.ram}%
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">Disk Usage</div>
+            <div className="text-xs text-muted-foreground mb-1">
+              Disk Usage
+              <span className="block text-[10px] opacity-70">Storage space used</span>
+            </div>
             <div className="text-2xl font-bold text-foreground">
               {displayMetrics.disk}%
             </div>
           </div>
           <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">CPU Temp</div>
+            <div className="text-xs text-muted-foreground mb-1">
+              CPU Temp
+              <span className="block text-[10px] opacity-70">Processor temperature</span>
+            </div>
             <div className="text-2xl font-bold text-foreground">
               {displayMetrics.temp}°C
             </div>
@@ -105,7 +117,10 @@ export default function DeviceInfoTile() {
           <div className="flex items-center gap-2 p-3 glass rounded-lg">
             <Clock className="w-4 h-4 text-primary" />
             <div className="flex-1">
-              <div className="text-xs text-muted-foreground">Uptime</div>
+              <div className="text-xs text-muted-foreground">
+                Uptime
+                <span className="block text-[10px] opacity-70">How long the device has been running</span>
+              </div>
               <div className="text-sm font-medium text-foreground">
                 {formatUptime(displayMetrics.uptime)}
               </div>
@@ -118,6 +133,7 @@ export default function DeviceInfoTile() {
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase">
               Services
+              <span className="block text-[10px] font-normal opacity-70 normal-case mt-0.5">Background programs running on this device</span>
             </div>
             {Object.entries(displayHealth.services).map(([name, status]) => (
               <div

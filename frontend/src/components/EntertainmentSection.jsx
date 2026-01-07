@@ -66,6 +66,7 @@ export default function EntertainmentSection() {
           <CardHeader>
             <CardTitle className="text-xl">{featuredItem.title}</CardTitle>
             <p className="text-sm text-muted-foreground">{featuredItem.description}</p>
+            <p className="text-xs text-muted-foreground mt-1 opacity-70">Click to open your media player</p>
           </CardHeader>
         </Card>
 

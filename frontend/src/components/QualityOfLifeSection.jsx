@@ -7,36 +7,42 @@ const QOL_ITEMS = [
   {
     id: 'translator',
     title: 'Translator',
+    description: 'Translate text between languages',
     icon: Languages,
     color: 'text-blue-400',
   },
   {
     id: 'tasks',
     title: 'Tasks',
+    description: 'Manage your to-do list',
     icon: ListChecks,
     color: 'text-green-400',
   },
   {
     id: 'notes',
     title: 'Notes',
+    description: 'Quick notes & reminders',
     icon: StickyNote,
     color: 'text-yellow-400',
   },
   {
     id: 'qr',
     title: 'Hotspot QR',
+    description: 'Share WiFi connection',
     icon: QrCode,
     color: 'text-purple-400',
   },
   {
     id: 'logs',
     title: 'System Logs',
+    description: 'View system activity',
     icon: FileText,
     color: 'text-red-400',
   },
   {
     id: 'tools',
     title: 'Tools',
+    description: 'Utilities & settings',
     icon: Wrench,
     color: 'text-cyan-400',
   },
@@ -58,7 +64,7 @@ export default function QualityOfLifeSection({ compact = false }) {
               key={item.id}
               onClick={() => handleClick(item)}
               className="glass px-4 py-2 rounded-full hover:glass-strong transition-smooth group flex items-center gap-2"
-              title={item.title}
+              title={item.description}
             >
               <Icon className={`w-4 h-4 ${item.color}`} />
               <span className="text-sm font-medium text-foreground">{item.title}</span>
@@ -89,7 +95,10 @@ export default function QualityOfLifeSection({ compact = false }) {
                   <div className="p-3 glass rounded-lg group-hover:scale-110 transition-transform">
                     <Icon className={`w-6 h-6 ${item.color}`} />
                   </div>
-                  <span className="text-sm font-medium text-foreground">{item.title}</span>
+                  <div>
+                    <span className="text-sm font-medium text-foreground block">{item.title}</span>
+                    <span className="text-xs text-muted-foreground block mt-0.5">{item.description}</span>
+                  </div>
                 </div>
               </button>
             );

@@ -80,7 +80,7 @@ export default function SearchBar() {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-              placeholder="Search OMEGA... (Press / to focus)"
+              placeholder="Search for files, commands, or help... (Press / to focus)"
               className="flex-1 bg-transparent border-none outline-none text-lg text-foreground placeholder:text-muted-foreground"
             />
             <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono text-muted-foreground glass rounded">
@@ -118,10 +118,11 @@ export default function SearchBar() {
 
       {/* Search Tips */}
       <div className="mt-4 text-center text-sm text-muted-foreground">
-        <span className="opacity-0 hover:opacity-100 transition-opacity">
-          Try: <code className="px-2 py-1 glass rounded text-xs">kiwix: wikipedia</code>{' '}
-          <code className="px-2 py-1 glass rounded text-xs">open: kiwix</code>
-        </span>
+        <div className="max-w-2xl mx-auto">
+          <p className="text-xs opacity-70">
+            Quick tips: Type "kiwix: topic" to search offline knowledge, or "open: kiwix" to browse the library
+          </p>
+        </div>
       </div>
     </div>
   );

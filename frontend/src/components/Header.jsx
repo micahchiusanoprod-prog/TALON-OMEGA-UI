@@ -41,12 +41,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Left: Logo & Status */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <div className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 OMEGA
               </div>
-              <div className={`status-dot ${deviceStatus.dotColor}`} />
+              <div className={`status-dot ${deviceStatus.dotColor}`} title={`System Status: ${deviceStatus.label}`} />
             </div>
           </div>
 
