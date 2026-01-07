@@ -129,20 +129,21 @@ export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) 
   }
 
   return (
-    <div className="space-y-3" data-testid="node-avatar-strip">
+    <div className="space-y-4" data-testid="node-avatar-strip">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold">Network</span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-bold">Network</span>
+          <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary font-semibold">
             {nodes.length} {nodes.length === 1 ? 'node' : 'nodes'}
           </span>
         </div>
-        <span className="text-xs text-muted-foreground">
-          Tap for details
+        <span className="text-sm text-muted-foreground">
+          Tap to view details
         </span>
       </div>
       
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin" data-testid="node-avatars">
+      {/* Generous spacing between avatar cards */}
+      <div className="flex gap-4 overflow-x-auto pb-3 pt-3 scrollbar-thin" data-testid="node-avatars">
         {nodes.map((node) => {
           const status = getStatusConfig(node);
           const StatusIcon = status.icon;
