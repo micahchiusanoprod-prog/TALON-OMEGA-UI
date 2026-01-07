@@ -271,7 +271,7 @@ export default function CommsKnowledge() {
             </div>
           </div>
           <div className="glass p-2 rounded">
-            <div className="text-muted-foreground mb-1">1-10km apart</div>
+            <div className="text-muted-foreground mb-1">0.5–6 mi apart</div>
             <div className="font-medium text-success flex items-center gap-1">
               <Radio className="w-3 h-3" /> Mesh / LoRa
             </div>
@@ -283,7 +283,7 @@ export default function CommsKnowledge() {
             </div>
           </div>
           <div className="glass p-2 rounded">
-            <div className="text-muted-foreground mb-1">100+ km / grid down</div>
+            <div className="text-muted-foreground mb-1">60+ mi / grid down</div>
             <div className="font-medium text-muted-foreground flex items-center gap-1">
               <Antenna className="w-3 h-3" /> HF Radio (future)
             </div>
