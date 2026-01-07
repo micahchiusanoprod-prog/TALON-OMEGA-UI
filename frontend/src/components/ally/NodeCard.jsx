@@ -12,6 +12,7 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react';
+import { captureScrollPosition } from '../../utils/scrollLock';
 
 export default function NodeCard({ node, onMessage, onDetails, onPing }) {
   const getStatusColor = () => {
