@@ -13,9 +13,72 @@ import {
   Disc,
   Mic2,
   Video,
-  Search
+  Search,
+  HelpCircle
 } from 'lucide-react';
 import { Input } from './ui/input';
+import TileHelpTabs, { QuickHelpTips } from './ui/TileHelpTabs';
+
+// Help content for Music tile
+const musicHelpContent = {
+  whatItDoes: "Play music stored on your device or network. Browse by most played, liked songs, or albums. Offline-first - works without internet.",
+  quickStart: [
+    "Browse Most Played, Liked, or Albums sections",
+    "Tap any track or album to start playing",
+    "Use playback controls (play/pause, skip)",
+    "Tap heart to like/unlike songs",
+    "Access lyrics and videos when available"
+  ],
+  controls: [
+    { name: "Play/Pause", description: "Center button controls playback" },
+    { name: "Skip", description: "Forward/back buttons skip tracks" },
+    { name: "Heart", description: "Tap to add/remove from Liked" },
+    { name: "Progress Bar", description: "Shows current position in track" },
+  ],
+  bestPractices: [
+    "Import your music library for album artwork",
+    "Like songs to build quick access playlist",
+    "Most Played updates automatically based on listening habits"
+  ]
+};
+
+const musicTroubleshootingContent = {
+  issues: [
+    {
+      symptom: "No audio playing",
+      causes: ["Volume muted", "Audio output misconfigured", "File format unsupported"],
+      fixes: ["Check device volume settings", "Verify audio output in system settings", "Try a different audio file"],
+      fallback: "Use external speaker or headphones"
+    },
+    {
+      symptom: "Album artwork not showing",
+      causes: ["Artwork not embedded in file", "Library not fully scanned", "Unsupported image format"],
+      fixes: ["Re-import library to refresh metadata", "Check file has embedded artwork", "Use files with standard formats (MP3, FLAC)"],
+    },
+    {
+      symptom: "Playback stuttering",
+      causes: ["High CPU usage", "Storage read errors", "Network issues for streamed content"],
+      fixes: ["Close other intensive apps", "Check storage health in Device Info", "Use locally stored files"],
+    }
+  ],
+  safetyNotes: [
+    "Music library stored locally",
+    "Playback history used to generate Most Played",
+    "Liked songs synced across your devices when connected"
+  ]
+};
+
+const musicLegendItems = [
+  { color: "bg-primary", label: "Playing", meaning: "Currently playing track" },
+  { color: "bg-destructive", label: "Liked", meaning: "In your Liked songs" },
+  { color: "bg-muted-foreground", label: "Available", meaning: "Ready to play" },
+];
+
+const musicQuickTips = [
+  "Tap album art to expand player",
+  "Heart icon adds to Liked playlist",
+  "Import library for album artwork"
+];
 
 // Mock album covers (placeholders)
 const mockAlbums = [
