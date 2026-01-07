@@ -376,34 +376,79 @@ export default function NodeDetailsDrawer({ node, onClose, onMessage }) {
                   GPS
                 </h3>
                 {details?.gps ? (
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <span className="text-muted-foreground">Fix:</span>
-                      <span className={`ml-2 font-medium ${details.gps.fix === '3D' ? 'text-success' : details.gps.fix ? 'text-warning' : 'text-destructive'}`}>
-                        {safeDisplay(details.gps.fix, '', 'No Fix')}
-                      </span>
+                  <>
+                    <div className="grid grid-cols-2 gap-3 text-xs mb-4">
+                      <div>
+                        <span className="text-muted-foreground">Fix:</span>
+                        <span className={`ml-2 font-medium ${details.gps.fix === '3D' ? 'text-success' : details.gps.fix ? 'text-warning' : 'text-destructive'}`}>
+                          {safeDisplay(details.gps.fix, '', 'No Fix')}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Satellites:</span>
+                        <span className="ml-2 font-medium">{safeDisplay(details.gps.sats)}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Latitude:</span>
+                        <span className="ml-2 font-medium">{details.gps.lat?.toFixed(6) ?? 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Longitude:</span>
+                        <span className="ml-2 font-medium">{details.gps.lon?.toFixed(6) ?? 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Accuracy:</span>
+                        <span className="ml-2 font-medium">{details.gps.acc ? `±${Math.round(details.gps.acc * 3.28084)} ft` : 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Speed:</span>
+                        <span className="ml-2 font-medium">{details.gps.speed ? `${Math.round(details.gps.speed * 0.621371)} mph` : 'N/A'}</span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">Satellites:</span>
-                      <span className="ml-2 font-medium">{safeDisplay(details.gps.sats)}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Latitude:</span>
-                      <span className="ml-2 font-medium">{details.gps.lat?.toFixed(6) ?? 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Longitude:</span>
-                      <span className="ml-2 font-medium">{details.gps.lon?.toFixed(6) ?? 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Accuracy:</span>
-                      <span className="ml-2 font-medium">{details.gps.acc ? `±${details.gps.acc}m` : 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Speed:</span>
-                      <span className="ml-2 font-medium">{safeDisplay(details.gps.speed, ' km/h')}</span>
-                    </div>
-                  </div>
+                    
+                    {/* Mini Map - Show node location */}
+                    {details.gps.lat && details.gps.lon && (
+                      <div className="rounded-lg overflow-hidden border border-border" data-testid="node-mini-map">
+                        <Suspense fallback={
+                          <div className="h-40 glass flex items-center justify-center">
+                            <div className="text-center">
+                              <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-2" />
+                              <p className="text-xs text-muted-foreground">Loading map...</p>
+                            </div>
+                          </div>
+                        }>
+                          <NodeMiniMap 
+                            lat={details.gps.lat} 
+                            lon={details.gps.lon}
+                            nodeName={node.name}
+                            nodeStatus={node.status}
+                            userStatus={node.user_status}
+                            accuracy={details.gps.acc}
+                            fixStatus={details.gps.fix}
+                          />
+                        </Suspense>
+                        
+                        {/* GPS Status Bar below map */}
+                        <div className="bg-secondary/30 px-3 py-2 flex items-center justify-between text-xs border-t border-border">
+                          <div className="flex items-center gap-2">
+                            <Navigation className={`w-3.5 h-3.5 ${details.gps.fix === '3D' ? 'text-success' : 'text-warning'}`} />
+                            <span className="text-muted-foreground">
+                              {details.gps.fix || 'No'} Fix • {details.gps.sats || 0} Satellites
+                            </span>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-6 px-2 text-xs"
+                            onClick={() => window.open(`https://www.google.com/maps?q=${details.gps.lat},${details.gps.lon}`, '_blank')}
+                          >
+                            <ExternalLink className="w-3 h-3 mr-1" />
+                            Open in Maps
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <p className="text-xs text-muted-foreground">No GPS data available</p>
                 )}
