@@ -787,6 +787,11 @@ export default function AllyCommunicationsHub() {
             <AllyMapView nodes={nodes} />
           )}
 
+          {/* GPS Guide Tab Content */}
+          {activeTab === 'guide' && (
+            <GpsGuide />
+          )}
+
           {/* Search and Filter */}
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex-1 min-w-[200px] relative">
