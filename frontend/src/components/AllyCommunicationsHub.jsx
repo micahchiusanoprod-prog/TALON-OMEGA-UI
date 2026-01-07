@@ -79,6 +79,9 @@ export default function AllyCommunicationsHub() {
   
   // Help modal state
   const [showHelp, setShowHelp] = useState(false);
+  
+  // Selected communication method
+  const [selectedCommsMethod, setSelectedCommsMethod] = useState('lan');
 
   useEffect(() => {
     fetchNodes();
