@@ -30,6 +30,21 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
   const prevMessageCountRef = useRef(0);
   const templates = allyApi.getMessageTemplates();
 
+  // Lock body scroll when modal opens to prevent page jumping
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
   useEffect(() => {
     fetchMessages();
     const interval = setInterval(fetchMessages, config.polling.allyChat);
