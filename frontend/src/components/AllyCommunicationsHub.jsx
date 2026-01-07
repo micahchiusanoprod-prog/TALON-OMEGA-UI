@@ -574,16 +574,26 @@ export default function AllyCommunicationsHub() {
                 <RefreshCw className="w-4 h-4 mr-1" />
                 Refresh
               </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowHelp(true)}
+                className="text-muted-foreground hover:text-foreground"
+                title="Help & How-to"
+                data-testid="help-btn"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Tab Navigation for Chat/Map */}
+          {/* Tab Navigation for Chat/Map/Guide */}
           <div className="flex items-center gap-1 glass rounded-lg p-1" data-testid="ally-hub-tabs">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
                 activeTab === 'chat' 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
@@ -591,7 +601,7 @@ export default function AllyCommunicationsHub() {
               data-testid="tab-chat"
             >
               <MessageSquare className="w-4 h-4" />
-              Global Chat
+              <span className="hidden sm:inline">Global</span> Chat
               {globalMessages.length > 0 && (
                 <span className={`text-xs px-1.5 py-0.5 rounded-full ${
                   activeTab === 'chat' ? 'bg-primary-foreground/20' : 'bg-muted'
