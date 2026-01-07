@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
 import config from '../../config';
 
-export default function MessagingModal({ type, nodeId, nodeName, onClose, savedScrollPosition = 0 }) {
+export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [urgent, setUrgent] = useState(false);
@@ -28,27 +28,7 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose, savedS
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const messagesContainerRef = useRef(null);
   const prevMessageCountRef = useRef(0);
-  const scrollPositionRef = useRef(savedScrollPosition);
   const templates = allyApi.getMessageTemplates();
-
-  // Lock body scroll when modal opens to prevent page jumping
-  useEffect(() => {
-    // Use the saved position passed from parent, or current if not provided
-    const scrollY = savedScrollPosition || window.scrollY;
-    scrollPositionRef.current = scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.style.overflowY = 'scroll'; // Prevent layout shift
-    
-    return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflowY = '';
-      window.scrollTo(0, scrollPositionRef.current);
-    };
-  }, [savedScrollPosition]);
 
   useEffect(() => {
     fetchMessages();
