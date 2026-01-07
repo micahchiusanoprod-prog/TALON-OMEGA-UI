@@ -82,6 +82,7 @@ const statusConfig = {
     borderColor: 'border-success/30',
     icon: CheckCircle,
     label: 'Available',
+    description: 'Ready to use',
   },
   degraded: {
     color: 'text-warning',
@@ -89,13 +90,15 @@ const statusConfig = {
     borderColor: 'border-warning/30',
     icon: AlertTriangle,
     label: 'Degraded',
+    description: 'Working but limited',
   },
   unavailable: {
-    color: 'text-muted-foreground',
-    bgColor: 'bg-muted',
-    borderColor: 'border-border',
+    color: 'text-destructive',
+    bgColor: 'bg-destructive-light',
+    borderColor: 'border-destructive/30',
     icon: XCircle,
     label: 'Unavailable',
+    description: 'Cannot connect',
   },
 };
 
