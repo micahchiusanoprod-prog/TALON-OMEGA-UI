@@ -1,5 +1,7 @@
-import React, { useEffect, useState, useRef, Suspense } from 'react';
-import { MapPin, HelpCircle, CheckCircle, Circle, WifiOff, Loader2, AlertTriangle } from 'lucide-react';
+import React, { useEffect, useState, Suspense } from 'react';
+import { MapPin, HelpCircle, CheckCircle, Circle, WifiOff, Loader2, AlertTriangle, Crosshair, Maximize2 } from 'lucide-react';
+import GpsStatusBar from './GpsStatusBar';
+import { Button } from '../ui/button';
 
 // Status color mapping for pins
 const statusColors = {
@@ -42,7 +44,7 @@ const formatTimeAgo = (timestamp) => {
 
 // Loading fallback
 const MapLoadingFallback = () => (
-  <div className="h-[350px] glass rounded-lg flex items-center justify-center" data-testid="map-loading">
+  <div className="h-[320px] glass rounded-lg flex items-center justify-center" data-testid="map-loading">
     <div className="text-center">
       <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
       <p className="text-sm text-muted-foreground">Loading map...</p>
@@ -82,11 +84,41 @@ const NoGpsPanel = ({ nodes }) => {
   );
 };
 
+// Map Control Buttons
+const MapControls = ({ onCenterAll, onCenterMe, nodesWithGps }) => (
+  <div className="absolute top-2 right-2 z-[1000] flex flex-col gap-1" data-testid="map-controls">
+    <Button
+      size="sm"
+      variant="secondary"
+      onClick={onCenterAll}
+      className="h-8 px-2 text-xs glass-strong shadow-lg"
+      title="Center on all nodes"
+      data-testid="center-all-btn"
+      disabled={nodesWithGps.length === 0}
+    >
+      <Maximize2 className="w-3.5 h-3.5 mr-1" />
+      All Nodes
+    </Button>
+    <Button
+      size="sm"
+      variant="secondary"
+      onClick={onCenterMe}
+      className="h-8 px-2 text-xs glass-strong shadow-lg"
+      title="Center on my location"
+      data-testid="center-me-btn"
+    >
+      <Crosshair className="w-3.5 h-3.5 mr-1" />
+      My Location
+    </Button>
+  </div>
+);
+
 // Lazy loaded map component
 const LazyMapContent = React.lazy(() => import('./LazyMapContent'));
 
-export default function AllyMapView({ nodes }) {
+export default function AllyMapView({ nodes, gpsStatus }) {
   const [isMapReady, setIsMapReady] = useState(false);
+  const [mapRef, setMapRef] = useState(null);
   
   // Separate nodes with and without GPS
   const nodesWithGps = nodes.filter(n => n.gps && n.gps.lat && n.gps.lon);
@@ -102,8 +134,17 @@ export default function AllyMapView({ nodes }) {
     return [avgLat, avgLon];
   }, [nodesWithGps]);
   
+  // Calculate bounds for all nodes
+  const nodeBounds = React.useMemo(() => {
+    if (nodesWithGps.length === 0) return null;
+    if (nodesWithGps.length === 1) {
+      return [[nodesWithGps[0].gps.lat, nodesWithGps[0].gps.lon]];
+    }
+    return nodesWithGps.map(n => [n.gps.lat, n.gps.lon]);
+  }, [nodesWithGps]);
+  
   // Calculate appropriate zoom level
-  const defaultZoom = nodesWithGps.length <= 1 ? 13 : 11;
+  const defaultZoom = nodesWithGps.length <= 1 ? 14 : 12;
   
   // Trigger map loading after component mounts
   useEffect(() => {
@@ -111,10 +152,33 @@ export default function AllyMapView({ nodes }) {
     return () => clearTimeout(timer);
   }, []);
   
+  // Center on all nodes
+  const handleCenterAll = () => {
+    if (mapRef && nodeBounds && nodeBounds.length > 0) {
+      if (nodeBounds.length === 1) {
+        mapRef.setView(nodeBounds[0], 14);
+      } else {
+        mapRef.fitBounds(nodeBounds, { padding: [50, 50] });
+      }
+    }
+  };
+  
+  // Center on my location (placeholder - will use device GPS when wired to Pi)
+  const handleCenterMe = () => {
+    // For now, center on the first node as a placeholder
+    // In production, this would use the device's own GPS coordinates
+    if (mapRef && defaultCenter) {
+      mapRef.setView(defaultCenter, 14);
+    }
+  };
+  
   return (
     <div className="space-y-3" data-testid="ally-map-view">
+      {/* GPS Status Bar */}
+      <GpsStatusBar gpsStatus={gpsStatus} />
+      
       {nodesWithGps.length === 0 ? (
-        <div className="h-[350px] glass rounded-lg flex items-center justify-center" data-testid="map-no-nodes">
+        <div className="h-[320px] glass rounded-lg flex items-center justify-center" data-testid="map-no-nodes">
           <div className="text-center p-6">
             <MapPin className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground mb-1">No nodes with GPS data</p>
@@ -124,41 +188,24 @@ export default function AllyMapView({ nodes }) {
           </div>
         </div>
       ) : isMapReady ? (
-        <Suspense fallback={<MapLoadingFallback />}>
-          <LazyMapContent 
+        <div className="relative">
+          <Suspense fallback={<MapLoadingFallback />}>
+            <LazyMapContent 
+              nodesWithGps={nodesWithGps}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onMapReady={setMapRef}
+            />
+          </Suspense>
+          <MapControls 
+            onCenterAll={handleCenterAll}
+            onCenterMe={handleCenterMe}
             nodesWithGps={nodesWithGps}
-            defaultCenter={defaultCenter}
-            defaultZoom={defaultZoom}
           />
-        </Suspense>
+        </div>
       ) : (
         <MapLoadingFallback />
       )}
-      
-      {/* Legend */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-success" />
-            <span className="text-muted-foreground">Good</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-warning" />
-            <span className="text-muted-foreground">Okay</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-destructive" />
-            <span className="text-muted-foreground">Need Help</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-muted-foreground" />
-            <span className="text-muted-foreground">Offline</span>
-          </div>
-        </div>
-        <div className="text-xs text-muted-foreground">
-          {nodesWithGps.length} of {nodes.length} nodes on map
-        </div>
-      </div>
       
       {/* No GPS Panel */}
       <NoGpsPanel nodes={nodesWithoutGps} />
