@@ -171,24 +171,36 @@ export default function AllyCommunicationsHub() {
     toast.success('Refreshed all data');
   };
 
-  // Store scroll position before opening modals to restore it on close
-  const [savedScrollPosition, setSavedScrollPosition] = useState(0);
-
   const handleMessage = (nodeId) => {
-    setSavedScrollPosition(window.scrollY);
+    lockBodyScroll(); // Lock scroll BEFORE state update
     setDmNodeId(nodeId);
     setShowDM(true);
   };
 
+  const handleCloseDM = () => {
+    setShowDM(false);
+    unlockBodyScroll();
+  };
+
   const handleDetails = (node) => {
-    setSavedScrollPosition(window.scrollY);
+    lockBodyScroll(); // Lock scroll BEFORE state update
     setSelectedNode(node);
     setShowDetails(true);
   };
 
+  const handleCloseDetails = () => {
+    setShowDetails(false);
+    unlockBodyScroll();
+  };
+
   const handleOpenBroadcast = () => {
-    setSavedScrollPosition(window.scrollY);
+    lockBodyScroll(); // Lock scroll BEFORE state update
     setShowBroadcast(true);
+  };
+
+  const handleCloseBroadcast = () => {
+    setShowBroadcast(false);
+    unlockBodyScroll();
   };
 
   const handlePing = async (nodeId) => {
