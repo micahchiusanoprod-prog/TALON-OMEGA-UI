@@ -501,7 +501,7 @@ export default function AllyCommunicationsHub() {
             )}
             
             {/* Chat Messages */}
-            <div className="h-40 overflow-y-auto p-3 space-y-2 scrollbar-thin" data-testid="chat-messages">
+            <div ref={chatContainerRef} className="h-40 overflow-y-auto p-3 space-y-2 scrollbar-thin" data-testid="chat-messages">
               {chatLoading ? (
                 <div className="space-y-2">
                   {[1, 2].map((i) => (
