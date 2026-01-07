@@ -15,8 +15,72 @@ import {
   Circle,
   ChevronRight,
   Settings,
-  Check
+  Check,
+  HelpCircle
 } from 'lucide-react';
+import TileHelpTabs, { QuickHelpTips } from './ui/TileHelpTabs';
+
+// Help content for Camera tile
+const cameraHelpContent = {
+  whatItDoes: "Record video diaries, capture photos, and create voice memos. All media is stored locally on your device with optional timestamp overlays for documentation.",
+  quickStart: [
+    "Select a section (Diary, Photos, Videos, or Voice)",
+    "Tap the record/capture button to start",
+    "Enable timestamp overlay for documentation",
+    "Tag people to organize your media",
+    "Access recent entries from each section"
+  ],
+  controls: [
+    { name: "Record Button", description: "Start/stop recording (red = recording)" },
+    { name: "Timestamp Toggle", description: "Overlay date/time on recordings" },
+    { name: "Tag Person", description: "Associate media with a person for organization" },
+  ],
+  bestPractices: [
+    "Keep daily diary entries brief (1-3 minutes)",
+    "Use voice memos for quick notes when hands are busy",
+    "Enable timestamps for any documentation purposes",
+    "Review storage periodically to manage space"
+  ]
+};
+
+const cameraTroubleshootingContent = {
+  issues: [
+    {
+      symptom: "Camera preview not showing",
+      causes: ["Device not connected to Pi", "Camera service not running", "Camera hardware issue"],
+      fixes: ["Verify Pi connection status", "Check backend services in Health tile", "Reconnect USB camera if external"],
+      fallback: "Use voice memos as an alternative until camera is restored"
+    },
+    {
+      symptom: "Recording stops unexpectedly",
+      causes: ["Low storage space", "Device overheating", "Battery critically low"],
+      fixes: ["Check available storage in Device Info", "Let device cool down", "Connect to power source"],
+    },
+    {
+      symptom: "Audio not recording",
+      causes: ["Microphone disabled", "Audio permissions not granted", "Hardware issue"],
+      fixes: ["Check microphone settings", "Grant audio permissions in system settings", "Test with voice memo to isolate issue"],
+    }
+  ],
+  safetyNotes: [
+    "Recordings are stored locally - not automatically backed up",
+    "Large video files may fill storage quickly",
+    "Delete unwanted recordings to free space"
+  ]
+};
+
+const cameraLegendItems = [
+  { color: "bg-destructive", label: "Recording", meaning: "Currently recording video/audio", action: "Tap stop to end" },
+  { color: "bg-primary", label: "Ready", meaning: "Camera ready to record", action: "Tap to start" },
+  { color: "bg-success", label: "Saved", meaning: "Recording saved successfully" },
+  { color: "bg-muted-foreground", label: "Offline", meaning: "Camera not connected" },
+];
+
+const cameraQuickTips = [
+  "Daily Diary: Record short video check-ins with auto-timestamps",
+  "Voice Memo: Fastest way to capture notes hands-free",
+  "Connect to Pi required for camera preview"
+];
 
 const sections = [
   {
