@@ -221,11 +221,14 @@ class AllyAPIService {
     return [
       {
         node_id: 'omega-01',
-        name: 'Dad\'s OMEGA',
+        name: "Dad's OMEGA",
         role: 'Primary',
         ip: '192.168.4.2',
         url: 'http://192.168.4.2:3000',
         status: 'online',
+        user_status: 'good', // good, okay, need_help
+        user_status_note: null,
+        user_status_set_at: null,
         last_seen: new Date().toISOString(),
         link_type: 'Hotspot',
         rssi: -45,
@@ -233,11 +236,14 @@ class AllyAPIService {
       },
       {
         node_id: 'omega-02',
-        name: 'Mom\'s OMEGA',
+        name: "Mom's OMEGA",
         role: 'Secondary',
         ip: '192.168.4.3',
         url: 'http://192.168.4.3:3000',
         status: 'online',
+        user_status: 'okay',
+        user_status_note: null,
+        user_status_set_at: new Date(Date.now() - 600000).toISOString(),
         last_seen: new Date(Date.now() - 30000).toISOString(),
         link_type: 'LAN',
         rssi: -52,
@@ -245,15 +251,33 @@ class AllyAPIService {
       },
       {
         node_id: 'omega-03',
-        name: 'Kids OMEGA',
+        name: "Kids' OMEGA",
         role: 'Mobile',
         ip: '192.168.4.4',
         url: 'http://192.168.4.4:3000',
         status: 'degraded',
+        user_status: 'need_help',
+        user_status_note: 'Device running hot',
+        user_status_set_at: new Date(Date.now() - 300000).toISOString(),
         last_seen: new Date(Date.now() - 120000).toISOString(),
         link_type: 'Mesh',
         rssi: -68,
         alerts_count: 2,
+      },
+      {
+        node_id: 'omega-04',
+        name: "Backup Unit",
+        role: 'Backup',
+        ip: null,
+        url: null,
+        status: 'offline',
+        user_status: null,
+        user_status_note: null,
+        user_status_set_at: null,
+        last_seen: new Date(Date.now() - 3600000).toISOString(),
+        link_type: null,
+        rssi: null,
+        alerts_count: 0,
       },
     ];
   }
@@ -321,7 +345,8 @@ class AllyAPIService {
       {
         id: '1',
         sender: 'omega-01',
-        sender_name: 'Dad\'s OMEGA',
+        sender_name: "Dad's OMEGA",
+        sender_status: 'good',
         text: 'Everyone check in - heading to the north ridge',
         timestamp: new Date(Date.now() - 300000).toISOString(),
         priority: 'normal',
@@ -330,8 +355,9 @@ class AllyAPIService {
       {
         id: '2',
         sender: 'omega-02',
-        sender_name: 'Mom\'s OMEGA',
-        text: 'Copy that, we\'re at base camp',
+        sender_name: "Mom's OMEGA",
+        sender_status: 'okay',
+        text: "Copy that, we're at base camp",
         timestamp: new Date(Date.now() - 240000).toISOString(),
         priority: 'normal',
         status: 'delivered',
@@ -345,6 +371,17 @@ class AllyAPIService {
         priority: 'emergency',
         status: 'delivered',
         broadcast_title: 'EMERGENCY WEATHER ALERT',
+        broadcast_severity: 'emergency',
+      },
+      {
+        id: '4',
+        sender: 'omega-03',
+        sender_name: "Kids' OMEGA",
+        sender_status: 'need_help',
+        text: 'Need assistance - device overheating',
+        timestamp: new Date(Date.now() - 60000).toISOString(),
+        priority: 'urgent',
+        status: 'delivered',
       },
     ];
   }
@@ -365,6 +402,64 @@ class AllyAPIService {
         timestamp: new Date(Date.now() - 540000).toISOString(),
         status: 'delivered',
       },
+      {
+        id: '3',
+        sender: 'me',
+        text: 'GPS coordinates shared',
+        timestamp: new Date(Date.now() - 480000).toISOString(),
+        status: 'sent',
+      },
+      {
+        id: '4',
+        sender: 'me',
+        text: 'Let me know when you receive them',
+        timestamp: new Date(Date.now() - 420000).toISOString(),
+        status: 'queued',
+      },
+    ];
+  }
+
+  /**
+   * Get Current User's Status
+   */
+  getCurrentUserStatus() {
+    // In real implementation, this would come from local storage or API
+    const stored = localStorage.getItem('omega_user_status');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return {
+      status: 'good',
+      note: null,
+      set_at: null,
+    };
+  }
+
+  /**
+   * Set Current User's Status
+   */
+  setCurrentUserStatus(status, note = null) {
+    const statusData = {
+      status,
+      note: status === 'need_help' ? note : null,
+      set_at: new Date().toISOString(),
+    };
+    localStorage.setItem('omega_user_status', JSON.stringify(statusData));
+    // In real implementation, this would also notify other nodes
+    return statusData;
+  }
+
+  /**
+   * Quick Message Templates
+   */
+  getMessageTemplates() {
+    return [
+      { id: 'omw', text: "On my way!", icon: '🚶' },
+      { id: 'ok', text: "All good here", icon: '✓' },
+      { id: 'help', text: "Need assistance", icon: '🆘' },
+      { id: 'wait', text: "Wait for me", icon: '⏳' },
+      { id: 'loc', text: "Share your location", icon: '📍' },
+      { id: 'call', text: "Call when you can", icon: '📞' },
     ];
   }
 }
