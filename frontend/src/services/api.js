@@ -213,6 +213,151 @@ class APIService {
       return { success: false, error: error.message };
     }
   }
+
+  /**
+   * Hotspot Status - GET /api/hotspot/status
+   */
+  async getHotspotStatus() {
+    try {
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotStatus}`);
+      return {
+        enabled: raw.enabled || false,
+        ssid: raw.ssid || config.hotspot.ssid,
+        band: raw.band || '2.4GHz',
+        channel: raw.channel || null,
+        uptime: raw.uptime_s || 0,
+        maxClients: raw.max_clients || config.hotspot.maxClients,
+        connectedCount: raw.connected_count || 0,
+        available: true,
+      };
+    } catch (error) {
+      console.error('Hotspot status fetch failed:', error);
+      return this.getMockHotspotStatus();
+    }
+  }
+
+  /**
+   * Toggle Hotspot - POST /api/hotspot/toggle
+   */
+  async toggleHotspot(enabled) {
+    try {
+      return await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotToggle}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled }),
+      });
+    } catch (error) {
+      console.error('Hotspot toggle failed:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Hotspot Clients - GET /api/hotspot/clients
+   */
+  async getHotspotClients() {
+    try {
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotClients}`);
+      return {
+        clients: (raw || []).map(c => ({
+          hostname: c.hostname || 'Unknown Device',
+          mac: c.mac || 'Unknown',
+          ip: c.ip || 'Unknown',
+          connectedAt: c.connected_at || c.last_seen,
+          lastSeen: c.last_seen,
+          rssi: c.rssi || null,
+          rxBytes: c.rx_bytes || 0,
+          txBytes: c.tx_bytes || 0,
+        })),
+        available: true,
+      };
+    } catch (error) {
+      console.error('Hotspot clients fetch failed:', error);
+      return this.getMockHotspotClients();
+    }
+  }
+
+  /**
+   * Hotspot Usage - GET /api/hotspot/usage
+   */
+  async getHotspotUsage() {
+    try {
+      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotUsage}`);
+      return {
+        rxBytesTotal: raw.rx_bytes_total || 0,
+        txBytesTotal: raw.tx_bytes_total || 0,
+        rxRateBps: raw.rx_rate_bps || 0,
+        txRateBps: raw.tx_rate_bps || 0,
+        available: true,
+      };
+    } catch (error) {
+      console.error('Hotspot usage fetch failed:', error);
+      return this.getMockHotspotUsage();
+    }
+  }
+
+  // ============= MOCK HOTSPOT DATA =============
+
+  getMockHotspotStatus() {
+    return {
+      enabled: true,
+      ssid: config.hotspot.ssid,
+      band: '2.4GHz',
+      channel: 6,
+      uptime: 7245,
+      maxClients: config.hotspot.maxClients,
+      connectedCount: 3,
+      available: false,
+    };
+  }
+
+  getMockHotspotClients() {
+    return {
+      clients: [
+        {
+          hostname: 'Phone-Android',
+          mac: 'AA:BB:CC:DD:EE:01',
+          ip: '192.168.4.2',
+          connectedAt: new Date(Date.now() - 3600000).toISOString(),
+          lastSeen: new Date().toISOString(),
+          rssi: -45,
+          rxBytes: 15728640,
+          txBytes: 8388608,
+        },
+        {
+          hostname: 'Laptop-Ubuntu',
+          mac: 'AA:BB:CC:DD:EE:02',
+          ip: '192.168.4.3',
+          connectedAt: new Date(Date.now() - 1800000).toISOString(),
+          lastSeen: new Date().toISOString(),
+          rssi: -52,
+          rxBytes: 52428800,
+          txBytes: 26214400,
+        },
+        {
+          hostname: 'Tablet-iPad',
+          mac: 'AA:BB:CC:DD:EE:03',
+          ip: '192.168.4.4',
+          connectedAt: new Date(Date.now() - 900000).toISOString(),
+          lastSeen: new Date().toISOString(),
+          rssi: -38,
+          rxBytes: 10485760,
+          txBytes: 5242880,
+        },
+      ],
+      available: false,
+    };
+  }
+
+  getMockHotspotUsage() {
+    return {
+      rxBytesTotal: 78643200,
+      txBytesTotal: 39845888,
+      rxRateBps: 524288,
+      txRateBps: 262144,
+      available: false,
+    };
+  }
 }
 
 export default new APIService();
