@@ -162,9 +162,10 @@ export default function AllyCommunicationsHub() {
       status: 'sending',
     };
     
-    // Optimistic update
+    // Optimistic update and trigger scroll
     setGlobalMessages(prev => [...prev, newMsg]);
     setChatMessage('');
+    setShouldAutoScroll(true);
     
     try {
       const result = await allyApi.sendGlobalMessage(chatMessage);
