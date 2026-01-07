@@ -352,5 +352,92 @@ export default function TileHelpTabs({
   );
 }
 
+/**
+ * Quick Help Tips - Compact inline helper for showing 1-3 essential tips
+ * Use at the top of tiles for immediate context
+ */
+export function QuickHelpTips({ tips, title = "Quick Tips" }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  if (!tips || tips.length === 0) return null;
+  
+  return (
+    <div className="glass rounded-lg p-2 mb-3" data-testid="quick-help-tips">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between text-xs"
+      >
+        <div className="flex items-center gap-1.5">
+          <Lightbulb className="w-3.5 h-3.5 text-warning" />
+          <span className="font-medium text-muted-foreground">{title}</span>
+        </div>
+        <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+      </button>
+      
+      {isExpanded && (
+        <div className="mt-2 pt-2 border-t border-border/50 space-y-1 animate-fade-in">
+          {tips.map((tip, i) => (
+            <div key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+              <span className="text-primary font-bold">•</span>
+              <span>{tip}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Status Indicator Legend - Compact inline legend for status colors
+ * Use to explain what colors mean without opening full help
+ */
+export function InlineLegend({ items, compact = true }) {
+  if (!items || items.length === 0) return null;
+  
+  return (
+    <div className={`flex items-center gap-3 ${compact ? 'flex-wrap' : 'flex-col items-start gap-2'}`} data-testid="inline-legend">
+      {items.map((item, i) => (
+        <div key={i} className="flex items-center gap-1.5 text-xs">
+          <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
+          <span className="text-muted-foreground">{item.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Help Button with Popover - Small ? button that shows help on hover/click
+ */
+export function HelpButton({ content, side = 'bottom' }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="relative inline-block">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+        className="w-5 h-5 rounded-full glass flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+        data-testid="help-button"
+      >
+        <HelpCircle className="w-3.5 h-3.5" />
+      </button>
+      
+      {isOpen && (
+        <div className={`absolute z-50 w-64 glass-strong rounded-lg p-3 shadow-lg animate-fade-in ${
+          side === 'bottom' ? 'top-full mt-1 left-1/2 -translate-x-1/2' :
+          side === 'left' ? 'right-full mr-1 top-0' :
+          side === 'right' ? 'left-full ml-1 top-0' :
+          'bottom-full mb-1 left-1/2 -translate-x-1/2'
+        }`}>
+          <div className="text-xs text-muted-foreground">{content}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Export utilities for custom use
 export { Step, Tip, Warning, Bullet, LegendItem, TroubleshootItem };
