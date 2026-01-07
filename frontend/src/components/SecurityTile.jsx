@@ -2,12 +2,6 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from './ui/accordion';
 import { 
   Shield, 
   Fingerprint, 
@@ -27,6 +21,82 @@ import {
   CheckCircle2,
   AlertTriangle
 } from 'lucide-react';
+import TileHelpTabs, { QuickHelpTips, InlineLegend } from './ui/TileHelpTabs';
+
+// Help content for Security tile
+const securityHelpContent = {
+  whatItDoes: "Manage people, permission levels, and fingerprint authentication for your OMEGA device. Control who can access what features.",
+  quickStart: [
+    "Review existing people and their permissions",
+    "Select a person to view/edit their details",
+    "Add fingerprints for biometric authentication",
+    "Adjust permission levels as needed",
+    "Add new people with 'Add Person' button"
+  ],
+  controls: [
+    { 
+      name: "Permission Levels", 
+      description: "Control access to features",
+      states: [
+        { color: "bg-warning", label: "Admin", meaning: "Full access to all features" },
+        { color: "bg-primary", label: "Member", meaning: "Standard access, most features" },
+        { color: "bg-muted-foreground", label: "Guest", meaning: "View only, limited actions" },
+      ]
+    },
+    { name: "Fingerprint Badge", description: "Number next to fingerprint icon shows enrolled prints" },
+    { name: "You Badge", description: "Indicates your account (cannot be removed)" },
+  ],
+  bestPractices: [
+    "Enroll 2+ fingerprints per person for reliability",
+    "Keep at least one Admin account at all times",
+    "Use Guest for temporary or limited access",
+    "Clean fingers before enrollment for best results"
+  ]
+};
+
+const securityTroubleshootingContent = {
+  issues: [
+    {
+      symptom: "Fingerprint not recognized",
+      causes: ["Dirty or wet finger", "Poor enrollment quality", "Sensor needs cleaning"],
+      fixes: ["Clean and dry your finger", "Re-enroll the fingerprint", "Wipe sensor with dry cloth"],
+      fallback: "Use password/PIN as backup authentication"
+    },
+    {
+      symptom: "Sensor not responding",
+      causes: ["USB disconnected", "Service not running", "Hardware failure"],
+      fixes: ["Check USB connection to sensor", "Restart fingerprint service via Health tile", "Try different USB port"],
+    },
+    {
+      symptom: "Cannot change permissions",
+      causes: ["Not logged in as Admin", "Trying to modify own Admin status", "System error"],
+      fixes: ["Log in with Admin account", "Have another Admin change your permissions", "Restart the device"],
+    },
+    {
+      symptom: "Cannot add new person",
+      causes: ["Not Admin permission", "Storage full", "Max users reached"],
+      fixes: ["Get Admin to add person", "Free up device storage", "Remove unused accounts"],
+    }
+  ],
+  safetyNotes: [
+    "Always keep at least one Admin account",
+    "Fingerprint data is stored locally only",
+    "Removing a person deletes all their data"
+  ]
+};
+
+const securityLegendItems = [
+  { color: "bg-warning", label: "Admin", meaning: "Full control of device", action: "Can manage all users" },
+  { color: "bg-primary", label: "Member", meaning: "Standard user", action: "Most features available" },
+  { color: "bg-muted-foreground", label: "Guest", meaning: "Limited access", action: "View only" },
+  { color: "bg-success", label: "Fingerprint", meaning: "Biometric enrolled" },
+];
+
+const securityQuickTips = [
+  "Tap a person card to manage their fingerprints & permissions",
+  "Enroll multiple fingerprints for better recognition",
+  "Admin required to add/remove people"
+];
 
 const permissionLevels = [
   { id: 'admin', name: 'Admin', icon: Crown, color: 'text-warning', description: 'Full access to all features' },
