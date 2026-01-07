@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Activity, Clock } from 'lucide-react';
+import { Activity, Clock, CheckCircle, AlertTriangle, AlertCircle } from 'lucide-react';
 import api from '../services/api';
 import config from '../config';
 
@@ -54,7 +54,52 @@ export default function DeviceInfoTile() {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
+  // Helper function to determine status based on thresholds
+  const getMetricStatus = (type, value) => {
+    if (value === null || value === undefined) {
+      return { status: 'unknown', icon: AlertCircle, color: 'text-muted-foreground', bg: 'bg-muted', label: 'Unknown' };
+    }
+
+    let status = 'good';
+    
+    switch(type) {
+      case 'cpu':
+        if (value > 80) status = 'critical';
+        else if (value > 60) status = 'warning';
+        break;
+      case 'ram':
+        if (value > 85) status = 'critical';
+        else if (value > 70) status = 'warning';
+        break;
+      case 'disk':
+        if (value > 85) status = 'critical';
+        else if (value > 70) status = 'warning';
+        break;
+      case 'temp':
+        if (value > 75) status = 'critical';
+        else if (value > 60) status = 'warning';
+        break;
+      default:
+        break;
+    }
+
+    if (status === 'good') {
+      return { status: 'good', icon: CheckCircle, color: 'text-success', bg: 'bg-success-light', label: 'Good' };
+    } else if (status === 'warning') {
+      return { status: 'warning', icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning-light', label: 'High' };
+    } else {
+      return { status: 'critical', icon: AlertCircle, color: 'text-destructive', bg: 'bg-destructive-light', label: 'Critical' };
+    }
+  };
+
   const showSimulated = !metrics?.available || !health?.services;
+
+  const metricsList = [
+    { key: 'cpu', label: 'CPU Usage', description: 'How hard the brain is working', value: displayMetrics.cpu, unit: '%', type: 'cpu' },
+    { key: 'ram', label: 'RAM Usage', description: 'Active memory in use', value: displayMetrics.ram, unit: '%', type: 'ram' },
+    { key: 'disk', label: 'Disk Usage', description: 'Storage space used', value: displayMetrics.disk, unit: '%', type: 'disk' },
+    { key: 'temp', label: 'CPU Temp', description: 'Processor temperature', value: displayMetrics.temp, unit: '°C', type: 'temp' },
+  ];
 
   return (
     <Card className="glass-strong border-border">
@@ -73,43 +118,31 @@ export default function DeviceInfoTile() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* System Metrics */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">
-              CPU Usage
-              <span className="block text-[10px] opacity-70">How hard the brain is working</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {displayMetrics.cpu}%
-            </div>
-          </div>
-          <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">
-              RAM Usage
-              <span className="block text-[10px] opacity-70">Active memory in use</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {displayMetrics.ram}%
-            </div>
-          </div>
-          <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">
-              Disk Usage
-              <span className="block text-[10px] opacity-70">Storage space used</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {displayMetrics.disk}%
-            </div>
-          </div>
-          <div className="glass p-3 rounded-lg">
-            <div className="text-xs text-muted-foreground mb-1">
-              CPU Temp
-              <span className="block text-[10px] opacity-70">Processor temperature</span>
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {displayMetrics.temp}°C
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {metricsList.map((metric) => {
+            const status = getMetricStatus(metric.type, metric.value);
+            const StatusIcon = status.icon;
+            
+            return (
+              <div key={metric.key} className="glass p-3 rounded-lg">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="text-xs text-muted-foreground">
+                    {metric.label}
+                    <span className="block text-[10px] opacity-70">{metric.description}</span>
+                  </div>
+                  <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full ${status.bg}`} title={`Status: ${status.label}`}>
+                    <StatusIcon className={`w-3 h-3 ${status.color}`} />
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-foreground">
+                    {metric.value}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{metric.unit}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Uptime */}
