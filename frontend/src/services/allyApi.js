@@ -171,10 +171,11 @@ class AllyApiService {
   async getGlobalChat() {
     if (!config.features.enableMockData) {
       try {
-        const since = this.cache.globalChatTimestamp 
-          ? `?since=${this.cache.globalChatTimestamp.toISOString()}`
-          : '';
-        const response = await this.retryFetch(`${this.baseUrl}/api/ally/chat/global${since}`);
+        const params = this.cache.globalChatTimestamp 
+          ? { since: this.cache.globalChatTimestamp.toISOString() }
+          : {};
+        const url = this.buildUrl('/api/ally/chat/global', params);
+        const response = await this.retryFetch(url);
         const data = await response.json();
         
         // Merge new messages with cache
@@ -215,14 +216,11 @@ class AllyApiService {
     
     if (!config.features.enableMockData) {
       try {
-        const response = await this.fetchWithTimeout(
-          `${this.baseUrl}/api/ally/chat/global`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, priority }),
-          }
-        );
+        const url = this.buildUrl('/api/ally/chat/global');
+        const response = await this.fetchWithTimeout(url, {
+          method: 'POST',
+          body: JSON.stringify({ text, priority }),
+        });
         const result = await response.json();
         
         // Update temp message with server response
