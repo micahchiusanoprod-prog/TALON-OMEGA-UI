@@ -51,8 +51,9 @@ export default function AllyCommunicationsHub() {
   const [statusNote, setStatusNote] = useState('');
   const statusDropdownRef = useRef(null);
   
-  // Broadcast alert tracking
-  const [alertsBadgeCount, setAlertsBadgeCount] = useState(0);
+  // Track if user sent a message (only auto-scroll then)
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     fetchNodes();
@@ -75,9 +76,13 @@ export default function AllyCommunicationsHub() {
     return () => clearInterval(retryInterval);
   }, []);
 
-  // Scroll to bottom when new messages arrive
+  // Only scroll chat container when user sends a message
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (shouldAutoScroll && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      setShouldAutoScroll(false);
+    }
+  }, [globalMessages, shouldAutoScroll]);
   }, [globalMessages]);
 
   // Close status dropdown on click outside
