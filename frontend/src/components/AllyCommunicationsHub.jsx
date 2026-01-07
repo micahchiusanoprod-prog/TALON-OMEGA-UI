@@ -573,141 +573,188 @@ export default function AllyCommunicationsHub() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Global Chat Box (Always Visible) */}
-          <div className="glass rounded-lg overflow-hidden" data-testid="global-chat-box">
-            <div className="glass-strong border-b border-border px-4 py-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold">Global Chat</span>
-              </div>
-              <span className="text-xs text-muted-foreground">{globalMessages.length} messages</span>
-            </div>
-            
-            {/* Pinned Emergency Broadcasts */}
-            {pinnedBroadcasts.length > 0 && (
-              <div className="border-b border-border p-2 space-y-2" data-testid="pinned-broadcasts">
-                {pinnedBroadcasts.map((msg) => (
-                  <div key={msg.id} className="bg-destructive-light border border-destructive rounded-lg p-2 animate-critical-flash">
-                    <div className="flex items-start gap-2">
-                      <Pin className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-bold text-destructive">{msg.broadcast_title || 'EMERGENCY'}</div>
-                        <div className="text-xs text-foreground truncate">{msg.text}</div>
-                        <div className="text-xs text-muted-foreground">{formatTime(msg.timestamp)}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* Chat Messages */}
-            <div className="relative">
-              <div 
-                ref={chatContainerRef} 
-                onScroll={handleChatScroll}
-                className="h-40 overflow-y-auto p-3 space-y-2 scrollbar-thin" 
-                data-testid="chat-messages"
-              >
-              {chatLoading ? (
-                <div className="space-y-2">
-                  {[1, 2].map((i) => (
-                    <div key={i} className="skeleton h-10 rounded-lg" />
-                  ))}
-                </div>
-              ) : regularMessages.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground">
-                  <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-xs">No messages yet. Start the conversation!</p>
-                </div>
-              ) : (
-                <>
-                  {regularMessages.map((msg) => {
-                    const isMe = msg.sender === 'me';
-                    const isBroadcast = msg.sender === 'broadcast';
-                    return (
-                      <div 
-                        key={msg.id} 
-                        className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
-                        data-testid={`chat-message-${msg.id}`}
-                      >
-                        <div className={`max-w-[80%] ${
-                          isBroadcast 
-                            ? 'bg-warning-light border border-warning' 
-                            : isMe 
-                              ? 'bg-primary text-primary-foreground' 
-                              : 'glass'
-                        } px-3 py-2 rounded-lg`}>
-                          {!isMe && !isBroadcast && (
-                            <div className="flex items-center gap-1.5 mb-0.5">
-                              <span className="text-xs font-semibold">{msg.sender_name}</span>
-                              {msg.sender_status && (
-                                <span className={`text-xs px-1.5 py-0.5 rounded ${getStatusColor(msg.sender_status)}`}>
-                                  {getStatusLabel(msg.sender_status)}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                          {isBroadcast && (
-                            <div className="text-xs font-bold text-warning mb-0.5">{msg.broadcast_title}</div>
-                          )}
-                          <div className="text-sm">{msg.text}</div>
-                          <div className={`text-xs mt-0.5 flex items-center gap-1.5 ${isMe ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                            <span>{formatTime(msg.timestamp)}</span>
-                            {msg.status && msg.status !== 'delivered' && (
-                              <span className={`${
-                                msg.status === 'failed' ? 'text-destructive' : 
-                                msg.status === 'queued' ? 'text-warning' : ''
-                              }`}>
-                                • {msg.status}
-                              </span>
-                            )}
-                            {msg.priority === 'urgent' && (
-                              <span className="text-warning font-medium">• URGENT</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </>
+          {/* Tab Navigation for Chat/Map */}
+          <div className="flex items-center gap-1 glass rounded-lg p-1" data-testid="ally-hub-tabs">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === 'chat' 
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              }`}
+              data-testid="tab-chat"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Global Chat
+              {globalMessages.length > 0 && (
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  activeTab === 'chat' ? 'bg-primary-foreground/20' : 'bg-muted'
+                }`}>
+                  {globalMessages.length}
+                </span>
               )}
+            </button>
+            <button
+              onClick={() => setActiveTab('map')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === 'map' 
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              }`}
+              data-testid="tab-map"
+            >
+              <Map className="w-4 h-4" />
+              Map
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                activeTab === 'map' ? 'bg-primary-foreground/20' : 'bg-muted'
+              }`}>
+                {nodes.filter(n => n.gps && n.gps.lat && n.gps.lon).length}
+              </span>
+            </button>
+          </div>
+
+          {/* Chat Tab Content */}
+          {activeTab === 'chat' && (
+            <div className="glass rounded-lg overflow-hidden" data-testid="global-chat-box">
+              <div className="glass-strong border-b border-border px-4 py-2 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold">Global Chat</span>
+                </div>
+                <span className="text-xs text-muted-foreground">{globalMessages.length} messages</span>
               </div>
               
-              {/* Jump to Latest Button */}
-              {hasNewMessages && !isNearBottom && (
-                <button
-                  onClick={handleJumpToLatest}
-                  className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:bg-primary-hover transition-colors flex items-center gap-1 animate-fade-in"
-                  data-testid="jump-to-latest-btn"
-                >
-                  <ChevronDown className="w-3 h-3" />
-                  New messages
-                </button>
+              {/* Pinned Emergency Broadcasts */}
+              {pinnedBroadcasts.length > 0 && (
+                <div className="border-b border-border p-2 space-y-2" data-testid="pinned-broadcasts">
+                  {pinnedBroadcasts.map((msg) => (
+                    <div key={msg.id} className="bg-destructive-light border border-destructive rounded-lg p-2 animate-critical-flash">
+                      <div className="flex items-start gap-2">
+                        <Pin className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-bold text-destructive">{msg.broadcast_title || 'EMERGENCY'}</div>
+                          <div className="text-xs text-foreground truncate">{msg.text}</div>
+                          <div className="text-xs text-muted-foreground">{formatTime(msg.timestamp)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
+              
+              {/* Chat Messages - Increased height from h-40 to h-64 (~60% taller) */}
+              <div className="relative">
+                <div 
+                  ref={chatContainerRef} 
+                  onScroll={handleChatScroll}
+                  className="h-64 sm:h-72 md:h-80 overflow-y-auto p-3 space-y-2 scrollbar-thin" 
+                  data-testid="chat-messages"
+                >
+                {chatLoading ? (
+                  <div className="space-y-2">
+                    {[1, 2].map((i) => (
+                      <div key={i} className="skeleton h-10 rounded-lg" />
+                    ))}
+                  </div>
+                ) : regularMessages.length === 0 ? (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-xs">No messages yet. Start the conversation!</p>
+                  </div>
+                ) : (
+                  <>
+                    {regularMessages.map((msg) => {
+                      const isMe = msg.sender === 'me';
+                      const isBroadcast = msg.sender === 'broadcast';
+                      return (
+                        <div 
+                          key={msg.id} 
+                          className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                          data-testid={`chat-message-${msg.id}`}
+                        >
+                          <div className={`max-w-[80%] ${
+                            isBroadcast 
+                              ? 'bg-warning-light border border-warning' 
+                              : isMe 
+                                ? 'bg-primary text-primary-foreground' 
+                                : 'glass'
+                          } px-3 py-2 rounded-lg`}>
+                            {!isMe && !isBroadcast && (
+                              <div className="flex items-center gap-1.5 mb-0.5">
+                                <span className="text-xs font-semibold">{msg.sender_name}</span>
+                                {msg.sender_status && (
+                                  <span className={`text-xs px-1.5 py-0.5 rounded ${getStatusColor(msg.sender_status)}`}>
+                                    {getStatusLabel(msg.sender_status)}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {isBroadcast && (
+                              <div className="text-xs font-bold text-warning mb-0.5">{msg.broadcast_title}</div>
+                            )}
+                            <div className="text-sm">{msg.text}</div>
+                            <div className={`text-xs mt-0.5 flex items-center gap-1.5 ${isMe ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                              <span>{formatTime(msg.timestamp)}</span>
+                              {msg.status && msg.status !== 'delivered' && (
+                                <span className={`${
+                                  msg.status === 'failed' ? 'text-destructive' : 
+                                  msg.status === 'queued' ? 'text-warning' : ''
+                                }`}>
+                                  • {msg.status}
+                                </span>
+                              )}
+                              {msg.priority === 'urgent' && (
+                                <span className="text-warning font-medium">• URGENT</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+                </div>
+                
+                {/* Jump to Latest Button */}
+                {hasNewMessages && !isNearBottom && (
+                  <button
+                    onClick={handleJumpToLatest}
+                    className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:bg-primary-hover transition-colors flex items-center gap-1 animate-fade-in"
+                    data-testid="jump-to-latest-btn"
+                  >
+                    <ChevronDown className="w-3 h-3" />
+                    New messages
+                  </button>
+                )}
+              </div>
+              
+              {/* Chat Input */}
+              <div className="border-t border-border p-2 flex gap-2">
+                <Input
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendChat()}
+                  placeholder="Type a message..."
+                  className="flex-1 h-8 text-sm"
+                  data-testid="chat-input"
+                />
+                <Button 
+                  size="sm" 
+                  onClick={handleSendChat} 
+                  disabled={!chatMessage.trim()}
+                  className="h-8 px-3"
+                  data-testid="chat-send-btn"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-            
-            {/* Chat Input */}
-            <div className="border-t border-border p-2 flex gap-2">
-              <Input
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendChat()}
-                placeholder="Type a message..."
-                className="flex-1 h-8 text-sm"
-                data-testid="chat-input"
-              />
-              <Button 
-                size="sm" 
-                onClick={handleSendChat} 
-                disabled={!chatMessage.trim()}
-                className="h-8 px-3"
-                data-testid="chat-send-btn"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+          )}
+
+          {/* Map Tab Content */}
+          {activeTab === 'map' && (
+            <AllyMapView nodes={nodes} />
+          )}
 
           {/* Search and Filter */}
           <div className="flex items-center gap-2 flex-wrap">
