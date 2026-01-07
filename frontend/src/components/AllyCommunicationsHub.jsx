@@ -764,9 +764,8 @@ export default function AllyCommunicationsHub() {
       {showDetails && selectedNode && (
         <NodeDetailsDrawer
           node={selectedNode}
-          onClose={() => setShowDetails(false)}
+          onClose={handleCloseDetails}
           onMessage={handleMessage}
-          savedScrollPosition={savedScrollPosition}
         />
       )}
 
@@ -775,16 +774,14 @@ export default function AllyCommunicationsHub() {
           type="dm"
           nodeId={dmNodeId}
           nodeName={nodes.find(n => n.node_id === dmNodeId)?.name}
-          onClose={() => setShowDM(false)}
-          savedScrollPosition={savedScrollPosition}
+          onClose={handleCloseDM}
         />
       )}
 
       {showBroadcast && (
         <BroadcastModal
-          onClose={() => setShowBroadcast(false)}
+          onClose={handleCloseBroadcast}
           onSent={handleBroadcastSent}
-          savedScrollPosition={savedScrollPosition}
         />
       )}
     </>
