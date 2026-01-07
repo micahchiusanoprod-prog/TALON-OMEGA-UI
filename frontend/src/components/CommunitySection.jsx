@@ -14,9 +14,46 @@ export default function CommunitySection({ fullWidth = true }) {
     const fetchPosts = async () => {
       try {
         const data = await api.getCommunityPosts();
-        setPosts(data.posts || []);
+        // Use mock posts if no data available
+        if (!data.posts || data.posts.length === 0) {
+          setPosts([
+            {
+              id: 1,
+              author: 'OMEGA User',
+              content: 'Just deployed the new firmware update! Everything running smooth.',
+              timestamp: new Date(Date.now() - 3600000).toISOString(),
+              likes: 5,
+            },
+            {
+              id: 2,
+              author: 'Cyberdeck Admin',
+              content: 'Reminder: Kiwix library updated with new Wikipedia archives. Check it out!',
+              timestamp: new Date(Date.now() - 7200000).toISOString(),
+              likes: 12,
+            },
+          ]);
+        } else {
+          setPosts(data.posts);
+        }
       } catch (error) {
         console.error('Failed to fetch community posts:', error);
+        // Set mock posts on error
+        setPosts([
+          {
+            id: 1,
+            author: 'OMEGA User',
+            content: 'Just deployed the new firmware update! Everything running smooth.',
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            likes: 5,
+          },
+          {
+            id: 2,
+            author: 'Cyberdeck Admin',
+            content: 'Reminder: Kiwix library updated with new Wikipedia archives. Check it out!',
+            timestamp: new Date(Date.now() - 7200000).toISOString(),
+            likes: 12,
+          },
+        ]);
       } finally {
         setLoading(false);
       }
