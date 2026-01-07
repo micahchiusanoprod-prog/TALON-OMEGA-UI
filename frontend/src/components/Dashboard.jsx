@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import SearchBar from './SearchBar';
-import GPSMap from './GPSMap';
+import EnvironmentTile from './EnvironmentTile';
+import DeviceInfoTile from './DeviceInfoTile';
 import EntertainmentSection from './EntertainmentSection';
 import CommunitySection from './CommunitySection';
 import QualityOfLifeSection from './QualityOfLifeSection';
@@ -13,11 +14,10 @@ import { Activity } from 'lucide-react';
 export default function Dashboard({ theme, onToggleTheme }) {
   const [metrics, setMetrics] = useState(null);
   const [health, setHealth] = useState(null);
-  const [gps, setGps] = useState(null);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [diagnosticsData, setDiagnosticsData] = useState({});
 
-  // Poll system metrics
+  // Poll system metrics (real-time feel)
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
@@ -51,23 +51,6 @@ export default function Dashboard({ theme, onToggleTheme }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Poll GPS
-  useEffect(() => {
-    const fetchGPS = async () => {
-      try {
-        const data = await api.getGPS();
-        setGps(data);
-        setDiagnosticsData(prev => ({ ...prev, gps: data }));
-      } catch (error) {
-        console.error('Failed to fetch GPS:', error);
-      }
-    };
-
-    fetchGPS();
-    const interval = setInterval(fetchGPS, config.polling.gps);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="min-h-screen pb-12">
       {/* Header */}
@@ -95,9 +78,10 @@ export default function Dashboard({ theme, onToggleTheme }) {
           <EntertainmentSection />
         </div>
 
-        {/* GPS Map */}
-        <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
-          <GPSMap gpsData={gps} />
+        {/* Environment & Device Info */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '400ms' }}>
+          <EnvironmentTile />
+          <DeviceInfoTile />
         </div>
       </main>
 
