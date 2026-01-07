@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { X, Send, AlertTriangle } from 'lucide-react';
+import { 
+  X, 
+  Send, 
+  AlertTriangle, 
+  CheckCircle, 
+  Clock, 
+  XCircle,
+  Zap,
+  Pin
+} from 'lucide-react';
 import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
 import config from '../../config';
@@ -12,12 +21,19 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
   const [newMessage, setNewMessage] = useState('');
   const [urgent, setUrgent] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const messagesEndRef = useRef(null);
+  const templates = allyApi.getMessageTemplates();
 
   useEffect(() => {
     fetchMessages();
     const interval = setInterval(fetchMessages, config.polling.allyChat);
     return () => clearInterval(interval);
   }, [type, nodeId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const fetchMessages = async () => {
     try {
@@ -33,58 +49,130 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
   };
 
   const handleSend = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || sending) return;
+
+    setSending(true);
+    const tempId = `temp-${Date.now()}`;
+    
+    // Optimistic update - add message immediately with 'sending' status
+    const optimisticMsg = {
+      id: tempId,
+      sender: 'me',
+      text: newMessage,
+      timestamp: new Date().toISOString(),
+      status: 'sending',
+      priority: urgent ? 'urgent' : 'normal',
+    };
+    setMessages(prev => [...prev, optimisticMsg]);
+    
+    const msgText = newMessage;
+    const isUrgent = urgent;
+    setNewMessage('');
+    setUrgent(false);
 
     try {
       const result = type === 'group'
-        ? await allyApi.sendGlobalMessage(newMessage, urgent ? 'urgent' : 'normal')
-        : await allyApi.sendDM(nodeId, newMessage, urgent);
+        ? await allyApi.sendGlobalMessage(msgText, isUrgent ? 'urgent' : 'normal')
+        : await allyApi.sendDM(nodeId, msgText, isUrgent);
+      
+      // Update message status based on result
+      setMessages(prev => prev.map(m => 
+        m.id === tempId 
+          ? { ...m, status: result.queued ? 'queued' : 'sent' }
+          : m
+      ));
       
       if (result.queued) {
-        toast.info('Message queued (offline)');
-      } else {
-        toast.success('Message sent');
+        toast.info('Message queued (will send when online)', {
+          description: 'The message will be sent automatically when connection is restored.',
+        });
       }
-      
-      setNewMessage('');
-      setUrgent(false);
-      fetchMessages();
     } catch (error) {
+      // Update message status to failed
+      setMessages(prev => prev.map(m => 
+        m.id === tempId ? { ...m, status: 'failed' } : m
+      ));
       toast.error('Failed to send message');
+    } finally {
+      setSending(false);
     }
+  };
+
+  const handleTemplateClick = (template) => {
+    setNewMessage(template.text);
+  };
+
+  const handleRetry = async (msg) => {
+    // Remove failed message and re-send
+    setMessages(prev => prev.filter(m => m.id !== msg.id));
+    setNewMessage(msg.text);
+    if (msg.priority === 'urgent') setUrgent(true);
   };
 
   const formatTime = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const emergencyBroadcasts = messages.filter(m => m.priority === 'emergency');
-  const regularMessages = messages.filter(m => m.priority !== 'emergency');
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'delivered':
+        return <CheckCircle className="w-3 h-3 text-success" />;
+      case 'sent':
+        return <CheckCircle className="w-3 h-3 text-muted-foreground" />;
+      case 'sending':
+        return <Clock className="w-3 h-3 text-muted-foreground animate-pulse" />;
+      case 'queued':
+        return <Clock className="w-3 h-3 text-warning" />;
+      case 'failed':
+        return <XCircle className="w-3 h-3 text-destructive" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'delivered': return 'Delivered';
+      case 'sent': return 'Sent';
+      case 'sending': return 'Sending...';
+      case 'queued': return 'Queued';
+      case 'failed': return 'Failed';
+      default: return '';
+    }
+  };
+
+  const emergencyBroadcasts = messages.filter(m => m.priority === 'emergency' || m.broadcast_severity === 'emergency');
+  const regularMessages = messages.filter(m => m.priority !== 'emergency' && m.broadcast_severity !== 'emergency');
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="glass-strong border-border max-w-2xl w-full max-h-[80vh] flex flex-col">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      data-testid="messaging-modal"
+    >
+      <Card className="glass-strong border-border max-w-2xl w-full max-h-[85vh] flex flex-col animate-fade-in">
+        {/* Header */}
         <div className="glass-strong border-b border-border p-4 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-foreground">
-              {type === 'group' ? 'Group Chat' : `Direct Message: ${nodeName}`}
+              {type === 'group' ? 'Group Chat' : `Message: ${nodeName || nodeId}`}
             </h2>
             <p className="text-xs text-muted-foreground">
-              {type === 'group' ? 'All family nodes' : nodeId}
+              {type === 'group' ? 'All family nodes' : `Direct conversation with ${nodeId}`}
             </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} data-testid="close-modal-btn">
             <X className="w-4 h-4" />
           </Button>
         </div>
 
-        {/* Emergency Broadcasts */}
+        {/* Pinned Emergency Broadcasts */}
         {emergencyBroadcasts.length > 0 && (
-          <div className="p-4 border-b border-border space-y-2">
+          <div className="p-3 border-b border-border space-y-2 bg-destructive-light/30" data-testid="emergency-broadcasts">
             {emergencyBroadcasts.map((msg) => (
-              <div key={msg.id} className="bg-destructive-light border-2 border-destructive p-3 rounded-lg animate-critical-flash">
+              <div key={msg.id} className="bg-destructive-light border border-destructive rounded-lg p-3 animate-critical-flash">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5 animate-critical-glow" />
+                  <Pin className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <div className="text-sm font-bold text-destructive">{msg.broadcast_title || 'EMERGENCY BROADCAST'}</div>
                     <div className="text-sm text-foreground mt-1">{msg.text}</div>
@@ -99,7 +187,7 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
         )}
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin" data-testid="message-list">
           {loading ? (
             <div className="space-y-2">
               {[1, 2, 3].map((i) => (
@@ -108,55 +196,151 @@ export default function MessagingModal({ type, nodeId, nodeName, onClose }) {
             </div>
           ) : regularMessages.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              <p className="text-sm">No messages yet</p>
+              <Send className="w-10 h-10 mx-auto mb-3 opacity-50" />
+              <p className="text-sm font-medium">No messages yet</p>
+              <p className="text-xs mt-1">Start the conversation!</p>
             </div>
           ) : (
-            regularMessages.map((msg) => {
-              const isMe = msg.sender === 'me';
-              return (
-                <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[70%] ${isMe ? 'bg-primary text-primary-foreground' : 'glass'} p-3 rounded-lg`}>
-                    {!isMe && type === 'group' && (
-                      <div className="text-xs font-semibold mb-1">{msg.sender_name}</div>
-                    )}
-                    <div className="text-sm">{msg.text}</div>
-                    <div className={`text-xs mt-1 flex items-center gap-2 ${isMe ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                      <span>{formatTime(msg.timestamp)}</span>
-                      {msg.status && <span>• {msg.status}</span>}
-                      {msg.priority === 'urgent' && (
-                        <span className="text-warning">• URGENT</span>
+            <>
+              {regularMessages.map((msg) => {
+                const isMe = msg.sender === 'me';
+                const isBroadcast = msg.sender === 'broadcast';
+                return (
+                  <div 
+                    key={msg.id} 
+                    className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                    data-testid={`message-${msg.id}`}
+                  >
+                    <div className={`max-w-[75%] ${
+                      isBroadcast 
+                        ? 'bg-warning-light border border-warning' 
+                        : isMe 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'glass'
+                    } p-3 rounded-lg ${msg.status === 'failed' ? 'opacity-60' : ''}`}>
+                      {!isMe && type === 'group' && !isBroadcast && (
+                        <div className="text-xs font-semibold mb-1 flex items-center gap-1.5">
+                          {msg.sender_name}
+                          {msg.sender_status && (
+                            <span className={`px-1.5 py-0.5 rounded text-xs ${
+                              msg.sender_status === 'need_help' ? 'bg-destructive-light text-destructive' :
+                              msg.sender_status === 'okay' ? 'bg-warning-light text-warning' :
+                              'bg-success-light text-success'
+                            }`}>
+                              {msg.sender_status === 'need_help' ? 'HELP' : msg.sender_status.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      {isBroadcast && (
+                        <div className="text-xs font-bold text-warning mb-1 flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" />
+                          {msg.broadcast_title || 'BROADCAST'}
+                        </div>
+                      )}
+                      <div className="text-sm">{msg.text}</div>
+                      <div className={`text-xs mt-1.5 flex items-center gap-2 ${isMe ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                        <span>{formatTime(msg.timestamp)}</span>
+                        {isMe && msg.status && (
+                          <span className="flex items-center gap-1">
+                            {getStatusIcon(msg.status)}
+                            <span className={msg.status === 'failed' ? 'text-destructive' : msg.status === 'queued' ? 'text-warning' : ''}>
+                              {getStatusLabel(msg.status)}
+                            </span>
+                          </span>
+                        )}
+                        {msg.priority === 'urgent' && (
+                          <span className="flex items-center gap-0.5 text-warning font-medium">
+                            <Zap className="w-3 h-3" />
+                            URGENT
+                          </span>
+                        )}
+                      </div>
+                      {msg.status === 'failed' && isMe && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleRetry(msg)}
+                          className="mt-2 h-6 text-xs text-destructive hover:text-destructive"
+                        >
+                          <XCircle className="w-3 h-3 mr-1" />
+                          Tap to retry
+                        </Button>
                       )}
                     </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </>
           )}
         </div>
 
-        {/* Compose */}
-        <div className="glass-strong border-t border-border p-4 space-y-2">
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 text-xs cursor-pointer">
-              <input
-                type="checkbox"
-                checked={urgent}
-                onChange={(e) => setUrgent(e.target.checked)}
-                className="w-4 h-4"
-              />
-              <span className="text-warning font-medium">Mark as Urgent</span>
-            </label>
+        {/* Quick Templates */}
+        <div className="border-t border-border px-4 py-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-thin pb-1" data-testid="quick-templates">
+            {templates.map((template) => (
+              <Button
+                key={template.id}
+                size="sm"
+                variant="outline"
+                onClick={() => handleTemplateClick(template)}
+                className="h-7 text-xs whitespace-nowrap flex-shrink-0 border-border-strong"
+                data-testid={`template-${template.id}`}
+              >
+                <span className="mr-1">{template.icon}</span>
+                {template.text}
+              </Button>
+            ))}
           </div>
+        </div>
+
+        {/* Compose */}
+        <div className="glass-strong border-t border-border p-4 space-y-3">
+          {/* Urgent Toggle */}
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 cursor-pointer select-none" data-testid="urgent-toggle">
+              <div className={`relative w-10 h-5 rounded-full transition-colors ${urgent ? 'bg-warning' : 'bg-muted'}`}>
+                <input
+                  type="checkbox"
+                  checked={urgent}
+                  onChange={(e) => setUrgent(e.target.checked)}
+                  className="sr-only"
+                />
+                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${urgent ? 'translate-x-5' : 'translate-x-0.5'}`} />
+              </div>
+              <span className={`text-xs font-medium ${urgent ? 'text-warning' : 'text-muted-foreground'}`}>
+                <Zap className="w-3 h-3 inline mr-1" />
+                Mark as Urgent
+              </span>
+            </label>
+            {urgent && (
+              <span className="text-xs text-warning">Recipients will be notified immediately</span>
+            )}
+          </div>
+          
+          {/* Input */}
           <div className="flex gap-2">
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
               placeholder="Type your message..."
               className="flex-1"
+              disabled={sending}
+              data-testid="message-input"
             />
-            <Button onClick={handleSend} disabled={!newMessage.trim()}>
-              <Send className="w-4 h-4" />
+            <Button 
+              onClick={handleSend} 
+              disabled={!newMessage.trim() || sending}
+              className={urgent ? 'bg-warning hover:bg-warning/90 text-warning-foreground' : ''}
+              data-testid="send-btn"
+            >
+              {sending ? (
+                <Clock className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
             </Button>
           </div>
         </div>
