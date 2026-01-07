@@ -60,7 +60,7 @@ const commsMethodsData = [
       close-proximity coordination.
     `,
     whenToUse: [
-      'All devices are within Wi-Fi range (typically <100m indoors)',
+      'All devices are within Wi-Fi range (typically <300 ft indoors)',
       'You need fast, real-time communication',
       'Sharing large files or streaming',
       'Base camp or home scenarios',
@@ -72,7 +72,7 @@ const commsMethodsData = [
       { issue: 'Interference', fix: 'Change Wi-Fi channel or move away from microwaves/cordless phones' },
     ],
     specs: {
-      range: '50-100m (indoors), 200m+ (outdoors with clear line)',
+      range: '150-300 ft (indoors), 650+ ft (outdoors)',
       speed: '10-100+ Mbps',
       latency: '<50ms',
       power: 'Moderate (500-1000mW)',
@@ -90,7 +90,7 @@ const commsMethodsData = [
       Uses Meshtastic protocol for encrypted, decentralized messaging.
     `,
     whenToUse: [
-      'Devices are spread over long distances (1-10km+)',
+      'Devices are spread over long distances (0.5-6+ mi)',
       'No Wi-Fi or cellular infrastructure available',
       'Low-bandwidth text messaging is sufficient',
       'Need maximum battery life',
@@ -103,7 +103,7 @@ const commsMethodsData = [
       { issue: 'Antenna disconnected', fix: 'Check SMA/U.FL connector, never transmit without antenna' },
     ],
     specs: {
-      range: '1-10km (line of sight), 2-5km typical',
+      range: '0.5-6 mi (line of sight), 1-3 mi typical',
       speed: '0.3-5 kbps',
       latency: '1-60s (depends on hops)',
       power: 'Very low (100-500mW)',
