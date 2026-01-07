@@ -26,6 +26,7 @@ import NodeCard from './ally/NodeCard';
 import NodeDetailsDrawer from './ally/NodeDetailsDrawer';
 import MessagingModal from './ally/MessagingModal';
 import BroadcastModal from './ally/BroadcastModal';
+import AllyMapView from './ally/AllyMapView';
 import { lockBodyScroll, unlockBodyScroll, captureScrollPosition } from '../utils/scrollLock';
 
 export default function AllyCommunicationsHub() {
@@ -64,6 +65,9 @@ export default function AllyCommunicationsHub() {
   
   // Connection status
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, lastError: null });
+  
+  // Tab state for Chat/Map view
+  const [activeTab, setActiveTab] = useState('chat');
 
   useEffect(() => {
     fetchNodes();
