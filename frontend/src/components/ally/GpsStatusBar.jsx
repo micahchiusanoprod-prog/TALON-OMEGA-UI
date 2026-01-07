@@ -16,8 +16,9 @@ import {
 
 // Mock GPS status - will be replaced with real data from Pi
 const getMockGpsStatus = () => {
-  // Simulate occasional no-fix state
-  const hasFix = Math.random() > 0.3;
+  // For testing: set to false to see "No Fix" state with Quick Help
+  // In production, this will be replaced with real GPS data from Pi
+  const hasFix = true; // Change to false to test "No Fix" state
   return {
     hasFix,
     lastUpdate: hasFix ? new Date() : new Date(Date.now() - 300000),
