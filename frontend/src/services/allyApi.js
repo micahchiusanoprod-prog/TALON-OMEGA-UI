@@ -262,10 +262,11 @@ class AllyApiService {
   async getDM(nodeId) {
     if (!config.features.enableMockData) {
       try {
-        const since = this.cache.dmChats[nodeId]?.timestamp
-          ? `?since=${this.cache.dmChats[nodeId].timestamp.toISOString()}`
-          : '';
-        const response = await this.retryFetch(`${this.baseUrl}/api/ally/chat/dm/${nodeId}${since}`);
+        const params = this.cache.dmChats[nodeId]?.timestamp
+          ? { since: this.cache.dmChats[nodeId].timestamp.toISOString() }
+          : {};
+        const url = this.buildUrl(`/api/ally/chat/dm/${nodeId}`, params);
+        const response = await this.retryFetch(url);
         const data = await response.json();
         
         // Initialize cache for this node if needed
@@ -316,14 +317,11 @@ class AllyApiService {
     
     if (!config.features.enableMockData) {
       try {
-        const response = await this.fetchWithTimeout(
-          `${this.baseUrl}/api/ally/chat/dm/${nodeId}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, priority }),
-          }
-        );
+        const url = this.buildUrl(`/api/ally/chat/dm/${nodeId}`);
+        const response = await this.fetchWithTimeout(url, {
+          method: 'POST',
+          body: JSON.stringify({ text, priority }),
+        });
         const result = await response.json();
         
         // Update temp message
