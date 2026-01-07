@@ -597,11 +597,17 @@ export default function AllyCommunicationsHub() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Tab Navigation for Chat/Map/Guide */}
-          <div className="flex items-center gap-1 glass rounded-lg p-1" data-testid="ally-hub-tabs">
+          {/* Comms Availability Panel */}
+          <CommsAvailabilityPanel 
+            onMethodSelect={setSelectedCommsMethod}
+            selectedMethod={selectedCommsMethod}
+          />
+
+          {/* Tab Navigation - 5 tabs with horizontal scroll on mobile */}
+          <div className="flex items-center gap-1 glass rounded-lg p-1 overflow-x-auto scrollbar-thin" data-testid="ally-hub-tabs">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === 'chat' 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
@@ -620,7 +626,7 @@ export default function AllyCommunicationsHub() {
             </button>
             <button
               onClick={() => setActiveTab('map')}
-              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === 'map' 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
@@ -636,8 +642,32 @@ export default function AllyCommunicationsHub() {
               </span>
             </button>
             <button
+              onClick={() => setActiveTab('codes')}
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                activeTab === 'codes' 
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              }`}
+              data-testid="tab-codes"
+            >
+              <Book className="w-4 h-4" />
+              Codes
+            </button>
+            <button
+              onClick={() => setActiveTab('knowledge')}
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
+                activeTab === 'knowledge' 
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              }`}
+              data-testid="tab-knowledge"
+            >
+              <Wifi className="w-4 h-4" />
+              <span className="hidden sm:inline">Comms</span> <span className="hidden md:inline">Knowledge</span>
+            </button>
+            <button
               onClick={() => setActiveTab('guide')}
-              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === 'guide' 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
