@@ -55,7 +55,7 @@ export default function CommunitySection({ fullWidth = true }) {
             <Button
               size="sm"
               onClick={handleNewPost}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="bg-primary hover:bg-primary-hover text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200"
             >
               <Plus className="w-4 h-4 mr-1" />
               New Post
