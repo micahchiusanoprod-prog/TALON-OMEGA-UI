@@ -612,7 +612,7 @@ export default function AllyCommunicationsHub() {
             </button>
             <button
               onClick={() => setActiveTab('map')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
                 activeTab === 'map' 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
@@ -627,7 +627,22 @@ export default function AllyCommunicationsHub() {
                 {nodes.filter(n => n.gps && n.gps.lat && n.gps.lon).length}
               </span>
             </button>
+            <button
+              onClick={() => setActiveTab('guide')}
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === 'guide' 
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              }`}
+              data-testid="tab-guide"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="hidden sm:inline">GPS</span> Guide
+            </button>
           </div>
+
+          {/* Tab Description - accessible legend and context */}
+          <AllyHubHelp activeTab={activeTab} compact />
 
           {/* Chat Tab Content */}
           {activeTab === 'chat' && (
