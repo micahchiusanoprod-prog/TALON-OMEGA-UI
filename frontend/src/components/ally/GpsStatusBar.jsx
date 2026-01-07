@@ -22,12 +22,16 @@ const getMockGpsStatus = () => {
   return {
     hasFix,
     lastUpdate: hasFix ? new Date() : new Date(Date.now() - 300000),
-    accuracy: hasFix ? 4.2 : null,
+    accuracy: hasFix ? 13.8 : null, // feet (was 4.2m)
     satellites: hasFix ? 9 : 0,
-    altitude: hasFix ? 52 : null,
+    altitude: hasFix ? 171 : null, // feet (was 52m)
     hdop: hasFix ? 1.2 : null,
   };
 };
+
+// Conversion helpers
+const metersToFeet = (m) => m ? Math.round(m * 3.28084) : null;
+const metersToMiles = (m) => m ? (m * 0.000621371).toFixed(1) : null;
 
 const QuickHelpTips = ({ isOpen, onToggle }) => {
   if (!isOpen) return null;
@@ -89,17 +93,17 @@ export default function GpsStatusBar({ gpsStatus: externalStatus }) {
   
   const getAccuracyLabel = (acc) => {
     if (!acc) return '—';
-    if (acc <= 3) return 'Excellent';
-    if (acc <= 10) return 'Good';
-    if (acc <= 25) return 'Fair';
+    if (acc <= 10) return 'Excellent';  // ≤10 ft
+    if (acc <= 33) return 'Good';       // ≤33 ft (~10m)
+    if (acc <= 82) return 'Fair';       // ≤82 ft (~25m)
     return 'Poor';
   };
   
   const getAccuracyColor = (acc) => {
     if (!acc) return 'text-muted-foreground';
-    if (acc <= 3) return 'text-success';
     if (acc <= 10) return 'text-success';
-    if (acc <= 25) return 'text-warning';
+    if (acc <= 33) return 'text-success';
+    if (acc <= 82) return 'text-warning';
     return 'text-destructive';
   };
 
@@ -142,7 +146,7 @@ export default function GpsStatusBar({ gpsStatus: externalStatus }) {
             <div className="flex items-center gap-1" title="Horizontal Accuracy">
               <Target className="w-3 h-3 text-muted-foreground" />
               <span className={getAccuracyColor(gpsStatus.accuracy)}>
-                {gpsStatus.accuracy ? `±${gpsStatus.accuracy}m` : '—'}
+                {gpsStatus.accuracy ? `±${gpsStatus.accuracy} ft` : '—'}
               </span>
             </div>
             
@@ -164,7 +168,7 @@ export default function GpsStatusBar({ gpsStatus: externalStatus }) {
             <div className="flex items-center gap-1" title="Altitude">
               <Mountain className="w-3 h-3 text-muted-foreground" />
               <span className="text-muted-foreground">
-                {gpsStatus.altitude !== null ? `${gpsStatus.altitude}m` : '—'}
+                {gpsStatus.altitude !== null ? `${gpsStatus.altitude} ft` : '—'}
               </span>
             </div>
             
