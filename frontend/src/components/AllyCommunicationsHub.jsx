@@ -903,6 +903,13 @@ export default function AllyCommunicationsHub() {
           onSent={handleBroadcastSent}
         />
       )}
+
+      {/* Help Modal */}
+      <AllyHubHelp 
+        activeTab={activeTab} 
+        isOpen={showHelp} 
+        onClose={() => setShowHelp(false)} 
+      />
     </>
   );
 }
