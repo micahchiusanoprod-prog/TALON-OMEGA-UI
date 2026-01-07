@@ -362,14 +362,11 @@ class AllyApiService {
   async broadcastAlert(title, message, severity = 'warning') {
     if (!config.features.enableMockData) {
       try {
-        const response = await this.fetchWithTimeout(
-          `${this.baseUrl}/api/ally/broadcast`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, message, severity }),
-          }
-        );
+        const url = this.buildUrl('/api/ally/broadcast');
+        const response = await this.fetchWithTimeout(url, {
+          method: 'POST',
+          body: JSON.stringify({ title, message, severity }),
+        });
         const result = await response.json();
         return { queued: result.status === 'queued', id: result.id };
       } catch (error) {
@@ -388,7 +385,8 @@ class AllyApiService {
   async getCurrentUserStatus() {
     if (!config.features.enableMockData) {
       try {
-        const response = await this.retryFetch(`${this.baseUrl}/api/ally/status/me`);
+        const url = this.buildUrl('/api/ally/status/me');
+        const response = await this.retryFetch(url);
         const data = await response.json();
         this.cache.userStatus = data;
         // Also save to localStorage for offline access
@@ -429,14 +427,11 @@ class AllyApiService {
     
     if (!config.features.enableMockData) {
       try {
-        const response = await this.fetchWithTimeout(
-          `${this.baseUrl}/api/ally/status/me`,
-          {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status, note: statusData.note }),
-          }
-        );
+        const url = this.buildUrl('/api/ally/status/me');
+        const response = await this.fetchWithTimeout(url, {
+          method: 'PUT',
+          body: JSON.stringify({ status, note: statusData.note }),
+        });
         const result = await response.json();
         return result;
       } catch (error) {
