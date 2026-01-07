@@ -472,11 +472,20 @@ const PostCard = ({ post, onReact, onVote, onComment }) => {
   );
 };
 
-// New Post Composer
+// Mock Status Data for Status Report
+const getMockStatusData = () => ({
+  battery: { percentage: 72, runtime: '4h 5m' },
+  gps: { fix: '3D', accuracy: '±10 ft' },
+  comms: { available: 2, degraded: 1, unavailable: 2, selected: 'LAN / Wi-Fi' },
+});
+
+// New Post Composer with Status Report feature
 const NewPostComposer = ({ onPost, onClose }) => {
   const [content, setContent] = useState('');
   const [type, setType] = useState('post');
   const [pollOptions, setPollOptions] = useState(['', '']);
+  const [pollHasImages, setPollHasImages] = useState(false);
+  const [isAlertPost, setIsAlertPost] = useState(false);
   
   const handleAddOption = () => {
     if (pollOptions.length < 4) {
@@ -490,6 +499,24 @@ const NewPostComposer = ({ onPost, onClose }) => {
     }
   };
   
+  // Generate Status Report content
+  const handleStatusReport = () => {
+    const status = getMockStatusData();
+    const timestamp = new Date().toLocaleString();
+    
+    const statusContent = `📊 #StatusReport
+
+🔋 Battery: ${status.battery.percentage}% | Runtime: ${status.battery.runtime}
+📍 GPS: ${status.gps.fix} Fix | Accuracy: ${status.gps.accuracy}
+📡 Comms: ${status.comms.available} UP / ${status.comms.degraded} WEAK / ${status.comms.unavailable} DOWN
+🔌 Using: ${status.comms.selected}
+
+⏰ ${timestamp}`;
+    
+    setContent(statusContent);
+    setType(isAlertPost ? 'alert' : 'post');
+  };
+  
   const handleSubmit = () => {
     if (!content.trim()) return;
     
@@ -501,9 +528,11 @@ const NewPostComposer = ({ onPost, onClose }) => {
           options: pollOptions.filter(o => o.trim()).map((text, i) => ({
             id: `new-opt-${i}`,
             text,
+            image: pollHasImages ? `placeholder-image-${i}` : null, // UI-stubbed image support
             votes: 0
           })),
           expiresAt: new Date(Date.now() + 86400000),
+          hasImages: pollHasImages,
         }
       })
     };
@@ -540,6 +569,39 @@ const NewPostComposer = ({ onPost, onClose }) => {
         ))}
       </div>
       
+      {/* STATUS REPORT BUTTON */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleStatusReport}
+        className="w-full flex items-center justify-center gap-2 border-primary/30 hover:bg-primary/10"
+        data-testid="status-report-btn"
+      >
+        <FileText className="w-4 h-4 text-primary" />
+        <span className="font-medium">Post Status Report</span>
+        <span className="text-xs text-muted-foreground">(Auto-fill from device)</span>
+      </Button>
+      
+      {/* Alert toggle for Status Report */}
+      {content.includes('#StatusReport') && (
+        <div className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            id="alert-toggle"
+            checked={isAlertPost}
+            onChange={(e) => {
+              setIsAlertPost(e.target.checked);
+              setType(e.target.checked ? 'alert' : 'post');
+            }}
+            className="w-4 h-4 rounded border-destructive accent-destructive"
+          />
+          <label htmlFor="alert-toggle" className="flex items-center gap-1.5 cursor-pointer">
+            <AlertCircle className="w-4 h-4 text-destructive" />
+            <span className="text-destructive font-medium">Share as Alert</span>
+          </label>
+        </div>
+      )}
+      
       {/* Content Input */}
       <textarea
         value={content}
@@ -556,9 +618,30 @@ const NewPostComposer = ({ onPost, onClose }) => {
       
       {/* Poll Options */}
       {type === 'poll' && (
-        <div className="space-y-2">
+        <div className="space-y-3">
+          {/* Image poll toggle */}
+          <div className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              id="image-poll"
+              checked={pollHasImages}
+              onChange={(e) => setPollHasImages(e.target.checked)}
+              className="w-4 h-4 rounded"
+            />
+            <label htmlFor="image-poll" className="flex items-center gap-1.5 cursor-pointer text-muted-foreground">
+              <ImageIcon className="w-4 h-4" />
+              <span>Add images to options</span>
+              <span className="text-xs">(coming soon)</span>
+            </label>
+          </div>
+          
           {pollOptions.map((option, index) => (
             <div key={index} className="flex gap-2">
+              {pollHasImages && (
+                <div className="w-12 h-12 rounded-lg glass border-2 border-dashed border-muted-foreground/30 flex items-center justify-center flex-shrink-0">
+                  <ImageIcon className="w-5 h-5 text-muted-foreground/50" />
+                </div>
+              )}
               <Input
                 value={option}
                 onChange={(e) => {
@@ -593,7 +676,7 @@ const NewPostComposer = ({ onPost, onClose }) => {
       {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" className="h-8">
+          <Button variant="ghost" size="sm" className="h-8" title="Add image (coming soon)">
             <ImageIcon className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="sm" className="h-8">
