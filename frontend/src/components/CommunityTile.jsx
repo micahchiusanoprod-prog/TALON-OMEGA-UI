@@ -23,7 +23,12 @@ import {
   AlertCircle,
   RefreshCw,
   Filter,
-  User
+  User,
+  Battery,
+  MapPin,
+  Radio,
+  Zap,
+  FileText
 } from 'lucide-react';
 import { Input } from './ui/input';
 import TileHelpTabs, { QuickHelpTips } from './ui/TileHelpTabs';
