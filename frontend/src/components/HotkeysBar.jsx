@@ -300,7 +300,7 @@ export function HotkeysCustomizeModal({ onClose }) {
         <div className="p-4 overflow-y-auto max-h-[calc(80vh-120px)]">
           {/* Info */}
           <p className="text-xs text-muted-foreground mb-4">
-            First {VISIBLE_COUNT} tools show in the bar. Additional tools appear in "More" dropdown.
+            First {VISIBLE_COUNT} tools show in the bar. Additional tools appear in the More dropdown.
           </p>
           
           {/* Current Pinned */}
