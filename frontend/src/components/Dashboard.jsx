@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import SearchBar from './SearchBar';
+import AllyCommunicationsHub from './AllyCommunicationsHub';
 import EnvironmentTile from './EnvironmentTile';
 import DeviceInfoTile from './DeviceInfoTile';
 import HotspotTile from './HotspotTile';
@@ -59,28 +60,33 @@ export default function Dashboard({ theme, onToggleTheme }) {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-24 space-y-8">
-        {/* Quality of Life - Minimal Compact Version */}
+        {/* Ally Communications Hub - HIGH PRIORITY */}
         <div className="animate-fade-in">
+          <AllyCommunicationsHub />
+        </div>
+
+        {/* Quality of Life - Minimal Compact Version */}
+        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
           <QualityOfLifeSection compact />
         </div>
 
         {/* Hero Search */}
-        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
           <SearchBar />
         </div>
 
         {/* Community */}
-        <div className="animate-fade-in mt-12" style={{ animationDelay: '200ms' }}>
+        <div className="animate-fade-in mt-12" style={{ animationDelay: '300ms' }}>
           <CommunitySection />
         </div>
 
         {/* Entertainment */}
-        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
           <EntertainmentSection />
         </div>
 
         {/* Environment, Device Info & Hotspot */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '400ms' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '500ms' }}>
           <EnvironmentTile />
           <DeviceInfoTile />
           <HotspotTile />
