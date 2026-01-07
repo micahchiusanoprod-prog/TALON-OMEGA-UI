@@ -878,7 +878,7 @@ export default function AllyCommunicationsHub() {
                   size="sm"
                   variant={filterStatus === key ? 'default' : 'outline'}
                   onClick={() => setFilterStatus(key)}
-                  className={`h-9 text-xs ${filterStatus === key ? '' : 'border-border-strong bg-secondary/30'}`}
+                  className={`h-8 text-xs ${filterStatus === key ? '' : 'border-border-strong bg-secondary/30'}`}
                   data-testid={`filter-${key}-btn`}
                 >
                   {Icon && <Icon className="w-3 h-3 mr-1" />}
@@ -890,7 +890,7 @@ export default function AllyCommunicationsHub() {
                   size="sm"
                   variant="ghost"
                   onClick={() => setFilterStatus('all')}
-                  className="h-9 text-xs text-muted-foreground"
+                  className="h-8 text-xs text-muted-foreground"
                   data-testid="clear-filter-btn"
                 >
                   <X className="w-3 h-3 mr-1" />
@@ -900,33 +900,27 @@ export default function AllyCommunicationsHub() {
             </div>
           </div>
 
-          {/* Node List */}
+          {/* Compact Node Avatar Strip */}
           {filteredNodes.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground" data-testid="no-nodes-found">
-              <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p className="text-sm">No nodes found</p>
+            <div className="text-center py-6 text-muted-foreground" data-testid="no-nodes-found">
+              <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-xs">No nodes match filters</p>
               {(searchQuery || filterStatus !== 'all') && (
                 <Button
                   variant="link"
                   onClick={() => { setSearchQuery(''); setFilterStatus('all'); }}
-                  className="text-primary text-sm mt-2"
+                  className="text-primary text-xs mt-1"
                 >
                   Clear filters
                 </Button>
               )}
             </div>
           ) : (
-            <div className="space-y-3 max-h-[500px] overflow-y-auto scrollbar-thin" data-testid="node-list">
-              {filteredNodes.map((node) => (
-                <NodeCard
-                  key={node.node_id}
-                  node={node}
-                  onMessage={handleMessage}
-                  onDetails={handleDetails}
-                  onPing={handlePing}
-                />
-              ))}
-            </div>
+            <NodeAvatarStrip
+              nodes={filteredNodes}
+              onNodeClick={handleDetails}
+              selectedNodeId={selectedNode?.node_id}
+            />
           )}
         </CardContent>
       </Card>
