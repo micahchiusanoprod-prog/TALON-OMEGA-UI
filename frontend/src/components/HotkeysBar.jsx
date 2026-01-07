@@ -182,14 +182,14 @@ function MoreDropdown({ hotkeys, onHotkeyClick }) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2.5 rounded-xl glass hover:bg-primary/10 active:bg-primary/20 transition-all"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl glass-strong hover:bg-primary/10 active:bg-primary/20 transition-all"
         data-testid="hotkey-more-btn"
       >
-        <div className="w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center">
-          <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
+        <div className="w-10 h-10 rounded-xl bg-secondary/30 flex items-center justify-center">
+          <MoreHorizontal className="w-6 h-6 text-muted-foreground" />
         </div>
-        <span className="text-sm font-medium">More</span>
-        <span className="text-xs px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+        <span className="text-sm font-semibold">More</span>
+        <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground font-bold">
           {hotkeys.length}
         </span>
       </button>
