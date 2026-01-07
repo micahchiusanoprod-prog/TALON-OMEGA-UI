@@ -8,7 +8,9 @@ import {
   Users,
   CheckCircle,
   Circle,
-  AlertTriangle
+  AlertTriangle,
+  Radio,
+  Book
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -41,6 +43,26 @@ const tabDescriptions = {
       'Check the "Troubleshooting" section if GPS shows "No Fix"',
       'Best Practices helps optimize your antenna setup',
       'Quick Reference has key numbers you need to remember'
+    ]
+  },
+  knowledge: {
+    title: 'Comms Knowledge',
+    icon: Radio,
+    description: 'Field manual for communication systems. Learn when to use each method, how they work, and how to troubleshoot failures.',
+    tips: [
+      'Quick Decision Guide helps pick the right transport',
+      'Each method shows range, speed, latency, and power specs',
+      'Failure Modes section has specific fixes for common issues'
+    ]
+  },
+  codes: {
+    title: 'Codebook',
+    icon: Book,
+    description: 'Standard emergency and tactical codes for efficient radio communication. Compose multi-code messages quickly.',
+    tips: [
+      'Use category filters to find codes by type (Medical, Safety, etc.)',
+      'Click + to build a multi-code message',
+      'COPY = Understood, WILCO = Will comply, MAYDAY = Emergency'
     ]
   }
 };
