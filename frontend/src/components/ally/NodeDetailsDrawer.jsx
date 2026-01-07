@@ -29,27 +29,10 @@ import {
 import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
 
-export default function NodeDetailsDrawer({ node, onClose, onMessage, savedScrollPosition = 0 }) {
+export default function NodeDetailsDrawer({ node, onClose, onMessage }) {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Lock body scroll when drawer opens
-  useEffect(() => {
-    const scrollY = savedScrollPosition || window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.style.overflowY = 'scroll';
-    
-    return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflowY = '';
-      window.scrollTo(0, scrollY);
-    };
-  }, [savedScrollPosition]);
 
   useEffect(() => {
     fetchDetails();
