@@ -105,6 +105,11 @@ export default function Dashboard({ theme, onToggleTheme }) {
           <PowerTile />
         </div>
 
+        {/* Community Tile - Social Feed */}
+        <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
+          <CommunityTile />
+        </div>
+
         {/* Entertainment */}
         <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
           <EntertainmentSection />
