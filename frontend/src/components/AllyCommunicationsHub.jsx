@@ -613,6 +613,19 @@ export default function AllyCommunicationsHub() {
                   })}
                 </>
               )}
+              </div>
+              
+              {/* Jump to Latest Button */}
+              {hasNewMessages && !isNearBottom && (
+                <button
+                  onClick={handleJumpToLatest}
+                  className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:bg-primary-hover transition-colors flex items-center gap-1 animate-fade-in"
+                  data-testid="jump-to-latest-btn"
+                >
+                  <ChevronDown className="w-3 h-3" />
+                  New messages
+                </button>
+              )}
             </div>
             
             {/* Chat Input */}
