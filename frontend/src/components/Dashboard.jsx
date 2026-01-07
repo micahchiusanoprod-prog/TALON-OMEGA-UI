@@ -3,6 +3,7 @@ import Header from './Header';
 import SearchBar from './SearchBar';
 import EnvironmentTile from './EnvironmentTile';
 import DeviceInfoTile from './DeviceInfoTile';
+import HotspotTile from './HotspotTile';
 import EntertainmentSection from './EntertainmentSection';
 import CommunitySection from './CommunitySection';
 import QualityOfLifeSection from './QualityOfLifeSection';
@@ -78,10 +79,11 @@ export default function Dashboard({ theme, onToggleTheme }) {
           <EntertainmentSection />
         </div>
 
-        {/* Environment & Device Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '400ms' }}>
+        {/* Environment, Device Info & Hotspot */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '400ms' }}>
           <EnvironmentTile />
           <DeviceInfoTile />
+          <HotspotTile />
         </div>
       </main>
 
