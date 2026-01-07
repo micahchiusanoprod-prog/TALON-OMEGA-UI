@@ -1,7 +1,22 @@
 // OMEGA Dashboard Configuration
-// Single source of truth for all endpoints and settings
+// Single source of truth for all configurable values
 
 const config = {
+  // API Configuration
+  api: {
+    // Base URL for the main OMEGA backend (port 8093 on Pi)
+    // In preview: uses mock data
+    // In production: set via REACT_APP_PI_API_URL environment variable
+    baseUrl: process.env.REACT_APP_PI_API_URL || 'http://127.0.0.1:8093/cgi-bin',
+    
+    // API Key for authentication
+    // Set via REACT_APP_PI_API_KEY environment variable
+    apiKey: process.env.REACT_APP_PI_API_KEY || '',
+    
+    // Request timeout in milliseconds
+    timeout: 5000,
+  },
+
   // Base URLs for local services
   endpoints: {
     kiwix: 'http://127.0.0.1:8090',
