@@ -50,9 +50,12 @@ export default function AllyCommunicationsHub() {
   const [statusNote, setStatusNote] = useState('');
   const statusDropdownRef = useRef(null);
   
-  // Track if user sent a message (only auto-scroll then)
+  // Track chat scroll state for smart auto-scroll
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(true);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
   const chatContainerRef = useRef(null);
+  const prevMessageCountRef = useRef(0);
   
   // Broadcast alert tracking
   const [alertsBadgeCount, setAlertsBadgeCount] = useState(0);
@@ -78,13 +81,51 @@ export default function AllyCommunicationsHub() {
     return () => clearInterval(retryInterval);
   }, []);
 
-  // Only scroll chat container when user sends a message
+  // Smart auto-scroll: only when user sent message OR user is near bottom and new messages arrive
   useEffect(() => {
-    if (shouldAutoScroll && chatContainerRef.current) {
+    if (!chatContainerRef.current) return;
+    
+    const newMessageCount = globalMessages.length;
+    const hadNewMessages = newMessageCount > prevMessageCountRef.current;
+    prevMessageCountRef.current = newMessageCount;
+    
+    // Auto-scroll if user explicitly sent a message
+    if (shouldAutoScroll) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
       setShouldAutoScroll(false);
+      setHasNewMessages(false);
+      return;
     }
-  }, [globalMessages, shouldAutoScroll]);
+    
+    // Auto-scroll if near bottom and new messages arrived
+    if (hadNewMessages && isNearBottom) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      setHasNewMessages(false);
+    } else if (hadNewMessages && !isNearBottom) {
+      // Show "new messages" indicator
+      setHasNewMessages(true);
+    }
+  }, [globalMessages, shouldAutoScroll, isNearBottom]);
+
+  // Track if user is near bottom of chat
+  const handleChatScroll = () => {
+    if (!chatContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    setIsNearBottom(distanceFromBottom < 50); // Within 50px of bottom
+    if (distanceFromBottom < 50) {
+      setHasNewMessages(false);
+    }
+  };
+
+  // Jump to latest messages
+  const handleJumpToLatest = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      setHasNewMessages(false);
+      setIsNearBottom(true);
+    }
+  };
 
   // Close status dropdown on click outside
   useEffect(() => {
