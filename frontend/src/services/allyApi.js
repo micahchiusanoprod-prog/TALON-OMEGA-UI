@@ -7,6 +7,8 @@ import config from '../config';
 class AllyApiService {
   constructor() {
     this.baseUrl = config.ally.apiBase;
+    this.apiKey = config.api.apiKey;
+    this.timeout = config.api.timeout || 5000;
     this.cache = {
       nodes: null,
       nodesTimestamp: null,
@@ -18,17 +20,58 @@ class AllyApiService {
     this.messageQueue = [];
     this.isOnline = false;
     this.lastError = null;
+    this.retryTimer = null;
   }
 
   // ============= HELPERS =============
 
-  async fetchWithTimeout(url, options = {}, timeout = 5000) {
+  /**
+   * Build URL with optional API key as query parameter
+   * Supports both header auth and query param fallback
+   */
+  buildUrl(endpoint, params = {}) {
+    const url = new URL(endpoint, this.baseUrl);
+    
+    // Add API key as query param if configured (fallback auth method)
+    if (this.apiKey) {
+      url.searchParams.set('key', this.apiKey);
+    }
+    
+    // Add any additional params
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, value);
+      }
+    });
+    
+    return url.toString();
+  }
+
+  /**
+   * Build headers with API key (primary auth method)
+   */
+  buildHeaders(additionalHeaders = {}) {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...additionalHeaders,
+    };
+    
+    // Add API key as header if configured
+    if (this.apiKey) {
+      headers['X-API-Key'] = this.apiKey;
+    }
+    
+    return headers;
+  }
+
+  async fetchWithTimeout(url, options = {}) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
     
     try {
       const response = await fetch(url, {
         ...options,
+        headers: this.buildHeaders(options.headers),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -43,14 +86,14 @@ class AllyApiService {
     } catch (error) {
       clearTimeout(timeoutId);
       this.isOnline = false;
-      this.lastError = error.message;
+      this.lastError = error.name === 'AbortError' ? 'Request timeout' : error.message;
       throw error;
     }
   }
 
-  async retryFetch(url, options = {}, retries = config.retry.maxAttempts) {
+  async retryFetch(url, options = {}, retries = config.retry?.maxAttempts || 3) {
     let lastError;
-    let delay = config.retry.baseDelay;
+    let delay = config.retry?.baseDelay || 1000;
     
     for (let i = 0; i < retries; i++) {
       try {
@@ -59,7 +102,7 @@ class AllyApiService {
         lastError = error;
         if (i < retries - 1) {
           await new Promise(resolve => setTimeout(resolve, delay));
-          delay = Math.min(delay * config.retry.backoffFactor, config.retry.maxDelay);
+          delay = Math.min(delay * (config.retry?.backoffFactor || 2), config.retry?.maxDelay || 10000);
         }
       }
     }
@@ -75,16 +118,18 @@ class AllyApiService {
       isOnline: this.isOnline,
       lastError: this.lastError,
       lastUpdated: this.cache.nodesTimestamp,
+      queuedMessages: this.messageQueue.length,
     };
   }
 
   // ============= NODE DISCOVERY =============
 
   async getNodes() {
-    // Try live backend first
+    // Try live backend first if mock mode is disabled
     if (!config.features.enableMockData) {
       try {
-        const response = await this.retryFetch(`${this.baseUrl}/api/ally/nodes`);
+        const url = this.buildUrl('/api/ally/nodes');
+        const response = await this.retryFetch(url);
         const data = await response.json();
         
         // Cache the result
@@ -110,7 +155,8 @@ class AllyApiService {
   async getNodeStatus(nodeId) {
     if (!config.features.enableMockData) {
       try {
-        const response = await this.retryFetch(`${this.baseUrl}/api/ally/node/${nodeId}/status`);
+        const url = this.buildUrl(`/api/ally/node/${nodeId}/status`);
+        const response = await this.retryFetch(url);
         const data = await response.json();
         return data;
       } catch (error) {
