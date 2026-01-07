@@ -16,7 +16,8 @@ import {
   HelpCircle,
   CheckCircle,
   Circle,
-  Pin
+  Pin,
+  Map
 } from 'lucide-react';
 import { toast } from 'sonner';
 import allyApi from '../services/allyApi';

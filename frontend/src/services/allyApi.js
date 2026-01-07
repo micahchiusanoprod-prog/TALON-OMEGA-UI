@@ -535,6 +535,7 @@ class AllyApiService {
         link_type: 'Hotspot',
         rssi: -45,
         alerts_count: 0,
+        gps: { lat: 37.7749, lon: -122.4194, acc: 5.2 },
       },
       {
         node_id: 'omega-02',
@@ -550,6 +551,7 @@ class AllyApiService {
         link_type: 'LAN',
         rssi: -52,
         alerts_count: 1,
+        gps: { lat: 37.7755, lon: -122.4180, acc: 3.8 },
       },
       {
         node_id: 'omega-03',
@@ -565,6 +567,7 @@ class AllyApiService {
         link_type: 'Mesh',
         rssi: -68,
         alerts_count: 2,
+        gps: { lat: 37.7760, lon: -122.4210, acc: 8.5 },
       },
       {
         node_id: 'omega-04',
@@ -580,6 +583,7 @@ class AllyApiService {
         link_type: null,
         rssi: null,
         alerts_count: 0,
+        gps: null, // No GPS - will appear in "No GPS" panel
       },
     ];
   }
