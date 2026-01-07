@@ -48,10 +48,40 @@ All UI/UX is complete and polished with mock data. Integration layer is producti
 | **Map Controls** | ✅ | "All Nodes" + "My Location" (placeholder) buttons |
 | **Comms Availability Panel** | ✅ | 4 transport cards (LAN, Mesh, SMS, HF) with status indicators |
 | **Transport Selection** | ✅ | Click to select, info bar shows selected method + warnings |
+| **Comms Availability Clarity** | ✅ | Helper text, RED for unavailable, explanation areas for degraded/unavailable |
 | **Codes Tab (Codebook)** | ✅ | 49 codes, search, 5 category filters, compose helper |
 | **Compose with Codes** | ✅ | Build multi-code messages, send to chat |
 | **Comms Knowledge Tab** | ✅ | Field manual with Quick Decision Guide + accordion sections |
 | **Transport Failure Modes** | ✅ | Each method shows how it works, when to use, failure modes, specs |
+| **US Units** | ✅ | All GPS/map/tips use feet/miles (not meters/km) |
+| **Compact Node List** | ✅ | Horizontal avatar strip with initials, status badges, short names |
+
+---
+
+## ✅ COMPLETED: New Dashboard Tiles (Preview Phase)
+
+| Tile | Status | Notes |
+|------|--------|-------|
+| **Camera Tile** | ✅ | Daily Diary, Photos, Videos, Voice Memo sections |
+| **Diary Timestamp Toggle** | ✅ | Overlay date + time while recording |
+| **Person Tagging** | ✅ | Manual tag selector (placeholder) |
+| **Security Tile** | ✅ | People list with permission levels (Admin/Member/Guest) |
+| **Fingerprint Management** | ✅ | Add/remove fingerprint UI (placeholder) |
+| **Security Education Tab** | ✅ | How to add fingerprints, permissions, troubleshooting |
+| **Music Tile** | ✅ | Mini player, Most Played, Liked, Albums sections |
+| **Music Placeholders** | ✅ | Lyrics + Music Videos structure (coming soon) |
+
+---
+
+## ✅ COMPLETED: Hotkeys Customization (QoL)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Hotkeys Bar** | ✅ | Top row with 8 default quick access buttons |
+| **Customize Modal** | ✅ | Add/remove/reorder hotkeys |
+| **localStorage Persistence** | ✅ | Selection survives refresh |
+| **27 Available Hotkeys** | ✅ | 6 categories: Default, Navigation, Comms, System, Tools, Entertainment |
+| **Reset to Default** | ✅ | One-click restore to default 8 |
 
 ### Integration Layer (Production-Ready)
 
@@ -103,22 +133,28 @@ url.searchParams.set('key', this.apiKey);
 ```
 /app/frontend/src/
 ├── components/
+│   ├── Dashboard.jsx                # Main dashboard with HotkeysBar and new tiles
 │   ├── AllyCommunicationsHub.jsx    # Main hub with 5 tabs, Comms Panel, Help button
+│   ├── CameraTile.jsx               # Camera with Diary, Photos, Videos, Voice Memo
+│   ├── SecurityTile.jsx             # People + Fingerprints + Permissions + Education
+│   ├── MusicTile.jsx                # Music player with sections
+│   ├── HotkeysBar.jsx               # Customizable hotkeys with localStorage
 │   └── ally/
 │       ├── NodeCard.jsx             # Individual node card with status badges
 │       ├── NodeDetailsDrawer.jsx    # Full node details drawer
+│       ├── NodeAvatarStrip.jsx      # Compact horizontal node list
 │       ├── MessagingModal.jsx       # DM modal with templates
 │       ├── BroadcastModal.jsx       # Broadcast with confirmation
 │       ├── AllyMapView.jsx          # Map view with GPS status bar and controls
 │       ├── LazyMapContent.jsx       # Leaflet map with markers and popups
-│       ├── GpsStatusBar.jsx         # GPS fix status bar with metrics
-│       ├── GpsGuide.jsx             # Educational GPS guide with accordions
+│       ├── GpsStatusBar.jsx         # GPS fix status bar (US units: feet)
+│       ├── GpsGuide.jsx             # Educational GPS guide (US units)
 │       ├── AllyHubHelp.jsx          # Help modal and tab descriptions (5 tabs)
-│       ├── CommsAvailabilityPanel.jsx # Transport method cards (LAN, Mesh, SMS, HF)
-│       ├── CommsKnowledge.jsx       # Field manual for comms systems
+│       ├── CommsAvailabilityPanel.jsx # Transport cards with explanations
+│       ├── CommsKnowledge.jsx       # Field manual (US units: miles)
 │       └── Codebook.jsx             # Searchable codebook with compose helper
 ├── services/
-│   └── allyApi.js                   # API service with mock/live support, GPS data
+│   └── allyApi.js                   # API service with mock/live support
 ├── utils/
 │   └── scrollLock.js                # Scroll position management
 └── config.js                        # Central configuration
@@ -213,6 +249,7 @@ POST /api/ally/node/{node_id}/refresh
 - `/app/test_reports/iteration_2.json` - Chat size increase + Map tab test (100% pass)
 - `/app/test_reports/iteration_3.json` - GPS Status Bar, GPS Guide, Help pattern test (100% pass)
 - `/app/test_reports/iteration_4.json` - Comms Panel, Codes Tab, Knowledge Tab test (100% pass)
+- `/app/test_reports/iteration_5.json` - P0 revisions (US units, compact nodes, comms clarity) + P1 tiles (Camera, Security, Music, Hotkeys) (100% pass)
 
 ---
 
@@ -224,6 +261,9 @@ POST /api/ally/node/{node_id}/refresh
 - Test live connectivity
 - Wire GPS status to real GPS data from Pi
 - Wire Comms status to actual transport availability
+- Wire Camera to actual camera hardware
+- Wire Security to fingerprint sensor
+- Wire Music to audio player backend
 
 ### P2 - Feature Completion
 - Full GPS Map enhancements (mesh lines, signal circles, route drawing)
@@ -233,6 +273,7 @@ POST /api/ally/node/{node_id}/refresh
 - Backups feature
 - KeySync feature
 - Encrypted DMs
+- Hotkey actions (navigation, modal opening, etc.)
 
 ### P3 - Enhancements
 - Push notifications for broadcasts
@@ -243,5 +284,5 @@ POST /api/ally/node/{node_id}/refresh
 ---
 
 *Last Updated: January 7, 2026*
-*Current Status: Ally Communications Hub COMPLETE with Comms Console (5 tabs, Transport Panel, Codebook) (Preview Phase)*
+*Current Status: Full Preview Phase COMPLETE (Ally Hub, Camera, Security, Music, Hotkeys)*
 *Next: Deploy to Pi and test with live backend*
