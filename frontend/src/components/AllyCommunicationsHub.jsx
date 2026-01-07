@@ -43,7 +43,6 @@ export default function AllyCommunicationsHub() {
   const [globalMessages, setGlobalMessages] = useState([]);
   const [chatMessage, setChatMessage] = useState('');
   const [chatLoading, setChatLoading] = useState(true);
-  const chatEndRef = useRef(null);
   
   // User Status state
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
