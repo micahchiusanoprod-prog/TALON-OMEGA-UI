@@ -14,8 +14,8 @@ export default function DiagnosticsPanel({ data, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="glass-strong border-border max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={onClose}>
+      <Card className="glass-strong border-border max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
         <CardHeader className="border-b border-border">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
