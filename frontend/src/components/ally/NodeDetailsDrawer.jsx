@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { 
@@ -24,10 +24,16 @@ import {
   Radio,
   Globe,
   HelpCircle,
-  Circle
+  Circle,
+  Loader2,
+  Navigation,
+  ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 import allyApi from '../../services/allyApi';
+
+// Lazy load the map component to avoid SSR issues
+const NodeMiniMap = lazy(() => import('./NodeMiniMap'));
 
 export default function NodeDetailsDrawer({ node, onClose, onMessage }) {
   const [details, setDetails] = useState(null);
