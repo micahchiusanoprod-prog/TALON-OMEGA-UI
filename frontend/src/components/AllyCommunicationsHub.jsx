@@ -271,16 +271,20 @@ export default function AllyCommunicationsHub() {
     }
   };
 
-  const handleStatusChange = (newStatus) => {
+  const handleStatusChange = async (newStatus) => {
     if (newStatus === 'need_help' && !statusNote.trim()) {
       // Show note input for need_help
       return;
     }
-    const result = allyApi.setCurrentUserStatus(newStatus, statusNote);
-    setCurrentUserStatus(result);
-    setStatusNote('');
-    setShowStatusDropdown(false);
-    toast.success(`Status updated to ${getStatusLabel(newStatus)}`);
+    try {
+      const result = await allyApi.setCurrentUserStatus(newStatus, statusNote);
+      setCurrentUserStatus(result);
+      setStatusNote('');
+      setShowStatusDropdown(false);
+      toast.success(`Status updated to ${getStatusLabel(newStatus)}`);
+    } catch (error) {
+      toast.error('Failed to update status');
+    }
   };
 
   const handleBroadcastSent = (broadcast) => {
