@@ -472,7 +472,20 @@ export default function SecurityTile() {
             </div>
           )
         )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      
+      {/* Profile Edit Modal */}
+      <UserProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => {
+          setProfileModalOpen(false);
+          setEditingPerson(null);
+        }}
+        user={editingPerson}
+        onSave={handleSaveProfile}
+        isDependent={editingPerson?.isDependent}
+      />
+    </>
   );
 }
