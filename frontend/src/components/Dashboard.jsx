@@ -44,22 +44,18 @@ export default function Dashboard() {
         </section>
 
         {/* ===== SYSTEM STATUS SECTION ===== */}
-        <section className="animate-fade-in pt-6" style={{ animationDelay: '200ms' }}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <EnvironmentTile />
-            <DeviceInfoTile />
-            <HotspotTile />
-            <PowerTile />
-          </div>
+        <section className="animate-fade-in pt-6 space-y-4" style={{ animationDelay: '200ms' }}>
+          <EnvironmentTile />
+          <DeviceInfoTile />
+          <HotspotTile />
+          <PowerTile />
         </section>
 
         {/* ===== TOOLS & MEDIA SECTION ===== */}
-        <section className="animate-fade-in pt-6" style={{ animationDelay: '300ms' }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <CameraTile />
-            <SecurityTile />
-            <MusicTile />
-          </div>
+        <section className="animate-fade-in pt-6 space-y-4" style={{ animationDelay: '300ms' }}>
+          <CameraTile />
+          <SecurityTile />
+          <MusicTile />
         </section>
 
       </main>
