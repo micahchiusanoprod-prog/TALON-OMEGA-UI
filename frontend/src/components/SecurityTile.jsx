@@ -368,7 +368,27 @@ const PersonDetail = ({ person, onBack, onUpdate, onEditProfile }) => {
 export default function SecurityTile() {
   const [activeTab, setActiveTab] = useState('people');
   const [selectedPerson, setSelectedPerson] = useState(null);
-  const [people] = useState(mockPeople);
+  const [people, setPeople] = useState(mockPeople);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [editingPerson, setEditingPerson] = useState(null);
+  
+  const handleEditProfile = (person) => {
+    setEditingPerson(person);
+    setProfileModalOpen(true);
+  };
+  
+  const handleSaveProfile = (profileData) => {
+    // Update the person's profile data
+    setPeople(prev => prev.map(p => 
+      p.id === editingPerson.id 
+        ? { ...p, ...profileData }
+        : p
+    ));
+    // Also update selectedPerson if it's the same person
+    if (selectedPerson?.id === editingPerson.id) {
+      setSelectedPerson(prev => ({ ...prev, ...profileData }));
+    }
+  };
   
   // Help view using standardized component
   if (activeTab === 'help') {
@@ -397,37 +417,39 @@ export default function SecurityTile() {
   }
   
   return (
-    <Card className="glass-strong border-border-strong" data-testid="security-tile">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-base">
-          <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-primary" />
-            Security
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setActiveTab('help')}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-            title="Help & Troubleshooting"
-            data-testid="security-help-btn"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {/* Quick Tips */}
-        <QuickHelpTips tips={securityQuickTips} />
-        
-        {/* Content */}
-        {activeTab === 'people' && (
-          selectedPerson ? (
-            <PersonDetail 
-              person={selectedPerson} 
-              onBack={() => setSelectedPerson(null)}
-              onUpdate={() => {}}
-            />
+    <>
+      <Card className="glass-strong border-border-strong" data-testid="security-tile">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              Security
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setActiveTab('help')}
+              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+              title="Help & Troubleshooting"
+              data-testid="security-help-btn"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* Quick Tips */}
+          <QuickHelpTips tips={securityQuickTips} />
+          
+          {/* Content */}
+          {activeTab === 'people' && (
+            selectedPerson ? (
+              <PersonDetail 
+                person={selectedPerson} 
+                onBack={() => setSelectedPerson(null)}
+                onUpdate={() => {}}
+                onEditProfile={handleEditProfile}
+              />
           ) : (
             <div className="space-y-3" data-testid="people-list">
               <div className="flex items-center justify-between">
