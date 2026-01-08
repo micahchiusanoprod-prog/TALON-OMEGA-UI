@@ -36,20 +36,26 @@ export default function Dashboard() {
       
       <main className="container mx-auto px-4 pb-8 pt-6 max-w-7xl space-y-2">
         
-        {/* ===== SEARCH & QUICK TOOLS ===== */}
+        {/* ===== QUICK TOOLS (ALWAYS VISIBLE AT TOP) ===== */}
         <section className="animate-fade-in">
+          <QuickToolsBar />
+        </section>
+
+        {/* ===== SEARCH BAR ===== */}
+        <section className="animate-fade-in pt-2" style={{ animationDelay: '50ms' }}>
           <SearchBar />
-          
-          {/* Quick Tools Bar - Minimal row of useful utilities */}
-          <div className="mt-4">
-            <QuickToolsBar />
-          </div>
         </section>
 
         {/* ===== COMMUNICATIONS SECTION ===== */}
         <section className="section-divider animate-fade-in" style={{ animationDelay: '100ms' }}>
           <SectionHeader icon={Radio} label="Communications" />
           <AllyCommunicationsHub />
+        </section>
+
+        {/* ===== COMMUNITY SECTION (Directly under Ally Hub) ===== */}
+        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '150ms' }}>
+          <SectionHeader icon={Users} label="Community" />
+          <CommunityTile />
         </section>
 
         {/* ===== SYSTEM STATUS SECTION ===== */}
@@ -72,13 +78,10 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ===== POWER & COMMUNITY SECTION ===== */}
+        {/* ===== POWER SECTION ===== */}
         <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '400ms' }}>
-          <SectionHeader icon={Zap} label="Power & Network" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PowerTile />
-            <CommunityTile />
-          </div>
+          <SectionHeader icon={Zap} label="Power Management" />
+          <PowerTile />
         </section>
 
       </main>
