@@ -490,13 +490,13 @@ export default function HotspotTile() {
                   <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-success" />
                   <span className="text-[10px] sm:text-xs text-muted-foreground">Normal</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-warning" />
-                  <span className="text-xs text-muted-foreground">High - Monitor usage</span>
+                <div className="flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-warning" />
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">High</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 text-destructive" />
-                  <span className="text-xs text-muted-foreground">Critical - May affect performance</span>
+                <div className="flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-destructive" />
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">Critical</span>
                 </div>
               </div>
             </div>
