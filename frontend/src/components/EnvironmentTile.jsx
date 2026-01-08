@@ -321,13 +321,13 @@ export default function EnvironmentTile() {
         <div className="space-y-3 mb-4">
           {/* Temperature - Primary */}
           <div className="glass rounded-xl p-4">
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-red-500/20">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-red-500/20">
                   <Thermometer className="w-5 h-5 text-red-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">Temperature</span>
+                  <span className="text-sm font-semibold">Temperature</span>
                   <p className="text-xs text-muted-foreground">Current air temperature</p>
                 </div>
               </div>
@@ -338,31 +338,31 @@ export default function EnvironmentTile() {
                     {getTrend(history.temperature) === 'up' ? 'Rising' : getTrend(history.temperature) === 'down' ? 'Falling' : 'Stable'}
                   </span>
                 </div>
-                <div className={`px-2 py-1 rounded-full ${getStatus('temperature', displayData.temperature).bg}`}>
-                  <span className={`text-xs font-medium ${getStatus('temperature', displayData.temperature).color}`}>
+                <div className={`px-2.5 py-1 rounded-full ${getStatus('temperature', displayData.temperature).bg}`}>
+                  <span className={`text-xs font-semibold ${getStatus('temperature', displayData.temperature).color}`}>
                     {getStatus('temperature', displayData.temperature).label}
                   </span>
                 </div>
               </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl xl:text-5xl font-bold">{toFahrenheit(displayData.temperature)}</span>
-              <span className="text-lg text-muted-foreground">°F</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tabular-nums">{toFahrenheit(displayData.temperature)}</span>
+              <span className="text-xl text-muted-foreground">°F</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-2">
               {displayData.temperature.toFixed(1)}°C • Feels like {toFahrenheit(displayData.temperature - 1)}°F
             </p>
           </div>
 
           {/* Humidity */}
           <div className="glass rounded-xl p-4">
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-blue-500/20">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-blue-500/20">
                   <Droplets className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">Humidity</span>
+                  <span className="text-sm font-semibold">Humidity</span>
                   <p className="text-xs text-muted-foreground">Water vapor in the air</p>
                 </div>
               </div>
@@ -373,8 +373,8 @@ export default function EnvironmentTile() {
                     {getTrend(history.humidity) === 'up' ? 'Rising' : getTrend(history.humidity) === 'down' ? 'Falling' : 'Stable'}
                   </span>
                 </div>
-                <div className={`px-2 py-1 rounded-full ${getStatus('humidity', displayData.humidity).bg}`}>
-                  <span className={`text-xs font-medium ${getStatus('humidity', displayData.humidity).color}`}>
+                <div className={`px-2.5 py-1 rounded-full ${getStatus('humidity', displayData.humidity).bg}`}>
+                  <span className={`text-xs font-semibold ${getStatus('humidity', displayData.humidity).color}`}>
                     {getStatus('humidity', displayData.humidity).label}
                   </span>
                 </div>
