@@ -33,17 +33,14 @@ export default function Dashboard() {
           <SearchBar />
         </section>
 
-        {/* ===== MAIN CONTENT: Communications + Community (side-by-side on desktop) ===== */}
+        {/* ===== COMMUNICATIONS SECTION ===== */}
         <section className="animate-fade-in pt-6" style={{ animationDelay: '100ms' }}>
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6 xl:items-stretch">
-            {/* Ally Communications Hub - Takes more space */}
-            <AllyCommunicationsHub />
-            
-            {/* Community Sidebar - Fixed width on desktop, stretches to match height */}
-            <div className="xl:flex xl:flex-col">
-              <CommunityTile />
-            </div>
-          </div>
+          <AllyCommunicationsHub />
+        </section>
+
+        {/* ===== COMMUNITY SECTION (Under Ally Hub - Full Width) ===== */}
+        <section className="animate-fade-in pt-6" style={{ animationDelay: '150ms' }}>
+          <CommunityTile />
         </section>
 
         {/* ===== SYSTEM STATUS SECTION ===== */}
