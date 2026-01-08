@@ -450,33 +450,35 @@ export default function HotspotTile() {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleCopyUrl}
-                className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary transition-all"
+                className="text-[10px] sm:text-xs border-border-strong bg-secondary/50 hover:bg-secondary transition-all px-1.5 sm:px-2"
               >
-                <Copy className="w-3 h-3 mr-1" />
-                Copy URL
+                <Copy className="w-3 h-3 sm:mr-1" />
+                <span className="hidden sm:inline">Copy URL</span>
+                <span className="sm:hidden">Copy</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleShowQR}
-                className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary transition-all"
+                className="text-[10px] sm:text-xs border-border-strong bg-secondary/50 hover:bg-secondary transition-all px-1.5 sm:px-2"
               >
-                <QrCode className="w-3 h-3 mr-1" />
-                QR Code
+                <QrCode className="w-3 h-3 sm:mr-1" />
+                <span className="hidden sm:inline">QR Code</span>
+                <span className="sm:hidden">QR</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleRefresh}
-                className="text-xs border-border-strong bg-secondary/50 hover:bg-secondary transition-all"
+                className="text-[10px] sm:text-xs border-border-strong bg-secondary/50 hover:bg-secondary transition-all px-1.5 sm:px-2"
               >
-                <RefreshCw className="w-3 h-3 mr-1" />
-                Refresh
+                <RefreshCw className="w-3 h-3 sm:mr-1" />
+                <span className="hidden sm:inline">Refresh</span>
               </Button>
             </div>
 
