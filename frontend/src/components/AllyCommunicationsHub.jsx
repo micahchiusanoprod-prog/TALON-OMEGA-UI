@@ -11,6 +11,7 @@ import {
   Radio,
   Activity,
   ChevronDown,
+  ChevronUp,
   Send,
   X,
   HelpCircle,
@@ -20,893 +21,816 @@ import {
   Map,
   BookOpen,
   Book,
-  Wifi
+  Wifi,
+  Clock,
+  Info,
+  Shield,
+  Zap,
+  Signal,
+  AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import allyApi from '../services/allyApi';
-import config from '../config';
-import NodeCard from './ally/NodeCard';
 import NodeDetailsDrawer from './ally/NodeDetailsDrawer';
 import MessagingModal from './ally/MessagingModal';
 import BroadcastModal from './ally/BroadcastModal';
 import AllyMapView from './ally/AllyMapView';
-import GpsGuide from './ally/GpsGuide';
-import AllyHubHelp, { StatusLegend } from './ally/AllyHubHelp';
-import CommsAvailabilityPanel from './ally/CommsAvailabilityPanel';
-import CommsKnowledge from './ally/CommsKnowledge';
-import Codebook from './ally/Codebook';
 import NodeAvatarStrip from './ally/NodeAvatarStrip';
 import { lockBodyScroll, unlockBodyScroll, captureScrollPosition } from '../utils/scrollLock';
 
+// ============================================
+// MOCK DATA FOR ALERTS LOG
+// ============================================
+const getMockAlerts = () => [
+  { id: 1, type: 'critical', title: 'SOS Beacon Active', description: "Kids' OMEGA triggered SOS beacon", timestamp: new Date(Date.now() - 300000), node: "Kids' OMEGA" },
+  { id: 2, type: 'warning', title: 'Low Battery', description: "Mom's OMEGA battery below 25%", timestamp: new Date(Date.now() - 1800000), node: "Mom's OMEGA" },
+  { id: 3, type: 'info', title: 'Node Offline', description: "Backup OMEGA went offline", timestamp: new Date(Date.now() - 3600000), node: "Backup OMEGA" },
+  { id: 4, type: 'warning', title: 'Weak Signal', description: "Mesh connection degraded on Dad's OMEGA", timestamp: new Date(Date.now() - 7200000), node: "Dad's OMEGA" },
+];
+
+// ============================================
+// COMMUNICATION METHODS DATA
+// ============================================
+const COMM_METHODS = [
+  {
+    id: 'lan',
+    name: 'LAN / Wi-Fi',
+    icon: Wifi,
+    status: 'available',
+    description: 'Standard network connection for high-speed data transfer within local network range.',
+    capabilities: ['Text messages', 'File transfer', 'Voice (future)', 'Video (future)'],
+    range: '~300 ft indoors, ~1000 ft outdoors',
+    requirements: 'Wi-Fi network or ethernet connection',
+    howToUse: 'Automatically connects when in range of known networks. Best for base camp operations.',
+    failureModes: ['Router offline', 'Out of range', 'Network congestion'],
+    priority: 1,
+  },
+  {
+    id: 'mesh',
+    name: 'Mesh / LoRa',
+    icon: Radio,
+    status: 'degraded',
+    description: 'Low-power long-range radio for text messages. Works when other methods fail.',
+    capabilities: ['Text messages (short)', 'Location sharing', 'Status updates'],
+    range: '1-5 miles line of sight, 0.5-1 mile in terrain',
+    requirements: 'LoRa radio module, clear line of sight helps',
+    howToUse: 'Keep messages under 200 characters. Higher ground = better range. Patience required.',
+    failureModes: ['Antenna disconnected', 'Interference', 'Too far from other nodes'],
+    priority: 2,
+  },
+  {
+    id: 'sdr',
+    name: 'Radio / SDR',
+    icon: Signal,
+    status: 'available',
+    description: 'Software-defined radio for voice and data. Requires amateur radio license for transmit.',
+    capabilities: ['Voice communication', 'Data packets', 'Weather broadcasts (receive)', 'Emergency frequencies'],
+    range: 'Varies by band: 2m = 10-50 miles, HF = continental',
+    requirements: 'SDR hardware, antenna, license for TX',
+    howToUse: 'Tune to agreed frequency. PTT for voice. Digital modes for data. Monitor 146.52 MHz.',
+    failureModes: ['Wrong frequency', 'Antenna mismatch', 'Propagation conditions'],
+    priority: 3,
+  },
+  {
+    id: 'sms',
+    name: 'SMS Gateway',
+    icon: MessageSquare,
+    status: 'unavailable',
+    description: 'Send text messages to standard cell phones via cellular network.',
+    capabilities: ['SMS to any phone number', 'Receive SMS replies'],
+    range: 'Anywhere with cellular coverage',
+    requirements: 'Cellular modem, SIM card, cell signal',
+    howToUse: 'Enter phone number with country code. Messages limited to 160 characters.',
+    failureModes: ['No cellular signal', 'SIM not activated', 'Carrier outage'],
+    priority: 4,
+  },
+  {
+    id: 'hf',
+    name: 'HF Radio Bridge',
+    icon: Zap,
+    status: 'unavailable',
+    description: 'Long-distance radio for continental range. Requires license and equipment.',
+    capabilities: ['Voice', 'Digital modes (JS8Call, Winlink)', 'Email via radio'],
+    range: '100-3000+ miles depending on conditions',
+    requirements: 'HF transceiver, tuned antenna, amateur license',
+    howToUse: 'Check propagation forecasts. Use digital modes for reliability. Best at dawn/dusk.',
+    failureModes: ['Poor propagation', 'Antenna issues', 'Wrong time of day'],
+    priority: 5,
+  },
+];
+
+// ============================================
+// STATUS CONFIG
+// ============================================
+const STATUS_CONFIG = {
+  available: { color: 'text-success', bg: 'bg-success/15', border: 'border-success/30', label: 'Available', dot: 'bg-success' },
+  degraded: { color: 'text-warning', bg: 'bg-warning/15', border: 'border-warning/30', label: 'Degraded', dot: 'bg-warning animate-pulse' },
+  unavailable: { color: 'text-destructive', bg: 'bg-destructive/15', border: 'border-destructive/30', label: 'Unavailable', dot: 'bg-destructive' },
+};
+
+// ============================================
+// COMMUNICATION METHOD CARD COMPONENT
+// ============================================
+const CommMethodCard = ({ method, isSelected, onSelect, isExpanded, onToggleExpand }) => {
+  const Icon = method.icon;
+  const config = STATUS_CONFIG[method.status];
+  
+  return (
+    <div 
+      className={`glass rounded-2xl overflow-hidden transition-all duration-300 ${
+        isSelected ? `ring-2 ring-primary ${config.bg}` : ''
+      }`}
+    >
+      {/* Header - Always visible */}
+      <button
+        onClick={() => onSelect(method.id)}
+        className={`w-full p-4 flex items-center gap-4 transition-all hover:bg-white/5`}
+        data-testid={`comm-method-${method.id}`}
+      >
+        {/* Icon with status indicator */}
+        <div className="relative">
+          <div className={`w-12 h-12 rounded-xl ${config.bg} flex items-center justify-center`}>
+            <Icon className={`w-6 h-6 ${config.color}`} />
+          </div>
+          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${config.dot} border-2 border-background`} />
+        </div>
+        
+        {/* Name and Status */}
+        <div className="flex-1 text-left">
+          <div className="font-semibold text-foreground">{method.name}</div>
+          <div className={`text-xs font-medium ${config.color}`}>{config.label}</div>
+        </div>
+        
+        {/* Selected indicator */}
+        {isSelected && (
+          <div className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+            ACTIVE
+          </div>
+        )}
+        
+        {/* Expand toggle */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleExpand(method.id); }}
+          className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+        >
+          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+      </button>
+      
+      {/* Expanded details */}
+      {isExpanded && (
+        <div className="px-4 pb-4 space-y-4 border-t border-border/50 pt-4 animate-fade-in">
+          {/* Description */}
+          <p className="text-sm text-muted-foreground">{method.description}</p>
+          
+          {/* Capabilities */}
+          <div>
+            <h5 className="text-xs font-bold text-foreground mb-2 flex items-center gap-1">
+              <CheckCircle className="w-3 h-3 text-success" />
+              CAPABILITIES
+            </h5>
+            <div className="flex flex-wrap gap-1.5">
+              {method.capabilities.map((cap, i) => (
+                <span key={i} className="px-2 py-1 rounded-lg bg-success/10 text-success text-xs font-medium">
+                  {cap}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Range */}
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-muted-foreground">Range:</span>
+              <p className="font-medium text-foreground mt-0.5">{method.range}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Requires:</span>
+              <p className="font-medium text-foreground mt-0.5">{method.requirements}</p>
+            </div>
+          </div>
+          
+          {/* How to Use */}
+          <div className="glass rounded-xl p-3">
+            <h5 className="text-xs font-bold text-primary mb-1 flex items-center gap-1">
+              <Info className="w-3 h-3" />
+              HOW TO USE
+            </h5>
+            <p className="text-xs text-muted-foreground">{method.howToUse}</p>
+          </div>
+          
+          {/* Failure Modes */}
+          {method.status !== 'available' && (
+            <div className="glass rounded-xl p-3 bg-warning/5 border border-warning/20">
+              <h5 className="text-xs font-bold text-warning mb-1 flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3" />
+                COMMON ISSUES
+              </h5>
+              <ul className="text-xs text-muted-foreground space-y-0.5">
+                {method.failureModes.map((mode, i) => (
+                  <li key={i}>• {mode}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// ALERTS LOG COMPONENT
+// ============================================
+const AlertsLog = ({ alerts }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const getAlertIcon = (type) => {
+    switch (type) {
+      case 'critical': return <AlertTriangle className="w-4 h-4 text-destructive" />;
+      case 'warning': return <AlertCircle className="w-4 h-4 text-warning" />;
+      default: return <Info className="w-4 h-4 text-primary" />;
+    }
+  };
+  
+  const getAlertStyle = (type) => {
+    switch (type) {
+      case 'critical': return 'bg-destructive/10 border-destructive/30';
+      case 'warning': return 'bg-warning/10 border-warning/30';
+      default: return 'bg-primary/10 border-primary/30';
+    }
+  };
+  
+  const formatTime = (date) => {
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return date.toLocaleDateString();
+  };
+  
+  return (
+    <div className="glass rounded-2xl overflow-hidden" data-testid="alerts-log">
+      {/* Header */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-destructive/15 flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-destructive" />
+          </div>
+          <div className="text-left">
+            <div className="font-semibold">Alert Log</div>
+            <div className="text-xs text-muted-foreground">{alerts.length} alerts</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {alerts.filter(a => a.type === 'critical').length > 0 && (
+            <span className="px-2 py-1 rounded-full bg-destructive text-white text-xs font-bold animate-pulse">
+              {alerts.filter(a => a.type === 'critical').length} Critical
+            </span>
+          )}
+          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </div>
+      </button>
+      
+      {/* Alert List */}
+      {isExpanded && (
+        <div className="border-t border-border/50 max-h-64 overflow-y-auto scrollbar-thin">
+          {alerts.length === 0 ? (
+            <div className="p-4 text-center text-muted-foreground text-sm">
+              No alerts
+            </div>
+          ) : (
+            alerts.map((alert) => (
+              <div 
+                key={alert.id} 
+                className={`p-3 border-b border-border/30 last:border-b-0 ${getAlertStyle(alert.type)}`}
+              >
+                <div className="flex items-start gap-3">
+                  {getAlertIcon(alert.type)}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-sm">{alert.title}</span>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {formatTime(alert.timestamp)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{alert.description}</p>
+                    <span className="text-xs text-primary">{alert.node}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// CONSOLIDATED HELP SECTION COMPONENT
+// ============================================
+const HelpSection = ({ isExpanded, onToggle }) => {
+  const [activeHelpTab, setActiveHelpTab] = useState('quick');
+  
+  const helpTabs = [
+    { id: 'quick', label: 'Quick Start', icon: Zap },
+    { id: 'legend', label: 'Status Legend', icon: Circle },
+    { id: 'troubleshoot', label: 'Troubleshooting', icon: HelpCircle },
+  ];
+  
+  return (
+    <div className="glass rounded-2xl overflow-hidden" data-testid="help-section">
+      {/* Header */}
+      <button
+        onClick={onToggle}
+        className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+            <HelpCircle className="w-5 h-5 text-primary" />
+          </div>
+          <div className="text-left">
+            <div className="font-semibold">Help & Guides</div>
+            <div className="text-xs text-muted-foreground">Quick start, legends, troubleshooting</div>
+          </div>
+        </div>
+        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      
+      {/* Help Content */}
+      {isExpanded && (
+        <div className="border-t border-border/50 p-4 space-y-4 animate-fade-in">
+          {/* Tab Navigation */}
+          <div className="flex gap-1 p-1 rounded-xl bg-secondary/30">
+            {helpTabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveHelpTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    activeHelpTab === tab.id 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Quick Start */}
+          {activeHelpTab === 'quick' && (
+            <div className="space-y-3">
+              <div className="glass rounded-xl p-3">
+                <h5 className="font-semibold text-sm mb-2">Getting Started</h5>
+                <ol className="text-xs text-muted-foreground space-y-2">
+                  <li className="flex gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">1</span>
+                    <span>Check which communication methods are <span className="text-success font-medium">Available</span> (green)</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">2</span>
+                    <span>Select a method to use for sending messages</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">3</span>
+                    <span>Click on a node avatar to see details or send a direct message</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">4</span>
+                    <span>Use <span className="text-destructive font-medium">Broadcast</span> for urgent messages to all nodes</span>
+                  </li>
+                </ol>
+              </div>
+              <div className="glass rounded-xl p-3 bg-warning/5 border border-warning/20">
+                <h5 className="font-semibold text-sm mb-1 text-warning flex items-center gap-1">
+                  <AlertTriangle className="w-4 h-4" />
+                  Pro Tips
+                </h5>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• Keep messages short on Mesh (&lt;200 chars)</li>
+                  <li>• LAN is fastest but shortest range</li>
+                  <li>• Mesh works best with line of sight</li>
+                  <li>• Check Alert Log regularly for issues</li>
+                </ul>
+              </div>
+            </div>
+          )}
+          
+          {/* Status Legend */}
+          {activeHelpTab === 'legend' && (
+            <div className="space-y-3">
+              <div className="glass rounded-xl p-3">
+                <h5 className="font-semibold text-sm mb-3">Communication Status</h5>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-success" />
+                    <span className="font-medium text-success">Available</span>
+                    <span className="text-xs text-muted-foreground">– Ready to use, working normally</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-warning animate-pulse" />
+                    <span className="font-medium text-warning">Degraded</span>
+                    <span className="text-xs text-muted-foreground">– Working but limited performance</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-destructive" />
+                    <span className="font-medium text-destructive">Unavailable</span>
+                    <span className="text-xs text-muted-foreground">– Cannot connect, check hardware</span>
+                  </div>
+                </div>
+              </div>
+              <div className="glass rounded-xl p-3">
+                <h5 className="font-semibold text-sm mb-3">Node Status</h5>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-success" />
+                    <span className="font-medium">Good</span>
+                    <span className="text-xs text-muted-foreground">– Online, no issues</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-warning" />
+                    <span className="font-medium">Okay</span>
+                    <span className="text-xs text-muted-foreground">– Online, minor issues</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-destructive" />
+                    <span className="font-medium">Need Help</span>
+                    <span className="text-xs text-muted-foreground">– Requesting assistance</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-muted-foreground" />
+                    <span className="font-medium">Offline</span>
+                    <span className="text-xs text-muted-foreground">– Not reachable</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Troubleshooting */}
+          {activeHelpTab === 'troubleshoot' && (
+            <div className="space-y-3">
+              <div className="glass rounded-xl p-3">
+                <h5 className="font-semibold text-sm mb-2">Common Issues</h5>
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <p className="font-medium text-foreground">Messages not sending?</p>
+                    <p className="text-muted-foreground">Check selected comm method is Available. Try a different method.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Node showing offline?</p>
+                    <p className="text-muted-foreground">May be out of range or powered off. Check last seen time.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Mesh degraded?</p>
+                    <p className="text-muted-foreground">Move to higher ground, check antenna connection, reduce distance.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">GPS not working?</p>
+                    <p className="text-muted-foreground">Need clear sky view. Go outdoors, wait 1-2 minutes for fix.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
 export default function AllyCommunicationsHub() {
-  // Node state
+  // State
   const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
   const [selectedNode, setSelectedNode] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showDM, setShowDM] = useState(false);
   const [dmNodeId, setDmNodeId] = useState(null);
   const [showBroadcast, setShowBroadcast] = useState(false);
-  const [lastSync, setLastSync] = useState(null);
-  
-  // Global Chat state
+  const [selectedCommMethod, setSelectedCommMethod] = useState('lan');
+  const [expandedCommMethod, setExpandedCommMethod] = useState(null);
+  const [alerts, setAlerts] = useState(getMockAlerts());
+  const [showHelp, setShowHelp] = useState(false);
+  const [activeView, setActiveView] = useState('comms'); // 'comms' | 'map' | 'chat'
   const [globalMessages, setGlobalMessages] = useState([]);
   const [chatMessage, setChatMessage] = useState('');
-  const [chatLoading, setChatLoading] = useState(true);
   
-  // User Status state
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [currentUserStatus, setCurrentUserStatus] = useState(allyApi.getCurrentUserStatus());
-  const [statusNote, setStatusNote] = useState('');
-  const statusDropdownRef = useRef(null);
-  
-  // Track chat scroll state for smart auto-scroll
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
-  const [isNearBottom, setIsNearBottom] = useState(true);
-  const [hasNewMessages, setHasNewMessages] = useState(false);
-  const chatContainerRef = useRef(null);
-  const prevMessageCountRef = useRef(0);
-  
-  // Broadcast alert tracking
-  const [alertsBadgeCount, setAlertsBadgeCount] = useState(0);
-  
-  // Connection status
-  const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, lastError: null });
-  
-  // Tab state for Chat/Map/Guide view
-  const [activeTab, setActiveTab] = useState('chat');
-  
-  // Help modal state
-  const [showHelp, setShowHelp] = useState(false);
-  
-  // Selected communication method
-  const [selectedCommsMethod, setSelectedCommsMethod] = useState('lan');
-
+  // Load data
   useEffect(() => {
-    fetchNodes();
-    fetchGlobalChat();
-    fetchUserStatus();
-    
-    const nodeInterval = setInterval(fetchNodes, config.polling.allyNodes);
-    const chatInterval = setInterval(fetchGlobalChat, config.polling.allyChat);
-    
-    return () => {
-      clearInterval(nodeInterval);
-      clearInterval(chatInterval);
-    };
-  }, []);
-
-  useEffect(() => {
-    const retryInterval = setInterval(() => {
-      allyApi.retryQueuedMessages();
-    }, config.ally.messageRetryInterval);
-    
-    return () => clearInterval(retryInterval);
-  }, []);
-
-  // Smart auto-scroll: only when user sent message OR user is near bottom and new messages arrive
-  useEffect(() => {
-    if (!chatContainerRef.current) return;
-    
-    const newMessageCount = globalMessages.length;
-    const hadNewMessages = newMessageCount > prevMessageCountRef.current;
-    prevMessageCountRef.current = newMessageCount;
-    
-    // Auto-scroll if user explicitly sent a message
-    if (shouldAutoScroll) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-      setShouldAutoScroll(false);
-      setHasNewMessages(false);
-      return;
-    }
-    
-    // Auto-scroll if near bottom and new messages arrived
-    if (hadNewMessages && isNearBottom) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-      setHasNewMessages(false);
-    } else if (hadNewMessages && !isNearBottom) {
-      // Show "new messages" indicator
-      setHasNewMessages(true);
-    }
-  }, [globalMessages, shouldAutoScroll, isNearBottom]);
-
-  // Track if user is near bottom of chat
-  const handleChatScroll = () => {
-    if (!chatContainerRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    setIsNearBottom(distanceFromBottom < 50); // Within 50px of bottom
-    if (distanceFromBottom < 50) {
-      setHasNewMessages(false);
-    }
-  };
-
-  // Jump to latest messages
-  const handleJumpToLatest = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-      setHasNewMessages(false);
-      setIsNearBottom(true);
-    }
-  };
-
-  // Close status dropdown on click outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target)) {
-        setShowStatusDropdown(false);
+    const loadData = async () => {
+      try {
+        const nodesData = await allyApi.getNodes();
+        setNodes(nodesData);
+        const messagesData = await allyApi.getGlobalChat();
+        setGlobalMessages(messagesData);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      } finally {
+        setLoading(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    loadData();
   }, []);
-
-  const fetchNodes = async () => {
-    try {
-      const data = await allyApi.getNodes();
-      setNodes(data);
-      setLastSync(new Date());
-      setConnectionStatus(allyApi.getConnectionStatus());
-    } catch (error) {
-      console.error('Failed to fetch nodes:', error);
-      setConnectionStatus(allyApi.getConnectionStatus());
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchGlobalChat = async () => {
-    try {
-      const data = await allyApi.getGlobalChat();
-      setGlobalMessages(data);
-      // Count emergency broadcasts for badge
-      const emergencyCount = data.filter(m => m.priority === 'emergency' || m.broadcast_severity === 'emergency').length;
-      setAlertsBadgeCount(emergencyCount);
-      setConnectionStatus(allyApi.getConnectionStatus());
-    } catch (error) {
-      console.error('Failed to fetch global chat:', error);
-      setConnectionStatus(allyApi.getConnectionStatus());
-    } finally {
-      setChatLoading(false);
-    }
-  };
-
-  const fetchUserStatus = async () => {
-    try {
-      const status = await allyApi.getCurrentUserStatus();
-      setCurrentUserStatus(status);
-    } catch (error) {
-      console.error('Failed to fetch user status:', error);
-    }
-  };
-
-  const handleRefresh = () => {
-    fetchNodes();
-    fetchGlobalChat();
-    toast.success('Refreshed all data');
-  };
-
-  const handleMessage = (nodeId) => {
-    captureScrollPosition(); // Capture BEFORE lock
-    lockBodyScroll();
-    setDmNodeId(nodeId);
-    setShowDM(true);
-  };
-
-  const handleCloseDM = () => {
-    setShowDM(false);
-    unlockBodyScroll();
-  };
-
-  const handleDetails = (node) => {
-    captureScrollPosition(); // Capture BEFORE lock
-    lockBodyScroll();
+  
+  // Handlers
+  const handleNodeClick = (node) => {
     setSelectedNode(node);
     setShowDetails(true);
+    lockBodyScroll();
   };
-
+  
   const handleCloseDetails = () => {
     setShowDetails(false);
+    setSelectedNode(null);
     unlockBodyScroll();
   };
-
-  const handleOpenBroadcast = () => {
-    captureScrollPosition(); // Capture BEFORE lock
+  
+  const handleOpenDM = (nodeId) => {
+    setDmNodeId(nodeId);
+    setShowDM(true);
     lockBodyScroll();
-    setShowBroadcast(true);
   };
-
+  
+  const handleCloseDM = () => {
+    setShowDM(false);
+    setDmNodeId(null);
+    unlockBodyScroll();
+  };
+  
+  const handleOpenBroadcast = () => {
+    setShowBroadcast(true);
+    lockBodyScroll();
+  };
+  
   const handleCloseBroadcast = () => {
     setShowBroadcast(false);
     unlockBodyScroll();
   };
-
-  const handlePing = async (nodeId) => {
-    try {
-      const result = await allyApi.pingNode(nodeId);
-      toast.success(`Ping successful: ${result.rtt_ms}ms`);
-    } catch (error) {
-      toast.error('Ping failed');
-    }
-  };
-
+  
   const handleSendChat = async () => {
     if (!chatMessage.trim()) return;
-    
-    const tempId = `temp-${Date.now()}`;
-    const newMsg = {
-      id: tempId,
-      sender: 'me',
-      sender_name: 'This Device',
-      sender_status: currentUserStatus.status,
-      text: chatMessage,
-      timestamp: new Date().toISOString(),
-      priority: 'normal',
-      status: 'sending',
-    };
-    
-    // Optimistic update and trigger scroll
-    setGlobalMessages(prev => [...prev, newMsg]);
-    setChatMessage('');
-    setShouldAutoScroll(true);
-    
     try {
-      const result = await allyApi.sendGlobalMessage(chatMessage);
-      // Update message status
-      setGlobalMessages(prev => prev.map(m => 
-        m.id === tempId 
-          ? { ...m, status: result.queued ? 'queued' : 'sent' }
-          : m
-      ));
-      if (result.queued) {
-        toast.info('Message queued (offline)');
-      }
+      const newMessage = await allyApi.sendGlobalChat(chatMessage);
+      setGlobalMessages(prev => [...prev, newMessage]);
+      setChatMessage('');
     } catch (error) {
-      setGlobalMessages(prev => prev.map(m => 
-        m.id === tempId ? { ...m, status: 'failed' } : m
-      ));
       toast.error('Failed to send message');
     }
   };
-
-  const handleStatusChange = async (newStatus) => {
-    if (newStatus === 'need_help' && !statusNote.trim()) {
-      // Show note input for need_help
-      return;
-    }
-    try {
-      const result = await allyApi.setCurrentUserStatus(newStatus, statusNote);
-      setCurrentUserStatus(result);
-      setStatusNote('');
-      setShowStatusDropdown(false);
-      toast.success(`Status updated to ${getStatusLabel(newStatus)}`);
-    } catch (error) {
-      toast.error('Failed to update status');
-    }
+  
+  const toggleCommMethodExpand = (methodId) => {
+    setExpandedCommMethod(expandedCommMethod === methodId ? null : methodId);
   };
-
-  const handleBroadcastSent = (broadcast) => {
-    // Add broadcast to global chat immediately
-    const broadcastMsg = {
-      id: `broadcast-${Date.now()}`,
-      sender: 'broadcast',
-      sender_name: 'THIS DEVICE',
-      text: broadcast.message,
-      timestamp: new Date().toISOString(),
-      priority: broadcast.severity,
-      status: 'sent',
-      broadcast_title: broadcast.title,
-      broadcast_severity: broadcast.severity,
-    };
-    setGlobalMessages(prev => [...prev, broadcastMsg]);
-    setAlertsBadgeCount(prev => prev + 1);
-  };
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'good': return 'GOOD';
-      case 'okay': return 'OKAY';
-      case 'need_help': return 'NEED HELP';
-      default: return 'UNKNOWN';
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'good': return 'text-success bg-success-light';
-      case 'okay': return 'text-warning bg-warning-light';
-      case 'need_help': return 'text-destructive bg-destructive-light animate-critical-flash';
-      default: return 'text-muted-foreground bg-muted';
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'good': return CheckCircle;
-      case 'okay': return Circle;
-      case 'need_help': return HelpCircle;
-      default: return Circle;
-    }
-  };
-
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return '';
-    const minutes = Math.floor((new Date() - new Date(timestamp)) / 60000);
-    if (minutes < 1) return 'just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    return `${Math.floor(minutes / 60)}h ago`;
-  };
-
-  // Filter and search nodes
-  const filteredNodes = nodes.filter(node => {
-    const matchesSearch = node.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         node.node_id.toLowerCase().includes(searchQuery.toLowerCase());
-    let matchesFilter = true;
-    switch (filterStatus) {
-      case 'online':
-        matchesFilter = node.status === 'online';
-        break;
-      case 'offline':
-        matchesFilter = node.status === 'offline';
-        break;
-      case 'alerts':
-        matchesFilter = node.alerts_count > 0;
-        break;
-      case 'need_help':
-        matchesFilter = node.user_status === 'need_help';
-        break;
-      default:
-        matchesFilter = true;
-    }
-    return matchesSearch && matchesFilter;
-  });
-
+  
+  // Stats
   const onlineCount = nodes.filter(n => n.status === 'online').length;
-  const totalAlerts = nodes.reduce((sum, n) => sum + (n.alerts_count || 0), 0);
   const needHelpCount = nodes.filter(n => n.user_status === 'need_help').length;
-
-  const getConnectionMode = () => {
-    const types = new Set(nodes.filter(n => n.link_type).map(n => n.link_type));
-    if (types.size === 0) return 'Unknown';
-    if (types.size === 1) return Array.from(types)[0];
-    return 'Mixed';
-  };
-
-  const formatLastSync = () => {
-    if (!lastSync) return 'Never';
-    const seconds = Math.floor((new Date() - lastSync) / 1000);
-    if (seconds < 60) return `${seconds}s ago`;
-    return `${Math.floor(seconds / 60)}m ago`;
-  };
-
-  const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const StatusIcon = getStatusIcon(currentUserStatus.status);
-
-  // Separate pinned broadcasts from regular messages
-  const pinnedBroadcasts = globalMessages.filter(m => m.broadcast_severity === 'emergency' || m.priority === 'emergency');
-  const regularMessages = globalMessages.filter(m => m.broadcast_severity !== 'emergency' && m.priority !== 'emergency');
-
+  const criticalAlerts = alerts.filter(a => a.type === 'critical').length;
+  
   if (loading) {
     return (
-      <Card className="glass-strong border-border" data-testid="ally-hub-loading">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-primary" />
-            Ally Communications Hub
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="skeleton h-24 rounded-lg" />
-            ))}
+      <Card className="glass-strong border-border-strong">
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <span className="text-muted-foreground">Loading communications...</span>
           </div>
         </CardContent>
       </Card>
     );
   }
-
+  
   return (
     <>
-      <Card className="glass-strong border-border" data-testid="ally-communications-hub">
-        <CardHeader>
-          <div className="space-y-3">
-            <div className="flex items-start justify-between">
+      <Card className="glass-strong border-border-strong" data-testid="ally-communications-hub">
+        <CardHeader className="pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <CardTitle className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+                <Radio className="w-5 h-5 text-primary" />
+              </div>
               <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-primary" />
-                  Ally Communications Hub
-                </CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Family device status + messages
-                </p>
-              </div>
-              
-              {/* Current User Status Dropdown */}
-              <div className="relative" ref={statusDropdownRef}>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowStatusDropdown(!showStatusDropdown)}
-                  className={`h-9 text-xs border-border-strong ${getStatusColor(currentUserStatus.status)}`}
-                  data-testid="user-status-dropdown-btn"
-                >
-                  <StatusIcon className="w-3.5 h-3.5 mr-1.5" />
-                  {getStatusLabel(currentUserStatus.status)}
-                  <ChevronDown className="w-3 h-3 ml-1" />
-                </Button>
-                
-                {showStatusDropdown && (
-                  <div className="absolute right-0 top-full mt-1 w-56 glass-strong border border-border rounded-lg shadow-lg z-50 overflow-hidden" data-testid="user-status-dropdown">
-                    <div className="p-2 border-b border-border">
-                      <p className="text-xs text-muted-foreground">Set your status</p>
-                      {currentUserStatus.set_at && (
-                        <p className="text-xs text-muted-foreground">
-                          Set {formatTimeAgo(currentUserStatus.set_at)}
-                        </p>
-                      )}
-                    </div>
-                    <div className="p-1">
-                      <button
-                        onClick={() => handleStatusChange('good')}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-secondary transition-colors text-left"
-                        data-testid="status-option-good"
-                      >
-                        <CheckCircle className="w-4 h-4 text-success" />
-                        <span>GOOD</span>
-                        <span className="text-xs text-muted-foreground ml-auto">All clear</span>
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange('okay')}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded hover:bg-secondary transition-colors text-left"
-                        data-testid="status-option-okay"
-                      >
-                        <Circle className="w-4 h-4 text-warning" />
-                        <span>OKAY</span>
-                        <span className="text-xs text-muted-foreground ml-auto">Manageable</span>
-                      </button>
-                      <div className="border-t border-border my-1" />
-                      <div className="px-3 py-2">
-                        <div className="flex items-center gap-2 mb-2">
-                          <HelpCircle className="w-4 h-4 text-destructive" />
-                          <span className="text-sm">NEED HELP</span>
-                        </div>
-                        <Input
-                          value={statusNote}
-                          onChange={(e) => setStatusNote(e.target.value)}
-                          placeholder="Add a note (optional)"
-                          className="h-8 text-xs mb-2"
-                          data-testid="status-note-input"
-                        />
-                        <Button
-                          size="sm"
-                          onClick={() => handleStatusChange('need_help')}
-                          className="w-full h-7 text-xs bg-destructive hover:bg-destructive/90"
-                          data-testid="status-need-help-btn"
-                        >
-                          Set NEED HELP
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Status Summary - Compact Row */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Connection Status */}
-              {!connectionStatus.isOnline && (
-                <div className="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 bg-warning/20 border border-warning/30 text-warning">
-                  <AlertTriangle className="w-3 h-3" />
-                  Disconnected
+                <span className="text-lg font-bold">Ally Communications</span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-xs text-success font-medium">{onlineCount} online</span>
+                  {needHelpCount > 0 && (
+                    <span className="text-xs text-destructive font-medium">{needHelpCount} need help</span>
+                  )}
                 </div>
-              )}
-              <div className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 bg-success/10 border border-success/20">
-                <Activity className="w-3 h-3 text-success" />
-                <span className="text-success font-bold">{onlineCount}</span>
-                <span className="text-muted-foreground">online</span>
               </div>
-              {totalAlerts > 0 && (
-                <div className="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 bg-destructive/20 border border-destructive/30 text-destructive animate-pulse">
-                  <AlertTriangle className="w-3 h-3" />
-                  {totalAlerts} Alert{totalAlerts > 1 ? 's' : ''}
-                </div>
-              )}
-              {needHelpCount > 0 && (
-                <div className="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 bg-destructive/20 border border-destructive/30 text-destructive">
-                  <HelpCircle className="w-3 h-3" />
-                  {needHelpCount} Need Help
-                </div>
-              )}
-            </div>
-
-            {/* Primary Actions */}
+            </CardTitle>
+            
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
                 onClick={handleOpenBroadcast}
                 className="btn-apple-primary relative"
-                data-testid="broadcast-alert-btn"
+                data-testid="broadcast-btn"
               >
                 <AlertTriangle className="w-4 h-4 mr-1.5" />
                 Broadcast
-                {alertsBadgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center">
-                    {alertsBadgeCount}
+                {criticalAlerts > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                    {criticalAlerts}
                   </span>
                 )}
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleRefresh}
-                className="text-muted-foreground hover:text-foreground"
-                data-testid="refresh-btn"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowHelp(true)}
-                className="text-muted-foreground hover:text-foreground"
-                title="Help"
-                data-testid="help-btn"
-              >
-                <HelpCircle className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </CardHeader>
-
-        <CardContent className="space-y-4">
-          {/* Comms Availability Panel */}
-          <CommsAvailabilityPanel 
-            onMethodSelect={setSelectedCommsMethod}
-            selectedMethod={selectedCommsMethod}
-          />
-
-          {/* Tab Navigation - Cleaner pills with icons */}
-          <div className="flex items-center gap-1 p-1 rounded-2xl overflow-x-auto scrollbar-thin" 
-            style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
-            data-testid="ally-hub-tabs"
-          >
+        
+        <CardContent className="space-y-6">
+          {/* View Toggle */}
+          <div className="flex gap-1 p-1 rounded-2xl bg-secondary/30">
             {[
-              { id: 'chat', icon: MessageSquare, label: 'Chat', badge: globalMessages.length },
-              { id: 'map', icon: Map, label: 'Map', badge: nodes.filter(n => n.gps && n.gps.lat && n.gps.lon).length },
-              { id: 'codes', icon: Book, label: 'Codes' },
-              { id: 'knowledge', icon: Wifi, label: 'Comms' },
-              { id: 'guide', icon: BookOpen, label: 'GPS' },
-            ].map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
+              { id: 'comms', label: 'Communications', icon: Radio },
+              { id: 'map', label: 'Map', icon: Map },
+              { id: 'chat', label: 'Chat', icon: MessageSquare, badge: globalMessages.length },
+            ].map(view => {
+              const Icon = view.icon;
               return (
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                    isActive 
-                      ? 'bg-primary text-primary-foreground shadow-md' 
+                  key={view.id}
+                  onClick={() => setActiveView(view.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    activeView === view.id 
+                      ? 'bg-primary text-primary-foreground' 
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                   }`}
-                  data-testid={`tab-${tab.id}`}
+                  data-testid={`view-${view.id}`}
                 >
                   <Icon className="w-4 h-4" />
-                  {tab.label}
-                  {tab.badge > 0 && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
-                      isActive ? 'bg-white/20' : 'bg-primary/20 text-primary'
+                  {view.label}
+                  {view.badge > 0 && (
+                    <span className={`text-xs px-1.5 rounded-full font-bold ${
+                      activeView === view.id ? 'bg-white/20' : 'bg-primary/20 text-primary'
                     }`}>
-                      {tab.badge}
+                      {view.badge}
                     </span>
                   )}
                 </button>
               );
             })}
           </div>
-
-          {/* Tab Description - accessible legend and context */}
-          <AllyHubHelp activeTab={activeTab} compact />
-
-          {/* Chat Tab Content */}
-          {activeTab === 'chat' && (
-            <div className="glass rounded-lg overflow-hidden" data-testid="global-chat-box">
-              <div className="glass-strong border-b border-border px-4 py-2 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-semibold">Global Chat</span>
+          
+          {/* COMMUNICATIONS VIEW */}
+          {activeView === 'comms' && (
+            <div className="space-y-4">
+              {/* Communication Methods Grid */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                  <Signal className="w-4 h-4" />
+                  Select Communication Method
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {COMM_METHODS.map(method => (
+                    <CommMethodCard
+                      key={method.id}
+                      method={method}
+                      isSelected={selectedCommMethod === method.id}
+                      onSelect={setSelectedCommMethod}
+                      isExpanded={expandedCommMethod === method.id}
+                      onToggleExpand={toggleCommMethodExpand}
+                    />
+                  ))}
                 </div>
-                <span className="text-xs text-muted-foreground">{globalMessages.length} messages</span>
               </div>
               
-              {/* Pinned Emergency Broadcasts */}
-              {pinnedBroadcasts.length > 0 && (
-                <div className="border-b border-border p-2 space-y-2" data-testid="pinned-broadcasts">
-                  {pinnedBroadcasts.map((msg) => (
-                    <div key={msg.id} className="bg-destructive-light border border-destructive rounded-lg p-2 animate-critical-flash">
-                      <div className="flex items-start gap-2">
-                        <Pin className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs font-bold text-destructive">{msg.broadcast_title || 'EMERGENCY'}</div>
-                          <div className="text-xs text-foreground truncate">{msg.text}</div>
-                          <div className="text-xs text-muted-foreground">{formatTime(msg.timestamp)}</div>
+              {/* Active Method Status */}
+              {selectedCommMethod && (
+                <div className={`glass rounded-xl p-3 ${STATUS_CONFIG[COMM_METHODS.find(m => m.id === selectedCommMethod)?.status || 'available'].bg} border ${STATUS_CONFIG[COMM_METHODS.find(m => m.id === selectedCommMethod)?.status || 'available'].border}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">
+                      <span className="text-muted-foreground">Sending via:</span>{' '}
+                      <span className="font-bold">{COMM_METHODS.find(m => m.id === selectedCommMethod)?.name}</span>
+                    </span>
+                    <span className={`text-xs font-bold ${STATUS_CONFIG[COMM_METHODS.find(m => m.id === selectedCommMethod)?.status || 'available'].color}`}>
+                      {STATUS_CONFIG[COMM_METHODS.find(m => m.id === selectedCommMethod)?.status || 'available'].label}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* MAP VIEW */}
+          {activeView === 'map' && (
+            <AllyMapView nodes={nodes} />
+          )}
+          
+          {/* CHAT VIEW */}
+          {activeView === 'chat' && (
+            <div className="space-y-3">
+              {/* Messages */}
+              <div className="glass rounded-xl h-64 overflow-y-auto p-3 space-y-2 scrollbar-thin">
+                {globalMessages.length === 0 ? (
+                  <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+                    No messages yet
+                  </div>
+                ) : (
+                  globalMessages.map((msg, i) => (
+                    <div key={i} className={`flex gap-2 ${msg.sender === 'self' ? 'justify-end' : ''}`}>
+                      <div className={`max-w-[80%] rounded-xl px-3 py-2 ${
+                        msg.sender === 'self' 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'glass'
+                      }`}>
+                        {msg.sender !== 'self' && (
+                          <div className="text-xs font-semibold mb-0.5">{msg.sender_name}</div>
+                        )}
+                        <p className="text-sm">{msg.text}</p>
+                        <div className="text-xs opacity-60 mt-0.5">
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-              
-              {/* Chat Messages - Increased height from h-40 to h-64 (~60% taller) */}
-              <div className="relative">
-                <div 
-                  ref={chatContainerRef} 
-                  onScroll={handleChatScroll}
-                  className="h-64 sm:h-72 md:h-80 overflow-y-auto p-3 space-y-2 scrollbar-thin" 
-                  data-testid="chat-messages"
-                >
-                {chatLoading ? (
-                  <div className="space-y-2">
-                    {[1, 2].map((i) => (
-                      <div key={i} className="skeleton h-10 rounded-lg" />
-                    ))}
-                  </div>
-                ) : regularMessages.length === 0 ? (
-                  <div className="text-center py-6 text-muted-foreground">
-                    <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-xs">No messages yet. Start the conversation!</p>
-                  </div>
-                ) : (
-                  <>
-                    {regularMessages.map((msg) => {
-                      const isMe = msg.sender === 'me';
-                      const isBroadcast = msg.sender === 'broadcast';
-                      return (
-                        <div 
-                          key={msg.id} 
-                          className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
-                          data-testid={`chat-message-${msg.id}`}
-                        >
-                          <div className={`max-w-[80%] ${
-                            isBroadcast 
-                              ? 'bg-warning-light border border-warning' 
-                              : isMe 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'glass'
-                          } px-3 py-2 rounded-lg`}>
-                            {!isMe && !isBroadcast && (
-                              <div className="flex items-center gap-1.5 mb-0.5">
-                                <span className="text-xs font-semibold">{msg.sender_name}</span>
-                                {msg.sender_status && (
-                                  <span className={`text-xs px-1.5 py-0.5 rounded ${getStatusColor(msg.sender_status)}`}>
-                                    {getStatusLabel(msg.sender_status)}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                            {isBroadcast && (
-                              <div className="text-xs font-bold text-warning mb-0.5">{msg.broadcast_title}</div>
-                            )}
-                            <div className="text-sm">{msg.text}</div>
-                            <div className={`text-xs mt-0.5 flex items-center gap-1.5 ${isMe ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                              <span>{formatTime(msg.timestamp)}</span>
-                              {msg.status && msg.status !== 'delivered' && (
-                                <span className={`${
-                                  msg.status === 'failed' ? 'text-destructive' : 
-                                  msg.status === 'queued' ? 'text-warning' : ''
-                                }`}>
-                                  • {msg.status}
-                                </span>
-                              )}
-                              {msg.priority === 'urgent' && (
-                                <span className="text-warning font-medium">• URGENT</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </>
-                )}
-                </div>
-                
-                {/* Jump to Latest Button */}
-                {hasNewMessages && !isNearBottom && (
-                  <button
-                    onClick={handleJumpToLatest}
-                    className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:bg-primary-hover transition-colors flex items-center gap-1 animate-fade-in"
-                    data-testid="jump-to-latest-btn"
-                  >
-                    <ChevronDown className="w-3 h-3" />
-                    New messages
-                  </button>
+                  ))
                 )}
               </div>
               
-              {/* Chat Input */}
-              <div className="border-t border-border p-2 flex gap-2">
+              {/* Input */}
+              <div className="flex gap-2">
                 <Input
                   value={chatMessage}
                   onChange={(e) => setChatMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendChat()}
                   placeholder="Type a message..."
-                  className="flex-1 h-8 text-sm"
-                  data-testid="chat-input"
+                  className="flex-1"
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
                 />
-                <Button 
-                  size="sm" 
-                  onClick={handleSendChat} 
-                  disabled={!chatMessage.trim()}
-                  className="h-8 px-3"
-                  data-testid="chat-send-btn"
-                >
+                <Button onClick={handleSendChat} className="btn-apple-primary">
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
             </div>
           )}
-
-          {/* Map Tab Content */}
-          {activeTab === 'map' && (
-            <AllyMapView nodes={nodes} />
-          )}
-
-          {/* GPS Guide Tab Content */}
-          {activeTab === 'guide' && (
-            <GpsGuide />
-          )}
-
-          {/* Comms Knowledge Tab Content */}
-          {activeTab === 'knowledge' && (
-            <CommsKnowledge />
-          )}
-
-          {/* Codebook Tab Content */}
-          {activeTab === 'codes' && (
-            <Codebook onSendMessage={(msg) => {
-              setChatMessage(msg);
-              setActiveTab('chat');
-            }} />
-          )}
-
-          {/* Search and Filter */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex-1 min-w-[200px] relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name or ID..."
-                className="pl-9 h-9 text-sm"
-                data-testid="node-search-input"
-              />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  data-testid="clear-search-btn"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-1 flex-wrap">
-              {[
-                { key: 'all', label: 'All' },
-                { key: 'online', label: 'Online' },
-                { key: 'offline', label: 'Offline' },
-                { key: 'alerts', label: 'Alerts', icon: AlertTriangle },
-                { key: 'need_help', label: 'Need Help', icon: HelpCircle },
-              ].map(({ key, label, icon: Icon }) => (
-                <Button
-                  key={key}
-                  size="sm"
-                  variant={filterStatus === key ? 'default' : 'outline'}
-                  onClick={() => setFilterStatus(key)}
-                  className={`h-8 text-xs ${filterStatus === key ? '' : 'border-border-strong bg-secondary/30'}`}
-                  data-testid={`filter-${key}-btn`}
-                >
-                  {Icon && <Icon className="w-3 h-3 mr-1" />}
-                  {label}
-                </Button>
-              ))}
-              {filterStatus !== 'all' && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setFilterStatus('all')}
-                  className="h-8 text-xs text-muted-foreground"
-                  data-testid="clear-filter-btn"
-                >
-                  <X className="w-3 h-3 mr-1" />
-                  Clear
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Compact Node Avatar Strip */}
-          {filteredNodes.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground" data-testid="no-nodes-found">
-              <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-xs">No nodes match filters</p>
-              {(searchQuery || filterStatus !== 'all') && (
-                <Button
-                  variant="link"
-                  onClick={() => { setSearchQuery(''); setFilterStatus('all'); }}
-                  className="text-primary text-xs mt-1"
-                >
-                  Clear filters
-                </Button>
-              )}
-            </div>
-          ) : (
+          
+          {/* NODE NETWORK (Always visible) */}
+          <div className="pt-2 border-t border-border/50">
             <NodeAvatarStrip
-              nodes={filteredNodes}
-              onNodeClick={handleDetails}
+              nodes={nodes}
+              onNodeClick={handleNodeClick}
               selectedNodeId={selectedNode?.node_id}
             />
-          )}
+          </div>
+          
+          {/* BOTTOM SECTION: Alerts + Help */}
+          <div className="pt-4 border-t border-border/50 space-y-3">
+            <AlertsLog alerts={alerts} />
+            <HelpSection isExpanded={showHelp} onToggle={() => setShowHelp(!showHelp)} />
+          </div>
         </CardContent>
       </Card>
-
+      
       {/* Modals */}
       {showDetails && selectedNode && (
         <NodeDetailsDrawer
           node={selectedNode}
           onClose={handleCloseDetails}
-          onMessage={handleMessage}
+          onMessage={(nodeId) => {
+            handleCloseDetails();
+            handleOpenDM(nodeId);
+          }}
         />
       )}
-
+      
       {showDM && dmNodeId && (
         <MessagingModal
-          type="dm"
           nodeId={dmNodeId}
-          nodeName={nodes.find(n => n.node_id === dmNodeId)?.name}
+          nodeName={nodes.find(n => n.node_id === dmNodeId)?.name || 'Node'}
           onClose={handleCloseDM}
         />
       )}
-
+      
       {showBroadcast && (
         <BroadcastModal
           onClose={handleCloseBroadcast}
-          onSent={handleBroadcastSent}
+          onSend={() => {
+            setAlerts(prev => [{
+              id: Date.now(),
+              type: 'critical',
+              title: 'Broadcast Sent',
+              description: 'Your broadcast was sent to all nodes',
+              timestamp: new Date(),
+              node: 'You'
+            }, ...prev]);
+            handleCloseBroadcast();
+          }}
         />
       )}
-
-      {/* Help Modal */}
-      <AllyHubHelp 
-        activeTab={activeTab} 
-        isOpen={showHelp} 
-        onClose={() => setShowHelp(false)} 
-      />
     </>
   );
 }
