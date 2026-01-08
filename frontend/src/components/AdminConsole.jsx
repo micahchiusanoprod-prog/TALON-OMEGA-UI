@@ -186,7 +186,7 @@ const FleetUpdatesSection = () => {
             <tbody>
               {nodes.map((node) => (
                 <tr key={node.id} className="border-t border-border/30 hover:bg-white/5">
-                  <td className="px-4 py-3">
+                  <td className="px-2 sm:px-4 py-2 sm:py-3">
                     <input 
                       type="checkbox"
                       className="rounded"
@@ -195,15 +195,15 @@ const FleetUpdatesSection = () => {
                       disabled={node.updateStatus === 'offline'}
                     />
                   </td>
-                  <td className="px-4 py-3 font-medium">{node.name}</td>
-                  <td className="px-4 py-3 font-mono text-sm">v{node.version}</td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{formatTime(node.lastSeen)}</td>
-                  <td className="px-4 py-3">{getStatusBadge(node.updateStatus)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-sm">{node.name}</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-xs sm:text-sm">v{node.version}</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-muted-foreground">{formatTime(node.lastSeen)}</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-3">{getStatusBadge(node.updateStatus)}</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-3">
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="h-8 px-2"
+                      className="h-7 sm:h-8 px-2 text-xs"
                       onClick={() => handleDownloadLogs(node.id)}
                     >
                       <Download className="w-3 h-3 mr-1" />
