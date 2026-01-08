@@ -14,14 +14,77 @@ import {
   Sun,
   Cloud,
   CloudRain,
-  Snowflake
+  Snowflake,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
+  Info
 } from 'lucide-react';
 import api from '../services/api';
 import config from '../config';
 
+// Help content for Environment tile
+const ENVIRONMENT_HELP = {
+  overview: "This tile shows the current environmental conditions around your OMEGA device. All readings come from onboard sensors.",
+  metrics: {
+    temperature: {
+      title: "Temperature",
+      description: "The current air temperature measured by the device's sensor.",
+      why: "Knowing the temperature helps you dress appropriately, plan activities, and monitor for extreme conditions that could affect health or equipment.",
+      ranges: [
+        { range: "Below 60°F (15°C)", status: "Cold", advice: "Layer up, watch for hypothermia risk" },
+        { range: "60-75°F (15-24°C)", status: "Comfortable", advice: "Ideal conditions for most activities" },
+        { range: "Above 85°F (29°C)", status: "Hot", advice: "Stay hydrated, watch for heat exhaustion" },
+      ]
+    },
+    humidity: {
+      title: "Humidity",
+      description: "The percentage of water vapor in the air relative to the maximum it can hold.",
+      why: "Humidity affects comfort, health, and how your body regulates temperature. It also impacts equipment and food storage.",
+      ranges: [
+        { range: "Below 30%", status: "Dry", advice: "May cause skin/respiratory irritation" },
+        { range: "30-50%", status: "Ideal", advice: "Comfortable for most people" },
+        { range: "Above 60%", status: "Humid", advice: "Can feel muggy, promotes mold growth" },
+      ]
+    },
+    pressure: {
+      title: "Barometric Pressure",
+      description: "The weight of the atmosphere pressing down, measured in hectopascals (hPa).",
+      why: "Pressure changes indicate incoming weather. Falling pressure often means storms; rising pressure suggests clearing skies.",
+      ranges: [
+        { range: "Below 1000 hPa", status: "Low", advice: "Storm or bad weather likely" },
+        { range: "1010-1020 hPa", status: "Normal", advice: "Stable conditions expected" },
+        { range: "Above 1020 hPa", status: "High", advice: "Clear, fair weather likely" },
+      ]
+    },
+    iaq: {
+      title: "Indoor Air Quality (IAQ)",
+      description: "A score from 0-500 indicating how clean or polluted the air is. Higher is better.",
+      why: "Poor air quality can cause headaches, fatigue, and respiratory issues. Important in enclosed spaces or after events like fires.",
+      ranges: [
+        { range: "0-100", status: "Poor", advice: "Ventilate immediately, may cause health issues" },
+        { range: "100-200", status: "Moderate", advice: "Acceptable, but could be better" },
+        { range: "200+", status: "Good", advice: "Excellent air quality" },
+      ]
+    },
+  },
+  legend: [
+    { icon: CheckCircle, color: "text-success", bg: "bg-success/20", label: "Normal", description: "Within safe, comfortable range" },
+    { icon: AlertTriangle, color: "text-warning", bg: "bg-warning/20", label: "Attention", description: "Outside ideal range, monitor closely" },
+    { icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/20", label: "Critical", description: "Action needed, may be unsafe" },
+  ],
+  tips: [
+    "Trend arrows show if conditions are rising, falling, or stable",
+    "Tap 'Help' anytime to see this guide again",
+    "Simulated data appears when sensors are offline",
+  ]
+};
+
 export default function EnvironmentTile() {
   const [sensors, setSensors] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showHelp, setShowHelp] = useState(false);
+  const [expandedHelp, setExpandedHelp] = useState(null);
   const [history, setHistory] = useState({
     temperature: [22.1, 22.3, 22.5, 22.4, 22.5],
     humidity: [44.8, 45.0, 45.2, 45.1, 45.2],
