@@ -170,10 +170,10 @@ export default function EnvironmentTile() {
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
-        {/* Hero Stats - Large Display */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        {/* Hero Stats - Vertical Layout */}
+        <div className="space-y-3 mb-4">
           {/* Temperature - Primary */}
-          <div className="glass rounded-xl p-4 col-span-2 xl:col-span-1">
+          <div className="glass rounded-xl p-4">
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-lg bg-red-500/20">
@@ -205,7 +205,7 @@ export default function EnvironmentTile() {
           </div>
 
           {/* Humidity */}
-          <div className="glass rounded-xl p-4 col-span-2 xl:col-span-1">
+          <div className="glass rounded-xl p-4">
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-lg bg-blue-500/20">
@@ -235,55 +235,62 @@ export default function EnvironmentTile() {
               Ideal: 30-50% • Dew point: {(displayData.temperature - (100 - displayData.humidity) / 5).toFixed(0)}°C
             </p>
           </div>
-        </div>
 
-        {/* Secondary Stats */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
           {/* Pressure */}
-          <div className="glass rounded-xl p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <Gauge className="w-4 h-4 text-purple-400" />
-              <span className="text-sm font-medium">Pressure</span>
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-purple-500/20">
+                  <Gauge className="w-5 h-5 text-purple-400" />
+                </div>
+                <span className="text-sm font-medium">Pressure</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <WeatherIcon className={`w-5 h-5 ${weather.color}`} />
+                <span className="text-xs text-muted-foreground">{weather.label}</span>
+              </div>
             </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl xl:text-3xl font-bold">{displayData.pressure.toFixed(0)}</span>
-              <span className="text-xs text-muted-foreground">hPa</span>
-            </div>
-            <div className="flex items-center gap-2 mt-2">
-              <WeatherIcon className={`w-4 h-4 ${weather.color}`} />
-              <span className="text-xs text-muted-foreground">{weather.label}</span>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl xl:text-4xl font-bold">{displayData.pressure.toFixed(0)}</span>
+              <span className="text-sm text-muted-foreground">hPa</span>
             </div>
           </div>
 
           {/* Air Quality */}
-          <div className="glass rounded-xl p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <Wind className="w-4 h-4 text-green-400" />
-              <span className="text-sm font-medium">Air Quality</span>
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-green-500/20">
+                  <Wind className="w-5 h-5 text-green-400" />
+                </div>
+                <span className="text-sm font-medium">Air Quality</span>
+              </div>
+              <span className={`text-sm font-medium ${
+                displayData.iaq >= 150 ? 'text-success' : displayData.iaq >= 100 ? 'text-primary' : 'text-warning'
+              }`}>
+                {displayData.iaq >= 150 ? 'Excellent' : displayData.iaq >= 100 ? 'Good' : 'Poor'}
+              </span>
             </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl xl:text-3xl font-bold">{displayData.iaq}</span>
-              <span className="text-xs text-muted-foreground">IAQ</span>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl xl:text-4xl font-bold">{displayData.iaq}</span>
+              <span className="text-sm text-muted-foreground">IAQ</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              {displayData.iaq >= 150 ? 'Excellent' : displayData.iaq >= 100 ? 'Good' : 'Poor'}
-            </p>
           </div>
         </div>
 
         {/* Comfort Index */}
-        <div className="glass rounded-xl p-3 mb-4">
+        <div className="glass rounded-xl p-4 mb-4">
           <div className="flex items-center justify-between">
             <div>
               <span className="text-sm font-medium">Comfort Index</span>
               <p className="text-xs text-muted-foreground">{comfort.description}</p>
             </div>
-            <div className={`text-lg font-bold ${comfort.color}`}>
+            <div className={`text-xl font-bold ${comfort.color}`}>
               {comfort.level}
             </div>
           </div>
           {/* Comfort bar */}
-          <div className="mt-2 h-2 bg-secondary rounded-full overflow-hidden">
+          <div className="mt-3 h-3 bg-secondary rounded-full overflow-hidden">
             <div 
               className={`h-full transition-all ${
                 comfort.level === 'Ideal' ? 'bg-success w-full' : 
