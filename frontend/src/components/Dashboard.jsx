@@ -14,19 +14,6 @@ import CommunityTile from './CommunityTile';
 import QuickToolsBar from './QuickToolsBar';
 import api from '../services/api';
 import config from '../config';
-import { Activity, Radio, Shield, Zap, Users } from 'lucide-react';
-
-// Section Header Component
-const SectionHeader = ({ icon: Icon, label, color = 'text-primary' }) => (
-  <div className="section-header">
-    <div className="section-label flex items-center gap-2">
-      <Icon className={`w-3.5 h-3.5 ${color}`} />
-      <span>{label}</span>
-    </div>
-    <div className="section-line" />
-  </div>
-);
-
 export default function Dashboard() {
   const [showDiagnostics, setShowDiagnostics] = useState(false);
 
@@ -47,20 +34,17 @@ export default function Dashboard() {
         </section>
 
         {/* ===== COMMUNICATIONS SECTION ===== */}
-        <section className="section-divider animate-fade-in" style={{ animationDelay: '100ms' }}>
-          <SectionHeader icon={Radio} label="Communications" />
+        <section className="animate-fade-in pt-6" style={{ animationDelay: '100ms' }}>
           <AllyCommunicationsHub />
         </section>
 
         {/* ===== COMMUNITY SECTION (Directly under Ally Hub) ===== */}
-        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '150ms' }}>
-          <SectionHeader icon={Users} label="Community" />
+        <section className="animate-fade-in pt-6" style={{ animationDelay: '150ms' }}>
           <CommunityTile />
         </section>
 
         {/* ===== SYSTEM STATUS SECTION ===== */}
-        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '200ms' }}>
-          <SectionHeader icon={Activity} label="System Status" />
+        <section className="animate-fade-in pt-6" style={{ animationDelay: '200ms' }}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <EnvironmentTile />
             <DeviceInfoTile />
@@ -69,8 +53,7 @@ export default function Dashboard() {
         </section>
 
         {/* ===== TOOLS SECTION ===== */}
-        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '300ms' }}>
-          <SectionHeader icon={Shield} label="Tools & Media" />
+        <section className="animate-fade-in pt-6" style={{ animationDelay: '300ms' }}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <CameraTile />
             <SecurityTile />
@@ -79,8 +62,7 @@ export default function Dashboard() {
         </section>
 
         {/* ===== POWER SECTION ===== */}
-        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '400ms' }}>
-          <SectionHeader icon={Zap} label="Power Management" />
+        <section className="animate-fade-in pt-6" style={{ animationDelay: '400ms' }}>
           <PowerTile />
         </section>
 
