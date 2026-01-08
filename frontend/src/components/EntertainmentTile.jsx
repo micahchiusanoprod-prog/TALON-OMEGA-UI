@@ -9,17 +9,11 @@ import {
   Music,
   Star,
   Clock,
-  TrendingUp,
   Shuffle,
   ChevronRight,
   Search,
   Sparkles,
-  Zap,
-  Heart,
-  Download,
-  Grid,
-  SkipForward,
-  Pause
+  Download
 } from 'lucide-react';
 import { Input } from './ui/input';
 
