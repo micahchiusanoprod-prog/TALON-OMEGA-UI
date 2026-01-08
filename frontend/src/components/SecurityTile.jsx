@@ -104,11 +104,51 @@ const permissionLevels = [
   { id: 'guest', name: 'Guest', icon: Eye, color: 'text-muted-foreground', description: 'View only, limited actions' },
 ];
 
-// Mock people data
+// Mock people data with bio and medical info
 const mockPeople = [
-  { id: '1', name: 'John (You)', avatar: null, fingerprints: 2, permission: 'admin', isCurrentUser: true },
-  { id: '2', name: 'Sarah', avatar: null, fingerprints: 1, permission: 'member' },
-  { id: '3', name: 'Kids', avatar: null, fingerprints: 0, permission: 'guest' },
+  { 
+    id: '1', 
+    name: 'John (You)', 
+    avatar: null, 
+    fingerprints: 2, 
+    permission: 'admin', 
+    isCurrentUser: true,
+    bio: 'Group leader and primary communications operator. 20 years experience in electrical engineering.',
+    roleLine: 'EMT • Radio Ops • Leader',
+    medicalVisibility: 'admin',
+    bloodType: 'O+',
+    allergies: { food: [], medication: ['Penicillin'], environment: [] },
+    medicalConditions: 'Mild hypertension (controlled)',
+    medications: 'Lisinopril 10mg daily',
+    emergencyContact: { name: 'Sarah (Wife)', relationship: 'Spouse', phone: 'Node omega-02' },
+    responderNotes: 'Reading glasses in left pocket.',
+  },
+  { 
+    id: '2', 
+    name: 'Sarah', 
+    avatar: null, 
+    fingerprints: 1, 
+    permission: 'member',
+    bio: 'Registered nurse with 20+ years ER experience. Master gardener.',
+    roleLine: 'RN • Medical Lead • Gardener',
+    medicalVisibility: 'household',
+    bloodType: 'A+',
+    allergies: { food: ['Shellfish'], medication: [], environment: ['Latex'] },
+  },
+  { 
+    id: '3', 
+    name: 'Kids', 
+    avatar: null, 
+    fingerprints: 0, 
+    permission: 'guest',
+    bio: 'Emma (14) and Jake (12). Both trained in basic first aid.',
+    roleLine: 'Students • Junior Operators',
+    medicalVisibility: 'admin',
+    bloodType: 'O+/A+',
+    allergies: { food: [], medication: [], environment: [] },
+    medicalConditions: 'Jake: Mild asthma',
+    isDependent: true,
+  },
 ];
 
 const PersonCard = ({ person, onSelect, isSelected }) => {
@@ -138,6 +178,9 @@ const PersonCard = ({ person, onSelect, isSelected }) => {
               <span className="text-xs px-1.5 py-0.5 bg-primary/20 text-primary rounded">You</span>
             )}
           </div>
+          {person.roleLine && (
+            <p className="text-xs text-primary truncate">{person.roleLine}</p>
+          )}
           <div className="flex items-center gap-2 mt-0.5">
             <PermIcon className={`w-3 h-3 ${permission?.color}`} />
             <span className="text-xs text-muted-foreground">{permission?.name}</span>
