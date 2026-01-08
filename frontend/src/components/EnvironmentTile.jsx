@@ -380,63 +380,66 @@ export default function EnvironmentTile() {
                 </div>
               </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl xl:text-5xl font-bold">{displayData.humidity.toFixed(0)}</span>
-              <span className="text-lg text-muted-foreground">%</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tabular-nums">{displayData.humidity.toFixed(0)}</span>
+              <span className="text-xl text-muted-foreground">%</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-2">
               Ideal: 30-50% • Dew point: {(displayData.temperature - (100 - displayData.humidity) / 5).toFixed(0)}°C
             </p>
           </div>
 
           {/* Pressure */}
           <div className="glass rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-purple-500/20">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-purple-500/20">
                   <Gauge className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">Barometric Pressure</span>
+                  <span className="text-sm font-semibold">Barometric Pressure</span>
                   <p className="text-xs text-muted-foreground">Atmospheric weight - predicts weather</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <WeatherIcon className={`w-5 h-5 ${weather.color}`} />
-                <span className="text-xs text-muted-foreground">{weather.label}</span>
+                <span className="text-xs font-medium text-muted-foreground">{weather.label}</span>
               </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl xl:text-4xl font-bold">{displayData.pressure.toFixed(0)}</span>
-              <span className="text-sm text-muted-foreground">hPa</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tabular-nums">{displayData.pressure.toFixed(0)}</span>
+              <span className="text-lg text-muted-foreground">hPa</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-2">
               {displayData.pressure > 1015 ? 'High pressure = fair weather likely' : 'Low pressure = weather change possible'}
             </p>
           </div>
 
           {/* Air Quality */}
           <div className="glass rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-green-500/20">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-green-500/20">
                   <Wind className="w-5 h-5 text-green-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">Indoor Air Quality</span>
+                  <span className="text-sm font-semibold">Indoor Air Quality</span>
                   <p className="text-xs text-muted-foreground">Higher score = cleaner air</p>
                 </div>
               </div>
-              <span className={`text-sm font-medium ${
-                displayData.iaq >= 150 ? 'text-success' : displayData.iaq >= 100 ? 'text-primary' : 'text-warning'
+              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                displayData.iaq >= 150 ? 'bg-success/20 text-success' : displayData.iaq >= 100 ? 'bg-primary/20 text-primary' : 'bg-warning/20 text-warning'
               }`}>
                 {displayData.iaq >= 150 ? 'Excellent' : displayData.iaq >= 100 ? 'Good' : 'Poor'}
               </span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl xl:text-4xl font-bold">{displayData.iaq}</span>
-              <span className="text-sm text-muted-foreground">IAQ</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tabular-nums">{displayData.iaq}</span>
+              <span className="text-lg text-muted-foreground">IAQ</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Index 0-500 • {displayData.iaq >= 150 ? 'Air is clean and healthy' : displayData.iaq >= 100 ? 'Air quality is acceptable' : 'Consider ventilation'}
+            </p>
           </div>
         </div>
 
@@ -444,7 +447,7 @@ export default function EnvironmentTile() {
         <div className="glass rounded-xl p-4 mb-4">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-sm font-medium">Comfort Index</span>
+              <span className="text-sm font-semibold">Comfort Index</span>
               <p className="text-xs text-muted-foreground">{comfort.description}</p>
             </div>
             <div className={`text-xl font-bold ${comfort.color}`}>
