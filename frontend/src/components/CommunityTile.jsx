@@ -28,7 +28,9 @@ import {
   MapPin,
   Radio,
   Zap,
-  FileText
+  FileText,
+  Bookmark,
+  Sparkles
 } from 'lucide-react';
 import { Input } from './ui/input';
 import TileHelpTabs, { QuickHelpTips } from './ui/TileHelpTabs';
