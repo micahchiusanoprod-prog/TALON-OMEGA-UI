@@ -34,7 +34,7 @@ export default function Dashboard() {
     <div className="min-h-screen">
       <Header onDiagnosticsClick={() => setShowDiagnostics(true)} />
       
-      <main className="container mx-auto px-4 pb-8 pt-6 max-w-7xl space-y-2">
+      <main className="container mx-auto px-4 pb-8 pt-20 max-w-7xl space-y-2">
         
         {/* ===== QUICK TOOLS (ALWAYS VISIBLE AT TOP) ===== */}
         <section className="animate-fade-in">
