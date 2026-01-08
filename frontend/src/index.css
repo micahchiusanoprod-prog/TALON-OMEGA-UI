@@ -161,13 +161,18 @@ code {
         background-attachment: fixed;
     }
     
-    /* Dark mode - Subtle grid background */
+    /* Dark mode - Subtle textured background with noise */
     .dark body {
         background-color: hsl(220, 15%, 5%);
         background-image: 
-            linear-gradient(rgba(6, 182, 212, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(6, 182, 212, 0.02) 1px, transparent 1px);
-        background-size: 60px 60px;
+            /* Subtle noise texture */
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+            /* Grid overlay */
+            linear-gradient(rgba(6, 182, 212, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6, 182, 212, 0.015) 1px, transparent 1px),
+            /* Radial gradient for depth */
+            radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+        background-size: 200px 200px, 80px 80px, 80px 80px, 100% 100%;
         background-attachment: fixed;
     }
 }
