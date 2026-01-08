@@ -617,18 +617,18 @@ export default function AllyCommunicationsHub() {
   return (
     <>
       <Card className="glass-strong border-border-strong" data-testid="ally-communications-hub">
-        <CardHeader className="pb-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <CardTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-                <Radio className="w-5 h-5 text-primary" />
+        <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <CardTitle className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+                <Radio className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               </div>
               <div>
-                <span className="text-lg font-bold">Ally Communications Hub</span>
+                <span className="text-base sm:text-lg font-bold">Ally Communications Hub</span>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-xs text-success font-medium">{onlineCount} online</span>
+                  <span className="text-[10px] sm:text-xs text-success font-medium">{onlineCount} online</span>
                   {needHelpCount > 0 && (
-                    <span className="text-xs text-destructive font-medium">{needHelpCount} need help</span>
+                    <span className="text-[10px] sm:text-xs text-destructive font-medium">{needHelpCount} need help</span>
                   )}
                 </div>
               </div>
@@ -638,13 +638,13 @@ export default function AllyCommunicationsHub() {
               <Button
                 size="sm"
                 onClick={handleOpenBroadcast}
-                className="btn-apple-primary relative"
+                className="btn-apple-primary relative text-xs sm:text-sm h-8 sm:h-9"
                 data-testid="broadcast-btn"
               >
-                <AlertTriangle className="w-4 h-4 mr-1.5" />
+                <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
                 Broadcast
                 {criticalAlerts > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 bg-destructive text-white text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
                     {criticalAlerts}
                   </span>
                 )}
@@ -653,30 +653,31 @@ export default function AllyCommunicationsHub() {
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
           {/* View Toggle - TALLER for glove-friendly tapping */}
-          <div className="flex gap-1 p-1.5 rounded-2xl bg-secondary/30">
+          <div className="flex gap-0.5 sm:gap-1 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl bg-secondary/30">
             {[
-              { id: 'comms', label: 'Communications', icon: Radio },
-              { id: 'map', label: 'Map', icon: Map },
-              { id: 'chat', label: 'Chat', icon: MessageSquare, badge: globalMessages.length },
+              { id: 'comms', label: 'Comms', fullLabel: 'Communications', icon: Radio },
+              { id: 'map', label: 'Map', fullLabel: 'Map', icon: Map },
+              { id: 'chat', label: 'Chat', fullLabel: 'Chat', icon: MessageSquare, badge: globalMessages.length },
             ].map(view => {
               const Icon = view.icon;
               return (
                 <button
                   key={view.id}
                   onClick={() => setActiveView(view.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-3 sm:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
                     activeView === view.id 
                       ? 'bg-primary text-primary-foreground' 
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                   }`}
                   data-testid={`view-${view.id}`}
                 >
-                  <Icon className="w-4 h-4" />
-                  {view.label}
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="sm:hidden">{view.label}</span>
+                  <span className="hidden sm:inline">{view.fullLabel}</span>
                   {view.badge > 0 && (
-                    <span className={`text-xs px-1.5 rounded-full font-bold ${
+                    <span className={`text-[10px] sm:text-xs px-1 sm:px-1.5 rounded-full font-bold ${
                       activeView === view.id ? 'bg-white/20' : 'bg-primary/20 text-primary'
                     }`}>
                       {view.badge}
@@ -689,14 +690,14 @@ export default function AllyCommunicationsHub() {
           
           {/* COMMUNICATIONS VIEW */}
           {activeView === 'comms' && (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {/* Communication Methods Grid - 3 columns on xl screens */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                  <Signal className="w-4 h-4" />
+              <div className="space-y-2 sm:space-y-3">
+                <h3 className="text-xs sm:text-sm font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                  <Signal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Select Communication Method
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 items-start">
                   {COMM_METHODS.map(method => (
                     <CommMethodCard
                       key={method.id}
