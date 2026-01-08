@@ -50,8 +50,11 @@ export default function Dashboard() {
             <EnvironmentTile />
             <DeviceInfoTile />
           </div>
-          <HotspotTile />
-          <PowerTile />
+          {/* Hotspot & Power side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <HotspotTile />
+            <PowerTile />
+          </div>
         </section>
 
         {/* ===== TOOLS & MEDIA SECTION ===== */}
