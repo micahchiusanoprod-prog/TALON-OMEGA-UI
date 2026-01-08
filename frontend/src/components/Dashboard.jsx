@@ -59,8 +59,11 @@ export default function Dashboard() {
 
         {/* ===== TOOLS & MEDIA SECTION ===== */}
         <section className="animate-fade-in pt-6 space-y-4" style={{ animationDelay: '300ms' }}>
-          <CameraTile />
-          <SecurityTile />
+          {/* Camera & Security side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <CameraTile />
+            <SecurityTile />
+          </div>
           <MusicTile />
         </section>
 
