@@ -120,20 +120,20 @@ const ConnectionIndicator = ({ node }) => {
 export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) {
   if (!nodes || nodes.length === 0) {
     return (
-      <div className="glass rounded-xl p-6 text-center text-muted-foreground">
-        <User className="w-8 h-8 mx-auto mb-2 opacity-50" />
-        <p className="text-sm">No nodes found</p>
-        <p className="text-xs text-muted-foreground/70">Nodes will appear when they connect to the network</p>
+      <div className="node-glass-panel rounded-2xl p-8 text-center text-muted-foreground">
+        <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <p className="text-base font-medium">No nodes found</p>
+        <p className="text-sm text-muted-foreground/70 mt-1">Nodes will appear when they connect to the network</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4" data-testid="node-avatar-strip">
+    <div className="space-y-5" data-testid="node-avatar-strip">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-bold">Network</span>
-          <span className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary font-semibold">
+          <span className="text-base font-bold">Network</span>
+          <span className="text-sm px-4 py-1.5 rounded-full bg-primary/15 text-primary font-semibold border border-primary/20">
             {nodes.length} {nodes.length === 1 ? 'node' : 'nodes'}
           </span>
         </div>
@@ -142,8 +142,8 @@ export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) 
         </span>
       </div>
       
-      {/* Generous spacing between avatar cards */}
-      <div className="flex gap-4 overflow-x-auto pb-3 pt-3 scrollbar-thin" data-testid="node-avatars">
+      {/* Modern glass node cards - LARGER and more premium */}
+      <div className="flex gap-5 overflow-x-auto pb-4 pt-4 scrollbar-thin" data-testid="node-avatars">
         {nodes.map((node) => {
           const status = getStatusConfig(node);
           const StatusIcon = status.icon;
@@ -154,20 +154,20 @@ export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) 
             <button
               key={node.node_id}
               onClick={() => onNodeClick(node)}
-              className={`flex-shrink-0 relative group transition-all duration-200 ${
-                isSelected ? 'scale-105' : 'hover:scale-102'
+              className={`flex-shrink-0 relative group transition-all duration-300 ${
+                isSelected ? 'scale-105' : 'hover:scale-[1.03]'
               }`}
               data-testid={`node-avatar-${node.node_id}`}
             >
-              {/* Avatar Card - LARGER for glove-friendly tap targets */}
-              <div className={`w-28 glass rounded-2xl p-4 flex flex-col items-center gap-3 border-2 transition-all ${
+              {/* Modern Glass Card - LARGER and more premium */}
+              <div className={`w-36 node-glass-panel rounded-3xl p-5 flex flex-col items-center gap-4 transition-all duration-300 ${
                 isSelected 
-                  ? `border-primary ${status.ringColor} ring-2 shadow-lg` 
-                  : 'border-transparent hover:border-primary/30'
+                  ? `border-primary/50 ${status.ringColor} ring-2 shadow-xl shadow-primary/20` 
+                  : 'border-white/10 hover:border-primary/30 hover:shadow-lg'
               }`}>
-                {/* Avatar Circle - LARGER for clear visibility */}
+                {/* Avatar Circle - MUCH LARGER for clear visibility */}
                 <div className="relative">
-                  <div className={`w-16 h-16 rounded-full overflow-hidden ${getAvatarColor(node.node_id)} flex items-center justify-center ring-3 ring-background shadow-xl`}>
+                  <div className={`w-20 h-20 rounded-full overflow-hidden ${getAvatarColor(node.node_id)} flex items-center justify-center ring-4 ring-background shadow-2xl`}>
                     {node.avatar ? (
                       <img 
                         src={node.avatar} 
@@ -189,36 +189,36 @@ export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) 
                         }}
                       />
                     )}
-                    <span className="text-white text-xl font-bold hidden items-center justify-center w-full h-full">
+                    <span className="text-white text-2xl font-bold hidden items-center justify-center w-full h-full">
                       {getInitials(node.name)}
                     </span>
                   </div>
                   
-                  {/* Status Badge - LARGER and more prominent */}
-                  <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full ${status.color} border-3 border-background flex items-center justify-center shadow-lg`}>
+                  {/* Status Badge - Larger and more prominent */}
+                  <div className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full ${status.color} border-4 border-background flex items-center justify-center shadow-lg`}>
                     <StatusIcon className="w-4 h-4 text-white" />
                   </div>
                 </div>
                 
-                {/* Name - LARGER text */}
-                <span className="text-sm font-bold text-foreground truncate w-full text-center">
+                {/* Name - Larger text */}
+                <span className="text-base font-bold text-foreground truncate w-full text-center">
                   {node.name.split(' ')[0].replace("'s", '')}
                 </span>
                 
-                {/* Connection & GPS Indicators - More visible */}
+                {/* Connection & GPS Indicators - Better spacing */}
                 <div className="flex items-center justify-center gap-3">
                   <ConnectionIndicator node={node} />
                   {hasGps && (
-                    <div className="flex items-center gap-1">
-                      <div className="w-2.5 h-2.5 rounded-full bg-success" />
-                      <span className="text-xs text-success font-medium">GPS</span>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-success shadow-sm shadow-success/50" />
+                      <span className="text-xs text-success font-semibold">GPS</span>
                     </div>
                   )}
                 </div>
               </div>
               
-              {/* Status Label (always visible, not just on hover) */}
-              <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-lg text-xs font-bold ${status.color} text-white shadow-lg z-10`}>
+              {/* Status Label - Floating pill above card */}
+              <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-bold ${status.color} text-white shadow-lg z-10`}>
                 {status.label}
               </div>
             </button>
@@ -226,22 +226,22 @@ export default function NodeAvatarStrip({ nodes, onNodeClick, selectedNodeId }) 
         })}
       </div>
       
-      {/* Quick Legend */}
-      <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <div className="w-2.5 h-2.5 rounded-full bg-success" />
+      {/* Quick Legend - Updated styling */}
+      <div className="flex items-center justify-center gap-5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-success shadow-sm shadow-success/50" />
           <span>Good</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-2.5 h-2.5 rounded-full bg-warning" />
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-warning shadow-sm shadow-warning/50" />
           <span>Okay</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-destructive shadow-sm shadow-destructive/50" />
           <span>Need Help</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground" />
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-muted-foreground" />
           <span>Offline</span>
         </div>
       </div>
