@@ -12,6 +12,11 @@ import MusicTile from './MusicTile';
 import PowerTile from './PowerTile';
 import CommunityTile from './CommunityTile';
 import QuickToolsBar from './QuickToolsBar';
+import OmegaNetflixTile from './OmegaNetflixTile';
+import MoviesTile from './MoviesTile';
+import ShowsTile from './ShowsTile';
+import GamesTile from './GamesTile';
+import { Film, Tv, Gamepad2, Music } from 'lucide-react';
 import api from '../services/api';
 import config from '../config';
 export default function Dashboard() {
