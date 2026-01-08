@@ -10,52 +10,11 @@ import {
   HardDrive,
   Thermometer,
   MemoryStick,
-  Wifi,
   Server,
-  Zap,
   RefreshCw
 } from 'lucide-react';
 import api from '../services/api';
 import config from '../config';
-
-// Circular Progress Component
-const CircularProgress = ({ value, size = 80, strokeWidth = 8, color, label, icon: Icon }) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (value / 100) * circumference;
-  
-  return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="transform -rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={strokeWidth}
-          className="text-secondary"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          className="transition-all duration-500"
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        {Icon && <Icon className="w-4 h-4 text-muted-foreground mb-0.5" />}
-        <span className="text-lg font-bold">{value}%</span>
-      </div>
-    </div>
-  );
-};
 
 export default function DeviceInfoTile() {
   const [metrics, setMetrics] = useState(null);
