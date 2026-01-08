@@ -5,140 +5,87 @@ import AllyCommunicationsHub from './AllyCommunicationsHub';
 import EnvironmentTile from './EnvironmentTile';
 import DeviceInfoTile from './DeviceInfoTile';
 import HotspotTile from './HotspotTile';
-import EntertainmentSection from './EntertainmentSection';
-import CommunitySection from './CommunitySection';
-import QualityOfLifeSection from './QualityOfLifeSection';
 import DiagnosticsPanel from './DiagnosticsPanel';
 import CameraTile from './CameraTile';
 import SecurityTile from './SecurityTile';
 import MusicTile from './MusicTile';
 import PowerTile from './PowerTile';
 import CommunityTile from './CommunityTile';
-import HotkeysBar from './HotkeysBar';
+import QuickToolsBar from './QuickToolsBar';
 import api from '../services/api';
 import config from '../config';
-import { Activity } from 'lucide-react';
+import { Activity, Radio, Shield, Zap, Users } from 'lucide-react';
 
-export default function Dashboard({ theme, onToggleTheme }) {
-  const [metrics, setMetrics] = useState(null);
-  const [health, setHealth] = useState(null);
+// Section Header Component
+const SectionHeader = ({ icon: Icon, label, color = 'text-primary' }) => (
+  <div className="section-header">
+    <div className="section-label flex items-center gap-2">
+      <Icon className={`w-3.5 h-3.5 ${color}`} />
+      <span>{label}</span>
+    </div>
+    <div className="section-line" />
+  </div>
+);
+
+export default function Dashboard() {
   const [showDiagnostics, setShowDiagnostics] = useState(false);
-  const [diagnosticsData, setDiagnosticsData] = useState({});
-
-  // Poll system metrics (real-time feel)
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        const data = await api.getMetrics();
-        setMetrics(data);
-        setDiagnosticsData(prev => ({ ...prev, metrics: data }));
-      } catch (error) {
-        console.error('Failed to fetch metrics:', error);
-      }
-    };
-
-    fetchMetrics();
-    const interval = setInterval(fetchMetrics, config.polling.metrics);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Poll health status
-  useEffect(() => {
-    const fetchHealth = async () => {
-      try {
-        const data = await api.getHealth();
-        setHealth(data);
-        setDiagnosticsData(prev => ({ ...prev, health: data }));
-      } catch (error) {
-        console.error('Failed to fetch health:', error);
-      }
-    };
-
-    fetchHealth();
-    const interval = setInterval(fetchHealth, config.polling.health);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Handle hotkey clicks
-  const handleHotkeyClick = (hotkeyId) => {
-    // For now, log the click - will wire to actual navigation/actions later
-    console.log('Hotkey clicked:', hotkeyId);
-    // Could scroll to sections, open modals, etc.
-  };
 
   return (
-    <div className="min-h-screen pb-12">
-      {/* Header */}
-      <Header metrics={metrics} health={health} theme={theme} onToggleTheme={onToggleTheme} />
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 pt-24 space-y-8">
-        {/* Hotkeys Bar - QoL Quick Access */}
-        <div className="animate-fade-in">
-          <HotkeysBar onHotkeyClick={handleHotkeyClick} />
-        </div>
-
-        {/* Hero Search */}
-        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+    <div className="min-h-screen">
+      <Header onDiagnosticsClick={() => setShowDiagnostics(true)} />
+      
+      <main className="container mx-auto px-4 pb-8 pt-6 max-w-7xl space-y-2">
+        
+        {/* ===== SEARCH & QUICK TOOLS ===== */}
+        <section className="animate-fade-in">
           <SearchBar />
-        </div>
+          
+          {/* Quick Tools Bar - Minimal row of useful utilities */}
+          <div className="mt-4">
+            <QuickToolsBar />
+          </div>
+        </section>
 
-        {/* Community */}
-        <div className="animate-fade-in mt-12" style={{ animationDelay: '200ms' }}>
-          <CommunitySection />
-        </div>
-
-        {/* Ally Communications Hub - Under Community */}
-        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+        {/* ===== COMMUNICATIONS SECTION ===== */}
+        <section className="section-divider animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <SectionHeader icon={Radio} label="Communications" />
           <AllyCommunicationsHub />
-        </div>
+        </section>
 
-        {/* New Tiles Row: Camera, Security, Music */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '350ms' }}>
-          <CameraTile />
-          <SecurityTile />
-          <MusicTile />
-        </div>
+        {/* ===== SYSTEM STATUS SECTION ===== */}
+        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <SectionHeader icon={Activity} label="System Status" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <EnvironmentTile />
+            <DeviceInfoTile />
+            <HotspotTile />
+          </div>
+        </section>
 
-        {/* Power Tile - Mission Critical */}
-        <div className="animate-fade-in" style={{ animationDelay: '375ms' }}>
-          <PowerTile />
-        </div>
+        {/* ===== TOOLS SECTION ===== */}
+        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <SectionHeader icon={Shield} label="Tools & Media" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <CameraTile />
+            <SecurityTile />
+            <MusicTile />
+          </div>
+        </section>
 
-        {/* Community Tile - Social Feed */}
-        <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
-          <CommunityTile />
-        </div>
+        {/* ===== POWER & COMMUNITY SECTION ===== */}
+        <section className="section-divider-subtle animate-fade-in" style={{ animationDelay: '400ms' }}>
+          <SectionHeader icon={Zap} label="Power & Network" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <PowerTile />
+            <CommunityTile />
+          </div>
+        </section>
 
-        {/* Entertainment */}
-        <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
-          <EntertainmentSection />
-        </div>
-
-        {/* Environment, Device Info & Hotspot */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '500ms' }}>
-          <EnvironmentTile />
-          <DeviceInfoTile />
-          <HotspotTile />
-        </div>
       </main>
 
-      {/* Diagnostics Button (bottom right corner) */}
-      {config.features.enableDiagnostics && (
-        <button
-          onClick={() => setShowDiagnostics(!showDiagnostics)}
-          className="fixed bottom-6 right-6 glass p-3 rounded-full hover:glass-strong transition-smooth glow-cyan z-[100]"
-          title="Diagnostics"
-          style={{ pointerEvents: 'auto' }}
-        >
-          <Activity className="w-5 h-5 text-primary" />
-        </button>
-      )}
-
-      {/* Diagnostics Panel */}
+      {/* Diagnostics Panel Modal */}
       {showDiagnostics && (
         <DiagnosticsPanel
-          data={diagnosticsData}
           onClose={() => setShowDiagnostics(false)}
         />
       )}
