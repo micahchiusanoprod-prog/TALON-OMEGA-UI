@@ -330,25 +330,25 @@ export default function DeviceInfoTile() {
           <div className="glass rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-500/20">
+                <div className="p-2.5 rounded-xl bg-blue-500/20">
                   <Cpu className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">CPU Usage</span>
+                  <span className="text-sm font-semibold">CPU Usage</span>
                   <p className="text-xs text-muted-foreground">How hard your processor is working</p>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full ${
+              <div className={`px-2.5 py-1 rounded-full ${
                 displayMetrics.cpu > 80 ? 'bg-destructive/20' : displayMetrics.cpu > 60 ? 'bg-warning/20' : 'bg-success/20'
               }`}>
-                <span className={`text-xs font-medium ${getMetricStatus('cpu', displayMetrics.cpu).color}`}>
+                <span className={`text-xs font-semibold ${getMetricStatus('cpu', displayMetrics.cpu).color}`}>
                   {getMetricStatus('cpu', displayMetrics.cpu).label}
                 </span>
               </div>
             </div>
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-bold">{displayMetrics.cpu}</span>
-              <span className="text-lg text-muted-foreground">%</span>
+            <div className="flex items-baseline gap-1 mb-3">
+              <span className="text-5xl font-bold tabular-nums">{displayMetrics.cpu}</span>
+              <span className="text-xl text-muted-foreground">%</span>
             </div>
             <div className="h-3 bg-secondary rounded-full overflow-hidden">
               <div 
@@ -358,31 +358,34 @@ export default function DeviceInfoTile() {
                 style={{ width: `${displayMetrics.cpu}%` }}
               />
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {displayMetrics.cpu < 40 ? 'Idle - plenty of headroom' : displayMetrics.cpu < 70 ? 'Active but healthy' : 'Heavy load - may cause slowdowns'}
+            </p>
           </div>
 
           {/* Memory */}
           <div className="glass rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-purple-500/20">
+                <div className="p-2.5 rounded-xl bg-purple-500/20">
                   <MemoryStick className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">Memory (RAM)</span>
+                  <span className="text-sm font-semibold">Memory (RAM)</span>
                   <p className="text-xs text-muted-foreground">Active working memory for running apps</p>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full ${
+              <div className={`px-2.5 py-1 rounded-full ${
                 displayMetrics.ram > 85 ? 'bg-destructive/20' : displayMetrics.ram > 70 ? 'bg-warning/20' : 'bg-success/20'
               }`}>
-                <span className={`text-xs font-medium ${getMetricStatus('ram', displayMetrics.ram).color}`}>
+                <span className={`text-xs font-semibold ${getMetricStatus('ram', displayMetrics.ram).color}`}>
                   {getMetricStatus('ram', displayMetrics.ram).label}
                 </span>
               </div>
             </div>
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-bold">{displayMetrics.ram}</span>
-              <span className="text-lg text-muted-foreground">%</span>
+            <div className="flex items-baseline gap-1 mb-3">
+              <span className="text-5xl font-bold tabular-nums">{displayMetrics.ram}</span>
+              <span className="text-xl text-muted-foreground">%</span>
             </div>
             <div className="h-3 bg-secondary rounded-full overflow-hidden">
               <div 
@@ -401,25 +404,25 @@ export default function DeviceInfoTile() {
           <div className="glass rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-orange-500/20">
+                <div className="p-2.5 rounded-xl bg-orange-500/20">
                   <HardDrive className="w-5 h-5 text-orange-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">Storage</span>
+                  <span className="text-sm font-semibold">Storage</span>
                   <p className="text-xs text-muted-foreground">Internal disk space for files & data</p>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full ${
+              <div className={`px-2.5 py-1 rounded-full ${
                 displayMetrics.disk > 85 ? 'bg-destructive/20' : displayMetrics.disk > 70 ? 'bg-warning/20' : 'bg-success/20'
               }`}>
-                <span className={`text-xs font-medium ${getMetricStatus('disk', displayMetrics.disk).color}`}>
+                <span className={`text-xs font-semibold ${getMetricStatus('disk', displayMetrics.disk).color}`}>
                   {getMetricStatus('disk', displayMetrics.disk).label}
                 </span>
               </div>
             </div>
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-bold">{displayMetrics.disk}</span>
-              <span className="text-lg text-muted-foreground">%</span>
+            <div className="flex items-baseline gap-1 mb-3">
+              <span className="text-5xl font-bold tabular-nums">{displayMetrics.disk}</span>
+              <span className="text-xl text-muted-foreground">%</span>
             </div>
             <div className="h-3 bg-secondary rounded-full overflow-hidden">
               <div 
@@ -438,25 +441,25 @@ export default function DeviceInfoTile() {
           <div className="glass rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-red-500/20">
+                <div className="p-2.5 rounded-xl bg-red-500/20">
                   <Thermometer className="w-5 h-5 text-red-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">CPU Temperature</span>
+                  <span className="text-sm font-semibold">CPU Temperature</span>
                   <p className="text-xs text-muted-foreground">Heat level - lower is better</p>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full ${
+              <div className={`px-2.5 py-1 rounded-full ${
                 displayMetrics.temp > 75 ? 'bg-destructive/20' : displayMetrics.temp > 60 ? 'bg-warning/20' : 'bg-success/20'
               }`}>
-                <span className={`text-xs font-medium ${getMetricStatus('temp', displayMetrics.temp).color}`}>
+                <span className={`text-xs font-semibold ${getMetricStatus('temp', displayMetrics.temp).color}`}>
                   {getMetricStatus('temp', displayMetrics.temp).label}
                 </span>
               </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-bold">{displayMetrics.temp}</span>
-              <span className="text-lg text-muted-foreground">°C</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tabular-nums">{displayMetrics.temp}</span>
+              <span className="text-xl text-muted-foreground">°C</span>
               <span className="text-sm text-muted-foreground ml-2">({(displayMetrics.temp * 9/5 + 32).toFixed(0)}°F)</span>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
@@ -466,16 +469,16 @@ export default function DeviceInfoTile() {
 
           {/* Uptime */}
           <div className="glass rounded-xl p-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 rounded-lg bg-cyan-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2.5 rounded-xl bg-cyan-500/20">
                 <Clock className="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <span className="text-sm font-medium">Uptime</span>
+                <span className="text-sm font-semibold">Uptime</span>
                 <p className="text-xs text-muted-foreground">Time since device was last restarted</p>
               </div>
             </div>
-            <div className="text-3xl font-bold">
+            <div className="text-4xl font-bold tabular-nums">
               {formatUptime(displayMetrics.uptime)}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
