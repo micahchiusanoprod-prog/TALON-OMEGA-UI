@@ -11,15 +11,98 @@ import {
   Thermometer,
   MemoryStick,
   Server,
-  RefreshCw
+  RefreshCw,
+  HelpCircle,
+  Info,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import api from '../services/api';
 import config from '../config';
+
+// Help content for Device Info tile
+const DEVICE_HELP = {
+  overview: "This tile shows the health and performance of your OMEGA device. Monitor these metrics to ensure your device is running optimally.",
+  metrics: {
+    cpu: {
+      title: "CPU Usage",
+      description: "The percentage of your processor's capacity currently in use.",
+      why: "High CPU usage can slow down your device and drain battery faster. Sustained high usage may indicate a problem or heavy workload.",
+      ranges: [
+        { range: "0-40%", status: "Idle", advice: "Normal operation, plenty of headroom" },
+        { range: "40-70%", status: "Moderate", advice: "Active but healthy usage" },
+        { range: "70-100%", status: "High", advice: "Heavy load, may cause slowdowns" },
+      ]
+    },
+    memory: {
+      title: "Memory (RAM)",
+      description: "How much of your device's working memory is currently being used.",
+      why: "RAM stores data for active programs. When full, performance drops significantly and apps may crash.",
+      ranges: [
+        { range: "0-50%", status: "Light", advice: "Plenty of room for more apps" },
+        { range: "50-80%", status: "Moderate", advice: "Normal for active use" },
+        { range: "80-100%", status: "High", advice: "May need to close apps or restart" },
+      ]
+    },
+    storage: {
+      title: "Storage",
+      description: "The percentage of your device's disk space that contains data.",
+      why: "Full storage prevents saving new data and can cause system instability. Keep at least 15% free.",
+      ranges: [
+        { range: "0-60%", status: "Good", advice: "Plenty of space available" },
+        { range: "60-85%", status: "Moderate", advice: "Consider cleaning up old files" },
+        { range: "85-100%", status: "Critical", advice: "Free up space immediately" },
+      ]
+    },
+    temperature: {
+      title: "CPU Temperature",
+      description: "How hot your processor is running. Measured in degrees Celsius.",
+      why: "Excessive heat reduces performance and can damage hardware. Ensure proper ventilation.",
+      ranges: [
+        { range: "Below 50°C", status: "Cool", advice: "Optimal operating temperature" },
+        { range: "50-70°C", status: "Warm", advice: "Normal under load" },
+        { range: "Above 70°C", status: "Hot", advice: "Improve cooling or reduce load" },
+      ]
+    },
+    uptime: {
+      title: "Uptime",
+      description: "How long since your device was last restarted.",
+      why: "Occasional restarts clear temporary files and refresh system resources. Very long uptimes may indicate you should restart.",
+      ranges: [
+        { range: "0-7 days", status: "Fresh", advice: "Recently restarted, good" },
+        { range: "7-30 days", status: "Normal", advice: "Typical uptime" },
+        { range: "30+ days", status: "Long", advice: "Consider a restart soon" },
+      ]
+    },
+    services: {
+      title: "Services",
+      description: "Background programs that power your device's features.",
+      why: "Services must be running for features to work. Stopped or degraded services may indicate problems.",
+      ranges: [
+        { range: "All 'up'", status: "Healthy", advice: "All features working" },
+        { range: "Some 'degraded'", status: "Partial", advice: "Some features may be limited" },
+        { range: "Any 'down'", status: "Problem", advice: "Features unavailable, check logs" },
+      ]
+    },
+  },
+  legend: [
+    { icon: CheckCircle, color: "text-success", bg: "bg-success/20", label: "Good", description: "Within optimal range" },
+    { icon: AlertTriangle, color: "text-warning", bg: "bg-warning/20", label: "High", description: "Elevated but manageable" },
+    { icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/20", label: "Critical", description: "Needs attention" },
+  ],
+  tips: [
+    "Progress bars show usage at a glance - green is good, yellow is caution, red is critical",
+    "Tap 'Refresh' to get the latest readings",
+    "If services show 'degraded', try restarting the device",
+  ]
+};
 
 export default function DeviceInfoTile() {
   const [metrics, setMetrics] = useState(null);
   const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showHelp, setShowHelp] = useState(false);
+  const [expandedHelp, setExpandedHelp] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
