@@ -251,7 +251,7 @@ const formatRelativeTime = (date) => {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-// Twitter/X style Post card component
+// X/Twitter style Post card component - matching X's exact design
 const PostCard = ({ post, onReact, onVote, onComment }) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -259,9 +259,18 @@ const PostCard = ({ post, onReact, onVote, onComment }) => {
   const [likeCount, setLikeCount] = useState(
     Object.values(post.reactions).reduce((a, b) => a + b, 0)
   );
+  const [retweeted, setRetweeted] = useState(false);
+  const [retweetCount, setRetweetCount] = useState(Math.floor(Math.random() * 50) + 1);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [viewCount] = useState(Math.floor(Math.random() * 1000) + 100);
   
   const isAlert = post.type === 'alert';
   const isPoll = post.type === 'poll';
+  
+  // Generate a consistent @handle from node_id
+  const getHandle = (nodeId) => {
+    return `@${nodeId.replace('-', '_')}`;
+  };
   
   const handleLike = () => {
     if (liked) {
@@ -274,60 +283,77 @@ const PostCard = ({ post, onReact, onVote, onComment }) => {
     setLiked(!liked);
   };
   
+  const handleRetweet = () => {
+    setRetweeted(!retweeted);
+    setRetweetCount(prev => retweeted ? prev - 1 : prev + 1);
+  };
+  
   const handleSubmitComment = () => {
     if (newComment.trim()) {
       onComment(post.id, newComment);
       setNewComment('');
     }
   };
+
+  // Format numbers like X does (1.2K, etc)
+  const formatCount = (num) => {
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
   
   return (
     <article 
-      className={`border-b border-border/50 hover:bg-white/[0.02] transition-colors ${
-        isAlert ? 'bg-destructive/5 border-l-2 border-l-destructive' : ''
+      className={`border-b border-[#2f3336] hover:bg-white/[0.03] transition-colors cursor-pointer ${
+        isAlert ? 'border-l-2 border-l-destructive bg-destructive/5' : ''
       }`}
       data-testid={`post-${post.id}`}
     >
-      <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex gap-2.5 sm:gap-3">
-        {/* Avatar */}
+      <div className="px-4 py-3 flex gap-3">
+        {/* Avatar - X style circular */}
         <div className="flex-shrink-0">
-          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full ${getAvatarColor(post.author.node_id)} flex items-center justify-center text-white font-bold text-xs sm:text-sm`}>
+          <div className={`w-10 h-10 rounded-full ${getAvatarColor(post.author.node_id)} flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:opacity-90 transition-opacity`}>
             {post.author.name.charAt(0)}
           </div>
         </div>
         
         {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Header Row */}
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="font-bold text-sm sm:text-[15px] text-foreground truncate">
-              {post.author.name}
-            </span>
-            {isAlert && (
-              <span className="px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold rounded bg-destructive text-white">
-                ALERT
+          {/* Header Row - Exactly like X */}
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-1 min-w-0 flex-wrap">
+              <span className="font-bold text-[15px] text-[#e7e9ea] hover:underline cursor-pointer truncate">
+                {post.author.name}
               </span>
-            )}
-            <span className="text-muted-foreground text-sm sm:text-[15px]">·</span>
-            <span className="text-muted-foreground text-sm sm:text-[15px]">
-              {formatRelativeTime(post.timestamp)}
-            </span>
-            {!post.synced && (
-              <span className="text-[10px] sm:text-xs text-warning">• pending</span>
-            )}
-            <div className="ml-auto">
-              <button className="p-1 sm:p-1.5 -m-1 sm:-m-1.5 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
-                <MoreHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
+              {isAlert && (
+                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-destructive text-white ml-1">
+                  ALERT
+                </span>
+              )}
+              <span className="text-[#71767b] text-[15px] truncate">
+                {getHandle(post.author.node_id)}
+              </span>
+              <span className="text-[#71767b] text-[15px]">·</span>
+              <span className="text-[#71767b] text-[15px] hover:underline cursor-pointer">
+                {formatRelativeTime(post.timestamp)}
+              </span>
+              {!post.synced && (
+                <span className="text-xs text-warning ml-1">• pending</span>
+              )}
             </div>
+            {/* Three dot menu */}
+            <button className="p-2 -m-2 rounded-full hover:bg-[#1d9bf0]/10 text-[#71767b] hover:text-[#1d9bf0] transition-colors group">
+              <MoreHorizontal className="w-[18px] h-[18px]" />
+            </button>
           </div>
           
           {/* Post Content */}
-          <p className="text-sm sm:text-[15px] leading-normal mt-0.5 whitespace-pre-wrap break-words">
-            {post.content}
-          </p>
+          <div className="mt-0.5">
+            <p className="text-[15px] leading-[20px] text-[#e7e9ea] whitespace-pre-wrap break-words">
+              {post.content}
+            </p>
+          </div>
           
-          {/* Poll Options - Twitter style */}
+          {/* Poll Options - X style */}
           {isPoll && post.poll && (
             <div className="mt-3 space-y-2" data-testid={`poll-${post.id}`}>
               {post.poll.options.map((option) => {
@@ -343,118 +369,161 @@ const PostCard = ({ post, onReact, onVote, onComment }) => {
                   <button
                     key={option.id}
                     onClick={() => onVote(post.id, option.id)}
-                    className="w-full text-left relative overflow-hidden rounded-full border border-border/50 hover:border-primary/50 transition-colors"
+                    className="w-full text-left relative overflow-hidden rounded-lg border border-[#536471] hover:border-[#1d9bf0] transition-colors"
                     data-testid={`poll-option-${option.id}`}
                   >
-                    {/* Progress bar */}
                     <div 
                       className={`absolute inset-y-0 left-0 transition-all ${
-                        isMyVote ? 'bg-primary/30' : isWinning ? 'bg-muted/80' : 'bg-muted/50'
+                        isMyVote ? 'bg-[#1d9bf0]/30' : isWinning ? 'bg-[#71767b]/30' : 'bg-[#71767b]/20'
                       }`}
                       style={{ width: `${percentage}%` }}
                     />
-                    <div className="relative px-4 py-2.5 flex items-center justify-between">
-                      <span className={`text-sm ${isMyVote ? 'font-bold' : ''}`}>
-                        {isMyVote && <Check className="w-4 h-4 inline mr-1.5 text-primary" />}
+                    <div className="relative px-3 py-2.5 flex items-center justify-between">
+                      <span className={`text-[15px] ${isMyVote ? 'font-bold text-[#e7e9ea]' : 'text-[#e7e9ea]'}`}>
+                        {isMyVote && <Check className="w-4 h-4 inline mr-1.5 text-[#1d9bf0]" />}
                         {option.text}
                       </span>
-                      <span className={`text-sm ${isWinning ? 'font-bold' : 'text-muted-foreground'}`}>
+                      <span className={`text-[15px] ${isWinning ? 'font-bold text-[#e7e9ea]' : 'text-[#71767b]'}`}>
                         {percentage}%
                       </span>
                     </div>
                   </button>
                 );
               })}
-              <div className="text-xs text-muted-foreground pt-1">
+              <div className="text-[13px] text-[#71767b] pt-1">
                 {post.poll.totalVotes} votes · {post.poll.expiresAt > new Date() ? 'Poll active' : 'Final results'}
               </div>
             </div>
           )}
           
-          {/* Action Bar - Twitter style */}
-          <div className="flex items-center justify-between mt-3 max-w-md -ml-2">
-            {/* Reply */}
+          {/* Action Bar - Exact X style */}
+          <div className="flex items-center justify-between mt-3 max-w-[425px] -ml-2">
+            {/* Reply/Comment */}
             <button 
-              onClick={() => setShowComments(!showComments)}
-              className="flex items-center gap-1 p-2 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors group"
+              onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
+              className="flex items-center gap-1 group"
+              data-testid={`reply-btn-${post.id}`}
             >
-              <MessageCircle className="w-[18px] h-[18px]" />
+              <div className="p-2 rounded-full group-hover:bg-[#1d9bf0]/10 transition-colors">
+                <MessageCircle className="w-[18px] h-[18px] text-[#71767b] group-hover:text-[#1d9bf0]" />
+              </div>
               {post.comments.length > 0 && (
-                <span className="text-xs group-hover:text-primary">{post.comments.length}</span>
+                <span className="text-[13px] text-[#71767b] group-hover:text-[#1d9bf0] -ml-1">
+                  {post.comments.length}
+                </span>
               )}
             </button>
             
-            {/* Repost/Share */}
-            <button className="flex items-center gap-1 p-2 rounded-full hover:bg-success/10 text-muted-foreground hover:text-success transition-colors group">
-              <RefreshCw className="w-[18px] h-[18px]" />
+            {/* Repost/Retweet */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); handleRetweet(); }}
+              className="flex items-center gap-1 group"
+              data-testid={`retweet-btn-${post.id}`}
+            >
+              <div className={`p-2 rounded-full transition-colors ${retweeted ? 'text-[#00ba7c]' : 'group-hover:bg-[#00ba7c]/10'}`}>
+                <RefreshCw className={`w-[18px] h-[18px] ${retweeted ? 'text-[#00ba7c]' : 'text-[#71767b] group-hover:text-[#00ba7c]'}`} />
+              </div>
+              <span className={`text-[13px] -ml-1 ${retweeted ? 'text-[#00ba7c]' : 'text-[#71767b] group-hover:text-[#00ba7c]'}`}>
+                {retweetCount}
+              </span>
             </button>
             
             {/* Like */}
             <button 
-              onClick={handleLike}
-              className={`flex items-center gap-1 p-2 rounded-full transition-colors group ${
-                liked 
-                  ? 'text-pink-500' 
-                  : 'text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500'
-              }`}
+              onClick={(e) => { e.stopPropagation(); handleLike(); }}
+              className="flex items-center gap-1 group"
+              data-testid={`like-btn-${post.id}`}
             >
-              <Heart className={`w-[18px] h-[18px] ${liked ? 'fill-current' : ''}`} />
+              <div className={`p-2 rounded-full transition-colors ${liked ? '' : 'group-hover:bg-[#f91880]/10'}`}>
+                <Heart className={`w-[18px] h-[18px] transition-colors ${liked ? 'fill-[#f91880] text-[#f91880]' : 'text-[#71767b] group-hover:text-[#f91880]'}`} />
+              </div>
               {likeCount > 0 && (
-                <span className={`text-xs ${liked ? 'text-pink-500' : 'group-hover:text-pink-500'}`}>
+                <span className={`text-[13px] -ml-1 ${liked ? 'text-[#f91880]' : 'text-[#71767b] group-hover:text-[#f91880]'}`}>
                   {likeCount}
                 </span>
               )}
             </button>
             
-            {/* Share */}
-            <button className="flex items-center gap-1 p-2 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
-              <Share2 className="w-[18px] h-[18px]" />
+            {/* View count */}
+            <button 
+              className="flex items-center gap-1 group"
+              data-testid={`views-btn-${post.id}`}
+            >
+              <div className="p-2 rounded-full group-hover:bg-[#1d9bf0]/10 transition-colors">
+                <BarChart3 className="w-[18px] h-[18px] text-[#71767b] group-hover:text-[#1d9bf0]" />
+              </div>
+              <span className="text-[13px] text-[#71767b] group-hover:text-[#1d9bf0] -ml-1">
+                {formatCount(viewCount)}
+              </span>
             </button>
+            
+            {/* Bookmark & Share */}
+            <div className="flex items-center">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setBookmarked(!bookmarked); }}
+                className="p-2 rounded-full hover:bg-[#1d9bf0]/10 transition-colors group"
+                data-testid={`bookmark-btn-${post.id}`}
+              >
+                <svg viewBox="0 0 24 24" className={`w-[18px] h-[18px] ${bookmarked ? 'fill-[#1d9bf0] text-[#1d9bf0]' : 'text-[#71767b] group-hover:text-[#1d9bf0]'}`}>
+                  <path fill="currentColor" d={bookmarked 
+                    ? "M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"
+                    : "M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"
+                  } />
+                </svg>
+              </button>
+              <button 
+                className="p-2 rounded-full hover:bg-[#1d9bf0]/10 transition-colors group"
+                data-testid={`share-btn-${post.id}`}
+              >
+                <Share2 className="w-[18px] h-[18px] text-[#71767b] group-hover:text-[#1d9bf0]" />
+              </button>
+            </div>
           </div>
           
-          {/* Comments Section - Thread style */}
+          {/* Comments Section - X thread style */}
           {showComments && (
-            <div className="mt-3 border-t border-border/50 pt-3 space-y-3" data-testid={`comments-${post.id}`}>
+            <div className="mt-3 border-t border-[#2f3336] pt-3 space-y-3" data-testid={`comments-${post.id}`}>
               {/* Existing Comments */}
               {post.comments.map((comment, idx) => (
                 <div key={comment.id} className="flex gap-3">
-                  {/* Thread line */}
                   <div className="flex flex-col items-center">
                     <div className={`w-8 h-8 rounded-full ${getAvatarColor(comment.author.node_id)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
                       {comment.author.name.charAt(0)}
                     </div>
                     {idx < post.comments.length - 1 && (
-                      <div className="w-0.5 flex-1 bg-border/50 mt-1" />
+                      <div className="w-0.5 flex-1 bg-[#2f3336] mt-1" />
                     )}
                   </div>
                   <div className="flex-1 pb-3">
                     <div className="flex items-center gap-1">
-                      <span className="font-bold text-sm">{comment.author.name}</span>
-                      <span className="text-muted-foreground text-sm">·</span>
-                      <span className="text-muted-foreground text-sm">{formatRelativeTime(comment.timestamp)}</span>
+                      <span className="font-bold text-[15px] text-[#e7e9ea] hover:underline cursor-pointer">{comment.author.name}</span>
+                      <span className="text-[#71767b] text-[15px]">{getHandle(comment.author.node_id)}</span>
+                      <span className="text-[#71767b] text-[15px]">·</span>
+                      <span className="text-[#71767b] text-[15px]">{formatRelativeTime(comment.timestamp)}</span>
                     </div>
-                    <p className="text-sm mt-0.5">{comment.content}</p>
+                    <p className="text-[15px] text-[#e7e9ea] mt-0.5">{comment.content}</p>
                   </div>
                 </div>
               ))}
               
-              {/* New Comment Input */}
+              {/* New Comment Input - X style */}
               <div className="flex gap-3 pt-2">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#1d9bf0]/20 flex items-center justify-center text-[#1d9bf0] text-xs font-bold flex-shrink-0">
                   Y
                 </div>
-                <div className="flex-1 flex gap-2">
+                <div className="flex-1 flex gap-2 items-center">
                   <input
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Post your reply"
-                    className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground"
+                    className="flex-1 bg-transparent border-none outline-none text-[15px] text-[#e7e9ea] placeholder:text-[#71767b]"
                     onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
+                    onClick={(e) => e.stopPropagation()}
                   />
                   <Button 
                     size="sm" 
-                    className="rounded-full px-4 h-8 font-bold"
-                    onClick={handleSubmitComment}
+                    className="rounded-full px-4 h-8 font-bold bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white"
+                    onClick={(e) => { e.stopPropagation(); handleSubmitComment(); }}
                     disabled={!newComment.trim()}
                   >
                     Reply
