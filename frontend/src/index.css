@@ -174,45 +174,147 @@ code {
 
 /* OMEGA Design System */
 @layer components {
-    /* Glass morphism effect - adapts to light/dark mode */
+    /* Apple-style Glass morphism - more refined */
     .glass {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(30, 35, 45, 0.6);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
     
     .dark .glass {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(30, 35, 45, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
     
     :root:not(.dark) .glass {
         background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
         border: 1px solid rgba(200, 220, 240, 0.3);
         box-shadow: 0 1px 3px rgba(200, 220, 240, 0.2);
     }
     
     .glass-strong {
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(25, 30, 40, 0.8);
+        backdrop-filter: blur(24px) saturate(200%);
+        -webkit-backdrop-filter: blur(24px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
     
     .dark .glass-strong {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(25, 30, 40, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.12);
     }
     
     :root:not(.dark) .glass-strong {
         background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px) saturate(200%);
+        -webkit-backdrop-filter: blur(24px) saturate(200%);
         border: 1px solid rgba(180, 210, 235, 0.4);
         box-shadow: 0 2px 8px rgba(180, 210, 235, 0.25);
+    }
+    
+    /* Apple-style buttons - modern, pill-shaped with hover states */
+    .btn-apple {
+        @apply px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200;
+        background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    
+    .btn-apple:hover {
+        background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    
+    .btn-apple:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    
+    .btn-apple-primary {
+        @apply px-4 py-2 rounded-xl font-semibold text-sm transition-all duration-200;
+        background: linear-gradient(180deg, hsl(187 100% 55%) 0%, hsl(187 100% 45%) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 8px rgba(6, 182, 212, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+        color: hsl(220 15% 5%);
+    }
+    
+    .btn-apple-primary:hover {
+        background: linear-gradient(180deg, hsl(187 100% 60%) 0%, hsl(187 100% 50%) 100%);
+        box-shadow: 0 4px 16px rgba(6, 182, 212, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+        transform: translateY(-1px);
+    }
+    
+    /* Section dividers */
+    .section-divider {
+        @apply relative py-8;
+    }
+    
+    .section-divider::before {
+        content: '';
+        @apply absolute left-0 right-0 top-0 h-px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(6, 182, 212, 0.3) 20%, 
+            rgba(6, 182, 212, 0.5) 50%, 
+            rgba(6, 182, 212, 0.3) 80%, 
+            transparent 100%
+        );
+    }
+    
+    .section-divider-subtle {
+        @apply relative py-6;
+    }
+    
+    .section-divider-subtle::before {
+        content: '';
+        @apply absolute left-0 right-0 top-0 h-px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.1) 20%, 
+            rgba(255, 255, 255, 0.15) 50%, 
+            rgba(255, 255, 255, 0.1) 80%, 
+            transparent 100%
+        );
+    }
+    
+    /* Section header with label */
+    .section-header {
+        @apply flex items-center gap-4 mb-6;
+    }
+    
+    .section-label {
+        @apply text-xs font-bold uppercase tracking-widest text-muted-foreground px-4 py-1.5 rounded-full;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .section-line {
+        @apply flex-1 h-px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    }
+    
+    /* Apple-style input fields */
+    .input-apple {
+        @apply w-full px-4 py-3 rounded-xl text-sm transition-all duration-200;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .input-apple:focus {
+        @apply outline-none;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: hsl(187 100% 50%);
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2), 0 0 20px rgba(6, 182, 212, 0.15);
+    }
+    
+    .input-apple::placeholder {
+        @apply text-muted-foreground;
     }
     
     /* Status indicators */
