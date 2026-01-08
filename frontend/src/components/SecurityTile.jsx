@@ -19,9 +19,12 @@ import {
   Plus,
   Trash2,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Edit3,
+  Heart
 } from 'lucide-react';
 import TileHelpTabs, { QuickHelpTips, InlineLegend } from './ui/TileHelpTabs';
+import UserProfileModal from './UserProfileModal';
 
 // Help content for Security tile
 const securityHelpContent = {
