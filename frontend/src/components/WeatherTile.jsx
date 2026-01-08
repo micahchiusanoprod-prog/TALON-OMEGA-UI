@@ -148,18 +148,18 @@ export default function WeatherTile() {
           </div>
           <div className="h-8 w-px bg-border" />
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <Sunset className="w-4 h-4 text-orange-400" />
+            <Sunset className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-400" />
             <div>
-              <p className="text-xs text-muted-foreground">Sunset</p>
-              <p className="text-sm font-medium">{weather.sun.sunset}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Sunset</p>
+              <p className="text-xs sm:text-sm font-medium">{weather.sun.sunset}</p>
             </div>
           </div>
         </div>
         
         {/* 5-Day Forecast */}
         <div>
-          <p className="text-xs font-semibold text-muted-foreground mb-2">5-DAY FORECAST</p>
-          <div className="grid grid-cols-5 gap-1">
+          <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground mb-2">5-DAY FORECAST</p>
+          <div className="grid grid-cols-5 gap-0.5 sm:gap-1">
             {weather.forecast.map((day, i) => (
               <div key={i} className={`text-center p-2 rounded-lg ${i === 0 ? 'bg-primary/10' : 'glass'}`}>
                 <p className="text-[10px] font-medium text-muted-foreground">{day.day}</p>
