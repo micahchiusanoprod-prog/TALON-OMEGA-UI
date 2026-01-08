@@ -161,18 +161,20 @@ code {
         background-attachment: fixed;
     }
     
-    /* Dark mode - Subtle textured background with noise */
+    /* Dark mode - Premium textured background with modern gradients */
     .dark body {
-        background-color: hsl(220, 15%, 5%);
+        background-color: hsl(222, 20%, 6%);
         background-image: 
             /* Subtle noise texture */
             url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
-            /* Grid overlay */
-            linear-gradient(rgba(6, 182, 212, 0.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(6, 182, 212, 0.015) 1px, transparent 1px),
-            /* Radial gradient for depth */
-            radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
-        background-size: 200px 200px, 80px 80px, 80px 80px, 100% 100%;
+            /* Grid overlay - more subtle */
+            linear-gradient(rgba(6, 182, 212, 0.012) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6, 182, 212, 0.012) 1px, transparent 1px),
+            /* Premium gradient mesh - richer depth */
+            radial-gradient(ellipse at 20% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
+            radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+        background-size: 200px 200px, 80px 80px, 80px 80px, 100% 100%, 100% 100%, 100% 100%;
         background-attachment: fixed;
     }
 }
