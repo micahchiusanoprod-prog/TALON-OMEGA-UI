@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Sun, Moon, Settings } from 'lucide-react';
 import config from '../config';
 import { toast } from 'sonner';
+import AdminConsole from './AdminConsole';
 
 export default function Header({ metrics, health, theme, onToggleTheme }) {
+  const [showAdminConsole, setShowAdminConsole] = useState(false);
   // Derive device status from health
   const deviceStatus = useMemo(() => {
     if (!health) {
@@ -98,6 +100,14 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
           {/* Right: Quick Actions with improved depth */}
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setShowAdminConsole(true)}
+              className="glass px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm"
+              title="Admin Console"
+              data-testid="admin-console-btn"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+            <button
               onClick={onToggleTheme}
               className="glass px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -111,6 +121,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
           </div>
         </div>
       </div>
+      
+      {/* Admin Console Modal */}
+      <AdminConsole 
+        isOpen={showAdminConsole} 
+        onClose={() => setShowAdminConsole(false)} 
+      />
     </header>
   );
 }
