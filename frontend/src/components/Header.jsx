@@ -121,12 +121,13 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
           </div>
         </div>
       </div>
-      
-      {/* Admin Console Modal */}
-      <AdminConsole 
-        isOpen={showAdminConsole} 
-        onClose={() => setShowAdminConsole(false)} 
-      />
     </header>
+    
+    {/* Admin Console Modal - Rendered outside header to avoid stacking context issues */}
+    <AdminConsole 
+      isOpen={showAdminConsole} 
+      onClose={() => setShowAdminConsole(false)} 
+    />
+  </>
   );
 }
