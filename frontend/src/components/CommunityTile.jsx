@@ -966,7 +966,7 @@ export default function CommunityTile() {
       
       {/* Composer */}
       {showComposer && (
-        <div className="border-b border-border/50 p-4">
+        <div className="border-b border-[#2f3336] p-4">
           <NewPostComposer 
             onPost={handleNewPost}
             onClose={() => setShowComposer(false)}
@@ -974,16 +974,16 @@ export default function CommunityTile() {
         </div>
       )}
       
-      {/* Feed - Single column Twitter style */}
+      {/* Feed - X style */}
       {loading ? (
-        <div className="divide-y divide-border/50">
+        <div className="divide-y divide-[#2f3336]">
           {[1,2,3].map(i => (
             <div key={i} className="p-4 flex gap-3">
-              <div className="skeleton w-10 h-10 rounded-full" />
+              <div className="skeleton w-10 h-10 rounded-full bg-[#2f3336]" />
               <div className="flex-1 space-y-2">
-                <div className="skeleton h-4 w-32" />
-                <div className="skeleton h-4 w-full" />
-                <div className="skeleton h-4 w-3/4" />
+                <div className="skeleton h-4 w-32 bg-[#2f3336] rounded" />
+                <div className="skeleton h-4 w-full bg-[#2f3336] rounded" />
+                <div className="skeleton h-4 w-3/4 bg-[#2f3336] rounded" />
               </div>
             </div>
           ))}
@@ -991,10 +991,10 @@ export default function CommunityTile() {
       ) : (
         <div className="divide-y-0" data-testid="community-feed">
           {filteredFeed.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground">
+            <div className="text-center py-16 text-[#71767b]">
               <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p className="text-lg font-medium">No {filter === 'all' ? 'posts' : filter + 's'} yet</p>
-              <p className="text-sm">When there are posts, they'll show up here.</p>
+              <p className="text-xl font-bold text-[#e7e9ea]">No {filter === 'all' ? 'posts' : filter + 's'} yet</p>
+              <p className="text-[15px] mt-1">When there are posts, they'll show up here.</p>
             </div>
           ) : (
             filteredFeed.map((post) => (
