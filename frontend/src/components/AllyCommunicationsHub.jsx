@@ -518,42 +518,32 @@ export default function AllyCommunicationsHub() {
               </div>
             </div>
 
-            {/* Status Summary Pills */}
+            {/* Status Summary - Compact Row */}
             <div className="flex items-center gap-2 flex-wrap">
               {/* Connection Status */}
               {!connectionStatus.isOnline && (
-                <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 bg-warning-light border border-warning">
-                  <AlertTriangle className="w-3 h-3 text-warning" />
-                  <span className="text-warning font-semibold">Disconnected</span>
+                <div className="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 bg-warning/20 border border-warning/30 text-warning">
+                  <AlertTriangle className="w-3 h-3" />
+                  Disconnected
                 </div>
               )}
-              <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2">
+              <div className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 bg-success/10 border border-success/20">
                 <Activity className="w-3 h-3 text-success" />
-                <span className="text-muted-foreground">Online:</span>
-                <span className="font-semibold">{onlineCount} / {nodes.length}</span>
+                <span className="text-success font-bold">{onlineCount}</span>
+                <span className="text-muted-foreground">online</span>
               </div>
               {totalAlerts > 0 && (
-                <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 bg-destructive-light animate-critical-flash">
-                  <AlertTriangle className="w-3 h-3 text-destructive animate-critical-glow" />
-                  <span className="text-destructive font-semibold">Alerts: {totalAlerts}</span>
+                <div className="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 bg-destructive/20 border border-destructive/30 text-destructive animate-pulse">
+                  <AlertTriangle className="w-3 h-3" />
+                  {totalAlerts} Alert{totalAlerts > 1 ? 's' : ''}
                 </div>
               )}
               {needHelpCount > 0 && (
-                <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 bg-destructive-light">
-                  <HelpCircle className="w-3 h-3 text-destructive" />
-                  <span className="text-destructive font-semibold">Need Help: {needHelpCount}</span>
+                <div className="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 bg-destructive/20 border border-destructive/30 text-destructive">
+                  <HelpCircle className="w-3 h-3" />
+                  {needHelpCount} Need Help
                 </div>
               )}
-              <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2">
-                <RefreshCw className="w-3 h-3 text-muted-foreground" />
-                <span className="text-muted-foreground">{connectionStatus.isOnline ? 'Synced:' : 'Last updated:'}</span>
-                <span className="font-semibold">{formatLastSync()}</span>
-              </div>
-              <div className="glass px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2">
-                <Radio className="w-3 h-3 text-primary" />
-                <span className="text-muted-foreground">Mode:</span>
-                <span className="font-semibold">{getConnectionMode()}</span>
-              </div>
             </div>
 
             {/* Primary Actions */}
