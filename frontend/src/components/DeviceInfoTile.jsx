@@ -368,8 +368,8 @@ export default function DeviceInfoTile() {
                   <MemoryStick className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium">Memory</span>
-                  <p className="text-xs text-muted-foreground">RAM usage</p>
+                  <span className="text-sm font-medium">Memory (RAM)</span>
+                  <p className="text-xs text-muted-foreground">Active working memory for running apps</p>
                 </div>
               </div>
               <div className={`px-2 py-1 rounded-full ${
@@ -392,6 +392,9 @@ export default function DeviceInfoTile() {
                 style={{ width: `${displayMetrics.ram}%` }}
               />
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {displayMetrics.ram < 50 ? 'Plenty of room for more apps' : displayMetrics.ram < 80 ? 'Normal for active use' : 'Consider closing some apps'}
+            </p>
           </div>
 
           {/* Storage */}
@@ -403,7 +406,7 @@ export default function DeviceInfoTile() {
                 </div>
                 <div>
                   <span className="text-sm font-medium">Storage</span>
-                  <p className="text-xs text-muted-foreground">Disk space used</p>
+                  <p className="text-xs text-muted-foreground">Internal disk space for files & data</p>
                 </div>
               </div>
               <div className={`px-2 py-1 rounded-full ${
@@ -426,6 +429,9 @@ export default function DeviceInfoTile() {
                 style={{ width: `${displayMetrics.disk}%` }}
               />
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              ~{Math.round((100 - displayMetrics.disk) * 0.64)}GB free of 64GB • {displayMetrics.disk < 70 ? 'Healthy' : 'Consider cleanup'}
+            </p>
           </div>
 
           {/* CPU Temperature */}
@@ -437,7 +443,7 @@ export default function DeviceInfoTile() {
                 </div>
                 <div>
                   <span className="text-sm font-medium">CPU Temperature</span>
-                  <p className="text-xs text-muted-foreground">Processor heat</p>
+                  <p className="text-xs text-muted-foreground">Heat level - lower is better</p>
                 </div>
               </div>
               <div className={`px-2 py-1 rounded-full ${
