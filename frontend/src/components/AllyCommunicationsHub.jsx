@@ -550,35 +550,33 @@ export default function AllyCommunicationsHub() {
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                variant="outline"
                 onClick={handleOpenBroadcast}
-                className="border-border-strong bg-secondary/50 hover:bg-secondary relative"
+                className="btn-apple-primary relative"
                 data-testid="broadcast-alert-btn"
               >
-                <AlertTriangle className="w-4 h-4 mr-1" />
-                Broadcast Alert
+                <AlertTriangle className="w-4 h-4 mr-1.5" />
+                Broadcast
                 {alertsBadgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center">
                     {alertsBadgeCount}
                   </span>
                 )}
               </Button>
               <Button
                 size="sm"
-                variant="outline"
+                variant="ghost"
                 onClick={handleRefresh}
-                className="border-border-strong bg-secondary/50 hover:bg-secondary"
+                className="text-muted-foreground hover:text-foreground"
                 data-testid="refresh-btn"
               >
-                <RefreshCw className="w-4 h-4 mr-1" />
-                Refresh
+                <RefreshCw className="w-4 h-4" />
               </Button>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => setShowHelp(true)}
                 className="text-muted-foreground hover:text-foreground"
-                title="Help & How-to"
+                title="Help"
                 data-testid="help-btn"
               >
                 <HelpCircle className="w-4 h-4" />
