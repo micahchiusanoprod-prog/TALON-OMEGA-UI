@@ -241,27 +241,37 @@ const getAvatarColor = (nodeId) => {
   return colors[hash % colors.length];
 };
 
-// Format relative time
+// Format relative time - Twitter style
 const formatRelativeTime = (date) => {
   const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-  if (seconds < 60) return 'Just now';
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  return `${Math.floor(seconds / 86400)}d ago`;
+  if (seconds < 60) return 'now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-// Post card component
+// Twitter/X style Post card component
 const PostCard = ({ post, onReact, onVote, onComment }) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
-  const [showReactions, setShowReactions] = useState(false);
+  const [liked, setLiked] = useState(post.myReaction === '❤️');
+  const [likeCount, setLikeCount] = useState(
+    Object.values(post.reactions).reduce((a, b) => a + b, 0)
+  );
   
   const isAlert = post.type === 'alert';
   const isPoll = post.type === 'poll';
   
-  const handleReact = (emoji) => {
-    onReact(post.id, emoji);
-    setShowReactions(false);
+  const handleLike = () => {
+    if (liked) {
+      setLikeCount(prev => prev - 1);
+      onReact(post.id, null);
+    } else {
+      setLikeCount(prev => prev + 1);
+      onReact(post.id, '❤️');
+    }
+    setLiked(!liked);
   };
   
   const handleSubmitComment = () => {
@@ -272,82 +282,192 @@ const PostCard = ({ post, onReact, onVote, onComment }) => {
   };
   
   return (
-    <div 
-      className={`glass rounded-xl p-4 space-y-3 border-2 transition-all ${
-        isAlert 
-          ? 'border-destructive/30 bg-destructive/5' 
-          : 'border-transparent'
+    <article 
+      className={`border-b border-border/50 hover:bg-white/[0.02] transition-colors ${
+        isAlert ? 'bg-destructive/5 border-l-2 border-l-destructive' : ''
       }`}
       data-testid={`post-${post.id}`}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          {/* Avatar */}
-          <div className={`w-10 h-10 rounded-full ${getAvatarColor(post.author.node_id)} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
+      <div className="px-4 py-3 flex gap-3">
+        {/* Avatar */}
+        <div className="flex-shrink-0">
+          <div className={`w-10 h-10 rounded-full ${getAvatarColor(post.author.node_id)} flex items-center justify-center text-white font-bold text-sm`}>
             {post.author.name.charAt(0)}
-          </div>
-          
-          {/* Author & Time */}
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm">{post.author.name}</span>
-              {isAlert && (
-                <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-destructive/20 text-destructive">
-                  ALERT
-                </span>
-              )}
-              {isPoll && (
-                <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-warning/20 text-warning">
-                  POLL
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span>{formatRelativeTime(post.timestamp)}</span>
-              {!post.synced && (
-                <span className="px-1.5 py-0.5 rounded bg-muted-foreground/20 text-muted-foreground text-xs">
-                  Pending sync
-                </span>
-              )}
-            </div>
           </div>
         </div>
         
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground">
-          <MoreHorizontal className="w-4 h-4" />
-        </Button>
-      </div>
-      
-      {/* Content */}
-      <p className="text-sm">{post.content}</p>
-      
-      {/* Poll Options */}
-      {isPoll && post.poll && (
-        <div className="space-y-2" data-testid={`poll-${post.id}`}>
-          {post.poll.options.map((option) => {
-            const percentage = post.poll.totalVotes > 0 
-              ? Math.round((option.votes / post.poll.totalVotes) * 100) 
-              : 0;
-            const isMyVote = post.poll.myVote === option.id;
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {/* Header Row */}
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="font-bold text-[15px] text-foreground truncate">
+              {post.author.name}
+            </span>
+            {isAlert && (
+              <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-destructive text-white">
+                ALERT
+              </span>
+            )}
+            <span className="text-muted-foreground text-[15px]">·</span>
+            <span className="text-muted-foreground text-[15px]">
+              {formatRelativeTime(post.timestamp)}
+            </span>
+            {!post.synced && (
+              <span className="text-xs text-warning">• pending</span>
+            )}
+            <div className="ml-auto">
+              <button className="p-1.5 -m-1.5 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          {/* Post Content */}
+          <p className="text-[15px] leading-normal mt-0.5 whitespace-pre-wrap break-words">
+            {post.content}
+          </p>
+          
+          {/* Poll Options - Twitter style */}
+          {isPoll && post.poll && (
+            <div className="mt-3 space-y-2" data-testid={`poll-${post.id}`}>
+              {post.poll.options.map((option) => {
+                const percentage = post.poll.totalVotes > 0 
+                  ? Math.round((option.votes / post.poll.totalVotes) * 100) 
+                  : 0;
+                const isMyVote = post.poll.myVote === option.id;
+                const isWinning = percentage === Math.max(...post.poll.options.map(o => 
+                  post.poll.totalVotes > 0 ? Math.round((o.votes / post.poll.totalVotes) * 100) : 0
+                ));
+                
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => onVote(post.id, option.id)}
+                    className="w-full text-left relative overflow-hidden rounded-full border border-border/50 hover:border-primary/50 transition-colors"
+                    data-testid={`poll-option-${option.id}`}
+                  >
+                    {/* Progress bar */}
+                    <div 
+                      className={`absolute inset-y-0 left-0 transition-all ${
+                        isMyVote ? 'bg-primary/30' : isWinning ? 'bg-muted/80' : 'bg-muted/50'
+                      }`}
+                      style={{ width: `${percentage}%` }}
+                    />
+                    <div className="relative px-4 py-2.5 flex items-center justify-between">
+                      <span className={`text-sm ${isMyVote ? 'font-bold' : ''}`}>
+                        {isMyVote && <Check className="w-4 h-4 inline mr-1.5 text-primary" />}
+                        {option.text}
+                      </span>
+                      <span className={`text-sm ${isWinning ? 'font-bold' : 'text-muted-foreground'}`}>
+                        {percentage}%
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+              <div className="text-xs text-muted-foreground pt-1">
+                {post.poll.totalVotes} votes · {post.poll.expiresAt > new Date() ? 'Poll active' : 'Final results'}
+              </div>
+            </div>
+          )}
+          
+          {/* Action Bar - Twitter style */}
+          <div className="flex items-center justify-between mt-3 max-w-md -ml-2">
+            {/* Reply */}
+            <button 
+              onClick={() => setShowComments(!showComments)}
+              className="flex items-center gap-1 p-2 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors group"
+            >
+              <MessageCircle className="w-[18px] h-[18px]" />
+              {post.comments.length > 0 && (
+                <span className="text-xs group-hover:text-primary">{post.comments.length}</span>
+              )}
+            </button>
             
-            return (
-              <button
-                key={option.id}
-                onClick={() => onVote(post.id, option.id)}
-                className={`w-full text-left p-3 rounded-lg border-2 transition-all relative overflow-hidden ${
-                  isMyVote 
-                    ? 'border-primary bg-primary/10' 
-                    : 'border-border hover:border-primary/50'
-                }`}
-                data-testid={`poll-option-${option.id}`}
-              >
-                {/* Progress bar */}
-                <div 
-                  className={`absolute inset-y-0 left-0 ${isMyVote ? 'bg-primary/20' : 'bg-muted'}`}
-                  style={{ width: `${percentage}%` }}
-                />
+            {/* Repost/Share */}
+            <button className="flex items-center gap-1 p-2 rounded-full hover:bg-success/10 text-muted-foreground hover:text-success transition-colors group">
+              <RefreshCw className="w-[18px] h-[18px]" />
+            </button>
+            
+            {/* Like */}
+            <button 
+              onClick={handleLike}
+              className={`flex items-center gap-1 p-2 rounded-full transition-colors group ${
+                liked 
+                  ? 'text-pink-500' 
+                  : 'text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500'
+              }`}
+            >
+              <Heart className={`w-[18px] h-[18px] ${liked ? 'fill-current' : ''}`} />
+              {likeCount > 0 && (
+                <span className={`text-xs ${liked ? 'text-pink-500' : 'group-hover:text-pink-500'}`}>
+                  {likeCount}
+                </span>
+              )}
+            </button>
+            
+            {/* Share */}
+            <button className="flex items-center gap-1 p-2 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
+              <Share2 className="w-[18px] h-[18px]" />
+            </button>
+          </div>
+          
+          {/* Comments Section - Thread style */}
+          {showComments && (
+            <div className="mt-3 border-t border-border/50 pt-3 space-y-3" data-testid={`comments-${post.id}`}>
+              {/* Existing Comments */}
+              {post.comments.map((comment, idx) => (
+                <div key={comment.id} className="flex gap-3">
+                  {/* Thread line */}
+                  <div className="flex flex-col items-center">
+                    <div className={`w-8 h-8 rounded-full ${getAvatarColor(comment.author.node_id)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                      {comment.author.name.charAt(0)}
+                    </div>
+                    {idx < post.comments.length - 1 && (
+                      <div className="w-0.5 flex-1 bg-border/50 mt-1" />
+                    )}
+                  </div>
+                  <div className="flex-1 pb-3">
+                    <div className="flex items-center gap-1">
+                      <span className="font-bold text-sm">{comment.author.name}</span>
+                      <span className="text-muted-foreground text-sm">·</span>
+                      <span className="text-muted-foreground text-sm">{formatRelativeTime(comment.timestamp)}</span>
+                    </div>
+                    <p className="text-sm mt-0.5">{comment.content}</p>
+                  </div>
+                </div>
+              ))}
+              
+              {/* New Comment Input */}
+              <div className="flex gap-3 pt-2">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
+                  Y
+                </div>
+                <div className="flex-1 flex gap-2">
+                  <input
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Post your reply"
+                    className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-muted-foreground"
+                    onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
+                  />
+                  <Button 
+                    size="sm" 
+                    className="rounded-full px-4 h-8 font-bold"
+                    onClick={handleSubmitComment}
+                    disabled={!newComment.trim()}
+                  >
+                    Reply
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+};
                 
                 <div className="relative flex items-center justify-between">
                   <span className="text-sm font-medium">{option.text}</span>
