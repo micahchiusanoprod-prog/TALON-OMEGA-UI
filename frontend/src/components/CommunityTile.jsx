@@ -838,8 +838,8 @@ export default function CommunityTile() {
   }
   
   return (
-    <Card className="glass-strong border-border-strong" data-testid="community-tile">
-      <CardHeader className="pb-3">
+    <Card className="glass-strong border-border-strong xl:h-full xl:flex xl:flex-col" data-testid="community-tile">
+      <CardHeader className="pb-3 flex-shrink-0">
         <CardTitle className="flex items-center justify-between text-base">
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5 text-primary" />
@@ -869,7 +869,7 @@ export default function CommunityTile() {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 xl:flex-1 xl:flex xl:flex-col xl:min-h-0">
         {/* Quick Tips */}
         <QuickHelpTips tips={communityQuickTips} />
         
@@ -905,13 +905,13 @@ export default function CommunityTile() {
         
         {/* Feed */}
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-3 xl:flex-1">
             <div className="skeleton h-32 rounded-xl" />
             <div className="skeleton h-24 rounded-xl" />
             <div className="skeleton h-28 rounded-xl" />
           </div>
         ) : (
-          <div className="space-y-3 max-h-[500px] overflow-y-auto scrollbar-thin" data-testid="community-feed">
+          <div className="space-y-3 max-h-[500px] xl:max-h-none xl:flex-1 overflow-y-auto scrollbar-thin" data-testid="community-feed">
             {filteredFeed.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
