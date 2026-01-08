@@ -404,20 +404,20 @@ export default function QuickToolsBar() {
   
   return (
     <>
-      <div className="flex justify-center" data-testid="quick-tools-bar">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+      <div className="w-full" data-testid="quick-tools-bar">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 px-1 scrollbar-thin snap-x snap-mandatory">
           {QUICK_TOOLS.map((tool) => {
             const Icon = tool.icon;
             return (
               <button
                 key={tool.id}
                 onClick={() => handleToolClick(tool)}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl btn-apple whitespace-nowrap group`}
+                className={`flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl btn-apple whitespace-nowrap group flex-shrink-0 snap-start`}
                 title={tool.description}
                 data-testid={`tool-${tool.id}`}
               >
                 <Icon className={`w-4 h-4 ${tool.color || 'text-primary'} group-hover:scale-110 transition-transform`} />
-                <span className="text-sm font-medium">{tool.name}</span>
+                <span className="text-xs sm:text-sm font-medium">{tool.name}</span>
               </button>
             );
           })}
