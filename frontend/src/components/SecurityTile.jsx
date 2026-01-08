@@ -161,38 +161,38 @@ const PersonCard = ({ person, onSelect, isSelected }) => {
   return (
     <button
       onClick={() => onSelect(person)}
-      className={`w-full glass rounded-lg p-3 text-left transition-all ${
+      className={`w-full glass rounded-lg p-2.5 sm:p-3 text-left transition-all ${
         isSelected ? 'ring-2 ring-primary bg-primary/10' : 'hover:bg-secondary/50'
       }`}
       data-testid={`person-card-${person.id}`}
     >
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
           {person.avatar ? (
             <img src={person.avatar} alt={person.name} className="w-full h-full rounded-full object-cover" />
           ) : (
-            <User className="w-5 h-5 text-primary" />
+            <User className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             <span className="text-sm font-medium truncate">{person.name}</span>
             {person.isCurrentUser && (
-              <span className="text-xs px-1.5 py-0.5 bg-primary/20 text-primary rounded">You</span>
+              <span className="text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 bg-primary/20 text-primary rounded flex-shrink-0">You</span>
             )}
           </div>
           {person.roleLine && (
-            <p className="text-xs text-primary truncate">{person.roleLine}</p>
+            <p className="text-[10px] sm:text-xs text-primary truncate">{person.roleLine}</p>
           )}
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 flex-wrap">
             <PermIcon className={`w-3 h-3 ${permission?.color}`} />
-            <span className="text-xs text-muted-foreground">{permission?.name}</span>
-            <span className="text-xs text-muted-foreground">•</span>
+            <span className="text-[10px] sm:text-xs text-muted-foreground">{permission?.name}</span>
+            <span className="text-[10px] sm:text-xs text-muted-foreground">•</span>
             <Fingerprint className={`w-3 h-3 ${person.fingerprints > 0 ? 'text-success' : 'text-muted-foreground'}`} />
-            <span className="text-xs text-muted-foreground">{person.fingerprints}</span>
+            <span className="text-[10px] sm:text-xs text-muted-foreground">{person.fingerprints}</span>
           </div>
         </div>
-        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
       </div>
     </button>
   );
