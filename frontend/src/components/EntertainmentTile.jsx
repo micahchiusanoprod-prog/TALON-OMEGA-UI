@@ -142,35 +142,35 @@ export default function EntertainmentTile() {
         <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 via-blue-500 via-cyan-500 to-emerald-500 opacity-90" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yIDItNCAyLTRzLTItMi00LTJjLTItMi00LTItNC0yczItMiAyLTRjMC0yLTItNC0yLTRzMi0yIDQtMmMyLTIgNC0yIDQtMnMtMiAyLTIgNGMwIDIgMiA0IDIgNHMtMiAyLTQgMmMtMiAyLTQgMi00IDJzMi0yIDItNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30" />
         
-        <div className="relative z-10 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                <Sparkles className="w-6 h-6 text-white" />
+        <div className="relative z-10 p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4 gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg flex-shrink-0">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white tracking-tight">Entertainment</h2>
-                <p className="text-white/80 text-sm">Movies • Shows • Games • Music</p>
+                <h2 className="text-lg sm:text-2xl font-bold text-white tracking-tight">Entertainment</h2>
+                <p className="text-white/80 text-xs sm:text-sm hidden sm:block">Movies • Shows • Games • Music</p>
               </div>
             </div>
-            <Button variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm gap-2">
-              <Shuffle className="w-4 h-4" />
-              Surprise Me
+            <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0">
+              <Shuffle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Surprise</span>
             </Button>
           </div>
           
           {/* Quick Stats */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
             {[
               { icon: Film, label: 'Movies', count: 24, color: 'bg-red-500/30' },
               { icon: Tv, label: 'Shows', count: 12, color: 'bg-violet-500/30' },
               { icon: Gamepad2, label: 'Games', count: 6, color: 'bg-green-500/30' },
               { icon: Music, label: 'Albums', count: 18, color: 'bg-cyan-500/30' },
             ].map((stat, i) => (
-              <div key={i} className={`${stat.color} backdrop-blur-sm rounded-xl p-3 text-center`}>
-                <stat.icon className="w-5 h-5 mx-auto mb-1 text-white" />
-                <p className="text-lg font-bold text-white">{stat.count}</p>
-                <p className="text-[10px] text-white/70 uppercase tracking-wide">{stat.label}</p>
+              <div key={i} className={`${stat.color} backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 text-center`}>
+                <stat.icon className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-0.5 sm:mb-1 text-white" />
+                <p className="text-sm sm:text-lg font-bold text-white">{stat.count}</p>
+                <p className="text-[8px] sm:text-[10px] text-white/70 uppercase tracking-wide">{stat.label}</p>
               </div>
             ))}
           </div>
