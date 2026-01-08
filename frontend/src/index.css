@@ -140,48 +140,6 @@ code {
         --chart-5: 340 80% 60%;
     }
 }
-        /* Secondary - Layered dark surfaces */
-        --secondary: 222 47% 12%;
-        --secondary-hover: 222 47% 16%;
-        --secondary-foreground: 210 40% 98%;
-        
-        /* Muted surfaces with depth */
-        --muted: 222 47% 12%;
-        --muted-hover: 222 47% 16%;
-        --muted-foreground: 217 10% 64.9%;
-        
-        /* Accent - Matching primary with depth */
-        --accent: 187 100% 50%;
-        --accent-hover: 187 100% 55%;
-        --accent-foreground: 222 47% 4%;
-        
-        /* Status colors with dark backgrounds */
-        --destructive: 0 72% 55%;
-        --destructive-light: 0 72% 15%;
-        --destructive-foreground: 210 40% 98%;
-        
-        --success: 142 76% 45%;
-        --success-light: 142 76% 15%;
-        --success-foreground: 210 40% 98%;
-        
-        --warning: 38 92% 55%;
-        --warning-light: 38 92% 15%;
-        --warning-foreground: 222 47% 4%;
-        
-        /* Borders with subtle glow */
-        --border: 222 47% 15%;
-        --border-strong: 222 47% 20%;
-        --input: 222 47% 15%;
-        --ring: 187 100% 50%;
-        
-        /* Chart colors */
-        --chart-1: 187 100% 50%;
-        --chart-2: 142 76% 45%;
-        --chart-3: 38 92% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
-}
 
 @layer base {
     * {
@@ -200,6 +158,16 @@ code {
             hsl(200, 85%, 97%) 75%,
             hsl(210, 100%, 98%) 100%
         );
+        background-attachment: fixed;
+    }
+    
+    /* Dark mode - Subtle grid background */
+    .dark body {
+        background-color: hsl(220, 15%, 5%);
+        background-image: 
+            linear-gradient(rgba(6, 182, 212, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6, 182, 212, 0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
         background-attachment: fixed;
     }
 }
