@@ -96,7 +96,7 @@ export default function WeatherTile() {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         {/* Location */}
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <MapPin className="w-3 h-3" />
@@ -107,47 +107,47 @@ export default function WeatherTile() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-end gap-1">
-              <span className="text-5xl font-light">{weather.current.temp}</span>
-              <span className="text-2xl text-muted-foreground mb-2">°F</span>
+              <span className="text-4xl sm:text-5xl font-light">{weather.current.temp}</span>
+              <span className="text-xl sm:text-2xl text-muted-foreground mb-1 sm:mb-2">°F</span>
             </div>
-            <p className="text-sm text-muted-foreground">Feels like {weather.current.feelsLike}°F</p>
-            <p className="text-sm font-medium mt-1">{weather.current.condition}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Feels like {weather.current.feelsLike}°F</p>
+            <p className="text-xs sm:text-sm font-medium mt-1">{weather.current.condition}</p>
           </div>
           <div className="text-right">
-            <WeatherIcon condition={weather.current.icon} className="w-16 h-16" />
+            <WeatherIcon condition={weather.current.icon} className="w-12 h-12 sm:w-16 sm:h-16" />
           </div>
         </div>
         
         {/* Key Metrics */}
-        <div className="grid grid-cols-3 gap-2">
-          <div className="glass rounded-lg p-2 text-center">
-            <Droplets className="w-4 h-4 mx-auto mb-1 text-blue-400" />
-            <p className="text-sm font-semibold">{weather.current.humidity}%</p>
-            <p className="text-[10px] text-muted-foreground">Humidity</p>
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+          <div className="glass rounded-lg p-1.5 sm:p-2 text-center">
+            <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4 mx-auto mb-0.5 sm:mb-1 text-blue-400" />
+            <p className="text-xs sm:text-sm font-semibold">{weather.current.humidity}%</p>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground">Humidity</p>
           </div>
-          <div className="glass rounded-lg p-2 text-center">
-            <Wind className="w-4 h-4 mx-auto mb-1 text-slate-400" />
-            <p className="text-sm font-semibold">{weather.current.windSpeed}</p>
-            <p className="text-[10px] text-muted-foreground">mph {weather.current.windDirection}</p>
+          <div className="glass rounded-lg p-1.5 sm:p-2 text-center">
+            <Wind className="w-3.5 h-3.5 sm:w-4 sm:h-4 mx-auto mb-0.5 sm:mb-1 text-slate-400" />
+            <p className="text-xs sm:text-sm font-semibold">{weather.current.windSpeed}</p>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground">mph {weather.current.windDirection}</p>
           </div>
-          <div className="glass rounded-lg p-2 text-center">
-            <Eye className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
-            <p className="text-sm font-semibold">{weather.current.visibility}</p>
-            <p className="text-[10px] text-muted-foreground">mi visibility</p>
+          <div className="glass rounded-lg p-1.5 sm:p-2 text-center">
+            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 mx-auto mb-0.5 sm:mb-1 text-emerald-400" />
+            <p className="text-xs sm:text-sm font-semibold">{weather.current.visibility}</p>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground">mi vis</p>
           </div>
         </div>
         
         {/* Sun Times */}
         <div className="flex justify-between items-center glass rounded-lg p-2">
-          <div className="flex items-center gap-2">
-            <Sunrise className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Sunrise className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
             <div>
-              <p className="text-xs text-muted-foreground">Sunrise</p>
-              <p className="text-sm font-medium">{weather.sun.sunrise}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Sunrise</p>
+              <p className="text-xs sm:text-sm font-medium">{weather.sun.sunrise}</p>
             </div>
           </div>
           <div className="h-8 w-px bg-border" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <Sunset className="w-4 h-4 text-orange-400" />
             <div>
               <p className="text-xs text-muted-foreground">Sunset</p>
