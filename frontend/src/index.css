@@ -79,25 +79,67 @@ code {
     }
     
     .dark {
-        /* OMEGA Dark Mode - Enhanced depth with layered surfaces */
-        --background: 222 47% 4%;
+        /* OMEGA Dark Mode - Apple-inspired depth with refined surfaces */
+        --background: 220 15% 5%;
         --foreground: 210 40% 98%;
         
-        /* Cards with multiple elevation levels */
-        --card: 222 47% 8%;
+        /* Cards with subtle elevation - more visible than pure black */
+        --card: 220 15% 8%;
         --card-foreground: 210 40% 98%;
-        --card-elevated: 222 47% 11%;
+        --card-elevated: 220 15% 12%;
         
-        /* Elevated surfaces */
-        --popover: 222 47% 6%;
+        /* Elevated surfaces with warmth */
+        --popover: 220 15% 10%;
         --popover-foreground: 210 40% 98%;
         
-        /* Primary - Vibrant cyan with hover states */
+        /* Primary - Electric cyan with refined glow */
         --primary: 187 100% 50%;
-        --primary-hover: 187 100% 55%;
-        --primary-light: 187 100% 20%;
-        --primary-foreground: 222 47% 4%;
+        --primary-hover: 187 100% 60%;
+        --primary-light: 187 100% 15%;
+        --primary-foreground: 220 15% 5%;
         
+        /* Secondary - Visible layered surfaces */
+        --secondary: 220 15% 14%;
+        --secondary-hover: 220 15% 18%;
+        --secondary-foreground: 210 40% 98%;
+        
+        /* Muted surfaces - subtle but visible */
+        --muted: 220 15% 12%;
+        --muted-hover: 220 15% 16%;
+        --muted-foreground: 220 10% 55%;
+        
+        /* Accent - Matching primary */
+        --accent: 187 100% 50%;
+        --accent-hover: 187 100% 60%;
+        --accent-foreground: 220 15% 5%;
+        
+        /* Status colors - vibrant on dark */
+        --destructive: 0 75% 60%;
+        --destructive-light: 0 75% 12%;
+        --destructive-foreground: 210 40% 98%;
+        
+        --success: 142 76% 50%;
+        --success-light: 142 76% 12%;
+        --success-foreground: 210 40% 98%;
+        
+        --warning: 38 95% 55%;
+        --warning-light: 38 95% 12%;
+        --warning-foreground: 220 15% 5%;
+        
+        /* Borders - subtle but visible */
+        --border: 220 15% 18%;
+        --border-strong: 220 15% 25%;
+        --input: 220 15% 15%;
+        --ring: 187 100% 50%;
+        
+        /* Chart colors */
+        --chart-1: 187 100% 50%;
+        --chart-2: 142 76% 50%;
+        --chart-3: 38 95% 55%;
+        --chart-4: 280 70% 65%;
+        --chart-5: 340 80% 60%;
+    }
+}
         /* Secondary - Layered dark surfaces */
         --secondary: 222 47% 12%;
         --secondary-hover: 222 47% 16%;
