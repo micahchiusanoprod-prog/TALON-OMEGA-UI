@@ -404,22 +404,24 @@ export default function QuickToolsBar() {
   
   return (
     <>
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin" data-testid="quick-tools-bar">
-        {QUICK_TOOLS.map((tool) => {
-          const Icon = tool.icon;
-          return (
-            <button
-              key={tool.id}
-              onClick={() => handleToolClick(tool)}
-              className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl btn-apple whitespace-nowrap group`}
-              title={tool.description}
-              data-testid={`tool-${tool.id}`}
-            >
-              <Icon className={`w-4 h-4 ${tool.color || 'text-primary'} group-hover:scale-110 transition-transform`} />
-              <span className="text-sm font-medium">{tool.name}</span>
-            </button>
-          );
-        })}
+      <div className="flex justify-center" data-testid="quick-tools-bar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          {QUICK_TOOLS.map((tool) => {
+            const Icon = tool.icon;
+            return (
+              <button
+                key={tool.id}
+                onClick={() => handleToolClick(tool)}
+                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl btn-apple whitespace-nowrap group`}
+                title={tool.description}
+                data-testid={`tool-${tool.id}`}
+              >
+                <Icon className={`w-4 h-4 ${tool.color || 'text-primary'} group-hover:scale-110 transition-transform`} />
+                <span className="text-sm font-medium">{tool.name}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
       
       {/* Modals */}
