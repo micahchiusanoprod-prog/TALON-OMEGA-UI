@@ -304,17 +304,20 @@ export default function HotspotTile() {
                     {visibleClients.map((client) => (
                       <div
                         key={client.mac}
-                        className="p-3 glass rounded-lg hover:glass-strong transition-smooth"
+                        className="p-2.5 sm:p-3 glass rounded-lg hover:glass-strong transition-smooth"
                       >
-                        <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-start justify-between mb-2 gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-foreground truncate">
                               {client.hostname}
                             </div>
-                            <div className="text-xs text-muted-foreground">
-                              {client.ip} • {client.mac}
+                            <div className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                              {client.ip}
                             </div>
-                            <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                            <div className="text-[10px] sm:text-xs text-muted-foreground truncate opacity-70">
+                              {client.mac}
+                            </div>
+                            <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[10px] sm:text-xs text-muted-foreground flex-wrap">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {formatTimeAgo(client.connectedAt)}
@@ -327,33 +330,33 @@ export default function HotspotTile() {
                               )}
                             </div>
                           </div>
-                          <div className="text-right text-xs text-muted-foreground">
+                          <div className="text-right text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">
                             <div>↓ {formatBytes(client.rxBytes)}</div>
                             <div>↑ {formatBytes(client.txBytes)}</div>
                           </div>
                         </div>
                         
                         {/* Device Management Buttons */}
-                        <div className="flex items-center gap-1.5 mt-2">
+                        <div className="flex items-center gap-1 sm:gap-1.5 mt-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleFavorite(client)}
-                            className="text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-secondary"
+                            className="text-[10px] sm:text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-secondary px-1.5 sm:px-2"
                             title="Mark as favorite device"
                           >
-                            <Star className="w-3 h-3 mr-1" />
-                            Favorite
+                            <Star className="w-3 h-3 sm:mr-1" />
+                            <span className="hidden sm:inline">Favorite</span>
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleLimitData(client)}
-                            className="text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-secondary"
+                            className="text-[10px] sm:text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-secondary px-1.5 sm:px-2"
                             title="Set data usage limit"
                           >
-                            <Gauge className="w-3 h-3 mr-1" />
-                            Limit
+                            <Gauge className="w-3 h-3 sm:mr-1" />
+                            <span className="hidden sm:inline">Limit</span>
                           </Button>
                           <Button
                             variant="outline"
