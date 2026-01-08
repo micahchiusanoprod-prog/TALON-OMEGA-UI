@@ -363,18 +363,21 @@ export default function EnvironmentTile() {
                 </div>
                 <div>
                   <span className="text-sm font-medium">Humidity</span>
-                  <div className="flex items-center gap-1">
-                    <TrendIcon trend={getTrend(history.humidity)} />
-                    <span className="text-xs text-muted-foreground">
-                      {getTrend(history.humidity) === 'up' ? 'Rising' : getTrend(history.humidity) === 'down' ? 'Falling' : 'Stable'}
-                    </span>
-                  </div>
+                  <p className="text-xs text-muted-foreground">Water vapor in the air</p>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded-full ${getStatus('humidity', displayData.humidity).bg}`}>
-                <span className={`text-xs font-medium ${getStatus('humidity', displayData.humidity).color}`}>
-                  {getStatus('humidity', displayData.humidity).label}
-                </span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <TrendIcon trend={getTrend(history.humidity)} />
+                  <span className="text-xs text-muted-foreground">
+                    {getTrend(history.humidity) === 'up' ? 'Rising' : getTrend(history.humidity) === 'down' ? 'Falling' : 'Stable'}
+                  </span>
+                </div>
+                <div className={`px-2 py-1 rounded-full ${getStatus('humidity', displayData.humidity).bg}`}>
+                  <span className={`text-xs font-medium ${getStatus('humidity', displayData.humidity).color}`}>
+                    {getStatus('humidity', displayData.humidity).label}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="flex items-baseline gap-2">
@@ -393,7 +396,10 @@ export default function EnvironmentTile() {
                 <div className="p-2 rounded-lg bg-purple-500/20">
                   <Gauge className="w-5 h-5 text-purple-400" />
                 </div>
-                <span className="text-sm font-medium">Pressure</span>
+                <div>
+                  <span className="text-sm font-medium">Barometric Pressure</span>
+                  <p className="text-xs text-muted-foreground">Atmospheric weight - predicts weather</p>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <WeatherIcon className={`w-5 h-5 ${weather.color}`} />
@@ -404,6 +410,9 @@ export default function EnvironmentTile() {
               <span className="text-3xl xl:text-4xl font-bold">{displayData.pressure.toFixed(0)}</span>
               <span className="text-sm text-muted-foreground">hPa</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {displayData.pressure > 1015 ? 'High pressure = fair weather likely' : 'Low pressure = weather change possible'}
+            </p>
           </div>
 
           {/* Air Quality */}
@@ -413,7 +422,10 @@ export default function EnvironmentTile() {
                 <div className="p-2 rounded-lg bg-green-500/20">
                   <Wind className="w-5 h-5 text-green-400" />
                 </div>
-                <span className="text-sm font-medium">Air Quality</span>
+                <div>
+                  <span className="text-sm font-medium">Indoor Air Quality</span>
+                  <p className="text-xs text-muted-foreground">Higher score = cleaner air</p>
+                </div>
               </div>
               <span className={`text-sm font-medium ${
                 displayData.iaq >= 150 ? 'text-success' : displayData.iaq >= 100 ? 'text-primary' : 'text-warning'
