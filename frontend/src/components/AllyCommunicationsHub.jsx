@@ -624,7 +624,7 @@ export default function AllyCommunicationsHub() {
                 <Radio className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <span className="text-lg font-bold">Ally Communications</span>
+                <span className="text-lg font-bold">Ally Communications Hub</span>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-xs text-success font-medium">{onlineCount} online</span>
                   {needHelpCount > 0 && (
@@ -654,8 +654,8 @@ export default function AllyCommunicationsHub() {
         </CardHeader>
         
         <CardContent className="space-y-6">
-          {/* View Toggle */}
-          <div className="flex gap-1 p-1 rounded-2xl bg-secondary/30">
+          {/* View Toggle - TALLER for glove-friendly tapping */}
+          <div className="flex gap-1 p-1.5 rounded-2xl bg-secondary/30">
             {[
               { id: 'comms', label: 'Communications', icon: Radio },
               { id: 'map', label: 'Map', icon: Map },
@@ -666,7 +666,7 @@ export default function AllyCommunicationsHub() {
                 <button
                   key={view.id}
                   onClick={() => setActiveView(view.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 rounded-xl text-sm font-medium transition-all ${
                     activeView === view.id 
                       ? 'bg-primary text-primary-foreground' 
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
