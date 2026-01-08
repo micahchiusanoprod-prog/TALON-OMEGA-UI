@@ -133,7 +133,7 @@ export default function SearchBar() {
                       {category.label}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Search for "{query}"
+                      Search for &ldquo;{query}&rdquo;
                     </div>
                   </div>
                 </button>
