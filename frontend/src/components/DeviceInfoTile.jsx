@@ -198,95 +198,151 @@ export default function DeviceInfoTile() {
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
-        {/* Circular Progress Gauges */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+        {/* Metrics - Vertical Stack */}
+        <div className="space-y-3 mb-4">
           {/* CPU */}
-          <div className="flex flex-col items-center glass rounded-xl p-3">
-            <CircularProgress 
-              value={displayMetrics.cpu} 
-              color={getMetricColor(displayMetrics.cpu, { warning: 60, critical: 80 })}
-              icon={Cpu}
-            />
-            <span className="text-sm font-medium mt-2">CPU</span>
-            <span className={`text-xs ${getMetricStatus('cpu', displayMetrics.cpu).color}`}>
-              {getMetricStatus('cpu', displayMetrics.cpu).label}
-            </span>
-          </div>
-
-          {/* RAM */}
-          <div className="flex flex-col items-center glass rounded-xl p-3">
-            <CircularProgress 
-              value={displayMetrics.ram} 
-              color={getMetricColor(displayMetrics.ram, { warning: 70, critical: 85 })}
-              icon={MemoryStick}
-            />
-            <span className="text-sm font-medium mt-2">Memory</span>
-            <span className={`text-xs ${getMetricStatus('ram', displayMetrics.ram).color}`}>
-              {getMetricStatus('ram', displayMetrics.ram).label}
-            </span>
-          </div>
-
-          {/* Disk */}
-          <div className="flex flex-col items-center glass rounded-xl p-3">
-            <CircularProgress 
-              value={displayMetrics.disk} 
-              color={getMetricColor(displayMetrics.disk, { warning: 70, critical: 85 })}
-              icon={HardDrive}
-            />
-            <span className="text-sm font-medium mt-2">Storage</span>
-            <span className={`text-xs ${getMetricStatus('disk', displayMetrics.disk).color}`}>
-              {getMetricStatus('disk', displayMetrics.disk).label}
-            </span>
-          </div>
-
-          {/* Temperature */}
-          <div className="flex flex-col items-center glass rounded-xl p-3">
-            <div className="relative flex items-center justify-center" style={{ width: 80, height: 80 }}>
-              <div className={`text-center ${getMetricStatus('temp', displayMetrics.temp).color}`}>
-                <Thermometer className="w-6 h-6 mx-auto mb-1" />
-                <span className="text-2xl font-bold">{displayMetrics.temp}</span>
-                <span className="text-xs">°C</span>
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/20">
+                  <Cpu className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium">CPU Usage</span>
+                  <p className="text-xs text-muted-foreground">Processor load</p>
+                </div>
+              </div>
+              <div className={`px-2 py-1 rounded-full ${
+                displayMetrics.cpu > 80 ? 'bg-destructive/20' : displayMetrics.cpu > 60 ? 'bg-warning/20' : 'bg-success/20'
+              }`}>
+                <span className={`text-xs font-medium ${getMetricStatus('cpu', displayMetrics.cpu).color}`}>
+                  {getMetricStatus('cpu', displayMetrics.cpu).label}
+                </span>
               </div>
             </div>
-            <span className="text-sm font-medium mt-2">CPU Temp</span>
-            <span className={`text-xs ${getMetricStatus('temp', displayMetrics.temp).color}`}>
-              {getMetricStatus('temp', displayMetrics.temp).label}
-            </span>
-          </div>
-        </div>
-
-        {/* Uptime & System Load */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          {/* Uptime */}
-          <div className="glass rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Uptime</span>
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-4xl font-bold">{displayMetrics.cpu}</span>
+              <span className="text-lg text-muted-foreground">%</span>
             </div>
-            <div className="text-2xl xl:text-3xl font-bold">
-              {formatUptime(displayMetrics.uptime)}
+            <div className="h-3 bg-secondary rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all ${
+                  displayMetrics.cpu > 80 ? 'bg-destructive' : displayMetrics.cpu > 60 ? 'bg-warning' : 'bg-success'
+                }`}
+                style={{ width: `${displayMetrics.cpu}%` }}
+              />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Since last reboot
-            </p>
           </div>
 
-          {/* System Load */}
+          {/* Memory */}
           <div className="glass rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium">Load Average</span>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-purple-500/20">
+                  <MemoryStick className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium">Memory</span>
+                  <p className="text-xs text-muted-foreground">RAM usage</p>
+                </div>
+              </div>
+              <div className={`px-2 py-1 rounded-full ${
+                displayMetrics.ram > 85 ? 'bg-destructive/20' : displayMetrics.ram > 70 ? 'bg-warning/20' : 'bg-success/20'
+              }`}>
+                <span className={`text-xs font-medium ${getMetricStatus('ram', displayMetrics.ram).color}`}>
+                  {getMetricStatus('ram', displayMetrics.ram).label}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-4xl font-bold">{displayMetrics.ram}</span>
+              <span className="text-lg text-muted-foreground">%</span>
+            </div>
+            <div className="h-3 bg-secondary rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all ${
+                  displayMetrics.ram > 85 ? 'bg-destructive' : displayMetrics.ram > 70 ? 'bg-warning' : 'bg-success'
+                }`}
+                style={{ width: `${displayMetrics.ram}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Storage */}
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-orange-500/20">
+                  <HardDrive className="w-5 h-5 text-orange-400" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium">Storage</span>
+                  <p className="text-xs text-muted-foreground">Disk space used</p>
+                </div>
+              </div>
+              <div className={`px-2 py-1 rounded-full ${
+                displayMetrics.disk > 85 ? 'bg-destructive/20' : displayMetrics.disk > 70 ? 'bg-warning/20' : 'bg-success/20'
+              }`}>
+                <span className={`text-xs font-medium ${getMetricStatus('disk', displayMetrics.disk).color}`}>
+                  {getMetricStatus('disk', displayMetrics.disk).label}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-4xl font-bold">{displayMetrics.disk}</span>
+              <span className="text-lg text-muted-foreground">%</span>
+            </div>
+            <div className="h-3 bg-secondary rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all ${
+                  displayMetrics.disk > 85 ? 'bg-destructive' : displayMetrics.disk > 70 ? 'bg-warning' : 'bg-success'
+                }`}
+                style={{ width: `${displayMetrics.disk}%` }}
+              />
+            </div>
+          </div>
+
+          {/* CPU Temperature */}
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-red-500/20">
+                  <Thermometer className="w-5 h-5 text-red-400" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium">CPU Temperature</span>
+                  <p className="text-xs text-muted-foreground">Processor heat</p>
+                </div>
+              </div>
+              <div className={`px-2 py-1 rounded-full ${
+                displayMetrics.temp > 75 ? 'bg-destructive/20' : displayMetrics.temp > 60 ? 'bg-warning/20' : 'bg-success/20'
+              }`}>
+                <span className={`text-xs font-medium ${getMetricStatus('temp', displayMetrics.temp).color}`}>
+                  {getMetricStatus('temp', displayMetrics.temp).label}
+                </span>
+              </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl xl:text-3xl font-bold">
-                {(displayMetrics.load?.[0] || 0.45).toFixed(2)}
-              </span>
+              <span className="text-4xl font-bold">{displayMetrics.temp}</span>
+              <span className="text-lg text-muted-foreground">°C</span>
+              <span className="text-sm text-muted-foreground ml-2">({(displayMetrics.temp * 9/5 + 32).toFixed(0)}°F)</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              1m: {(displayMetrics.load?.[0] || 0.45).toFixed(2)} • 
-              5m: {(displayMetrics.load?.[1] || 0.52).toFixed(2)} • 
-              15m: {(displayMetrics.load?.[2] || 0.38).toFixed(2)}
-            </p>
+          </div>
+
+          {/* Uptime */}
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-lg bg-cyan-500/20">
+                <Clock className="w-5 h-5 text-cyan-400" />
+              </div>
+              <div>
+                <span className="text-sm font-medium">Uptime</span>
+                <p className="text-xs text-muted-foreground">Since last reboot</p>
+              </div>
+            </div>
+            <div className="text-3xl font-bold">
+              {formatUptime(displayMetrics.uptime)}
+            </div>
           </div>
         </div>
 
@@ -305,11 +361,11 @@ export default function DeviceInfoTile() {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 xl:grid-cols-3 gap-2">
+          <div className="space-y-2">
             {displayHealth.services && Object.entries(displayHealth.services).map(([name, status]) => (
               <div
                 key={name}
-                className={`flex items-center justify-between p-2 rounded-lg ${
+                className={`flex items-center justify-between p-3 rounded-lg ${
                   status === 'up' || status === 'running'
                     ? 'bg-success/10'
                     : status === 'degraded'
@@ -317,9 +373,9 @@ export default function DeviceInfoTile() {
                     : 'bg-destructive/10'
                 }`}
               >
-                <span className="text-sm capitalize">{name}</span>
+                <span className="text-sm font-medium capitalize">{name}</span>
                 <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                  className={`text-xs font-medium px-2 py-1 rounded-full ${
                     status === 'up' || status === 'running'
                       ? 'bg-success/20 text-success'
                       : status === 'degraded'
@@ -327,7 +383,7 @@ export default function DeviceInfoTile() {
                       : 'bg-destructive/20 text-destructive'
                   }`}
                 >
-                  {status === 'up' || status === 'running' ? '●' : status === 'degraded' ? '◐' : '○'} {status}
+                  {status}
                 </span>
               </div>
             ))}
