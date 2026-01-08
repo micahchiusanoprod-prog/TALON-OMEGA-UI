@@ -45,8 +45,11 @@ export default function Dashboard() {
 
         {/* ===== SYSTEM STATUS SECTION ===== */}
         <section className="animate-fade-in pt-6 space-y-4" style={{ animationDelay: '200ms' }}>
-          <EnvironmentTile />
-          <DeviceInfoTile />
+          {/* Environment & Device Info side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <EnvironmentTile />
+            <DeviceInfoTile />
+          </div>
           <HotspotTile />
           <PowerTile />
         </section>
