@@ -232,14 +232,98 @@ export default function DeviceInfoTile() {
             <Activity className="w-5 h-5 text-primary" />
             Device Info
           </CardTitle>
-          {showSimulated && (
-            <span className="text-xs px-2 py-1 rounded-full bg-warning/20 text-warning">
-              Simulated
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {showSimulated && (
+              <span className="text-xs px-2 py-1 rounded-full bg-warning/20 text-warning">
+                Simulated
+              </span>
+            )}
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className={`p-1.5 rounded-lg transition-colors ${showHelp ? 'bg-primary/20 text-primary' : 'hover:bg-secondary text-muted-foreground'}`}
+              title="Help & Legend"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
+      <CardContent className="flex-1 flex flex-col overflow-y-auto scrollbar-thin">
+        {/* Help Section */}
+        {showHelp && (
+          <div className="mb-4 glass rounded-xl p-4 border border-primary/20 animate-fade-in">
+            <div className="flex items-center gap-2 mb-3">
+              <Info className="w-4 h-4 text-primary" />
+              <span className="font-semibold text-sm">Understanding Device Metrics</span>
+            </div>
+            <p className="text-xs text-muted-foreground mb-4">{DEVICE_HELP.overview}</p>
+            
+            {/* Metric Help - Expandable */}
+            <div className="space-y-2 mb-4">
+              {Object.entries(DEVICE_HELP.metrics).map(([key, metric]) => (
+                <div key={key} className="border border-border/50 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setExpandedHelp(expandedHelp === key ? null : key)}
+                    className="w-full px-3 py-2 flex items-center justify-between text-left hover:bg-secondary/30 transition-colors"
+                  >
+                    <span className="text-sm font-medium">{metric.title}</span>
+                    {expandedHelp === key ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+                  {expandedHelp === key && (
+                    <div className="px-3 pb-3 space-y-2 animate-fade-in">
+                      <p className="text-xs text-muted-foreground">{metric.description}</p>
+                      <p className="text-xs"><strong>Why it matters:</strong> {metric.why}</p>
+                      <div className="mt-2">
+                        <span className="text-xs font-medium">Reference Ranges:</span>
+                        <div className="mt-1 space-y-1">
+                          {metric.ranges.map((r, i) => (
+                            <div key={i} className="text-xs flex items-start gap-2">
+                              <span className="text-muted-foreground w-24 flex-shrink-0">{r.range}</span>
+                              <span className="font-medium w-16 flex-shrink-0">{r.status}</span>
+                              <span className="text-muted-foreground">{r.advice}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Status Legend */}
+            <div className="border-t border-border/50 pt-3">
+              <span className="text-xs font-semibold mb-2 block">Status Indicators</span>
+              <div className="space-y-2">
+                {DEVICE_HELP.legend.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-lg ${item.bg}`}>
+                      <item.icon className={`w-4 h-4 ${item.color}`} />
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium">{item.label}</span>
+                      <p className="text-xs text-muted-foreground">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tips */}
+            <div className="border-t border-border/50 pt-3 mt-3">
+              <span className="text-xs font-semibold mb-2 block">Tips</span>
+              <ul className="space-y-1">
+                {DEVICE_HELP.tips.map((tip, i) => (
+                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    {tip}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
         {/* Metrics - Vertical Stack */}
         <div className="space-y-3 mb-4">
           {/* CPU */}
@@ -251,7 +335,7 @@ export default function DeviceInfoTile() {
                 </div>
                 <div>
                   <span className="text-sm font-medium">CPU Usage</span>
-                  <p className="text-xs text-muted-foreground">Processor load</p>
+                  <p className="text-xs text-muted-foreground">How hard your processor is working</p>
                 </div>
               </div>
               <div className={`px-2 py-1 rounded-full ${
