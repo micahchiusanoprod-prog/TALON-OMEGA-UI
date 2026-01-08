@@ -135,7 +135,7 @@ export default function LazyMapContent({ nodesWithGps, defaultCenter, defaultZoo
   
   if (!isReady) {
     return (
-      <div className="h-[320px] glass rounded-lg flex items-center justify-center">
+      <div className="h-[320px] lg:h-[450px] glass rounded-lg flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">Initializing map...</p>
@@ -149,7 +149,7 @@ export default function LazyMapContent({ nodesWithGps, defaultCenter, defaultZoo
       ref={mapRef}
       center={defaultCenter}
       zoom={defaultZoom}
-      className="h-[320px] w-full rounded-lg z-0"
+      className="h-[320px] lg:h-[450px] w-full rounded-lg z-0"
       style={{ background: 'hsl(var(--muted))' }}
       data-testid="ally-map-container"
     >
