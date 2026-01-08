@@ -121,7 +121,6 @@ const ContentCard = ({ item, size = 'normal' }) => {
 
 export default function EntertainmentTile() {
   const [activeSection, setActiveSection] = useState('all');
-  const [isPlaying, setIsPlaying] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
   const filteredContent = allContent.filter(item => {
