@@ -176,11 +176,11 @@ const FleetUpdatesSection = () => {
                     )}
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Node</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Version</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Last Seen</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Actions</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-semibold text-muted-foreground">Node</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-semibold text-muted-foreground">Version</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-semibold text-muted-foreground">Last Seen</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-semibold text-muted-foreground">Status</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-semibold text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
