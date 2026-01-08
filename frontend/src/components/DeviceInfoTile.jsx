@@ -459,6 +459,9 @@ export default function DeviceInfoTile() {
               <span className="text-lg text-muted-foreground">°C</span>
               <span className="text-sm text-muted-foreground ml-2">({(displayMetrics.temp * 9/5 + 32).toFixed(0)}°F)</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {displayMetrics.temp < 50 ? 'Running cool - optimal' : displayMetrics.temp < 70 ? 'Normal under load' : 'Running hot - check ventilation'}
+            </p>
           </div>
 
           {/* Uptime */}
@@ -469,21 +472,27 @@ export default function DeviceInfoTile() {
               </div>
               <div>
                 <span className="text-sm font-medium">Uptime</span>
-                <p className="text-xs text-muted-foreground">Since last reboot</p>
+                <p className="text-xs text-muted-foreground">Time since device was last restarted</p>
               </div>
             </div>
             <div className="text-3xl font-bold">
               {formatUptime(displayMetrics.uptime)}
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {displayMetrics.uptime < 604800 ? 'Recently restarted - fresh state' : displayMetrics.uptime < 2592000 ? 'Normal uptime' : 'Consider restarting soon for best performance'}
+            </p>
           </div>
         </div>
 
         {/* Services Status */}
         <div className="glass rounded-xl p-4 mb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Server className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Services</span>
+              <div>
+                <span className="text-sm font-medium">Services</span>
+                <p className="text-xs text-muted-foreground">Background processes powering features</p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <span className={`text-sm font-bold ${servicesUp === serviceCount ? 'text-success' : 'text-warning'}`}>
@@ -493,31 +502,44 @@ export default function DeviceInfoTile() {
             </div>
           </div>
           
-          <div className="space-y-2">
-            {displayHealth.services && Object.entries(displayHealth.services).map(([name, status]) => (
-              <div
-                key={name}
-                className={`flex items-center justify-between p-3 rounded-lg ${
-                  status === 'up' || status === 'running'
-                    ? 'bg-success/10'
-                    : status === 'degraded'
-                    ? 'bg-warning/10'
-                    : 'bg-destructive/10'
-                }`}
-              >
-                <span className="text-sm font-medium capitalize">{name}</span>
-                <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${
+          <div className="space-y-2 mt-3">
+            {displayHealth.services && Object.entries(displayHealth.services).map(([name, status]) => {
+              const serviceDescriptions = {
+                kiwix: 'Offline Wikipedia & docs',
+                backend: 'Core API server',
+                mesh: 'Mesh network comms',
+                gps: 'Location tracking',
+                sensors: 'Environment monitoring',
+              };
+              return (
+                <div
+                  key={name}
+                  className={`flex items-center justify-between p-3 rounded-lg ${
                     status === 'up' || status === 'running'
-                      ? 'bg-success/20 text-success'
+                      ? 'bg-success/10'
                       : status === 'degraded'
-                      ? 'bg-warning/20 text-warning'
-                      : 'bg-destructive/20 text-destructive'
+                      ? 'bg-warning/10'
+                      : 'bg-destructive/10'
                   }`}
                 >
-                  {status}
-                </span>
-              </div>
+                  <div>
+                    <span className="text-sm font-medium capitalize">{name}</span>
+                    <p className="text-xs text-muted-foreground">{serviceDescriptions[name] || 'System service'}</p>
+                  </div>
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      status === 'up' || status === 'running'
+                        ? 'bg-success/20 text-success'
+                        : status === 'degraded'
+                        ? 'bg-warning/20 text-warning'
+                        : 'bg-destructive/20 text-destructive'
+                    }`}
+                  >
+                    {status}
+                  </span>
+                </div>
+              );
+            })}
             ))}
           </div>
         </div>
