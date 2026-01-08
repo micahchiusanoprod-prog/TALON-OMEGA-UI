@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Book, FileText, Users, Terminal } from 'lucide-react';
+import { Search, Book, FileText, Users, Terminal, Command } from 'lucide-react';
 import { Card } from './ui/card';
 import config from '../config';
 
@@ -67,12 +67,19 @@ export default function SearchBar() {
     <div className="relative max-w-3xl mx-auto">
       <form onSubmit={handleSearch} className="relative">
         <div
-          className={`glass-strong rounded-2xl p-2 transition-smooth ${
-            isFocused ? 'ring-2 ring-primary glow-cyan' : ''
+          className={`rounded-2xl transition-all duration-300 ${
+            isFocused 
+              ? 'ring-2 ring-primary shadow-lg shadow-primary/20' 
+              : 'shadow-md'
           }`}
+          style={{
+            background: 'rgba(30, 35, 45, 0.7)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            border: isFocused ? '1px solid rgba(6, 182, 212, 0.5)' : '1px solid rgba(255, 255, 255, 0.1)',
+          }}
         >
-          <div className="flex items-center gap-3 px-4 py-3">
-            <Search className="w-6 h-6 text-muted-foreground" />
+          <div className="flex items-center gap-3 px-5 py-4">
+            <Search className={`w-5 h-5 transition-colors ${isFocused ? 'text-primary' : 'text-muted-foreground'}`} />
             <input
               ref={inputRef}
               type="text"
@@ -80,10 +87,16 @@ export default function SearchBar() {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-              placeholder="Search Kiwix library, files, or commands... (Press / to focus)"
-              className="flex-1 bg-transparent border-none outline-none text-lg text-foreground placeholder:text-muted-foreground"
+              placeholder="Search Kiwix, files, or commands..."
+              className="flex-1 bg-transparent border-none outline-none text-base text-foreground placeholder:text-muted-foreground/70"
             />
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono text-muted-foreground glass rounded">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-muted-foreground rounded-lg"
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              <Command className="w-3 h-3" />
               /
             </kbd>
           </div>
@@ -92,7 +105,15 @@ export default function SearchBar() {
 
       {/* Autosuggest Dropdown */}
       {(isFocused || showResults) && query.length > 0 && (
-        <Card className="absolute top-full mt-2 w-full glass-strong border-border overflow-hidden z-50">
+        <div 
+          className="absolute top-full mt-2 w-full rounded-2xl overflow-hidden z-50 animate-fade-in"
+          style={{
+            background: 'rgba(25, 30, 40, 0.95)',
+            backdropFilter: 'blur(24px) saturate(200%)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          }}
+        >
           <div className="p-2">
             {SEARCH_CATEGORIES.map((category) => {
               const Icon = category.icon;
@@ -100,30 +121,27 @@ export default function SearchBar() {
                 <button
                   key={category.id}
                   onClick={() => handleCategoryClick(category.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/50 transition-smooth text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-all text-left group"
                 >
-                  <Icon className="w-5 h-5 text-primary" />
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center"
+                    style={{ background: 'rgba(6, 182, 212, 0.1)' }}
+                  >
+                    <Icon className="w-4 h-4 text-primary" />
+                  </div>
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-foreground">{category.label}</div>
+                    <div className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                      {category.label}
+                    </div>
                     <div className="text-xs text-muted-foreground">
-                      Search for "{query}" in {category.label.toLowerCase()}
+                      Search for "{query}"
                     </div>
                   </div>
                 </button>
               );
             })}
           </div>
-        </Card>
-      )}
-
-      {/* Search Tips */}
-      <div className="mt-4 text-center text-sm text-muted-foreground">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs opacity-70">
-            Type anything to search Kiwix offline library, or use "open: kiwix" to browse all content
-          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 }
