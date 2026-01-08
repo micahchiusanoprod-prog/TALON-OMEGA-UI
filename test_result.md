@@ -230,9 +230,112 @@ metadata:
   version: "1.0"
   test_sequence: 2
 
+  - task: "Quick Tools Bar functionality"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/QuickToolsBar.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test all 6 buttons (Calculator, Translator, SOS Beacon, Currency, Dictionary, Field Notes) - verify visibility, modal opening, functionality, and proper closing with X button and Escape key"
+
+  - task: "Ally Communications Hub - View Tabs"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/AllyCommunicationsHub.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test 3 view tabs (Communications, Map, Chat) - verify tab switching and content display"
+
+  - task: "Communication Method Cards"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/AllyCommunicationsHub.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test 5 communication method cards (LAN/Wi-Fi, Mesh/LoRa, Radio/SDR, SMS Gateway, HF Radio Bridge) - verify status indicators, selection, and expand arrow functionality"
+
+  - task: "Node Avatar Strip"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/ally/NodeAvatarStrip.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test 4 nodes (Dad, Mom, Kids', Backup) with status labels (GOOD, OKAY, NEED HELP, OFFLINE), node clicking to open details drawer, Copy Coordinates and Open in Maps buttons"
+
+  - task: "Alert Log section"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/AllyCommunicationsHub.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test Alert Log expand/collapse functionality and verify 4 alerts including 1 Critical alert display"
+
+  - task: "Help & Guides section"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/AllyCommunicationsHub.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test Help & Guides expand/collapse and verify Quick Start/Status Legend/Troubleshooting tabs functionality"
+
+  - task: "Community Section with filters"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/CommunityTile.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test Community tile filter tabs (All, Alerts, Polls) and verify posts are displaying with reactions"
+
+  - task: "Broadcast button functionality"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/AllyCommunicationsHub.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test Broadcast button functionality in Ally Communications Hub"
+
 test_plan:
   current_focus:
-    - "Diagnostics panel"
+    - "Quick Tools Bar functionality"
+    - "Ally Communications Hub - View Tabs"
+    - "Communication Method Cards"
+    - "Node Avatar Strip"
+    - "Alert Log section"
+    - "Help & Guides section"
+    - "Community Section with filters"
+    - "Broadcast button functionality"
   stuck_tasks:
     - "Diagnostics panel"
   test_all: false
@@ -245,3 +348,5 @@ agent_communication:
     message: "COMPREHENSIVE TESTING COMPLETED - OMEGA Dashboard is working excellently! 7/8 major features fully functional. Only issue: Diagnostics panel button visible but panel won't open due to toast overlay interference. All other features including header metrics, search bar, GPS tracking, entertainment section, community section, quality of life tiles, and visual design are working perfectly. Mock data displaying correctly, dark mode active, glassmorphism effects beautiful, responsive design functional."
   - agent: "main"
     message: "Fixed Quick Tools Bar visibility issue - it was being obscured by the fixed header. Increased main container top padding from pt-6 to pt-20. Quick Tools Bar (Calculator, Translator, SOS Beacon, Currency, Dictionary, Field Notes) now visible and clickable. Layout adjustments complete: Quick Tools above Search Bar, Community section directly under Ally Communications Hub. Ready for comprehensive testing of the Ally Communications Hub features."
+  - agent: "testing"
+    message: "Updated test plan to focus on the specific features mentioned in review request: Quick Tools Bar (6 buttons), Ally Communications Hub (3 view tabs, communication methods, node avatars, alerts, help sections), Community section with filters, and Broadcast functionality. All tasks marked for comprehensive testing."
