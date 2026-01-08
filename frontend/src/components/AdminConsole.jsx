@@ -153,18 +153,18 @@ const FleetUpdatesSection = () => {
 
       {/* Node Version Table */}
       <div className="glass rounded-2xl overflow-hidden">
-        <div className="p-4 border-b border-border/50">
-          <h3 className="font-semibold flex items-center gap-2">
+        <div className="p-3 sm:p-4 border-b border-border/50">
+          <h3 className="font-semibold flex items-center gap-2 text-sm sm:text-base">
             <Settings className="w-4 h-4 text-primary" />
             Fleet Status
             <span className="text-xs text-muted-foreground ml-2">Latest: v{LATEST_VERSION}</span>
           </h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto scrollbar-thin">
+          <table className="w-full min-w-[500px]">
             <thead className="bg-secondary/30">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-semibold text-muted-foreground">
                   <input 
                     type="checkbox" 
                     className="rounded"
