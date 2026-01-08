@@ -690,13 +690,13 @@ export default function AllyCommunicationsHub() {
           {/* COMMUNICATIONS VIEW */}
           {activeView === 'comms' && (
             <div className="space-y-4">
-              {/* Communication Methods Grid */}
+              {/* Communication Methods Grid - 3 columns on xl screens */}
               <div className="space-y-3">
                 <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
                   <Signal className="w-4 h-4" />
                   Select Communication Method
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
                   {COMM_METHODS.map(method => (
                     <CommMethodCard
                       key={method.id}
