@@ -198,7 +198,7 @@ const PersonCard = ({ person, onSelect, isSelected }) => {
   );
 };
 
-const PersonDetail = ({ person, onBack, onUpdate }) => {
+const PersonDetail = ({ person, onBack, onUpdate, onEditProfile }) => {
   const [permission, setPermission] = useState(person.permission);
   const [showEnroll, setShowEnroll] = useState(false);
   
@@ -215,7 +215,64 @@ const PersonDetail = ({ person, onBack, onUpdate }) => {
         <div className="w-20 h-20 mx-auto rounded-full bg-primary/20 flex items-center justify-center mb-2">
           <User className="w-10 h-10 text-primary" />
         </div>
+        {person.roleLine && (
+          <p className="text-xs text-primary font-medium mb-2">{person.roleLine}</p>
+        )}
         <Button size="sm" variant="outline" className="text-xs">Change Photo</Button>
+      </div>
+      
+      {/* Bio Section */}
+      <div className="glass rounded-lg p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-xs font-semibold text-muted-foreground">BIO</h4>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="h-6 px-2 text-xs"
+            onClick={() => onEditProfile(person)}
+          >
+            <Edit3 className="w-3 h-3 mr-1" /> Edit Profile
+          </Button>
+        </div>
+        <p className="text-sm text-foreground">
+          {person.bio || <span className="text-muted-foreground italic">No bio provided</span>}
+        </p>
+      </div>
+      
+      {/* Medical Quick View */}
+      <div className="glass rounded-lg p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+            <Heart className="w-3 h-3" /> MEDICAL
+          </h4>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
+            person.medicalVisibility === 'private' 
+              ? 'bg-muted text-muted-foreground' 
+              : 'bg-primary/20 text-primary'
+          }`}>
+            {person.medicalVisibility === 'private' ? 'Private' : 'Shared'}
+          </span>
+        </div>
+        {person.bloodType && person.bloodType !== 'Unknown' && (
+          <p className="text-sm">Blood Type: <span className="font-bold text-destructive">{person.bloodType}</span></p>
+        )}
+        {person.allergies && (person.allergies.food?.length > 0 || person.allergies.medication?.length > 0) && (
+          <div className="flex flex-wrap gap-1">
+            {[...(person.allergies.food || []), ...(person.allergies.medication || [])].map((allergy, i) => (
+              <span key={i} className="text-[10px] px-1.5 py-0.5 bg-destructive/20 text-destructive rounded">
+                ⚠️ {allergy}
+              </span>
+            ))}
+          </div>
+        )}
+        <Button 
+          size="sm" 
+          variant="ghost" 
+          className="w-full h-7 text-xs"
+          onClick={() => onEditProfile(person)}
+        >
+          View & Edit Medical Info
+        </Button>
       </div>
       
       {/* Permission Level */}
