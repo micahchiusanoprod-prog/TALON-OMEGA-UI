@@ -362,11 +362,11 @@ export default function HotspotTile() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleBlock(client)}
-                            className="text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-destructive-light hover:text-destructive"
+                            className="text-[10px] sm:text-xs h-7 flex-1 border-border-strong bg-secondary/30 hover:bg-destructive-light hover:text-destructive px-1.5 sm:px-2"
                             title="Block this device"
                           >
-                            <Ban className="w-3 h-3 mr-1" />
-                            Block
+                            <Ban className="w-3 h-3 sm:mr-1" />
+                            <span className="hidden sm:inline">Block</span>
                           </Button>
                         </div>
                       </div>
