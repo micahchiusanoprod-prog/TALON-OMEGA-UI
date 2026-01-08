@@ -733,10 +733,10 @@ export default function AdminConsole({ isOpen, onClose }) {
         </div>
 
         {/* Section Tabs */}
-        <div className="flex gap-2 p-4 border-b border-border/50">
+        <div className="flex gap-2 p-4 border-b border-border/50 overflow-x-auto">
           <button
             onClick={() => setActiveSection('fleet')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
               activeSection === 'fleet' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'btn-apple'
@@ -746,8 +746,19 @@ export default function AdminConsole({ isOpen, onClose }) {
             Fleet Updates
           </button>
           <button
+            onClick={() => setActiveSection('roster')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+              activeSection === 'roster' 
+                ? 'bg-primary text-primary-foreground' 
+                : 'btn-apple'
+            }`}
+          >
+            <ClipboardList className="w-4 h-4" />
+            Roster & Readiness
+          </button>
+          <button
             onClick={() => setActiveSection('broadcast')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
               activeSection === 'broadcast' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'btn-apple'
@@ -761,6 +772,7 @@ export default function AdminConsole({ isOpen, onClose }) {
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)] scrollbar-thin">
           {activeSection === 'fleet' && <FleetUpdatesSection />}
+          {activeSection === 'roster' && <RosterSection />}
           {activeSection === 'broadcast' && <BroadcastAssemblySection />}
         </div>
       </div>
