@@ -244,38 +244,6 @@ export default function EntertainmentTile() {
           </Button>
         </div>
         
-        {/* Mini Music Player */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900 p-4">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${nowPlaying.gradient} flex items-center justify-center shadow-lg`}>
-              <Music className="w-6 h-6 text-white/50" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold truncate">{nowPlaying.title}</p>
-              <p className="text-sm text-muted-foreground truncate">{nowPlaying.artist} • {nowPlaying.album}</p>
-              {/* Progress bar */}
-              <div className="mt-2 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" style={{ width: `${nowPlaying.progress}%` }} />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-full">
-                <Heart className="w-5 h-5" />
-              </Button>
-              <Button 
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="h-12 w-12 p-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 shadow-lg"
-              >
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
-              </Button>
-              <Button variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-full">
-                <SkipForward className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-        
         {/* Footer Stats */}
         <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
           <div className="flex items-center gap-4">
