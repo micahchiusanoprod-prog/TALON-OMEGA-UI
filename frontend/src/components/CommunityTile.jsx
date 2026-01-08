@@ -835,99 +835,102 @@ export default function CommunityTile() {
   }
   
   return (
-    <Card className="glass-strong border-border-strong" data-testid="community-tile">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-base">
+    <div className="glass-strong border border-border-strong rounded-2xl overflow-hidden" data-testid="community-tile">
+      {/* Twitter-style Header */}
+      <div className="sticky top-0 z-10 backdrop-blur-xl bg-background/80 border-b border-border/50">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <h2 className="text-xl font-bold">Community</h2>
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-primary" />
-            Community
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => setShowComposer(!showComposer)}
-              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-full hover:bg-primary/10 text-primary transition-colors"
               title="New Post"
               data-testid="new-post-btn"
             >
-              <Plus className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
+              <Plus className="w-5 h-5" />
+            </button>
+            <button
               onClick={() => setShowHelp(true)}
-              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-              title="Help & Troubleshooting"
+              className="p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors"
+              title="Help"
               data-testid="community-help-btn"
             >
-              <HelpCircle className="w-4 h-4" />
-            </Button>
+              <HelpCircle className="w-5 h-5" />
+            </button>
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Quick Tips */}
-        <QuickHelpTips tips={communityQuickTips} />
+        </div>
         
-        {/* New Post Composer */}
-        {showComposer && (
-          <NewPostComposer 
-            onPost={handleNewPost}
-            onClose={() => setShowComposer(false)}
-          />
-        )}
-        
-        {/* Filter Tabs */}
-        <div className="flex gap-1 glass rounded-lg p-1">
+        {/* Twitter-style Tabs */}
+        <div className="flex border-b border-border/50">
           {[
-            { id: 'all', label: 'All' },
+            { id: 'all', label: 'For you' },
             { id: 'alert', label: 'Alerts' },
             { id: 'poll', label: 'Polls' },
           ].map(({ id, label }) => (
             <button
               key={id}
               onClick={() => setFilter(id)}
-              className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
                 filter === id 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'text-muted-foreground hover:bg-secondary/50'
+                  ? 'text-foreground' 
+                  : 'text-muted-foreground hover:bg-white/5'
               }`}
               data-testid={`filter-${id}`}
             >
               {label}
+              {filter === id && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-primary rounded-full" />
+              )}
             </button>
           ))}
         </div>
-        
-        {/* Feed - Grid on desktop for wider layout */}
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <div className="skeleton h-32 rounded-xl" />
-            <div className="skeleton h-24 rounded-xl" />
-            <div className="skeleton h-28 rounded-xl" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" data-testid="community-feed">
-            {filteredFeed.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No {filter === 'all' ? 'posts' : filter + 's'} yet</p>
+      </div>
+      
+      {/* Composer */}
+      {showComposer && (
+        <div className="border-b border-border/50 p-4">
+          <NewPostComposer 
+            onPost={handleNewPost}
+            onClose={() => setShowComposer(false)}
+          />
+        </div>
+      )}
+      
+      {/* Feed - Single column Twitter style */}
+      {loading ? (
+        <div className="divide-y divide-border/50">
+          {[1,2,3].map(i => (
+            <div key={i} className="p-4 flex gap-3">
+              <div className="skeleton w-10 h-10 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <div className="skeleton h-4 w-32" />
+                <div className="skeleton h-4 w-full" />
+                <div className="skeleton h-4 w-3/4" />
               </div>
-            ) : (
-              filteredFeed.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  onReact={handleReact}
-                  onVote={handleVote}
-                  onComment={handleComment}
-                />
-              ))
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="divide-y-0" data-testid="community-feed">
+          {filteredFeed.length === 0 ? (
+            <div className="text-center py-16 text-muted-foreground">
+              <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p className="text-lg font-medium">No {filter === 'all' ? 'posts' : filter + 's'} yet</p>
+              <p className="text-sm">When there are posts, they'll show up here.</p>
+            </div>
+          ) : (
+            filteredFeed.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onReact={handleReact}
+                onVote={handleVote}
+                onComment={handleComment}
+              />
+            ))
+          )}
+        </div>
+      )}
+    </div>
   );
 }
