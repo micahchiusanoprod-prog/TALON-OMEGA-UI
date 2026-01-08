@@ -592,80 +592,43 @@ export default function AllyCommunicationsHub() {
             selectedMethod={selectedCommsMethod}
           />
 
-          {/* Tab Navigation - 5 tabs with horizontal scroll on mobile */}
-          <div className="flex items-center gap-1 glass rounded-lg p-1 overflow-x-auto scrollbar-thin" data-testid="ally-hub-tabs">
-            <button
-              onClick={() => setActiveTab('chat')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                activeTab === 'chat' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-              }`}
-              data-testid="tab-chat"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">Global</span> Chat
-              {globalMessages.length > 0 && (
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeTab === 'chat' ? 'bg-primary-foreground/20' : 'bg-muted'
-                }`}>
-                  {globalMessages.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab('map')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                activeTab === 'map' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-              }`}
-              data-testid="tab-map"
-            >
-              <Map className="w-4 h-4" />
-              Map
-              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                activeTab === 'map' ? 'bg-primary-foreground/20' : 'bg-muted'
-              }`}>
-                {nodes.filter(n => n.gps && n.gps.lat && n.gps.lon).length}
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab('codes')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                activeTab === 'codes' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-              }`}
-              data-testid="tab-codes"
-            >
-              <Book className="w-4 h-4" />
-              Codes
-            </button>
-            <button
-              onClick={() => setActiveTab('knowledge')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                activeTab === 'knowledge' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-              }`}
-              data-testid="tab-knowledge"
-            >
-              <Wifi className="w-4 h-4" />
-              <span className="hidden sm:inline">Comms</span> <span className="hidden md:inline">Knowledge</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('guide')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
-                activeTab === 'guide' 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-              }`}
-              data-testid="tab-guide"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span className="hidden sm:inline">GPS</span> Guide
-            </button>
+          {/* Tab Navigation - Cleaner pills with icons */}
+          <div className="flex items-center gap-1 p-1 rounded-2xl overflow-x-auto scrollbar-thin" 
+            style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+            data-testid="ally-hub-tabs"
+          >
+            {[
+              { id: 'chat', icon: MessageSquare, label: 'Chat', badge: globalMessages.length },
+              { id: 'map', icon: Map, label: 'Map', badge: nodes.filter(n => n.gps && n.gps.lat && n.gps.lon).length },
+              { id: 'codes', icon: Book, label: 'Codes' },
+              { id: 'knowledge', icon: Wifi, label: 'Comms' },
+              { id: 'guide', icon: BookOpen, label: 'GPS' },
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                    isActive 
+                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                  }`}
+                  data-testid={`tab-${tab.id}`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.label}
+                  {tab.badge > 0 && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+                      isActive ? 'bg-white/20' : 'bg-primary/20 text-primary'
+                    }`}>
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Tab Description - accessible legend and context */}
