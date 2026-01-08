@@ -61,15 +61,6 @@ const allContent = [
   { id: 'a4', title: 'Digital Decay', type: 'album', artist: 'Neon Collapse', tracks: 14, gradient: 'from-purple-500 to-pink-500' },
 ];
 
-// Mini player state
-const nowPlaying = {
-  title: 'Echoes',
-  artist: 'Radio Ghost',
-  album: 'Silent Frequencies',
-  gradient: 'from-cyan-500 to-blue-500',
-  progress: 45
-};
-
 const ContentCard = ({ item, size = 'normal' }) => {
   const isGame = item.type === 'game';
   const isAlbum = item.type === 'album';
