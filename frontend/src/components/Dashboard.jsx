@@ -69,7 +69,44 @@ export default function Dashboard() {
             <CameraTile />
             <SecurityTile />
           </div>
-          <MusicTile />
+        </section>
+
+        {/* ===== ENTERTAINMENT SECTION DIVIDER ===== */}
+        <section className="animate-fade-in pt-10" style={{ animationDelay: '350ms' }}>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center">
+              <div className="glass-strong px-6 py-3 rounded-full flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <Film className="w-4 h-4 text-red-400" />
+                  <Tv className="w-4 h-4 text-violet-400" />
+                  <Gamepad2 className="w-4 h-4 text-green-400" />
+                  <Music className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-sm font-semibold tracking-wide">ENTERTAINMENT</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== ENTERTAINMENT SECTION ===== */}
+        <section className="animate-fade-in pt-6 space-y-4" style={{ animationDelay: '400ms' }}>
+          {/* Omega Netflix - Full Width Hero */}
+          <OmegaNetflixTile />
+          
+          {/* Movies & Shows side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <MoviesTile />
+            <ShowsTile />
+          </div>
+          
+          {/* Games & Music side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <GamesTile />
+            <MusicTile />
+          </div>
         </section>
 
       </main>
