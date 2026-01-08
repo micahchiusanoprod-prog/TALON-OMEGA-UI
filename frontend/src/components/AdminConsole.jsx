@@ -712,8 +712,8 @@ export default function AdminConsole({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="glass-strong rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden mx-4 animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-8 pb-8 bg-black/70 backdrop-blur-sm overflow-y-auto" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="glass-strong rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden mx-4 animate-fade-in flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border/50">
           <div className="flex items-center gap-3">
