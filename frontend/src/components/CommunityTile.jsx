@@ -288,10 +288,10 @@ const PostCard = ({ post, onReact, onVote, onComment }) => {
       }`}
       data-testid={`post-${post.id}`}
     >
-      <div className="px-4 py-3 flex gap-3">
+      <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex gap-2.5 sm:gap-3">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          <div className={`w-10 h-10 rounded-full ${getAvatarColor(post.author.node_id)} flex items-center justify-center text-white font-bold text-sm`}>
+          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full ${getAvatarColor(post.author.node_id)} flex items-center justify-center text-white font-bold text-xs sm:text-sm`}>
             {post.author.name.charAt(0)}
           </div>
         </div>
@@ -300,30 +300,30 @@ const PostCard = ({ post, onReact, onVote, onComment }) => {
         <div className="flex-1 min-w-0">
           {/* Header Row */}
           <div className="flex items-center gap-1 flex-wrap">
-            <span className="font-bold text-[15px] text-foreground truncate">
+            <span className="font-bold text-sm sm:text-[15px] text-foreground truncate">
               {post.author.name}
             </span>
             {isAlert && (
-              <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-destructive text-white">
+              <span className="px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold rounded bg-destructive text-white">
                 ALERT
               </span>
             )}
-            <span className="text-muted-foreground text-[15px]">·</span>
-            <span className="text-muted-foreground text-[15px]">
+            <span className="text-muted-foreground text-sm sm:text-[15px]">·</span>
+            <span className="text-muted-foreground text-sm sm:text-[15px]">
               {formatRelativeTime(post.timestamp)}
             </span>
             {!post.synced && (
-              <span className="text-xs text-warning">• pending</span>
+              <span className="text-[10px] sm:text-xs text-warning">• pending</span>
             )}
             <div className="ml-auto">
-              <button className="p-1.5 -m-1.5 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
-                <MoreHorizontal className="w-4 h-4" />
+              <button className="p-1 sm:p-1.5 -m-1 sm:-m-1.5 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors">
+                <MoreHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
           
           {/* Post Content */}
-          <p className="text-[15px] leading-normal mt-0.5 whitespace-pre-wrap break-words">
+          <p className="text-sm sm:text-[15px] leading-normal mt-0.5 whitespace-pre-wrap break-words">
             {post.content}
           </p>
           
