@@ -484,11 +484,11 @@ export default function HotspotTile() {
 
             {/* Legend */}
             <div className="pt-4 border-t border-border">
-              <div className="text-xs font-semibold text-muted-foreground mb-2">Performance Guide:</div>
-              <div className="flex items-center gap-4 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-success" />
-                  <span className="text-xs text-muted-foreground">Normal - Healthy operation</span>
+              <div className="text-[10px] sm:text-xs font-semibold text-muted-foreground mb-2">Performance Guide:</div>
+              <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-success" />
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">Normal</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-warning" />
