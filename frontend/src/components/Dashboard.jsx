@@ -35,12 +35,12 @@ export default function Dashboard() {
 
         {/* ===== MAIN CONTENT: Communications + Community (side-by-side on desktop) ===== */}
         <section className="animate-fade-in pt-6" style={{ animationDelay: '100ms' }}>
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6 xl:items-stretch">
             {/* Ally Communications Hub - Takes more space */}
             <AllyCommunicationsHub />
             
-            {/* Community Sidebar - Fixed width on desktop */}
-            <div className="xl:sticky xl:top-20 xl:self-start">
+            {/* Community Sidebar - Fixed width on desktop, stretches to match height */}
+            <div className="xl:flex xl:flex-col">
               <CommunityTile />
             </div>
           </div>
