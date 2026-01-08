@@ -907,32 +907,39 @@ export default function CommunityTile() {
   
   return (
     <div className="glass-strong border border-border-strong rounded-2xl overflow-hidden" data-testid="community-tile">
-      {/* Twitter-style Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-xl bg-background/80 border-b border-border/50">
-        <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-bold">Community</h2>
-          <div className="flex items-center gap-1 sm:gap-2">
+      {/* X-style Header */}
+      <div className="sticky top-0 z-10 backdrop-blur-xl bg-black/80 border-b border-[#2f3336]">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-[#e7e9ea]">Community</h2>
+          <div className="flex items-center gap-1">
             <button
               onClick={() => setShowComposer(!showComposer)}
-              className="p-1.5 sm:p-2 rounded-full hover:bg-primary/10 text-primary transition-colors"
+              className="p-2 rounded-full hover:bg-[#1d9bf0]/10 text-[#1d9bf0] transition-colors"
               title="New Post"
               data-testid="new-post-btn"
             >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Plus className="w-5 h-5" />
+            </button>
+            <button
+              className="p-2 rounded-full hover:bg-white/10 text-[#e7e9ea] transition-colors"
+              title="Settings"
+              data-testid="community-settings-btn"
+            >
+              <Sparkles className="w-5 h-5" />
             </button>
             <button
               onClick={() => setShowHelp(true)}
-              className="p-1.5 sm:p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors"
+              className="p-2 rounded-full hover:bg-white/10 text-[#71767b] transition-colors"
               title="Help"
               data-testid="community-help-btn"
             >
-              <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+              <HelpCircle className="w-5 h-5" />
             </button>
           </div>
         </div>
         
-        {/* Twitter-style Tabs */}
-        <div className="flex border-b border-border/50">
+        {/* X-style Tabs */}
+        <div className="flex">
           {[
             { id: 'all', label: 'For you' },
             { id: 'alert', label: 'Alerts' },
@@ -941,16 +948,16 @@ export default function CommunityTile() {
             <button
               key={id}
               onClick={() => setFilter(id)}
-              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
+              className={`flex-1 py-4 text-[15px] font-medium transition-colors relative hover:bg-white/5 ${
                 filter === id 
-                  ? 'text-foreground' 
-                  : 'text-muted-foreground hover:bg-white/5'
+                  ? 'text-[#e7e9ea]' 
+                  : 'text-[#71767b]'
               }`}
               data-testid={`filter-${id}`}
             >
               {label}
               {filter === id && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-primary rounded-full" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 bg-[#1d9bf0] rounded-full" />
               )}
             </button>
           ))}
