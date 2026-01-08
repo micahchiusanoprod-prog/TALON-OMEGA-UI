@@ -736,7 +736,7 @@ export default function AllyCommunicationsHub() {
           {activeView === 'chat' && (
             <div className="space-y-3">
               {/* Messages */}
-              <div className="glass rounded-xl h-64 lg:h-[400px] overflow-y-auto p-3 space-y-2 scrollbar-thin">
+              <div className="glass rounded-xl h-64 lg:h-[400px] xl:h-[500px] overflow-y-auto p-3 space-y-2 scrollbar-thin">
                 {globalMessages.length === 0 ? (
                   <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
                     No messages yet

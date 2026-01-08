@@ -44,7 +44,7 @@ const formatTimeAgo = (timestamp) => {
 
 // Loading fallback
 const MapLoadingFallback = () => (
-  <div className="h-[320px] lg:h-[450px] glass rounded-lg flex items-center justify-center" data-testid="map-loading">
+  <div className="h-[320px] lg:h-[450px] xl:h-[550px] glass rounded-lg flex items-center justify-center" data-testid="map-loading">
     <div className="text-center">
       <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-2" />
       <p className="text-sm text-muted-foreground">Loading map...</p>
@@ -178,7 +178,7 @@ export default function AllyMapView({ nodes, gpsStatus }) {
       <GpsStatusBar gpsStatus={gpsStatus} />
       
       {nodesWithGps.length === 0 ? (
-        <div className="h-[320px] lg:h-[450px] glass rounded-lg flex items-center justify-center" data-testid="map-no-nodes">
+        <div className="h-[320px] lg:h-[450px] xl:h-[550px] glass rounded-lg flex items-center justify-center" data-testid="map-no-nodes">
           <div className="text-center p-6">
             <MapPin className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground mb-1">No nodes with GPS data</p>
