@@ -696,7 +696,7 @@ export default function AllyCommunicationsHub() {
                   <Signal className="w-4 h-4" />
                   Select Communication Method
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
                   {COMM_METHODS.map(method => (
                     <CommMethodCard
                       key={method.id}
