@@ -21,7 +21,7 @@ export default function Dashboard() {
     <div className="min-h-screen">
       <Header onDiagnosticsClick={() => setShowDiagnostics(true)} />
       
-      <main className="container mx-auto px-4 pb-8 pt-20 max-w-7xl space-y-2">
+      <main className="container mx-auto px-4 pb-8 pt-20 max-w-[1600px] space-y-2">
         
         {/* ===== QUICK TOOLS (ALWAYS VISIBLE AT TOP) ===== */}
         <section className="animate-fade-in">
@@ -33,37 +33,36 @@ export default function Dashboard() {
           <SearchBar />
         </section>
 
-        {/* ===== COMMUNICATIONS SECTION ===== */}
+        {/* ===== MAIN CONTENT: Communications + Community (side-by-side on desktop) ===== */}
         <section className="animate-fade-in pt-6" style={{ animationDelay: '100ms' }}>
-          <AllyCommunicationsHub />
-        </section>
-
-        {/* ===== COMMUNITY SECTION (Directly under Ally Hub) ===== */}
-        <section className="animate-fade-in pt-6" style={{ animationDelay: '150ms' }}>
-          <CommunityTile />
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6">
+            {/* Ally Communications Hub - Takes more space */}
+            <AllyCommunicationsHub />
+            
+            {/* Community Sidebar - Fixed width on desktop */}
+            <div className="xl:sticky xl:top-20 xl:self-start">
+              <CommunityTile />
+            </div>
+          </div>
         </section>
 
         {/* ===== SYSTEM STATUS SECTION ===== */}
         <section className="animate-fade-in pt-6" style={{ animationDelay: '200ms' }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <EnvironmentTile />
             <DeviceInfoTile />
             <HotspotTile />
+            <PowerTile />
           </div>
         </section>
 
-        {/* ===== TOOLS SECTION ===== */}
+        {/* ===== TOOLS & MEDIA SECTION ===== */}
         <section className="animate-fade-in pt-6" style={{ animationDelay: '300ms' }}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             <CameraTile />
             <SecurityTile />
             <MusicTile />
           </div>
-        </section>
-
-        {/* ===== POWER SECTION ===== */}
-        <section className="animate-fade-in pt-6" style={{ animationDelay: '400ms' }}>
-          <PowerTile />
         </section>
 
       </main>
