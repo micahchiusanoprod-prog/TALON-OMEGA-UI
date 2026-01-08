@@ -79,65 +79,65 @@ code {
     }
     
     .dark {
-        /* OMEGA Dark Mode - Apple-inspired depth with refined surfaces */
-        --background: 220 15% 5%;
+        /* OMEGA Dark Mode - Premium Apple-inspired with rich gradients */
+        --background: 222 20% 6%;
         --foreground: 210 40% 98%;
         
-        /* Cards with subtle elevation - more visible than pure black */
-        --card: 220 15% 8%;
+        /* Cards with visible elevation - refined dark surfaces */
+        --card: 222 18% 10%;
         --card-foreground: 210 40% 98%;
-        --card-elevated: 220 15% 12%;
+        --card-elevated: 222 18% 14%;
         
-        /* Elevated surfaces with warmth */
-        --popover: 220 15% 10%;
+        /* Elevated surfaces with subtle warmth */
+        --popover: 222 18% 12%;
         --popover-foreground: 210 40% 98%;
         
         /* Primary - Electric cyan with refined glow */
-        --primary: 187 100% 50%;
-        --primary-hover: 187 100% 60%;
-        --primary-light: 187 100% 15%;
-        --primary-foreground: 220 15% 5%;
+        --primary: 187 100% 52%;
+        --primary-hover: 187 100% 62%;
+        --primary-light: 187 100% 18%;
+        --primary-foreground: 222 20% 6%;
         
-        /* Secondary - Visible layered surfaces */
-        --secondary: 220 15% 14%;
-        --secondary-hover: 220 15% 18%;
+        /* Secondary - Rich layered surfaces */
+        --secondary: 222 18% 16%;
+        --secondary-hover: 222 18% 20%;
         --secondary-foreground: 210 40% 98%;
         
-        /* Muted surfaces - subtle but visible */
-        --muted: 220 15% 12%;
-        --muted-hover: 220 15% 16%;
-        --muted-foreground: 220 10% 55%;
+        /* Muted surfaces - visible with depth */
+        --muted: 222 18% 14%;
+        --muted-hover: 222 18% 18%;
+        --muted-foreground: 220 12% 58%;
         
-        /* Accent - Matching primary */
-        --accent: 187 100% 50%;
-        --accent-hover: 187 100% 60%;
-        --accent-foreground: 220 15% 5%;
+        /* Accent - Matching primary with glow */
+        --accent: 187 100% 52%;
+        --accent-hover: 187 100% 62%;
+        --accent-foreground: 222 20% 6%;
         
-        /* Status colors - vibrant on dark */
-        --destructive: 0 75% 60%;
-        --destructive-light: 0 75% 12%;
+        /* Status colors - vibrant and clear */
+        --destructive: 0 78% 62%;
+        --destructive-light: 0 78% 14%;
         --destructive-foreground: 210 40% 98%;
         
-        --success: 142 76% 50%;
-        --success-light: 142 76% 12%;
+        --success: 145 80% 48%;
+        --success-light: 145 80% 14%;
         --success-foreground: 210 40% 98%;
         
-        --warning: 38 95% 55%;
-        --warning-light: 38 95% 12%;
-        --warning-foreground: 220 15% 5%;
+        --warning: 42 95% 55%;
+        --warning-light: 42 95% 14%;
+        --warning-foreground: 222 20% 6%;
         
-        /* Borders - subtle but visible */
-        --border: 220 15% 18%;
-        --border-strong: 220 15% 25%;
-        --input: 220 15% 15%;
-        --ring: 187 100% 50%;
+        /* Borders - subtle but visible with gradient potential */
+        --border: 222 18% 20%;
+        --border-strong: 222 18% 28%;
+        --input: 222 18% 18%;
+        --ring: 187 100% 52%;
         
-        /* Chart colors */
-        --chart-1: 187 100% 50%;
-        --chart-2: 142 76% 50%;
-        --chart-3: 38 95% 55%;
-        --chart-4: 280 70% 65%;
-        --chart-5: 340 80% 60%;
+        /* Chart colors - vibrant spectrum */
+        --chart-1: 187 100% 52%;
+        --chart-2: 145 80% 48%;
+        --chart-3: 42 95% 55%;
+        --chart-4: 280 75% 65%;
+        --chart-5: 340 82% 62%;
     }
 }
 
