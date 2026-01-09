@@ -1,15 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { Sun, Moon, Settings, HelpCircle, BookOpen } from 'lucide-react';
+import { Sun, Moon, Settings, HelpCircle, BookOpen, BarChart3 } from 'lucide-react';
 import config from '../config';
 import { toast } from 'sonner';
 import AdminConsole from './AdminConsole';
 import FAQPage from './FAQPage';
 import HelpCenter from './HelpCenter';
+import LogsAnalytics from './LogsAnalytics';
 
 export default function Header({ metrics, health, theme, onToggleTheme }) {
   const [showAdminConsole, setShowAdminConsole] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
   const [showHelpCenter, setShowHelpCenter] = useState(false);
+  const [showLogs, setShowLogs] = useState(false);
   // Derive device status from health
   const deviceStatus = useMemo(() => {
     if (!health) {
