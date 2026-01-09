@@ -1838,7 +1838,7 @@ const IncidentsTab = ({ incidents, snapshots, rules, onResolveIncident }) => {
                   {filteredIncidents.map(inc => {
                     const duration = inc.endTime 
                       ? Math.floor((new Date(inc.endTime) - new Date(inc.startTime)) / 60000)
-                      : Math.floor((Date.now() - new Date(inc.startTime)) / 60000);
+                      : Math.floor((nowTs - new Date(inc.startTime)) / 60000);
                     
                     return (
                       <tr 
