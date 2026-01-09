@@ -11,6 +11,34 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: LOGS Analytics (January 9, 2026)
+
+### LOGS Analytics Features Implemented
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **LOGS Header Button** | ✅ | Premium emerald/cyan gradient pill button |
+| **This Device Tab** | ✅ | Single device analytics with full monitoring |
+| **All Nodes Tab** | ✅ | Fleet comparison and derived intelligence |
+| **Snapshot Controls** | ✅ | Capture toggle, interval (15s/30s/60s/5m), retention (12h/24h/7d), export JSON, clear history |
+| **Health Index** | ✅ | 0-100 score with trend arrow and sparkline |
+| **System Charts** | ✅ | CPU/RAM/Disk, Temp/Humidity, GPS, Comms timelines (recharts) |
+| **Time Range Selector** | ✅ | 1h/6h/12h/24h/7d options |
+| **Window Comparison** | ✅ | Last 12h vs Previous 12h with delta & percent changes |
+| **Anomaly Engine** | ✅ | Detects temp spikes, comms degradation, backup failures, CPU spikes |
+| **Raw Snapshots Table** | ✅ | Collapsible table with row click for detail drawer |
+| **Snapshot Detail Drawer** | ✅ | Formatted + JSON view with diff highlights |
+| **Fleet Summary** | ✅ | Fleet Readiness Score, Outlier Detection, Capability Coverage |
+| **Consensus Events** | ✅ | Detects synchronized issues across multiple nodes |
+| **Node Roster** | ✅ | Cards with filters (all/degraded/unavailable) and sorting |
+| **Compare Nodes** | ✅ | Interactive comparison tool with overlay charts |
+| **Data Model Ready** | ✅ | Includes node_id/node_name for future wiring to port 8093 |
+
+### Files Created
+- `/app/frontend/src/components/LogsAnalytics.jsx` - Complete analytics component (~1200 lines)
+- Updated `/app/frontend/src/components/Header.jsx` - Added LOGS button
+
+---
+
 ## ✅ COMPLETED: Help Center (Manual App) (January 9, 2026)
 
 ### Help Center Features Implemented
