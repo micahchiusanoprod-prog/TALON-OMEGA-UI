@@ -1089,35 +1089,154 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
     }
   };
   
+  // Compare window hours
+  const compareHours = compareWindow === '6h' ? 6 : compareWindow === '12h' ? 12 : compareWindow === '24h' ? 24 : 12;
+  const comparisonData = useMemo(() => compareWindows(snapshots, compareHours), [snapshots, compareHours]);
+  
+  // Filtered table snapshots based on search
+  const filteredTableSnapshots = useMemo(() => {
+    if (!searchQuery.trim()) return filteredSnapshots;
+    const query = searchQuery.toLowerCase();
+    return filteredSnapshots.filter(s => 
+      s.ts.toLowerCase().includes(query) ||
+      s.comms.lan.toLowerCase().includes(query) ||
+      s.gps.fix.toLowerCase().includes(query) ||
+      s.backup.status.toLowerCase().includes(query)
+    );
+  }, [filteredSnapshots, searchQuery]);
+  
   return (
     <div className="space-y-6">
-      {/* Snapshot Controls */}
-      <div className="glass rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold flex items-center gap-2">
-            <Database className="w-4 h-4 text-primary" />
-            Snapshot Controls
-          </h3>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{snapshots.length} snapshots</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {/* Capturing Toggle */}
-          <div className="glass rounded-lg p-3">
-            <span className="text-xs text-muted-foreground block mb-2">Capturing</span>
-            <button
-              onClick={() => setCapturing(!capturing)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${capturing ? 'bg-success text-white' : 'bg-secondary'}`}
-            >
-              {capturing ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
-              {capturing ? 'ON' : 'OFF'}
-            </button>
+      {/* Quick Actions Bar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          size="sm"
+          variant={showSettings ? 'default' : 'outline'}
+          onClick={() => setShowSettings(!showSettings)}
+          className="h-8 gap-1.5"
+        >
+          <Settings className="w-3.5 h-3.5" />
+          Settings
+        </Button>
+        <Button
+          size="sm"
+          variant={showActiveLogs ? 'default' : 'outline'}
+          onClick={() => setShowActiveLogs(!showActiveLogs)}
+          className="h-8 gap-1.5"
+        >
+          <Archive className="w-3.5 h-3.5" />
+          Active Logs
+        </Button>
+        <Button
+          size="sm"
+          variant={showStats ? 'default' : 'outline'}
+          onClick={() => setShowStats(!showStats)}
+          className="h-8 gap-1.5"
+        >
+          <PieChart className="w-3.5 h-3.5" />
+          Statistics
+        </Button>
+        <Button
+          size="sm"
+          variant={showTable ? 'default' : 'outline'}
+          onClick={() => setShowTable(!showTable)}
+          className="h-8 gap-1.5"
+        >
+          <List className="w-3.5 h-3.5" />
+          Raw Data
+        </Button>
+        <div className="flex-1" />
+        <Button size="sm" variant="outline" onClick={handleExport} className="h-8 gap-1.5">
+          <Download className="w-3.5 h-3.5" />
+          Export
+        </Button>
+      </div>
+      
+      {/* Last Snapshot Info */}
+      <LastSnapshotInfo snapshot={latestSnapshot} capturing={capturing} />
+      
+      {/* Settings Panel (Collapsible) */}
+      {showSettings && (
+        <div className="glass rounded-xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-primary" />
+              Capture Settings
+            </h3>
+            <span className="text-xs text-muted-foreground">{snapshots.length} snapshots stored</span>
           </div>
           
-          {/* Interval */}
-          <div className="glass rounded-lg p-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            {/* Capturing Toggle */}
+            <div className="glass rounded-lg p-3">
+              <span className="text-xs text-muted-foreground block mb-2">Capturing</span>
+              <button
+                onClick={() => setCapturing(!capturing)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors w-full justify-center ${capturing ? 'bg-success text-white' : 'bg-secondary'}`}
+              >
+                {capturing ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
+                {capturing ? 'ON' : 'OFF'}
+              </button>
+            </div>
+            
+            {/* Interval */}
+            <div className="glass rounded-lg p-3">
+              <span className="text-xs text-muted-foreground block mb-2">Interval</span>
+              <select
+                value={interval}
+                onChange={(e) => setInterval(e.target.value)}
+                className="w-full bg-secondary rounded-lg px-2 py-1.5 text-sm"
+              >
+                <option value="15s">15 seconds</option>
+                <option value="30s">30 seconds</option>
+                <option value="60s">60 seconds</option>
+                <option value="5m">5 minutes</option>
+                <option value="15m">15 minutes</option>
+              </select>
+            </div>
+            
+            {/* Retention */}
+            <div className="glass rounded-lg p-3">
+              <span className="text-xs text-muted-foreground block mb-2">Retention</span>
+              <select
+                value={retention}
+                onChange={(e) => setRetention(e.target.value)}
+                className="w-full bg-secondary rounded-lg px-2 py-1.5 text-sm"
+              >
+                <option value="6h">6 hours</option>
+                <option value="12h">12 hours</option>
+                <option value="24h">24 hours</option>
+                <option value="3d">3 days</option>
+                <option value="7d">7 days</option>
+              </select>
+            </div>
+            
+            {/* Actions */}
+            <div className="glass rounded-lg p-3">
+              <span className="text-xs text-muted-foreground block mb-2">Danger Zone</span>
+              <Button size="sm" variant="outline" onClick={handleClearHistory} className="w-full h-8 text-destructive border-destructive/50">
+                <Trash2 className="w-3 h-3 mr-1" />
+                Clear All
+              </Button>
+            </div>
+          </div>
+          
+          <p className="text-xs text-muted-foreground">
+            <Info className="w-3 h-3 inline mr-1" />
+            Snapshots are stored locally. Export regularly for backup. Older data is automatically pruned based on retention setting.
+          </p>
+        </div>
+      )}
+      
+      {/* Active Logs Panel (Collapsible) */}
+      {showActiveLogs && (
+        <ActiveLogsPanel logCategories={logCategories} setLogCategories={setLogCategories} />
+      )}
+      
+      {/* Statistics Panel (Collapsible) */}
+      {showStats && (
+        <StatisticsSummary snapshots={filteredSnapshots} timeRange={timeRange} />
+      )}
             <span className="text-xs text-muted-foreground block mb-2">Interval</span>
             <select
               value={interval}
