@@ -199,6 +199,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
       isOpen={showHelpCenter}
       onClose={() => setShowHelpCenter(false)}
     />
+    
+    {/* LOGS Analytics */}
+    <LogsAnalytics
+      isOpen={showLogs}
+      onClose={() => setShowLogs(false)}
+    />
   </>
   );
 }
