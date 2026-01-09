@@ -11,6 +11,50 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: LOGS "True Observability" Phase 1 (P0) (January 9, 2026)
+
+### P0 Features Implemented
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Capture Health Panel** | ✅ | Shows capture ON/OFF, interval, retention, missed snapshots %, avg latency, endpoint health dots |
+| **Endpoint Freshness** | ✅ | Health/Metrics/Sensors/GPS/Backup endpoints with OK/Stale status + last poll time |
+| **Data Freshness Warning** | ✅ | Yellow warning banner when any endpoint is stale |
+| **Detection Rules Panel** | ✅ | Collapsible panel in Settings with 7 configurable rules |
+| **Rule Thresholds** | ✅ | CPU/RAM/Disk/Temp/GPS Accuracy/Comms Duration/Backup Fails with warning & critical levels |
+| **Sensitivity Presets** | ✅ | Low/Medium/High presets that adjust detection thresholds |
+| **Smoothing Window** | ✅ | 3/5/10 samples or 15 min averaging to reduce false positives |
+| **Baseline Window** | ✅ | 6h/12h/24h/7d baseline for anomaly detection |
+| **Incidents Tab** | ✅ | New sub-tab with badge showing open incident count |
+| **Incident Timeline View** | ✅ | Horizontal timeline with colored segments for each incident |
+| **Incident List View** | ✅ | Table with Severity/Incident/Subsystem/Started/Duration/Status columns |
+| **Incident Filters** | ✅ | Time range (1h-7d), Severity (Info/Warn/Critical), Subsystem, Status |
+| **Incident Stats** | ✅ | Total, Open, Critical, Resolved (24h) counts at top |
+| **Incident Detail Drawer** | ✅ | Right-side drawer with full incident analysis |
+| **Summary Section** | ✅ | Plain English description, duration, subsystems, anomaly count, peak values |
+| **Top Drivers** | ✅ | 3-5 metrics with delta vs baseline, correlation strength (high/medium/low) |
+| **Likely Causes** | ✅ | 2-4 suggested causes with confidence labels and percentages |
+| **Verify Checklist** | ✅ | Operator-only section with copyable shell commands |
+| **Resolution Notes** | ✅ | Text area + "Mark Resolved" button + "Add Annotation" button |
+| **Tooltips/Microcopy** | ✅ | All new terms have info icons with explanations |
+| **Mobile Responsive** | ✅ | All panels adapt to mobile viewport |
+
+### Data Model (Ready for Future Wiring)
+```javascript
+// Capture Health
+{ capturing: boolean, interval: string, retention: string, missedSnapshots: { last1h: number, last12h: number }, avgLatency: number, endpoints: [{ id, name, status: 'ok'|'stale'|'degraded', lastPoll: ISO, latency: number }] }
+
+// Detection Rules
+{ cpu: { enabled: boolean, warning: number, critical: number }, ... }
+
+// Incident
+{ id, title, startTime, endTime, severity: 'info'|'warn'|'critical', subsystems: string[], status: 'open'|'monitoring'|'resolved', anomalyIds: string[], peakValues: {}, resolutionNotes?: string }
+```
+
+### Files Modified
+- `/app/frontend/src/components/LogsAnalytics.jsx` - Added P0 components (~600 new lines)
+
+---
+
 ## ✅ COMPLETED: LOGS Analytics (January 9, 2026)
 
 ### LOGS Analytics Features Implemented
