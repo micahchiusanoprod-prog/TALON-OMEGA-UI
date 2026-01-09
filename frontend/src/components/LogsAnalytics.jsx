@@ -912,6 +912,977 @@ const AnomalyCard = ({ anomaly }) => {
   );
 };
 
+// ============================================================
+// P0: CAPTURE HEALTH PANEL
+// ============================================================
+
+const CaptureHealthPanel = ({ captureHealth, capturing }) => {
+  const staleEndpoints = captureHealth.endpoints.filter(ep => ep.status === 'stale' || ep.status === 'degraded');
+  const hasStaleData = staleEndpoints.length > 0;
+  const missedTotal = captureHealth.missedSnapshots.last1h + captureHealth.missedSnapshots.last12h;
+  
+  return (
+    <div className="glass rounded-xl p-4 border border-border/50">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold flex items-center gap-2 text-sm">
+          <Activity className="w-4 h-4 text-primary" />
+          Capture Health
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-normal" title="Logs about the logs - monitors the health of the capture system itself">
+            Meta
+          </span>
+        </h3>
+        <div className="flex items-center gap-2">
+          {hasStaleData && (
+            <span className="flex items-center gap-1 text-xs text-warning bg-warning/20 px-2 py-0.5 rounded-full">
+              <AlertTriangle className="w-3 h-3" />
+              Data Freshness Warning
+            </span>
+          )}
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
+        {/* Capture Status */}
+        <div className="glass rounded-lg p-2.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] text-muted-foreground">Capture</span>
+            <div className="relative group">
+              <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                Whether snapshot capture is actively running
+              </div>
+            </div>
+          </div>
+          <div className={`flex items-center gap-1.5 ${capturing ? 'text-success' : 'text-warning'}`}>
+            {capturing ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+            <span className="text-sm font-semibold">{capturing ? 'ON' : 'OFF'}</span>
+          </div>
+        </div>
+        
+        {/* Interval */}
+        <div className="glass rounded-lg p-2.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] text-muted-foreground">Interval</span>
+            <div className="relative group">
+              <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                How often snapshots are captured
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-sm font-semibold">{captureHealth.interval}</span>
+          </div>
+        </div>
+        
+        {/* Retention */}
+        <div className="glass rounded-lg p-2.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] text-muted-foreground">Retention</span>
+            <div className="relative group">
+              <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                How long snapshot data is kept before pruning
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <Database className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-sm font-semibold">{captureHealth.retention}</span>
+          </div>
+        </div>
+        
+        {/* Missed Snapshots */}
+        <div className="glass rounded-lg p-2.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] text-muted-foreground">Missed</span>
+            <div className="relative group">
+              <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] w-40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                Snapshots that failed to capture. High missed % may indicate system issues.
+              </div>
+            </div>
+          </div>
+          <div className={`text-sm font-semibold ${missedTotal > 5 ? 'text-warning' : 'text-success'}`}>
+            {captureHealth.missedSnapshots.last1h}% (1h) / {captureHealth.missedSnapshots.last12h}% (12h)
+          </div>
+        </div>
+        
+        {/* Avg Latency */}
+        <div className="glass rounded-lg p-2.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] text-muted-foreground">Avg Latency</span>
+            <div className="relative group">
+              <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] w-40 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                Average time to complete a snapshot capture across all endpoints
+              </div>
+            </div>
+          </div>
+          <div className={`text-sm font-semibold ${captureHealth.avgLatency > 100 ? 'text-warning' : 'text-muted-foreground'}`}>
+            {captureHealth.avgLatency}ms
+          </div>
+        </div>
+        
+        {/* Endpoints Status Summary */}
+        <div className="glass rounded-lg p-2.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] text-muted-foreground">Endpoints</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-semibold text-success">{captureHealth.endpoints.filter(e => e.status === 'ok').length}</span>
+            <span className="text-[10px] text-muted-foreground">OK</span>
+            {staleEndpoints.length > 0 && (
+              <>
+                <span className="text-muted-foreground">/</span>
+                <span className="text-sm font-semibold text-warning">{staleEndpoints.length}</span>
+                <span className="text-[10px] text-warning">Stale</span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {/* Endpoint Detail Row */}
+      <div className="flex flex-wrap gap-2">
+        {captureHealth.endpoints.map(ep => {
+          const isOk = ep.status === 'ok';
+          const isStale = ep.status === 'stale';
+          const lastPollAgo = formatTimeAgo(ep.lastPoll);
+          
+          return (
+            <div 
+              key={ep.id}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs ${
+                isOk ? 'bg-success/10 text-success' : isStale ? 'bg-warning/10 text-warning' : 'bg-destructive/10 text-destructive'
+              }`}
+              title={`${ep.name}: ${ep.status} | Last poll: ${lastPollAgo} | Latency: ${ep.latency}ms`}
+            >
+              <div className={`w-1.5 h-1.5 rounded-full ${isOk ? 'bg-success' : isStale ? 'bg-warning' : 'bg-destructive'}`} />
+              <span className="font-medium">{ep.name}</span>
+              <span className="text-[10px] opacity-70">{lastPollAgo}</span>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Stale Data Warning */}
+      {hasStaleData && (
+        <div className="mt-3 p-2 bg-warning/10 border border-warning/30 rounded-lg">
+          <p className="text-xs text-warning flex items-start gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+            <span>
+              <strong>Data Freshness Warning:</strong> {staleEndpoints.map(e => e.name).join(', ')} endpoint(s) have stale data. 
+              This may indicate network issues or endpoint failures. Recent metrics may be outdated.
+            </span>
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================
+// P0: DETECTION RULES PANEL (Settings Section)
+// ============================================================
+
+const DetectionRulesPanel = ({ rules, setRules, sensitivity, setSensitivity, smoothingWindow, setSmoothingWindow, baselineWindow, setBaselineWindow }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const toggleRule = (ruleId) => {
+    setRules(prev => ({
+      ...prev,
+      [ruleId]: { ...prev[ruleId], enabled: !prev[ruleId].enabled }
+    }));
+  };
+  
+  const updateThreshold = (ruleId, type, value) => {
+    setRules(prev => ({
+      ...prev,
+      [ruleId]: { ...prev[ruleId], [type]: parseFloat(value) || 0 }
+    }));
+  };
+  
+  const resetToDefaults = () => {
+    setRules(DEFAULT_DETECTION_RULES);
+    setSensitivity('medium');
+    setSmoothingWindow(5);
+    setBaselineWindow('12h');
+    toast.success('Detection rules reset to defaults');
+  };
+  
+  const activeRulesCount = Object.values(rules).filter(r => r.enabled).length;
+  
+  const ruleLabels = {
+    cpu: { label: 'CPU Usage', unit: '%', icon: Cpu },
+    ram: { label: 'RAM Usage', unit: '%', icon: HardDrive },
+    disk: { label: 'Disk Usage', unit: '%', icon: Database },
+    temp: { label: 'Temperature', unit: '°C', icon: Thermometer },
+    gpsAccuracy: { label: 'GPS Accuracy', unit: 'm', icon: MapPin },
+    commsDegradeDuration: { label: 'Comms Degrade Duration', unit: 'min', icon: Radio },
+    backupFails: { label: 'Consecutive Backup Fails', unit: '', icon: Database },
+  };
+  
+  return (
+    <div className="glass rounded-xl border border-border/50 overflow-hidden">
+      {/* Header - Always visible */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/20">
+            <Target className="w-4 h-4 text-primary" />
+          </div>
+          <div className="text-left">
+            <h3 className="font-semibold text-sm">Detection Rules</h3>
+            <p className="text-xs text-muted-foreground">
+              {activeRulesCount} rules active • {sensitivity} sensitivity • {baselineWindow} baseline
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground hidden sm:inline">
+            Anomalies are deviations from baseline or threshold breaches
+          </span>
+          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </div>
+      </button>
+      
+      {/* Expanded Content */}
+      {isExpanded && (
+        <div className="p-4 pt-0 border-t border-border/50 space-y-4">
+          {/* Global Controls */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Sensitivity */}
+            <div className="glass rounded-lg p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-xs font-medium">Sensitivity Preset</span>
+                <div className="relative group">
+                  <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                  <div className="absolute bottom-full left-0 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] w-48 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Adjusts all thresholds. High = more alerts, Low = fewer alerts.
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-1">
+                {Object.entries(SENSITIVITY_PRESETS).map(([key, preset]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSensitivity(key)}
+                    className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-colors capitalize ${
+                      sensitivity === key ? 'bg-primary text-white' : 'bg-secondary hover:bg-secondary/80'
+                    }`}
+                    title={preset.description}
+                  >
+                    {key}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Smoothing Window */}
+            <div className="glass rounded-lg p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-xs font-medium">Smoothing Window</span>
+                <div className="relative group">
+                  <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                  <div className="absolute bottom-full left-0 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] w-48 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Number of samples averaged to reduce noise and false positives.
+                  </div>
+                </div>
+              </div>
+              <select
+                value={smoothingWindow}
+                onChange={(e) => setSmoothingWindow(parseInt(e.target.value))}
+                className="w-full bg-secondary rounded px-2 py-1.5 text-xs"
+              >
+                {SMOOTHING_WINDOWS.map(sw => (
+                  <option key={sw.value} value={sw.value}>{sw.label}</option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Baseline Window */}
+            <div className="glass rounded-lg p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-xs font-medium">Baseline Window</span>
+                <div className="relative group">
+                  <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                  <div className="absolute bottom-full left-0 mb-1 px-2 py-1 bg-popover border border-border rounded text-[10px] w-48 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Time period used to calculate normal baseline values for anomaly detection.
+                  </div>
+                </div>
+              </div>
+              <select
+                value={baselineWindow}
+                onChange={(e) => setBaselineWindow(e.target.value)}
+                className="w-full bg-secondary rounded px-2 py-1.5 text-xs"
+              >
+                {BASELINE_WINDOWS.map(bw => (
+                  <option key={bw.value} value={bw.value}>{bw.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {/* Rule List */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground">Threshold Rules</span>
+              <Button size="sm" variant="ghost" onClick={resetToDefaults} className="h-6 text-xs gap-1">
+                <RotateCcw className="w-3 h-3" />
+                Reset Defaults
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {Object.entries(rules).map(([ruleId, rule]) => {
+                const meta = ruleLabels[ruleId];
+                if (!meta) return null;
+                const Icon = meta.icon;
+                
+                return (
+                  <div 
+                    key={ruleId}
+                    className={`glass rounded-lg p-3 transition-opacity ${rule.enabled ? '' : 'opacity-50'}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Icon className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium">{meta.label}</span>
+                      </div>
+                      <button
+                        onClick={() => toggleRule(ruleId)}
+                        className={`w-8 h-4 rounded-full transition-colors relative ${rule.enabled ? 'bg-primary' : 'bg-secondary'}`}
+                      >
+                        <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${rule.enabled ? 'left-4' : 'left-0.5'}`} />
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] text-warning block mb-1">Warning</label>
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            value={rule.warning}
+                            onChange={(e) => updateThreshold(ruleId, 'warning', e.target.value)}
+                            disabled={!rule.enabled}
+                            className="w-full bg-secondary rounded px-2 py-1 text-xs disabled:opacity-50"
+                          />
+                          {meta.unit && <span className="text-[10px] text-muted-foreground">{meta.unit}</span>}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-destructive block mb-1">Critical</label>
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            value={rule.critical}
+                            onChange={(e) => updateThreshold(ruleId, 'critical', e.target.value)}
+                            disabled={!rule.enabled}
+                            className="w-full bg-secondary rounded px-2 py-1 text-xs disabled:opacity-50"
+                          />
+                          {meta.unit && <span className="text-[10px] text-muted-foreground">{meta.unit}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <p className="text-xs text-muted-foreground flex items-start gap-1.5">
+            <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+            Rules determine when anomalies are flagged. Anomalies are grouped into incidents automatically.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================
+// P0: INCIDENT DETAIL DRAWER
+// ============================================================
+
+const IncidentDetailDrawer = ({ incident, snapshots, onClose, onResolve }) => {
+  const [resolutionNotes, setResolutionNotes] = useState(incident.resolutionNotes || '');
+  const [copiedCommand, setCopiedCommand] = useState(null);
+  
+  if (!incident) return null;
+  
+  const topDrivers = generateTopDrivers(incident, snapshots);
+  const likelyCauses = generateLikelyCauses(incident);
+  const verifyChecklist = generateVerifyChecklist(incident);
+  
+  const duration = incident.endTime 
+    ? Math.floor((new Date(incident.endTime) - new Date(incident.startTime)) / 60000)
+    : Math.floor((Date.now() - new Date(incident.startTime)) / 60000);
+  
+  const severityColors = {
+    critical: 'text-destructive bg-destructive/20 border-destructive/30',
+    warn: 'text-warning bg-warning/20 border-warning/30',
+    info: 'text-blue-400 bg-blue-500/20 border-blue-500/30',
+  };
+  
+  const statusColors = {
+    open: 'text-destructive',
+    monitoring: 'text-warning',
+    resolved: 'text-success',
+  };
+  
+  const copyCommand = (cmd, idx) => {
+    navigator.clipboard.writeText(cmd);
+    setCopiedCommand(idx);
+    setTimeout(() => setCopiedCommand(null), 2000);
+    toast.success('Command copied');
+  };
+  
+  const handleResolve = () => {
+    onResolve(incident.id, resolutionNotes);
+    toast.success('Incident marked as resolved');
+  };
+  
+  return (
+    <div className="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-background border-l border-border z-50 overflow-y-auto">
+      {/* Header */}
+      <div className="sticky top-0 glass p-4 border-b border-border z-10">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className={`px-2 py-0.5 rounded text-xs font-semibold uppercase ${severityColors[incident.severity]}`}>
+              {incident.severity}
+            </span>
+            <span className={`text-xs ${statusColors[incident.status]}`}>
+              {incident.status === 'open' ? '● Ongoing' : incident.status === 'monitoring' ? '◐ Monitoring' : '✓ Resolved'}
+            </span>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-secondary rounded-lg">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <h3 className="font-bold text-lg">{incident.title}</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          ID: {incident.id} • Started {formatTimeAgo(incident.startTime)}
+        </p>
+      </div>
+      
+      <div className="p-4 space-y-4">
+        {/* 1. Summary */}
+        <div className="glass rounded-xl p-4">
+          <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-primary" />
+            Summary
+          </h4>
+          <div className="space-y-3">
+            <p className="text-sm">
+              {incident.subsystems.includes('thermals') && 'Temperature exceeded normal operating range, indicating potential thermal stress on the system.'}
+              {incident.subsystems.includes('storage') && 'Backup operation failed to complete successfully, risking data integrity.'}
+              {incident.subsystems.includes('comms') && 'Network communications degraded, affecting connectivity and data sync.'}
+              {incident.subsystems.includes('gps') && 'GPS accuracy dropped below acceptable levels, affecting location services.'}
+              {incident.subsystems.includes('services') && 'System services experienced resource contention or performance issues.'}
+            </p>
+            
+            <div className="grid grid-cols-3 gap-2">
+              <div className="glass rounded-lg p-2 text-center">
+                <span className="text-[10px] text-muted-foreground block">Duration</span>
+                <span className="text-sm font-semibold">{duration}m</span>
+              </div>
+              <div className="glass rounded-lg p-2 text-center">
+                <span className="text-[10px] text-muted-foreground block">Subsystems</span>
+                <span className="text-sm font-semibold capitalize">{incident.subsystems.join(', ')}</span>
+              </div>
+              <div className="glass rounded-lg p-2 text-center">
+                <span className="text-[10px] text-muted-foreground block">Anomalies</span>
+                <span className="text-sm font-semibold">{incident.anomalyIds?.length || 1}</span>
+              </div>
+            </div>
+            
+            {incident.peakValues && Object.keys(incident.peakValues).length > 0 && (
+              <div>
+                <span className="text-[10px] text-muted-foreground">Peak Values:</span>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {Object.entries(incident.peakValues).map(([key, value]) => (
+                    <span key={key} className="px-2 py-0.5 bg-secondary rounded text-xs">
+                      {key}: <strong>{typeof value === 'number' ? value.toFixed(1) : value}</strong>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* 2. Top Drivers (Root Cause Hints) */}
+        <div className="glass rounded-xl p-4">
+          <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            Top Drivers
+            <span className="text-[10px] text-muted-foreground font-normal">(vs baseline)</span>
+          </h4>
+          <div className="space-y-2">
+            {topDrivers.map((driver, idx) => (
+              <div key={idx} className="flex items-center justify-between p-2 bg-black/20 rounded-lg">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{driver.metric}</span>
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${
+                      driver.correlation === 'high' ? 'bg-destructive/20 text-destructive' :
+                      driver.correlation === 'medium' ? 'bg-warning/20 text-warning' :
+                      'bg-secondary text-muted-foreground'
+                    }`}>
+                      {driver.correlation}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{driver.explanation}</p>
+                </div>
+                <span className="text-sm font-mono text-destructive">{driver.delta}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* 3. Likely Causes */}
+        <div className="glass rounded-xl p-4">
+          <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-warning" />
+            Likely Causes
+            <span className="text-[10px] text-muted-foreground font-normal">(suggestions, not definitive)</span>
+          </h4>
+          <div className="space-y-2">
+            {likelyCauses.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-3 p-2 bg-black/20 rounded-lg">
+                <div className="flex-1">
+                  <p className="text-sm">{item.cause}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                    item.confidence === 'high' ? 'bg-success/20 text-success' :
+                    item.confidence === 'medium' ? 'bg-warning/20 text-warning' :
+                    'bg-secondary text-muted-foreground'
+                  }`}>
+                    {item.confidence}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{item.likelihood}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* 4. Verify Checklist (Operator Only) */}
+        <div className="glass rounded-xl p-4 border border-amber-500/30">
+          <h4 className="font-semibold text-sm mb-1 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-amber-400" />
+            Verify Checklist
+          </h4>
+          <p className="text-[10px] text-amber-400 mb-3">⚠️ OPERATOR ONLY — Commands require system access</p>
+          
+          <div className="space-y-2">
+            {verifyChecklist.map((item, idx) => (
+              <div key={idx} className="p-2 bg-black/30 rounded-lg">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm">{idx + 1}. {item.step}</span>
+                </div>
+                {item.command && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <code className="flex-1 text-xs font-mono bg-black/50 px-2 py-1 rounded text-emerald-400 overflow-x-auto">
+                      {item.command}
+                    </code>
+                    <button
+                      onClick={() => copyCommand(item.command, idx)}
+                      className="p-1 hover:bg-white/10 rounded"
+                      title="Copy command"
+                    >
+                      {copiedCommand === idx ? (
+                        <CheckCircle className="w-4 h-4 text-success" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* 5. Resolution Notes */}
+        <div className="glass rounded-xl p-4">
+          <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-success" />
+            Resolution
+          </h4>
+          
+          {incident.status === 'resolved' ? (
+            <div className="p-3 bg-success/10 border border-success/30 rounded-lg">
+              <p className="text-sm">{incident.resolutionNotes || 'No notes provided.'}</p>
+              <p className="text-xs text-muted-foreground mt-2">Resolved {incident.endTime ? formatTimeAgo(incident.endTime) : 'recently'}</p>
+            </div>
+          ) : (
+            <>
+              <textarea
+                value={resolutionNotes}
+                onChange={(e) => setResolutionNotes(e.target.value)}
+                placeholder="Add resolution notes..."
+                className="w-full bg-secondary rounded-lg p-3 text-sm resize-none h-20 mb-3"
+              />
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleResolve}
+                  className="flex-1 gap-2"
+                  disabled={incident.status === 'resolved'}
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  Mark Resolved
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <Bookmark className="w-4 h-4" />
+                  Add Annotation
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================
+// P0: INCIDENTS TAB
+// ============================================================
+
+const IncidentsTab = ({ incidents, snapshots, rules, onResolveIncident }) => {
+  const [viewMode, setViewMode] = useState('timeline'); // 'timeline' or 'list'
+  const [timeRange, setTimeRange] = useState('24h');
+  const [filterSeverity, setFilterSeverity] = useState('all');
+  const [filterSubsystem, setFilterSubsystem] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedIncident, setSelectedIncident] = useState(null);
+  
+  // Filter incidents
+  const filteredIncidents = useMemo(() => {
+    let filtered = [...incidents];
+    
+    // Time range filter
+    const hours = timeRange === '1h' ? 1 : timeRange === '6h' ? 6 : timeRange === '12h' ? 12 : timeRange === '24h' ? 24 : 168;
+    const cutoff = Date.now() - hours * 60 * 60 * 1000;
+    filtered = filtered.filter(inc => new Date(inc.startTime).getTime() > cutoff);
+    
+    // Severity filter
+    if (filterSeverity !== 'all') {
+      filtered = filtered.filter(inc => inc.severity === filterSeverity);
+    }
+    
+    // Subsystem filter
+    if (filterSubsystem !== 'all') {
+      filtered = filtered.filter(inc => inc.subsystems.includes(filterSubsystem));
+    }
+    
+    // Status filter
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(inc => inc.status === filterStatus);
+    }
+    
+    return filtered;
+  }, [incidents, timeRange, filterSeverity, filterSubsystem, filterStatus]);
+  
+  // Stats
+  const openCount = incidents.filter(i => i.status === 'open').length;
+  const criticalCount = incidents.filter(i => i.severity === 'critical' && i.status !== 'resolved').length;
+  
+  const severityColors = {
+    critical: 'bg-destructive',
+    warn: 'bg-warning',
+    info: 'bg-blue-500',
+  };
+  
+  const statusIcons = {
+    open: <AlertCircle className="w-3.5 h-3.5 text-destructive" />,
+    monitoring: <Eye className="w-3.5 h-3.5 text-warning" />,
+    resolved: <CheckCircle className="w-3.5 h-3.5 text-success" />,
+  };
+  
+  return (
+    <div className="space-y-4">
+      {/* Header Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="glass rounded-xl p-3">
+          <div className="flex items-center gap-2 mb-1">
+            <AlertTriangle className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground">Total Incidents</span>
+          </div>
+          <span className="text-2xl font-bold">{filteredIncidents.length}</span>
+        </div>
+        <div className="glass rounded-xl p-3">
+          <div className="flex items-center gap-2 mb-1">
+            <AlertCircle className="w-4 h-4 text-destructive" />
+            <span className="text-xs text-muted-foreground">Open</span>
+          </div>
+          <span className="text-2xl font-bold text-destructive">{openCount}</span>
+        </div>
+        <div className="glass rounded-xl p-3">
+          <div className="flex items-center gap-2 mb-1">
+            <Zap className="w-4 h-4 text-warning" />
+            <span className="text-xs text-muted-foreground">Critical</span>
+          </div>
+          <span className="text-2xl font-bold text-warning">{criticalCount}</span>
+        </div>
+        <div className="glass rounded-xl p-3">
+          <div className="flex items-center gap-2 mb-1">
+            <CheckCircle className="w-4 h-4 text-success" />
+            <span className="text-xs text-muted-foreground">Resolved (24h)</span>
+          </div>
+          <span className="text-2xl font-bold text-success">
+            {incidents.filter(i => i.status === 'resolved').length}
+          </span>
+        </div>
+      </div>
+      
+      {/* Controls */}
+      <div className="glass rounded-xl p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* View Toggle */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setViewMode('timeline')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                viewMode === 'timeline' ? 'bg-primary text-white' : 'glass hover:bg-secondary'
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              Timeline
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                viewMode === 'list' ? 'bg-primary text-white' : 'glass hover:bg-secondary'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" />
+              List
+            </button>
+          </div>
+          
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Time Range */}
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="bg-secondary rounded-lg px-2 py-1.5 text-xs"
+            >
+              <option value="1h">Last 1h</option>
+              <option value="6h">Last 6h</option>
+              <option value="12h">Last 12h</option>
+              <option value="24h">Last 24h</option>
+              <option value="7d">Last 7d</option>
+            </select>
+            
+            {/* Severity */}
+            <select
+              value={filterSeverity}
+              onChange={(e) => setFilterSeverity(e.target.value)}
+              className="bg-secondary rounded-lg px-2 py-1.5 text-xs"
+            >
+              <option value="all">All Severity</option>
+              <option value="critical">Critical</option>
+              <option value="warn">Warning</option>
+              <option value="info">Info</option>
+            </select>
+            
+            {/* Subsystem */}
+            <select
+              value={filterSubsystem}
+              onChange={(e) => setFilterSubsystem(e.target.value)}
+              className="bg-secondary rounded-lg px-2 py-1.5 text-xs"
+            >
+              <option value="all">All Subsystems</option>
+              {SUBSYSTEMS.map(ss => (
+                <option key={ss.id} value={ss.id}>{ss.name}</option>
+              ))}
+            </select>
+            
+            {/* Status */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="bg-secondary rounded-lg px-2 py-1.5 text-xs"
+            >
+              <option value="all">All Status</option>
+              <option value="open">Open</option>
+              <option value="monitoring">Monitoring</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      {/* Timeline View */}
+      {viewMode === 'timeline' && (
+        <div className="glass rounded-xl p-4">
+          <h4 className="font-semibold text-sm mb-4 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-primary" />
+            Incident Timeline
+          </h4>
+          
+          {filteredIncidents.length === 0 ? (
+            <div className="text-center py-12">
+              <CheckCircle className="w-12 h-12 mx-auto mb-3 text-success/50" />
+              <p className="text-muted-foreground">No incidents in this time range</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {Object.values(rules).filter(r => r.enabled).length} detection rules active
+              </p>
+            </div>
+          ) : (
+            <div className="relative">
+              {/* Timeline axis */}
+              <div className="h-2 bg-secondary rounded-full mb-4 relative overflow-hidden">
+                {filteredIncidents.map((inc, idx) => {
+                  const hours = timeRange === '1h' ? 1 : timeRange === '6h' ? 6 : timeRange === '12h' ? 12 : timeRange === '24h' ? 24 : 168;
+                  const rangeMs = hours * 60 * 60 * 1000;
+                  const startOffset = (Date.now() - new Date(inc.startTime).getTime()) / rangeMs;
+                  const endOffset = inc.endTime 
+                    ? (Date.now() - new Date(inc.endTime).getTime()) / rangeMs 
+                    : 0;
+                  const width = Math.max(2, (startOffset - endOffset) * 100);
+                  const left = Math.max(0, (1 - startOffset) * 100);
+                  
+                  return (
+                    <button
+                      key={inc.id}
+                      onClick={() => setSelectedIncident(inc)}
+                      className={`absolute top-0 h-full ${severityColors[inc.severity]} hover:brightness-125 transition-all rounded-full`}
+                      style={{ left: `${left}%`, width: `${width}%`, minWidth: '8px' }}
+                      title={`${inc.title} (${inc.severity})`}
+                    />
+                  );
+                })}
+              </div>
+              
+              {/* Time labels */}
+              <div className="flex justify-between text-[10px] text-muted-foreground mb-4">
+                <span>Now</span>
+                <span>{timeRange} ago</span>
+              </div>
+              
+              {/* Incident cards below timeline */}
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {filteredIncidents.map(inc => {
+                  const subsystemMeta = SUBSYSTEMS.find(s => s.id === inc.subsystems[0]);
+                  const SubsystemIcon = subsystemMeta?.icon || AlertTriangle;
+                  
+                  return (
+                    <button
+                      key={inc.id}
+                      onClick={() => setSelectedIncident(inc)}
+                      className="w-full glass rounded-lg p-3 text-left hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${severityColors[inc.severity]}`} />
+                          <SubsystemIcon className={`w-4 h-4 ${subsystemMeta?.color || 'text-primary'}`} />
+                          <span className="font-medium text-sm">{inc.title}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {statusIcons[inc.status]}
+                          <span className="text-xs text-muted-foreground">{formatTimeAgo(inc.startTime)}</span>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* List View */}
+      {viewMode === 'list' && (
+        <div className="glass rounded-xl p-4">
+          <h4 className="font-semibold text-sm mb-4 flex items-center gap-2">
+            <List className="w-4 h-4 text-primary" />
+            Incident List
+          </h4>
+          
+          {filteredIncidents.length === 0 ? (
+            <div className="text-center py-12">
+              <CheckCircle className="w-12 h-12 mx-auto mb-3 text-success/50" />
+              <p className="text-muted-foreground">No incidents match your filters</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                    <th className="pb-2 pr-4">Severity</th>
+                    <th className="pb-2 pr-4">Incident</th>
+                    <th className="pb-2 pr-4">Subsystem</th>
+                    <th className="pb-2 pr-4">Started</th>
+                    <th className="pb-2 pr-4">Duration</th>
+                    <th className="pb-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredIncidents.map(inc => {
+                    const duration = inc.endTime 
+                      ? Math.floor((new Date(inc.endTime) - new Date(inc.startTime)) / 60000)
+                      : Math.floor((Date.now() - new Date(inc.startTime)) / 60000);
+                    
+                    return (
+                      <tr 
+                        key={inc.id}
+                        onClick={() => setSelectedIncident(inc)}
+                        className="border-b border-border/50 hover:bg-white/5 cursor-pointer"
+                      >
+                        <td className="py-3 pr-4">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                            inc.severity === 'critical' ? 'bg-destructive/20 text-destructive' :
+                            inc.severity === 'warn' ? 'bg-warning/20 text-warning' :
+                            'bg-blue-500/20 text-blue-400'
+                          }`}>
+                            {inc.severity}
+                          </span>
+                        </td>
+                        <td className="py-3 pr-4 font-medium">{inc.title}</td>
+                        <td className="py-3 pr-4 capitalize">{inc.subsystems.join(', ')}</td>
+                        <td className="py-3 pr-4 text-muted-foreground">{formatTimeAgo(inc.startTime)}</td>
+                        <td className="py-3 pr-4">{duration}m{inc.status === 'open' && '+'}</td>
+                        <td className="py-3">
+                          <div className="flex items-center gap-1">
+                            {statusIcons[inc.status]}
+                            <span className="capitalize text-xs">{inc.status}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Incident Detail Drawer */}
+      {selectedIncident && (
+        <IncidentDetailDrawer
+          incident={selectedIncident}
+          snapshots={snapshots}
+          onClose={() => setSelectedIncident(null)}
+          onResolve={onResolveIncident}
+        />
+      )}
+    </div>
+  );
+};
+
 // Node Card for Fleet View
 const NodeCard = ({ node, snapshots, onClick, selected }) => {
   const latestSnapshot = snapshots[snapshots.length - 1];
