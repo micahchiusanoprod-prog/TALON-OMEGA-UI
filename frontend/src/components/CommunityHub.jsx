@@ -1800,12 +1800,6 @@ export default function CommunityHub({ isOpen, onClose }) {
       window.history.replaceState({}, '', url.toString());
     }
   }, [validActiveTab, isOpen]);
-    if (isOpen) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', validActiveTab);
-      window.history.replaceState({}, '', url.toString());
-    }
-  }, [validActiveTab, isOpen]);
   
   if (!isOpen) return null;
   
