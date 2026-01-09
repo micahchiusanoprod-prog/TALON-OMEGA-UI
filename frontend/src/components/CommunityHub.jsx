@@ -219,10 +219,11 @@ const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScore
   const [addressedRecs, setAddressedRecs] = useState(new Set());
   
   const openIncidents = incidents.filter(i => i.status !== 'Closed').length;
-  const incidentsLast7d = incidents.filter(i => {
-    const created = new Date(i.createdAt);
-    return created > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  }).length;
+  const incidentsLast7d = useMemo(() => {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return incidents.filter(i => new Date(i.createdAt) > sevenDaysAgo).length;
+  }, [incidents]);
   
   // Members below thresholds
   const atRiskMembers = useMemo(() => {
