@@ -1566,13 +1566,16 @@ const IncidentsTab = ({ incidents, snapshots, rules, onResolveIncident }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedIncident, setSelectedIncident] = useState(null);
   
+  // Stable timestamp for filtering
+  const [nowTs] = useState(() => Date.now());
+  
   // Filter incidents
   const filteredIncidents = useMemo(() => {
     let filtered = [...incidents];
     
     // Time range filter
     const hours = timeRange === '1h' ? 1 : timeRange === '6h' ? 6 : timeRange === '12h' ? 12 : timeRange === '24h' ? 24 : 168;
-    const cutoff = Date.now() - hours * 60 * 60 * 1000;
+    const cutoff = nowTs - hours * 60 * 60 * 1000;
     filtered = filtered.filter(inc => new Date(inc.startTime).getTime() > cutoff);
     
     // Severity filter
@@ -1591,7 +1594,7 @@ const IncidentsTab = ({ incidents, snapshots, rules, onResolveIncident }) => {
     }
     
     return filtered;
-  }, [incidents, timeRange, filterSeverity, filterSubsystem, filterStatus]);
+  }, [incidents, timeRange, filterSeverity, filterSubsystem, filterStatus, nowTs]);
   
   // Stats
   const openCount = incidents.filter(i => i.status === 'open').length;
