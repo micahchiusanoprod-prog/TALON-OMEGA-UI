@@ -412,73 +412,75 @@ export default function WeatherTile() {
         </CardHeader>
         
         <CardContent className="px-4 lg:px-6 pb-4 lg:pb-6">
-          {/* Desktop: Vertical stack layout */}
+          {/* Desktop: 2-column grid layout for metrics */}
           <div className="hidden lg:block space-y-4">
-            {/* Current Temperature */}
-            <WeatherMetricCard
-              icon={Thermometer}
-              iconColor="text-red-400"
-              iconBg="bg-red-500/20"
-              title="Current Temperature"
-              value={weather.current.temp}
-              unit="°F"
-              secondaryValue={`Feels like ${weather.current.feelsLike}°F`}
-              status={tempRanges[tempRangeIdx].label}
-              statusColor={tempRanges[tempRangeIdx].textColor}
-              statusBg={tempRanges[tempRangeIdx].bgColor}
-              description="Current air temperature at your location. 'Feels like' accounts for wind chill and humidity effects on perceived temperature."
-              ranges={tempRanges}
-              currentRangeIndex={tempRangeIdx}
-            />
+            {/* Row 1: Temperature & Humidity */}
+            <div className="grid grid-cols-2 gap-4">
+              <WeatherMetricCard
+                icon={Thermometer}
+                iconColor="text-red-400"
+                iconBg="bg-red-500/20"
+                title="Current Temperature"
+                value={weather.current.temp}
+                unit="°F"
+                secondaryValue={`Feels like ${weather.current.feelsLike}°F`}
+                status={tempRanges[tempRangeIdx].label}
+                statusColor={tempRanges[tempRangeIdx].textColor}
+                statusBg={tempRanges[tempRangeIdx].bgColor}
+                description="'Feels like' accounts for wind chill and humidity."
+                ranges={tempRanges}
+                currentRangeIndex={tempRangeIdx}
+              />
+              
+              <WeatherMetricCard
+                icon={Droplets}
+                iconColor="text-blue-400"
+                iconBg="bg-blue-500/20"
+                title="Humidity"
+                value={weather.current.humidity}
+                unit="%"
+                status={humidityRanges[humidityRangeIdx].label}
+                statusColor={humidityRanges[humidityRangeIdx].textColor}
+                statusBg={humidityRanges[humidityRangeIdx].bgColor}
+                description="High humidity + falling pressure = rain likely."
+                ranges={humidityRanges}
+                currentRangeIndex={humidityRangeIdx}
+              />
+            </div>
             
-            {/* Humidity */}
-            <WeatherMetricCard
-              icon={Droplets}
-              iconColor="text-blue-400"
-              iconBg="bg-blue-500/20"
-              title="Humidity"
-              value={weather.current.humidity}
-              unit="%"
-              status={humidityRanges[humidityRangeIdx].label}
-              statusColor={humidityRanges[humidityRangeIdx].textColor}
-              statusBg={humidityRanges[humidityRangeIdx].bgColor}
-              description="Relative humidity affects comfort and indicates precipitation likelihood. High humidity + falling pressure often means rain is coming."
-              ranges={humidityRanges}
-              currentRangeIndex={humidityRangeIdx}
-            />
-            
-            {/* Wind */}
-            <WeatherMetricCard
-              icon={Wind}
-              iconColor="text-slate-400"
-              iconBg="bg-slate-500/20"
-              title="Wind Speed"
-              value={weather.current.windSpeed}
-              unit="mph"
-              secondaryValue={`From ${weather.current.windDirection}`}
-              status={windRanges[windRangeIdx].label}
-              statusColor={windRanges[windRangeIdx].textColor}
-              statusBg={windRanges[windRangeIdx].bgColor}
-              description="Wind speed and direction. Strong winds affect outdoor activities, tent setup, and can make temperatures feel colder (wind chill)."
-              ranges={windRanges}
-              currentRangeIndex={windRangeIdx}
-            />
-            
-            {/* UV Index */}
-            <WeatherMetricCard
-              icon={Sun}
-              iconColor="text-amber-400"
-              iconBg="bg-amber-500/20"
-              title="UV Index"
-              value={weather.current.uvIndex}
-              unit="index"
-              status={uvRanges[uvRangeIdx].label}
-              statusColor={uvRanges[uvRangeIdx].textColor}
-              statusBg={uvRanges[uvRangeIdx].bgColor}
-              description="Ultraviolet radiation intensity. Higher values mean faster sunburn. Use sunscreen and protective clothing when UV is Moderate or higher."
-              ranges={uvRanges}
-              currentRangeIndex={uvRangeIdx}
-            />
+            {/* Row 2: Wind & UV Index */}
+            <div className="grid grid-cols-2 gap-4">
+              <WeatherMetricCard
+                icon={Wind}
+                iconColor="text-slate-400"
+                iconBg="bg-slate-500/20"
+                title="Wind Speed"
+                value={weather.current.windSpeed}
+                unit="mph"
+                secondaryValue={`From ${weather.current.windDirection}`}
+                status={windRanges[windRangeIdx].label}
+                statusColor={windRanges[windRangeIdx].textColor}
+                statusBg={windRanges[windRangeIdx].bgColor}
+                description="Affects outdoor activities and wind chill."
+                ranges={windRanges}
+                currentRangeIndex={windRangeIdx}
+              />
+              
+              <WeatherMetricCard
+                icon={Sun}
+                iconColor="text-amber-400"
+                iconBg="bg-amber-500/20"
+                title="UV Index"
+                value={weather.current.uvIndex}
+                unit="index"
+                status={uvRanges[uvRangeIdx].label}
+                statusColor={uvRanges[uvRangeIdx].textColor}
+                statusBg={uvRanges[uvRangeIdx].bgColor}
+                description="Use sunscreen when Moderate or higher."
+                ranges={uvRanges}
+                currentRangeIndex={uvRangeIdx}
+              />
+            </div>
             
             {/* OMEGA Sensor Pressure */}
             <div className="glass rounded-xl p-4 space-y-3">
