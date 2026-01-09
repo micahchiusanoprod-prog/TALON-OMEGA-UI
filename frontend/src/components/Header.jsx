@@ -229,6 +229,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
       isOpen={showLogs}
       onClose={() => setShowLogs(false)}
     />
+    
+    {/* Community Hub */}
+    <CommunityHub
+      isOpen={showCommunity}
+      onClose={() => setShowCommunity(false)}
+    />
   </>
   );
 }
