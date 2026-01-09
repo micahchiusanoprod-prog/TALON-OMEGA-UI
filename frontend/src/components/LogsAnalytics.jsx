@@ -2426,6 +2426,9 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
   
   return (
     <div className="space-y-6">
+      {/* P0: Capture Health Panel (at top) */}
+      <CaptureHealthPanel captureHealth={captureHealth} capturing={capturing} />
+      
       {/* Quick Actions Bar */}
       <div className="flex flex-wrap items-center gap-2">
         <Button
