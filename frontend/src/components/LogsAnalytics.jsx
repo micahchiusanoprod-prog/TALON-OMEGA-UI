@@ -3293,15 +3293,74 @@ export default function LogsAnalytics({ isOpen, onClose }) {
   // P0: Generate anomalies and incidents
   const anomalies = useMemo(() => detectAnomalies(thisDeviceSnapshots), [thisDeviceSnapshots]);
   
-  const [incidents, setIncidents] = useState(() => generateIncidentsFromAnomalies(anomalies, detectionRules));
+  // P0: Generate incidents from anomalies (and add mock historical incidents)
+  const [incidentsState, setIncidentsState] = useState({ resolved: {} });
+  
+  const incidents = useMemo(() => {
+    const generatedIncidents = generateIncidentsFromAnomalies(anomalies, detectionRules);
+    
+    // Add more mock incidents for demo purposes
+    const now = Date.now();
+    const mockIncidents = [
+      {
+        id: 'INC-MOCK-001',
+        title: 'Temp Spike (8m)',
+        startTime: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
+        endTime: new Date(now - 1.8 * 60 * 60 * 1000).toISOString(),
+        severity: 'warn',
+        subsystems: ['thermals'],
+        status: 'monitoring',
+        anomalyIds: ['temp-mock-1'],
+        peakValues: { temp: 72.5 },
+      },
+      {
+        id: 'INC-MOCK-002',
+        title: 'Comms Degraded (12m)',
+        startTime: new Date(now - 4 * 60 * 60 * 1000).toISOString(),
+        endTime: new Date(now - 3.8 * 60 * 60 * 1000).toISOString(),
+        severity: 'critical',
+        subsystems: ['comms'],
+        status: 'open',
+        anomalyIds: ['comms-mock-1'],
+        peakValues: { signalStrength: -85 },
+      },
+      {
+        id: 'INC-MOCK-003',
+        title: 'Backup Failed',
+        startTime: new Date(now - 6 * 60 * 60 * 1000).toISOString(),
+        endTime: new Date(now - 5.9 * 60 * 60 * 1000).toISOString(),
+        severity: 'warn',
+        subsystems: ['storage'],
+        status: incidentsState.resolved['INC-MOCK-003'] ? 'resolved' : 'monitoring',
+        anomalyIds: ['backup-mock-1'],
+        peakValues: { backupFails: 2 },
+        resolutionNotes: incidentsState.resolved['INC-MOCK-003']?.notes || '',
+      },
+      {
+        id: 'INC-MOCK-004',
+        title: 'CPU Spike (5m)',
+        startTime: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
+        endTime: null,
+        severity: 'info',
+        subsystems: ['services'],
+        status: 'open',
+        anomalyIds: ['cpu-mock-1'],
+        peakValues: { cpu: 87.3 },
+      },
+    ];
+    
+    return [...mockIncidents, ...generatedIncidents];
+  }, [anomalies, detectionRules, incidentsState]);
   
   // P0: Resolve incident handler
   const handleResolveIncident = useCallback((incidentId, notes) => {
-    setIncidents(prev => prev.map(inc => 
-      inc.id === incidentId 
-        ? { ...inc, status: 'resolved', resolutionNotes: notes, endTime: new Date().toISOString() }
-        : inc
-    ));
+    setIncidentsState(prev => ({
+      ...prev,
+      resolved: {
+        ...prev.resolved,
+        [incidentId]: { notes, resolvedAt: new Date().toISOString() }
+      }
+    }));
   }, []);
   
   // Calculate active log count
