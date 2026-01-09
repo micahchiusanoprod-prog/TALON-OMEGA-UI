@@ -1500,6 +1500,7 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
           Click any row to view full snapshot details and compare with previous.
         </p>
       </div>
+      )}
       
       {/* Snapshot Drawer */}
       {selectedSnapshot && (
