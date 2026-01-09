@@ -1341,7 +1341,7 @@ export default function HelpCenter({ isOpen, onClose }) {
                   <div className="glass rounded-xl p-4 bg-violet-500/10 border border-violet-500/30">
                     <h3 className="font-semibold mb-2">Privacy Note</h3>
                     <p className="text-sm text-muted-foreground">
-                      DMs are private by default. Any "break-glass access" must be explicit, logged, limited to emergencies, and visible to users afterward.
+                      DMs are private by default. Any &ldquo;break-glass access&rdquo; must be explicit, logged, limited to emergencies, and visible to users afterward.
                     </p>
                   </div>
                 </div>
