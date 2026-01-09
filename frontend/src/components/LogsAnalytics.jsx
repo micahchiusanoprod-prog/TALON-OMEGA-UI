@@ -33,6 +33,7 @@ import {
   WifiOff,
   Server,
   Eye,
+  EyeOff,
   GitCompare,
   BarChart3,
   Zap,
@@ -40,7 +41,23 @@ import {
   AlertCircle,
   Info,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Settings,
+  Layers,
+  FileText,
+  Calendar,
+  RotateCcw,
+  Target,
+  Sliders,
+  List,
+  Grid,
+  PieChart,
+  Archive,
+  History,
+  Bookmark,
+  Star,
+  Bell,
+  Search
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -56,7 +73,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  ReferenceLine
+  ReferenceLine,
+  BarChart,
+  Bar
 } from 'recharts';
 
 // ============================================================
