@@ -1373,13 +1373,24 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Window Comparison */}
         <div className="glass rounded-xl p-4">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <GitCompare className="w-4 h-4 text-primary" />
-            Window Comparison (Last 12h vs Previous 12h)
-          </h4>
-          {comparison.changes.length > 0 ? (
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-semibold flex items-center gap-2">
+              <GitCompare className="w-4 h-4 text-primary" />
+              Window Comparison
+            </h4>
+            <select
+              value={compareWindow}
+              onChange={(e) => setCompareWindow(e.target.value)}
+              className="bg-secondary rounded-lg px-2 py-1 text-xs"
+            >
+              <option value="6h">Last 6h vs Previous 6h</option>
+              <option value="12h">Last 12h vs Previous 12h</option>
+              <option value="24h">Last 24h vs Previous 24h</option>
+            </select>
+          </div>
+          {comparisonData.changes.length > 0 ? (
             <div className="space-y-2">
-              {comparison.changes.slice(0, 5).map(change => (
+              {comparisonData.changes.slice(0, 5).map(change => (
                 <div key={change.metric} className="flex items-center justify-between p-2 bg-black/20 rounded-lg">
                   <span className="text-sm capitalize">{change.metric}</span>
                   <div className="flex items-center gap-2">
@@ -1402,10 +1413,13 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
         
         {/* Anomaly Feed */}
         <div className="glass rounded-xl p-4">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-warning" />
-            Anomaly Feed
-          </h4>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-semibold flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-warning" />
+              Anomaly Feed
+            </h4>
+            <span className="text-xs text-muted-foreground">{anomalies.length} detected</span>
+          </div>
           {anomalies.length > 0 ? (
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {anomalies.slice(0, 5).map(anomaly => (
@@ -1421,13 +1435,27 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
         </div>
       </div>
       
-      {/* Raw Snapshots Table */}
+      {/* Raw Snapshots Table (Collapsible) */}
+      {showTable && (
       <div className="glass rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-semibold flex items-center gap-2">
             <Database className="w-4 h-4 text-primary" />
-            Raw Snapshots
+            Raw Snapshots ({filteredTableSnapshots.length})
           </h4>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filter snapshots..."
+                className="bg-secondary rounded-lg pl-7 pr-3 py-1.5 text-xs w-40"
+              />
+            </div>
+          </div>
+        </div>
           <button
             onClick={() => setShowTable(!showTable)}
             className="flex items-center gap-1 text-xs text-primary hover:underline"
