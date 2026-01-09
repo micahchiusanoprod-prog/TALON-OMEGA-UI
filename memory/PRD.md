@@ -233,6 +233,10 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ## P2 Backlog / Future Work
 
+### Lower Tiles Refactor (Optional)
+- HotspotTile, PowerTile, SecurityTile already have purpose-built layouts
+- Consider standardizing if user wants visual consistency
+
 ### Pi Backend Integration (When Deployed)
 - Set `enableMockData: false`
 - Configure `REACT_APP_PI_API_URL` and `REACT_APP_PI_API_KEY`
@@ -247,6 +251,6 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
-*Last Updated: January 8, 2026*
-*Current Status: Full Preview Phase COMPLETE with X-style Community Feed*
+*Last Updated: January 9, 2026*
+*Current Status: Camera Tile Redesign & Music Player COMPLETE*
 *All data remains MOCKED. Ready for Pi backend integration.*
