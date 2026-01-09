@@ -1750,9 +1750,9 @@ const IncidentsTab = ({ incidents, snapshots, rules, onResolveIncident }) => {
                 {filteredIncidents.map((inc, idx) => {
                   const hours = timeRange === '1h' ? 1 : timeRange === '6h' ? 6 : timeRange === '12h' ? 12 : timeRange === '24h' ? 24 : 168;
                   const rangeMs = hours * 60 * 60 * 1000;
-                  const startOffset = (Date.now() - new Date(inc.startTime).getTime()) / rangeMs;
+                  const startOffset = (nowTs - new Date(inc.startTime).getTime()) / rangeMs;
                   const endOffset = inc.endTime 
-                    ? (Date.now() - new Date(inc.endTime).getTime()) / rangeMs 
+                    ? (nowTs - new Date(inc.endTime).getTime()) / rangeMs 
                     : 0;
                   const width = Math.max(2, (startOffset - endOffset) * 100);
                   const left = Math.max(0, (1 - startOffset) * 100);
