@@ -384,6 +384,24 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ## P2 Backlog / Future Work
 
+### Community Hub - Upcoming Phases
+| Phase | Feature | Priority |
+|-------|---------|----------|
+| **Phase 2** | Overview Tab - Full implementation with charts | P1 |
+| **Phase 3** | Analytics Tab - Coverage matrix, gap analysis, reports | P1 |
+| **Phase 4** | Directory Tab - Full search, profiles, Team Builder | P1 |
+| **Phase 5** | Comms Tab - Announcements, feeds, polls, tasks | P1 |
+| **Phase 6** | Incident Reports Tab - Full incident management | P1 |
+
+### LOGS Observability - P1 Features
+- Anomaly Feed Upgrades
+- Annotations system
+- Report Generator
+- Service Reliability Panel
+
+### LOGS Observability - P2 Features
+- Raw Log Explorer
+
 ### Lower Tiles Refactor (Optional)
 - HotspotTile, PowerTile, SecurityTile already have purpose-built layouts
 - Consider standardizing if user wants visual consistency
@@ -403,5 +421,5 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 ---
 
 *Last Updated: January 9, 2026*
-*Current Status: Camera Tile Redesign & Music Player COMPLETE*
+*Current Status: Community Hub Phase 0+1 COMPLETE*
 *All data remains MOCKED. Ready for Pi backend integration.*
