@@ -169,6 +169,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
     {showFAQ && (
       <FAQPage onClose={() => setShowFAQ(false)} />
     )}
+    
+    {/* Help Center */}
+    <HelpCenter
+      isOpen={showHelpCenter}
+      onClose={() => setShowHelpCenter(false)}
+    />
   </>
   );
 }
