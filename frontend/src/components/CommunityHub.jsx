@@ -1311,17 +1311,184 @@ const AnalyticsTab = () => {
   );
 };
 
-const DirectoryTab = () => {
-  const { can } = useRBAC();
-  if (!can('viewDirectory')) return <AccessDenied />;
+const DirectoryTab = ({ profiles, scoreConfig, memberScores, onTabChange }) => {
+  const { can, currentUser, isAdmin } = useRBAC();
+  
+  if (!can('viewDirectory')) return <AccessDeniedCard minRole="guest" currentRole={currentUser?.role} />;
+  
+  // Get redacted profiles based on viewer role
+  const viewerRole = currentUser?.role || 'guest';
+  const redactedProfiles = useMemo(() => 
+    profiles.map(p => redactProfile(p, viewerRole)),
+    [profiles, viewerRole]
+  );
+  
+  // Show only first 3 profiles as preview (per Phase 1 requirements)
+  const previewProfiles = redactedProfiles.slice(0, 3);
   
   return (
-    <div className="glass rounded-xl p-8 text-center">
-      <Users className="w-16 h-16 mx-auto mb-4 text-primary/50" />
-      <h3 className="text-lg font-semibold mb-2">Member Directory</h3>
-      <p className="text-sm text-muted-foreground">
-        Search, profiles, and Team Builder will be available in Phase 4.
-      </p>
+    <div className="space-y-6">
+      {/* Privacy Notice */}
+      <div className="glass rounded-xl p-4 border border-primary/30">
+        <div className="flex items-start gap-3">
+          <Eye className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-semibold text-sm">Privacy Redaction Active</h4>
+            <p className="text-xs text-muted-foreground mt-1">
+              Sensitive fields (age, height, weight) are shown only when members opt-in.
+              {isAdmin ? (
+                <span className="text-amber-400 ml-1">As an admin, you see all fields.</span>
+              ) : (
+                <span className="text-muted-foreground ml-1">Fields marked "Hidden" are not shared by the member.</span>
+              )}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Directory Preview Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold flex items-center gap-2">
+          <Users className="w-5 h-5 text-primary" />
+          Member Directory Preview
+        </h2>
+        <span className="text-xs text-muted-foreground">
+          Showing {previewProfiles.length} of {profiles.length} members
+        </span>
+      </div>
+      
+      {/* Profile Cards Grid - Shows redaction behavior */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {previewProfiles.map(profile => (
+          <ProfilePreviewCard 
+            key={profile.id} 
+            profile={profile} 
+            viewerRole={viewerRole}
+            score={memberScores[profile.id]}
+            thresholds={scoreConfig.thresholds}
+          />
+        ))}
+      </div>
+      
+      {/* Placeholder for full directory */}
+      <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-border">
+        <Users className="w-12 h-12 mx-auto mb-4 text-primary/30" />
+        <h3 className="font-semibold mb-2">Full Directory Coming in Phase 4</h3>
+        <ul className="text-sm text-muted-foreground space-y-1">
+          <li>• Advanced search & filtering</li>
+          <li>• Skill-based member discovery</li>
+          <li>• Team Builder tool</li>
+          <li>• Bulk export (redacted for role)</li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+// Profile Preview Card - Shows privacy redaction behavior
+const ProfilePreviewCard = ({ profile, viewerRole, score, thresholds }) => {
+  const { isAdmin } = useRBAC();
+  const isRedacted = profile._redacted;
+  
+  // Helper to render field with redaction indicator
+  const renderField = (label, value, icon) => {
+    const Icon = icon;
+    const isHidden = value === null;
+    
+    return (
+      <div className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
+        <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+          <Icon className="w-3 h-3" />
+          {label}
+        </span>
+        {isHidden ? (
+          <span className="text-xs text-amber-400/70 flex items-center gap-1" data-testid={`field-hidden-${label.toLowerCase()}`}>
+            <EyeOff className="w-3 h-3" />
+            Hidden
+          </span>
+        ) : (
+          <span className="text-xs font-medium">{value}</span>
+        )}
+      </div>
+    );
+  };
+  
+  return (
+    <div 
+      className="glass rounded-xl p-4 hover:bg-white/5 transition-colors"
+      data-testid={`profile-card-${profile.id}`}
+    >
+      {/* Header */}
+      <div className="flex items-start gap-3 mb-4">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center font-bold text-white flex-shrink-0">
+          {profile.displayName?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-semibold truncate">{profile.displayName}</h3>
+            {score && (
+              <ScoreBadge score={score.score} thresholds={thresholds} />
+            )}
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <StatusDot status={profile.availabilityStatus} />
+            <span className="text-xs text-muted-foreground capitalize">{profile.availabilityStatus}</span>
+            {profile.roleClass && (
+              <span className="text-xs px-1.5 py-0.5 rounded bg-primary/20 text-primary">
+                {profile.roleClass}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {/* Redacted Fields Display */}
+      <div className="space-y-0 mb-4">
+        {renderField('Age', profile.age ? `${profile.age} years` : null, Calendar)}
+        {renderField('Height', formatHeight(profile.heightIn), Activity)}
+        {renderField('Weight', formatWeight(profile.weightLb), Activity)}
+        {renderField('Education', profile.educationLevel, GraduationCap)}
+      </div>
+      
+      {/* Skills Preview */}
+      <div className="flex flex-wrap gap-1 mb-3">
+        {profile.skillSets?.slice(0, 3).map(skill => (
+          <span key={skill} className="text-[10px] px-1.5 py-0.5 rounded bg-secondary">
+            {skill}
+          </span>
+        ))}
+        {profile.skillSets?.length > 3 && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
+            +{profile.skillSets.length - 3} more
+          </span>
+        )}
+      </div>
+      
+      {/* Languages */}
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Languages className="w-3 h-3" />
+        {profile.languages?.join(', ')}
+      </div>
+      
+      {/* Redaction indicator for non-admins */}
+      {isRedacted && !isAdmin && (
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+            <Lock className="w-3 h-3" />
+            Some fields hidden by member privacy settings
+          </p>
+        </div>
+      )}
+      
+      {/* Admin badge */}
+      {isAdmin && (
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-[10px] text-amber-400 flex items-center gap-1">
+            <ShieldCheck className="w-3 h-3" />
+            Full profile visible (admin)
+          </p>
+        </div>
+      )}
     </div>
   );
 };
