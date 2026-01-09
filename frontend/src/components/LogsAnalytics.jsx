@@ -2550,6 +2550,20 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
         </div>
       )}
       
+      {/* P0: Detection Rules Panel (inside Settings section) */}
+      {showSettings && (
+        <DetectionRulesPanel
+          rules={detectionRules}
+          setRules={setDetectionRules}
+          sensitivity={sensitivity}
+          setSensitivity={setSensitivity}
+          smoothingWindow={smoothingWindow}
+          setSmoothingWindow={setSmoothingWindow}
+          baselineWindow={baselineWindow}
+          setBaselineWindow={setBaselineWindow}
+        />
+      )}
+      
       {/* Active Logs Panel (Collapsible) */}
       {showActiveLogs && (
         <ActiveLogsPanel logCategories={logCategories} setLogCategories={setLogCategories} />
