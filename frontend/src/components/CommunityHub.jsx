@@ -1918,8 +1918,8 @@ export default function CommunityHub({ isOpen, onClose }) {
               onTabChange={handleTabChange}
             />
           )}
-          {activeTab === 'comms' && <CommsTab />}
-          {activeTab === 'incidents' && (
+          {validActiveTab === 'comms' && <CommsTab />}
+          {validActiveTab === 'incidents' && (
             <IncidentReportsTab onTabChange={handleTabChange} />
           )}
           
