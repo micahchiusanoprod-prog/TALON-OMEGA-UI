@@ -11,6 +11,33 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: Help Center (Manual App) (January 9, 2026)
+
+### Help Center Features Implemented
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Header Button** | ✅ | Premium pill/glass button centered in header ("Help Center" desktop, "Help" mobile) |
+| **Search Functionality** | ✅ | Live search across categories, troubleshooting, glossary, and comms methods |
+| **15 Category Cards** | ✅ | Getting Started, Cheat Sheet, Installed vs Optional, etc. (exact order per spec) |
+| **"Need help fast?" Panel** | ✅ | 3 quick fix buttons for common issues |
+| **Cheat Sheet (Verbatim)** | ✅ | All URLs, data paths, services, operator commands with copy buttons |
+| **Communications Hub** | ✅ | All 5 methods with "What/How/Analogy/Use when" format + status colors |
+| **Troubleshooting Textbook** | ✅ | 9 entries (A-I) with Symptom→Cause→Fix→Verify format |
+| **Operator Only Callouts** | ✅ | Terminal-style blocks with amber styling |
+| **Glossary** | ✅ | All terms with plain English definitions |
+| **Appendix** | ✅ | What's Estimated vs Exact section |
+| **Back to Top Button** | ✅ | Appears after scrolling 400px |
+| **Print Button** | ✅ | window.print() integration |
+| **Back to Dashboard** | ✅ | Returns to dashboard without state loss |
+| **Mobile Optimized** | ✅ | Responsive layout, shortened labels |
+| **Keyboard Accessible** | ✅ | All interactive elements focusable |
+
+### Files Created
+- `/app/frontend/src/components/HelpCenter.jsx` - Complete Help Center component (~1500 lines)
+- Updated `/app/frontend/src/components/Header.jsx` - Added Help Center button
+
+---
+
 ## ✅ COMPLETED: Camera Tile Redesign & Music Player Verification (January 9, 2026)
 
 ### Camera Tile Redesign
