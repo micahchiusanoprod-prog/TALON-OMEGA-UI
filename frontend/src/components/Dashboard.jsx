@@ -24,14 +24,17 @@ export default function Dashboard() {
       
       <main className="container mx-auto px-4 pb-8 pt-20 max-w-[1600px] space-y-2">
         
-        {/* ===== QUICK TOOLS (ALWAYS VISIBLE AT TOP) ===== */}
+        {/* ===== SEARCH & QUICK TOOLS (CENTERED TOGETHER) ===== */}
         <section className="animate-fade-in">
-          <QuickToolsBar />
-        </section>
-
-        {/* ===== SEARCH BAR ===== */}
-        <section className="animate-fade-in pt-2" style={{ animationDelay: '50ms' }}>
-          <SearchBar />
+          <div className="max-w-3xl mx-auto space-y-3">
+            {/* Search Bar */}
+            <SearchBar />
+            
+            {/* Quick Tools - Centered with Search */}
+            <div className="flex justify-center">
+              <QuickToolsBar />
+            </div>
+          </div>
         </section>
 
         {/* ===== COMMUNICATIONS SECTION ===== */}
