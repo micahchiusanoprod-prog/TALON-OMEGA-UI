@@ -114,9 +114,20 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           )}
 
-          {/* Mobile: Help Center Button + Temp */}
+          {/* Mobile: LOGS + Help Center Button + Temp */}
           {useCompactHeader && (
             <div className="flex md:hidden items-center gap-2">
+              {/* LOGS Button - Mobile */}
+              <button
+                onClick={() => setShowLogs(true)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition-all"
+                title="Open LOGS Analytics"
+                data-testid="logs-btn-mobile"
+              >
+                <BarChart3 className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-semibold">LOGS</span>
+              </button>
+              
               {/* Help Center Button - Mobile */}
               <button
                 onClick={() => setShowHelpCenter(true)}
