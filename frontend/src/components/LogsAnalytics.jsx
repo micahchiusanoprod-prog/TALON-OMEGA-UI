@@ -2332,7 +2332,7 @@ const LastSnapshotInfo = ({ snapshot, capturing }) => {
 };
 
 // This Device Tab
-const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterval, retention, setRetention, logCategories, setLogCategories }) => {
+const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterval, retention, setRetention, logCategories, setLogCategories, captureHealth, detectionRules, setDetectionRules, sensitivity, setSensitivity, smoothingWindow, setSmoothingWindow, baselineWindow, setBaselineWindow }) => {
   const [timeRange, setTimeRange] = useState('12h');
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const [showTable, setShowTable] = useState(false);
