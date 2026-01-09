@@ -376,75 +376,77 @@ export default function DeviceInfoTile() {
         </CardHeader>
         
         <CardContent className="px-4 lg:px-6 pb-4 lg:pb-6">
-          {/* Desktop: Vertical stack */}
+          {/* Desktop: 2-column grid */}
           <div className="hidden lg:block space-y-4">
-            {/* CPU */}
-            <MetricCard
-              icon={Cpu}
-              iconColor="text-blue-400"
-              iconBg="bg-blue-500/20"
-              title="CPU Usage"
-              value={displayMetrics.cpu}
-              unit="%"
-              status={cpuRanges[cpuRangeIdx].label}
-              statusColor={cpuRanges[cpuRangeIdx].textColor}
-              statusBg={cpuRanges[cpuRangeIdx].bgColor}
-              description="Processor capacity being used. High sustained usage slows the system and drains battery faster."
-              ranges={cpuRanges}
-              currentRangeIndex={cpuRangeIdx}
-            />
+            {/* Row 1: CPU & RAM */}
+            <div className="grid grid-cols-2 gap-4">
+              <MetricCard
+                icon={Cpu}
+                iconColor="text-blue-400"
+                iconBg="bg-blue-500/20"
+                title="CPU Usage"
+                value={displayMetrics.cpu}
+                unit="%"
+                status={cpuRanges[cpuRangeIdx].label}
+                statusColor={cpuRanges[cpuRangeIdx].textColor}
+                statusBg={cpuRanges[cpuRangeIdx].bgColor}
+                description="Processor load. High usage = slower system."
+                ranges={cpuRanges}
+                currentRangeIndex={cpuRangeIdx}
+              />
+              
+              <MetricCard
+                icon={MemoryStick}
+                iconColor="text-purple-400"
+                iconBg="bg-purple-500/20"
+                title="Memory (RAM)"
+                value={displayMetrics.ram}
+                unit="%"
+                status={ramRanges[ramRangeIdx].label}
+                statusColor={ramRanges[ramRangeIdx].textColor}
+                statusBg={ramRanges[ramRangeIdx].bgColor}
+                description="Working memory. When full, apps may crash."
+                ranges={ramRanges}
+                currentRangeIndex={ramRangeIdx}
+              />
+            </div>
             
-            {/* RAM */}
-            <MetricCard
-              icon={MemoryStick}
-              iconColor="text-purple-400"
-              iconBg="bg-purple-500/20"
-              title="Memory (RAM)"
-              value={displayMetrics.ram}
-              unit="%"
-              status={ramRanges[ramRangeIdx].label}
-              statusColor={ramRanges[ramRangeIdx].textColor}
-              statusBg={ramRanges[ramRangeIdx].bgColor}
-              description="Active working memory for running apps. When full, the system slows dramatically and apps may crash."
-              ranges={ramRanges}
-              currentRangeIndex={ramRangeIdx}
-            />
+            {/* Row 2: Storage & Temperature */}
+            <div className="grid grid-cols-2 gap-4">
+              <MetricCard
+                icon={HardDrive}
+                iconColor="text-orange-400"
+                iconBg="bg-orange-500/20"
+                title="Storage"
+                value={displayMetrics.disk}
+                unit="%"
+                status={storageRanges[storageRangeIdx].label}
+                statusColor={storageRanges[storageRangeIdx].textColor}
+                statusBg={storageRanges[storageRangeIdx].bgColor}
+                description="Disk space. Keep 15% free for best performance."
+                ranges={storageRanges}
+                currentRangeIndex={storageRangeIdx}
+              />
+              
+              <MetricCard
+                icon={Thermometer}
+                iconColor="text-red-400"
+                iconBg="bg-red-500/20"
+                title="CPU Temperature"
+                value={displayMetrics.temp}
+                unit="°C"
+                secondaryValue={`${(displayMetrics.temp * 9/5 + 32).toFixed(0)}°F`}
+                status={tempRanges[tempRangeIdx].label}
+                statusColor={tempRanges[tempRangeIdx].textColor}
+                statusBg={tempRanges[tempRangeIdx].bgColor}
+                description="Processor heat. High temp = throttling."
+                ranges={tempRanges}
+                currentRangeIndex={tempRangeIdx}
+                showProgressBar={false}
+              />
+            </div>
             
-            {/* Storage */}
-            <MetricCard
-              icon={HardDrive}
-              iconColor="text-orange-400"
-              iconBg="bg-orange-500/20"
-              title="Storage"
-              value={displayMetrics.disk}
-              unit="%"
-              status={storageRanges[storageRangeIdx].label}
-              statusColor={storageRanges[storageRangeIdx].textColor}
-              statusBg={storageRanges[storageRangeIdx].bgColor}
-              description="Permanent storage for files and apps. Keep at least 15% free for optimal performance and system updates."
-              ranges={storageRanges}
-              currentRangeIndex={storageRangeIdx}
-            />
-            
-            {/* CPU Temperature */}
-            <MetricCard
-              icon={Thermometer}
-              iconColor="text-red-400"
-              iconBg="bg-red-500/20"
-              title="CPU Temperature"
-              value={displayMetrics.temp}
-              unit="°C"
-              secondaryValue={`${(displayMetrics.temp * 9/5 + 32).toFixed(0)}°F`}
-              status={tempRanges[tempRangeIdx].label}
-              statusColor={tempRanges[tempRangeIdx].textColor}
-              statusBg={tempRanges[tempRangeIdx].bgColor}
-              description="How hot the processor is running. Excessive heat reduces performance and can damage hardware over time."
-              ranges={tempRanges}
-              currentRangeIndex={tempRangeIdx}
-              showProgressBar={false}
-            />
-            
-            {/* Uptime & Services */}
+            {/* Uptime & Services Row */}
             <div className="glass rounded-xl p-4">
               <div className="grid grid-cols-2 gap-4">
                 {/* Uptime */}
@@ -455,13 +457,11 @@ export default function DeviceInfoTile() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-base">Uptime</h4>
-                      <p className="text-xs text-muted-foreground">Time since last restart</p>
+                      <p className="text-xs text-muted-foreground">Since last restart</p>
                     </div>
                   </div>
                   <div className="text-3xl font-light tabular-nums">{formatUptime(displayMetrics.uptime)}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Occasional restarts help clear memory and refresh system resources.
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">Restart weekly for best performance.</p>
                 </div>
                 
                 {/* Services */}
