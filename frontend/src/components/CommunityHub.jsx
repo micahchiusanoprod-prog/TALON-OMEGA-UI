@@ -1775,36 +1775,45 @@ export default function CommunityHub({ isOpen, onClose }) {
     setActiveTab(tabId);
   }, [currentUser.role]);
   
-  // Ensure active tab is valid for current role
-  useEffect(() => {
+  // Ensure active tab is valid for current role - use useMemo to derive valid state
+  const validActiveTab = useMemo(() => {
     const validTab = tabs.find(t => t.id === activeTab);
-    if (!validTab) {
-      setActiveTab('overview');
+    return validTab ? activeTab : 'overview';
+  }, [tabs, activeTab]);
+  
+  // Show toast if redirected due to role change
+  useEffect(() => {
+    if (validActiveTab !== activeTab) {
+      setActiveTab(validActiveTab);
       if (activeTab === 'incidents') {
         toast.error('Access denied', {
           description: 'You were redirected because your role changed.',
         });
       }
     }
-  }, [tabs, activeTab]);
+  }, [validActiveTab, activeTab]);
   
-  // Query param sync for tabs (optional enhancement)
-  useEffect(() => {
+  // Query param sync for tabs - run once on mount
+  const initialTabFromParams = useMemo(() => {
+    if (typeof window === 'undefined') return null;
     const params = new URLSearchParams(window.location.search);
-    const tabParam = params.get('tab');
-    if (tabParam && tabs.some(t => t.id === tabParam)) {
-      handleTabChange(tabParam);
-    }
+    return params.get('tab');
   }, []);
+  
+  useEffect(() => {
+    if (initialTabFromParams && tabs.some(t => t.id === initialTabFromParams)) {
+      setActiveTab(initialTabFromParams);
+    }
+  }, [initialTabFromParams, tabs]);
   
   // Update URL when tab changes
   useEffect(() => {
     if (isOpen) {
       const url = new URL(window.location.href);
-      url.searchParams.set('tab', activeTab);
+      url.searchParams.set('tab', validActiveTab);
       window.history.replaceState({}, '', url.toString());
     }
-  }, [activeTab, isOpen]);
+  }, [validActiveTab, isOpen]);
   
   if (!isOpen) return null;
   
