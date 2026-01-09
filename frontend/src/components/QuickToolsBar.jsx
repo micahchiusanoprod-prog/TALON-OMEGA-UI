@@ -405,7 +405,7 @@ export default function QuickToolsBar() {
   return (
     <>
       <div className="w-full" data-testid="quick-tools-bar">
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 px-1 scrollbar-thin snap-x snap-mandatory">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 px-1 scrollbar-thin snap-x snap-mandatory">
           {QUICK_TOOLS.map((tool) => {
             const Icon = tool.icon;
             return (
