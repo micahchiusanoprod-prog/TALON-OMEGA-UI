@@ -717,7 +717,7 @@ export default function HelpCenter({ isOpen, onClose }) {
           {/* Search Results */}
           {searchResults ? (
             <div className="space-y-6">
-              <h2 className="text-lg font-bold">Search Results for "{searchQuery}"</h2>
+              <h2 className="text-lg font-bold">Search Results for &ldquo;{searchQuery}&rdquo;</h2>
               
               {searchResults.totalCount === 0 ? (
                 <div className="glass rounded-xl p-8 text-center">
