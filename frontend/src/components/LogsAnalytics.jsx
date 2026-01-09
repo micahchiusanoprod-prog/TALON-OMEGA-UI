@@ -767,11 +767,262 @@ const SnapshotDrawer = ({ snapshot, previousSnapshot, onClose }) => {
 // MAIN TABS
 // ============================================================
 
+// Active Logs Panel Component
+const ActiveLogsPanel = ({ logCategories, setLogCategories }) => {
+  const toggleCategory = (id) => {
+    setLogCategories(prev => prev.map(cat => 
+      cat.id === id ? { ...cat, enabled: !cat.enabled } : cat
+    ));
+  };
+  
+  const enabledCount = logCategories.filter(c => c.enabled).length;
+  
+  return (
+    <div className="glass rounded-xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold flex items-center gap-2">
+          <Archive className="w-4 h-4 text-primary" />
+          Active Log Categories
+        </h3>
+        <span className="text-xs text-muted-foreground">{enabledCount}/{logCategories.length} active</span>
+      </div>
+      
+      <p className="text-xs text-muted-foreground mb-3">
+        Select which data categories to track and archive. Disabled categories will not be captured in new snapshots.
+      </p>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {logCategories.map(cat => {
+          const Icon = cat.icon;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => toggleCategory(cat.id)}
+              className={`flex items-start gap-3 p-3 rounded-lg text-left transition-all ${
+                cat.enabled 
+                  ? 'bg-primary/10 border border-primary/30' 
+                  : 'glass border border-transparent opacity-60 hover:opacity-100'
+              }`}
+            >
+              <div className={`p-1.5 rounded-lg ${cat.enabled ? 'bg-primary/20' : 'bg-secondary'}`}>
+                <Icon className={`w-4 h-4 ${cat.enabled ? cat.color : 'text-muted-foreground'}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">{cat.name}</span>
+                  {cat.enabled && <CheckCircle className="w-3 h-3 text-success" />}
+                </div>
+                <p className="text-[10px] text-muted-foreground truncate">{cat.description}</p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// Statistics Summary Component
+const StatisticsSummary = ({ snapshots, timeRange }) => {
+  const stats = useMemo(() => {
+    if (snapshots.length === 0) return null;
+    
+    const calc = (arr, key) => {
+      const values = arr.map(s => key.split('.').reduce((o, k) => o?.[k], s)).filter(v => typeof v === 'number');
+      if (values.length === 0) return { min: 0, max: 0, avg: 0, current: 0 };
+      return {
+        min: Math.min(...values),
+        max: Math.max(...values),
+        avg: values.reduce((a, b) => a + b, 0) / values.length,
+        current: values[values.length - 1]
+      };
+    };
+    
+    return {
+      cpu: calc(snapshots, 'metrics.cpu'),
+      ram: calc(snapshots, 'metrics.ram'),
+      disk: calc(snapshots, 'metrics.disk'),
+      temp: calc(snapshots, 'sensors.temperature'),
+      humidity: calc(snapshots, 'sensors.humidity'),
+      pressure: calc(snapshots, 'sensors.pressure'),
+      iaq: calc(snapshots, 'sensors.iaq'),
+      gpsAccuracy: calc(snapshots, 'gps.accuracy'),
+      uptimeOk: snapshots.filter(s => s.ok).length,
+      uptimeTotal: snapshots.length,
+      commsAvailable: snapshots.filter(s => s.comms?.lan === 'available').length,
+      backupSuccess: snapshots.filter(s => s.backup?.status === 'success').length,
+    };
+  }, [snapshots]);
+  
+  if (!stats) return null;
+  
+  const StatRow = ({ label, data, unit = '', precision = 1 }) => (
+    <div className="grid grid-cols-5 gap-2 text-xs py-1.5 border-b border-border/30 last:border-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="text-center font-mono">{data.current.toFixed(precision)}{unit}</span>
+      <span className="text-center font-mono text-green-400">{data.min.toFixed(precision)}{unit}</span>
+      <span className="text-center font-mono text-red-400">{data.max.toFixed(precision)}{unit}</span>
+      <span className="text-center font-mono text-primary">{data.avg.toFixed(precision)}{unit}</span>
+    </div>
+  );
+  
+  return (
+    <div className="glass rounded-xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold flex items-center gap-2">
+          <PieChart className="w-4 h-4 text-primary" />
+          Statistical Summary ({timeRange})
+        </h3>
+      </div>
+      
+      <div className="grid grid-cols-5 gap-2 text-xs py-2 border-b border-border font-semibold">
+        <span>Metric</span>
+        <span className="text-center">Current</span>
+        <span className="text-center text-green-400">Min</span>
+        <span className="text-center text-red-400">Max</span>
+        <span className="text-center text-primary">Avg</span>
+      </div>
+      
+      <StatRow label="CPU" data={stats.cpu} unit="%" />
+      <StatRow label="RAM" data={stats.ram} unit="%" />
+      <StatRow label="Disk" data={stats.disk} unit="%" />
+      <StatRow label="Temp" data={stats.temp} unit="°C" />
+      <StatRow label="Humidity" data={stats.humidity} unit="%" />
+      <StatRow label="Pressure" data={stats.pressure} unit=" hPa" precision={0} />
+      <StatRow label="IAQ" data={stats.iaq} unit="" precision={0} />
+      <StatRow label="GPS Acc" data={stats.gpsAccuracy} unit="m" />
+      
+      <div className="grid grid-cols-3 gap-3 mt-4 pt-3 border-t border-border">
+        <div className="text-center">
+          <div className="text-lg font-bold text-success">{((stats.uptimeOk / stats.uptimeTotal) * 100).toFixed(1)}%</div>
+          <p className="text-[10px] text-muted-foreground">Uptime OK Rate</p>
+        </div>
+        <div className="text-center">
+          <div className="text-lg font-bold text-emerald-400">{((stats.commsAvailable / stats.uptimeTotal) * 100).toFixed(1)}%</div>
+          <p className="text-[10px] text-muted-foreground">Comms Available</p>
+        </div>
+        <div className="text-center">
+          <div className="text-lg font-bold text-violet-400">{((stats.backupSuccess / stats.uptimeTotal) * 100).toFixed(1)}%</div>
+          <p className="text-[10px] text-muted-foreground">Backup Success</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Metric Visibility Toggle Component
+const MetricVisibilityPanel = ({ visibleMetrics, setVisibleMetrics }) => {
+  const metrics = [
+    { id: 'cpu', label: 'CPU %', color: 'bg-blue-500' },
+    { id: 'ram', label: 'RAM %', color: 'bg-purple-500' },
+    { id: 'disk', label: 'Disk %', color: 'bg-amber-500' },
+    { id: 'temp', label: 'Temperature', color: 'bg-red-500' },
+    { id: 'humidity', label: 'Humidity', color: 'bg-cyan-500' },
+    { id: 'pressure', label: 'Pressure', color: 'bg-pink-500' },
+    { id: 'iaq', label: 'IAQ', color: 'bg-orange-500' },
+    { id: 'gpsAccuracy', label: 'GPS Accuracy', color: 'bg-green-500' },
+    { id: 'comms', label: 'Comms Status', color: 'bg-emerald-500' },
+  ];
+  
+  const toggle = (id) => {
+    setVisibleMetrics(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+  
+  return (
+    <div className="flex flex-wrap gap-2">
+      {metrics.map(m => (
+        <button
+          key={m.id}
+          onClick={() => toggle(m.id)}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium transition-all ${
+            visibleMetrics[m.id] 
+              ? 'bg-secondary border border-primary/50' 
+              : 'bg-secondary/50 opacity-50 hover:opacity-100'
+          }`}
+        >
+          <div className={`w-2 h-2 rounded-full ${m.color}`} />
+          {m.label}
+          {visibleMetrics[m.id] ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// Last Snapshot Info Component
+const LastSnapshotInfo = ({ snapshot, capturing }) => {
+  if (!snapshot) return null;
+  
+  const ts = new Date(snapshot.ts);
+  const timeSince = Date.now() - ts.getTime();
+  const secondsAgo = Math.floor(timeSince / 1000);
+  const minutesAgo = Math.floor(secondsAgo / 60);
+  
+  return (
+    <div className="glass rounded-xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold flex items-center gap-2">
+          <History className="w-4 h-4 text-primary" />
+          Last Snapshot
+        </h3>
+        <div className="flex items-center gap-2">
+          {capturing ? (
+            <span className="flex items-center gap-1.5 text-xs text-success">
+              <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+              Live Capturing
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-xs text-warning">
+              <Pause className="w-3 h-3" />
+              Paused
+            </span>
+          )}
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="glass rounded-lg p-2">
+          <span className="text-[10px] text-muted-foreground block">Timestamp</span>
+          <p className="text-sm font-mono">{ts.toLocaleTimeString()}</p>
+          <p className="text-[10px] text-muted-foreground">{ts.toLocaleDateString()}</p>
+        </div>
+        <div className="glass rounded-lg p-2">
+          <span className="text-[10px] text-muted-foreground block">Time Since</span>
+          <p className="text-sm font-mono">
+            {minutesAgo > 0 ? `${minutesAgo}m ${secondsAgo % 60}s` : `${secondsAgo}s`}
+          </p>
+          <p className="text-[10px] text-muted-foreground">ago</p>
+        </div>
+        <div className="glass rounded-lg p-2">
+          <span className="text-[10px] text-muted-foreground block">Status</span>
+          <p className={`text-sm font-semibold ${snapshot.ok ? 'text-success' : 'text-destructive'}`}>
+            {snapshot.ok ? 'OK' : 'Issues'}
+          </p>
+          <p className="text-[10px] text-muted-foreground">{snapshot.health?.status || 'unknown'}</p>
+        </div>
+        <div className="glass rounded-lg p-2">
+          <span className="text-[10px] text-muted-foreground block">Health</span>
+          <p className={`text-sm font-bold ${getHealthColor(calculateHealthIndex(snapshot))}`}>
+            {calculateHealthIndex(snapshot)}/100
+          </p>
+          <p className="text-[10px] text-muted-foreground">index score</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // This Device Tab
-const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterval, retention, setRetention }) => {
+const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterval, retention, setRetention, logCategories, setLogCategories }) => {
   const [timeRange, setTimeRange] = useState('12h');
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const [showTable, setShowTable] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showActiveLogs, setShowActiveLogs] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [visibleMetrics, setVisibleMetrics] = useState(DEFAULT_VISIBLE_METRICS);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [compareWindow, setCompareWindow] = useState('12h');
   const [now] = useState(() => Date.now()); // Stable timestamp for filtering
   
   // Filter snapshots by time range
