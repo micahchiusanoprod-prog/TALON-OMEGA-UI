@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, createContext, useContext } from 'react';
+import React, { useState, useMemo, useCallback, createContext, useContext, useEffect } from 'react';
 import {
   X,
   Users,
@@ -68,11 +68,67 @@ import {
   Send,
   Vote,
   ClipboardList,
-  Bell
+  Bell,
+  ArrowLeft,
+  Copy,
+  CheckCheck
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
+
+// ============================================================
+// PHASE 0: RBAC GUARD COMPONENT
+// ============================================================
+
+// Role hierarchy for comparison
+const ROLE_HIERARCHY = { guest: 0, member: 1, admin: 2 };
+
+// RequireRole Guard Component - Wraps content that requires minimum role
+const RequireRole = ({ minRole, children, onAccessDenied, fallback }) => {
+  const { currentUser, isAdmin, isMember } = useRBAC();
+  const userRoleLevel = ROLE_HIERARCHY[currentUser?.role] || 0;
+  const requiredLevel = ROLE_HIERARCHY[minRole] || 0;
+  
+  const hasAccess = userRoleLevel >= requiredLevel;
+  
+  useEffect(() => {
+    if (!hasAccess && onAccessDenied) {
+      onAccessDenied();
+    }
+  }, [hasAccess, onAccessDenied]);
+  
+  if (!hasAccess) {
+    if (fallback) return fallback;
+    return (
+      <AccessDeniedCard 
+        minRole={minRole} 
+        currentRole={currentUser?.role} 
+      />
+    );
+  }
+  
+  return children;
+};
+
+// Access Denied Card with return button
+const AccessDeniedCard = ({ minRole, currentRole, onReturn }) => (
+  <div className="flex flex-col items-center justify-center py-16 glass rounded-xl" data-testid="access-denied">
+    <ShieldAlert className="w-16 h-16 text-destructive/50 mb-4" />
+    <h3 className="text-lg font-semibold mb-2">Access Denied</h3>
+    <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
+      This section requires <span className="font-semibold text-amber-400">{minRole}</span> role or higher.
+      <br />
+      Your current role: <span className="font-semibold">{currentRole || 'guest'}</span>
+    </p>
+    {onReturn && (
+      <Button onClick={onReturn} variant="outline" size="sm" className="gap-2">
+        <ArrowLeft className="w-4 h-4" />
+        Return to Overview
+      </Button>
+    )}
+  </div>
+);
 
 // ============================================================
 // PHASE 0: RBAC + PRIVACY + DATA CONTRACTS
@@ -178,16 +234,92 @@ const RBACProvider = ({ children, currentUser }) => {
   );
 };
 
-// Privacy Redaction Helper
-const redactField = (value, canView, optIn = true, placeholder = '••••••') => {
-  if (!canView || !optIn) return placeholder;
-  return value;
+// ============================================================
+// PHASE 0: PRIVACY REDACTION SYSTEM
+// ============================================================
+
+/**
+ * Privacy Redaction Helper
+ * Redacts sensitive profile fields based on viewer role and opt-in settings
+ * 
+ * Rules:
+ * - Admin: Always sees full profile (all fields)
+ * - Member/Guest: Only sees fields where privacy opt-in is TRUE
+ * - When hidden: Returns null (UI renders as "Hidden")
+ * 
+ * @param {Object} profile - The profile object to redact
+ * @param {string} viewerRole - 'guest' | 'member' | 'admin'
+ * @returns {Object} - Redacted profile with nulls for hidden fields
+ */
+const redactProfile = (profile, viewerRole) => {
+  if (!profile) return null;
+  
+  // Admin sees everything
+  if (viewerRole === 'admin') {
+    return { ...profile, _redacted: false };
+  }
+  
+  // Get privacy settings with defaults
+  const privacy = profile.privacySettings || {
+    showAge: false,
+    showHeight: false,
+    showWeight: false,
+    showMedical: false,
+    showEducation: true, // Default public
+  };
+  
+  // Create redacted copy
+  const redacted = {
+    ...profile,
+    _redacted: true,
+    // Redact based on opt-in flags
+    age: privacy.showAge ? profile.age : null,
+    heightIn: privacy.showHeight ? profile.heightIn : null,
+    weightLb: privacy.showWeight ? profile.weightLb : null,
+    // Education is usually public unless explicitly hidden
+    educationLevel: privacy.showEducation !== false ? profile.educationLevel : null,
+    // Always hide admin-only fields from non-admins
+    adminNotes: null,
+    notes: null,
+  };
+  
+  return redacted;
 };
 
-const shouldShowField = (field, canView, profile) => {
-  // Check opt-in flags on profile
-  const optInFlags = profile?.privacySettings || {};
-  return canView && optInFlags[field] !== false;
+/**
+ * Helper to check if a specific field is visible
+ */
+const isFieldVisible = (profile, fieldName, viewerRole) => {
+  if (viewerRole === 'admin') return true;
+  
+  const privacy = profile?.privacySettings || {};
+  const fieldToOptIn = {
+    age: 'showAge',
+    heightIn: 'showHeight',
+    weightLb: 'showWeight',
+    educationLevel: 'showEducation',
+  };
+  
+  const optInKey = fieldToOptIn[fieldName];
+  return optInKey ? privacy[optInKey] === true : true;
+};
+
+/**
+ * Format height from inches to readable string
+ */
+const formatHeight = (inches) => {
+  if (!inches) return null;
+  const feet = Math.floor(inches / 12);
+  const remainingInches = inches % 12;
+  return `${feet}'${remainingInches}"`;
+};
+
+/**
+ * Format weight in lbs
+ */
+const formatWeight = (lbs) => {
+  if (!lbs) return null;
+  return `${lbs} lbs`;
 };
 
 // ============================================================
