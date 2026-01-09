@@ -57,7 +57,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           </div>
 
-          {/* Center: LOGS Button + Help Center Button + Metrics Pills (desktop) */}
+          {/* Center: LOGS Button + Community Button + Help Center Button + Metrics Pills (desktop) */}
           {!useCompactHeader && (
             <div className="hidden md:flex items-center gap-3 flex-wrap">
               {/* LOGS Button - Premium */}
@@ -69,6 +69,17 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               >
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm font-semibold">LOGS</span>
+              </button>
+              
+              {/* Community Button - Premium */}
+              <button
+                onClick={() => setShowCommunity(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 hover:from-violet-500/30 hover:to-fuchsia-500/30 hover:border-violet-500/50 transition-all shadow-sm"
+                title="Open Community Hub"
+                data-testid="community-btn"
+              >
+                <Users className="w-4 h-4 text-violet-400" />
+                <span className="text-sm font-semibold">Community</span>
               </button>
               
               {/* Help Center Button - Centered & Premium */}
@@ -116,7 +127,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           )}
 
-          {/* Mobile: LOGS + Help Center Button + Temp */}
+          {/* Mobile: LOGS + Community + Help Center Button + Temp */}
           {useCompactHeader && (
             <div className="flex md:hidden items-center gap-2">
               {/* LOGS Button - Mobile */}
@@ -128,6 +139,17 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               >
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
                 <span className="text-xs font-semibold">LOGS</span>
+              </button>
+              
+              {/* Community Button - Mobile */}
+              <button
+                onClick={() => setShowCommunity(true)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 hover:border-violet-500/50 transition-all"
+                title="Open Community Hub"
+                data-testid="community-btn-mobile"
+              >
+                <Users className="w-4 h-4 text-violet-400" />
+                <span className="text-xs font-semibold">Community</span>
               </button>
               
               {/* Help Center Button - Mobile */}
