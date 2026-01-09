@@ -3294,13 +3294,13 @@ export default function LogsAnalytics({ isOpen, onClose }) {
   const anomalies = useMemo(() => detectAnomalies(thisDeviceSnapshots), [thisDeviceSnapshots]);
   
   // P0: Generate incidents from anomalies (and add mock historical incidents)
-  const [incidentsState, setIncidentsState] = useState({ resolved: {} });
+  const [incidentsState, setIncidentsState] = useState({ resolved: {}, mockTs: Date.now() });
   
   const incidents = useMemo(() => {
     const generatedIncidents = generateIncidentsFromAnomalies(anomalies, detectionRules);
     
-    // Add more mock incidents for demo purposes
-    const now = Date.now();
+    // Add more mock incidents for demo purposes (use stable timestamp)
+    const now = incidentsState.mockTs;
     const mockIncidents = [
       {
         id: 'INC-MOCK-001',
