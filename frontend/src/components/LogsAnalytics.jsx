@@ -822,6 +822,17 @@ const ActiveLogsPanel = ({ logCategories, setLogCategories }) => {
   );
 };
 
+// Stat Row Component (moved outside)
+const StatRow = ({ label, data, unit = '', precision = 1 }) => (
+  <div className="grid grid-cols-5 gap-2 text-xs py-1.5 border-b border-border/30 last:border-0">
+    <span className="text-muted-foreground">{label}</span>
+    <span className="text-center font-mono">{data.current.toFixed(precision)}{unit}</span>
+    <span className="text-center font-mono text-green-400">{data.min.toFixed(precision)}{unit}</span>
+    <span className="text-center font-mono text-red-400">{data.max.toFixed(precision)}{unit}</span>
+    <span className="text-center font-mono text-primary">{data.avg.toFixed(precision)}{unit}</span>
+  </div>
+);
+
 // Statistics Summary Component
 const StatisticsSummary = ({ snapshots, timeRange }) => {
   const stats = useMemo(() => {
@@ -855,16 +866,6 @@ const StatisticsSummary = ({ snapshots, timeRange }) => {
   }, [snapshots]);
   
   if (!stats) return null;
-  
-  const StatRow = ({ label, data, unit = '', precision = 1 }) => (
-    <div className="grid grid-cols-5 gap-2 text-xs py-1.5 border-b border-border/30 last:border-0">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-center font-mono">{data.current.toFixed(precision)}{unit}</span>
-      <span className="text-center font-mono text-green-400">{data.min.toFixed(precision)}{unit}</span>
-      <span className="text-center font-mono text-red-400">{data.max.toFixed(precision)}{unit}</span>
-      <span className="text-center font-mono text-primary">{data.avg.toFixed(precision)}{unit}</span>
-    </div>
-  );
   
   return (
     <div className="glass rounded-xl p-4">
