@@ -1497,8 +1497,27 @@ export default function CommunityHub({ isOpen, onClose }) {
   const [currentUserPrivacy, setCurrentUserPrivacy] = useState({ showAge: true, showHeightWeight: true, showEducation: true });
   const currentUser = { ...MOCK_CURRENT_USERS[currentUserRole], privacy: currentUserPrivacy };
   
-  const [activeTab, setActiveTab] = useState('overview');
-  const [directoryFilters, setDirectoryFilters] = useState({});
+  // Get initial values from URL params (lazy evaluation)
+  const getInitialTab = () => {
+    if (typeof window === 'undefined') return 'overview';
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    const validTabs = ['overview', 'analytics', 'directory', 'comms', 'incidents'];
+    return validTabs.includes(tab) ? tab : 'overview';
+  };
+  
+  const getInitialFilters = () => {
+    if (typeof window === 'undefined') return {};
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const skills = params.get('skills')?.split(',').filter(Boolean);
+    const languages = params.get('languages')?.split(',').filter(Boolean);
+    const online = params.get('online') === 'true';
+    return { q, skills, languages, online };
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+  const [directoryFilters, setDirectoryFilters] = useState(getInitialFilters);
   const [analyticsFilter, setAnalyticsFilter] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
   
