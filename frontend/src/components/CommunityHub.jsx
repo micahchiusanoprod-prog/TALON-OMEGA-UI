@@ -1330,8 +1330,6 @@ const AnalyticsTab = () => {
 const DirectoryTab = ({ profiles, scoreConfig, memberScores, onTabChange }) => {
   const { can, currentUser, isAdmin } = useRBAC();
   
-  if (!can('viewDirectory')) return <AccessDeniedCard minRole="guest" currentRole={currentUser?.role} />;
-  
   // Get redacted profiles based on viewer role
   const viewerRole = currentUser?.role || 'guest';
   const redactedProfiles = useMemo(() => 
@@ -1341,6 +1339,8 @@ const DirectoryTab = ({ profiles, scoreConfig, memberScores, onTabChange }) => {
   
   // Show only first 3 profiles as preview (per Phase 1 requirements)
   const previewProfiles = redactedProfiles.slice(0, 3);
+  
+  if (!can('viewDirectory')) return <AccessDeniedCard minRole="guest" currentRole={currentUser?.role} />;
   
   return (
     <div className="space-y-6">
@@ -1355,7 +1355,7 @@ const DirectoryTab = ({ profiles, scoreConfig, memberScores, onTabChange }) => {
               {isAdmin ? (
                 <span className="text-amber-400 ml-1">As an admin, you see all fields.</span>
               ) : (
-                <span className="text-muted-foreground ml-1">Fields marked "Hidden" are not shared by the member.</span>
+                <span className="text-muted-foreground ml-1">Fields marked &quot;Hidden&quot; are not shared by the member.</span>
               )}
             </p>
           </div>
