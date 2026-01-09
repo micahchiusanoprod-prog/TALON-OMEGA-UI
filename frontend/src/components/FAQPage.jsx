@@ -456,51 +456,54 @@ export default function FAQPage({ onClose }) {
   
   return (
     <div className="fixed inset-0 z-[100] bg-background overflow-hidden" data-testid="faq-page">
-      {/* Header */}
+      {/* Header - Compact on mobile */}
       <div className="sticky top-0 z-10 glass border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          {/* Top row: Back + Close */}
+          <div className="flex items-center justify-between mb-3">
             <button
               onClick={onClose}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors active:text-foreground"
               data-testid="faq-back-btn"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Dashboard
+              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="sm:hidden">Back</span>
             </button>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="p-2 -mr-2 hover:bg-secondary rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
           
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-xl bg-primary/20">
-              <HelpCircle className="w-6 h-6 text-primary" />
+          {/* Title row - Compact */}
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-primary/20">
+              <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Help Center</h1>
-              <p className="text-sm text-muted-foreground">Find answers to common questions</p>
+              <h1 className="text-xl sm:text-2xl font-bold">Help Center</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Find answers to common questions</p>
             </div>
           </div>
           
-          {/* Search */}
+          {/* Search - Full width */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for help..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl glass border border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+              className="w-full pl-10 sm:pl-12 pr-10 py-2.5 sm:py-3 rounded-xl glass border border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
               data-testid="faq-search"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-secondary rounded-full"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-secondary rounded-full"
               >
                 <X className="w-4 h-4 text-muted-foreground" />
               </button>
@@ -515,11 +518,11 @@ export default function FAQPage({ onClose }) {
         </div>
       </div>
       
-      {/* Quick Navigation (Icon Grid) */}
+      {/* Quick Navigation (Icon Grid) - Compact on mobile */}
       {!searchQuery && (
-        <div className="container mx-auto px-4 py-4">
-          <p className="text-xs font-semibold text-muted-foreground mb-3">QUICK NAVIGATION</p>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-12 gap-2">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground mb-2 sm:mb-3">QUICK NAVIGATION</p>
+          <div className="grid grid-cols-6 sm:grid-cols-6 md:grid-cols-12 gap-1 sm:gap-2">
             {FAQ_CATEGORIES.map(cat => {
               const Icon = cat.icon;
               return (
@@ -528,13 +531,13 @@ export default function FAQPage({ onClose }) {
                   onClick={() => {
                     document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-white/5 transition-colors group"
+                  className="flex flex-col items-center gap-0.5 sm:gap-1 p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-white/5 transition-colors group active:bg-white/10"
                   title={cat.name}
                 >
-                  <div className={`p-2 rounded-lg ${cat.bgColor} group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-4 h-4 ${cat.color}`} />
+                  <div className={`p-1.5 sm:p-2 rounded-md sm:rounded-lg ${cat.bgColor} group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${cat.color}`} />
                   </div>
-                  <span className="text-[10px] text-muted-foreground truncate max-w-full">{cat.name}</span>
+                  <span className="text-[8px] sm:text-[10px] text-muted-foreground truncate max-w-full leading-tight">{cat.name}</span>
                 </button>
               );
             })}
@@ -542,9 +545,9 @@ export default function FAQPage({ onClose }) {
         </div>
       )}
       
-      {/* FAQ Categories */}
-      <div className="container mx-auto px-4 pb-8 overflow-y-auto" style={{ height: 'calc(100vh - 280px)' }}>
-        <div className="space-y-4">
+      {/* FAQ Categories - Scrollable */}
+      <div className="container mx-auto px-3 sm:px-4 pb-8 overflow-y-auto scrollbar-thin" style={{ height: searchQuery ? 'calc(100vh - 160px)' : 'calc(100vh - 240px)' }}>
+        <div className="space-y-3 sm:space-y-4">
           {FAQ_CATEGORIES.map(category => (
             <div key={category.id} id={`cat-${category.id}`}>
               <CategorySection
