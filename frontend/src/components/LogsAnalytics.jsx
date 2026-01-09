@@ -312,6 +312,284 @@ const generateOutlierNode = () => {
 };
 
 // ============================================================
+// P0: CAPTURE HEALTH MOCK DATA
+// ============================================================
+
+const generateCaptureHealth = () => {
+  const now = Date.now();
+  // Simulate occasional stale endpoints
+  const staleChance = () => Math.random() > 0.85;
+  
+  return {
+    capturing: true,
+    interval: '60s',
+    retention: '24h',
+    missedSnapshots: {
+      last1h: Math.random() > 0.9 ? Math.floor(Math.random() * 5) : 0,
+      last12h: Math.floor(Math.random() * 8),
+    },
+    avgLatency: Math.floor(45 + Math.random() * 30), // 45-75ms
+    endpoints: ENDPOINT_SOURCES.map(ep => ({
+      ...ep,
+      status: staleChance() ? 'stale' : Math.random() > 0.95 ? 'degraded' : 'ok',
+      lastPoll: new Date(now - Math.floor(Math.random() * (staleChance() ? 600000 : 60000))).toISOString(),
+      latency: Math.floor(20 + Math.random() * 50),
+    })),
+  };
+};
+
+// ============================================================
+// P0: INCIDENT GENERATION FROM ANOMALIES
+// ============================================================
+
+const generateIncidentsFromAnomalies = (anomalies, rules) => {
+  if (!anomalies || anomalies.length === 0) return [];
+  
+  const incidents = [];
+  let currentIncident = null;
+  const sortedAnomalies = [...anomalies].sort((a, b) => new Date(a.ts) - new Date(b.ts));
+  
+  // Group anomalies into incidents (within 10 min window and same type)
+  const groupingWindowMs = 10 * 60 * 1000;
+  
+  sortedAnomalies.forEach((anomaly, idx) => {
+    const anomalyTime = new Date(anomaly.ts).getTime();
+    
+    if (!currentIncident) {
+      currentIncident = createIncident(anomaly, idx);
+    } else {
+      const timeDiff = anomalyTime - new Date(currentIncident.endTime || currentIncident.startTime).getTime();
+      const sameSubsystem = getSubsystemFromAnomaly(anomaly) === currentIncident.subsystems[0];
+      
+      if (timeDiff < groupingWindowMs && sameSubsystem) {
+        // Extend current incident
+        currentIncident.endTime = anomaly.ts;
+        currentIncident.anomalyIds.push(anomaly.id);
+        currentIncident.peakValues = updatePeakValues(currentIncident.peakValues, anomaly);
+        if (anomaly.severity === 'high') currentIncident.severity = 'critical';
+      } else {
+        // Close current and start new
+        incidents.push(currentIncident);
+        currentIncident = createIncident(anomaly, idx);
+      }
+    }
+  });
+  
+  if (currentIncident) {
+    incidents.push(currentIncident);
+  }
+  
+  // Add some mock resolved incidents for demo
+  const mockResolvedIncidents = [
+    {
+      id: 'INC-RESOLVED-001',
+      title: 'Backup Failure (Resolved)',
+      startTime: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
+      endTime: new Date(Date.now() - 17.5 * 60 * 60 * 1000).toISOString(),
+      severity: 'warn',
+      subsystems: ['storage'],
+      status: 'resolved',
+      anomalyIds: ['backup-resolved-1'],
+      peakValues: { backupFails: 2 },
+      resolutionNotes: 'Disk space cleared, backup completed successfully.',
+    },
+    {
+      id: 'INC-RESOLVED-002',
+      title: 'GPS Accuracy Degraded (Resolved)',
+      startTime: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+      endTime: new Date(Date.now() - 7.8 * 60 * 60 * 1000).toISOString(),
+      severity: 'info',
+      subsystems: ['gps'],
+      status: 'resolved',
+      anomalyIds: ['gps-resolved-1'],
+      peakValues: { gpsAccuracy: 35 },
+      resolutionNotes: 'Moved to open area, GPS fix restored.',
+    },
+  ];
+  
+  return [...incidents.reverse(), ...mockResolvedIncidents];
+};
+
+const createIncident = (anomaly, idx) => {
+  const subsystem = getSubsystemFromAnomaly(anomaly);
+  const severity = anomaly.severity === 'high' ? 'critical' : anomaly.severity === 'medium' ? 'warn' : 'info';
+  const now = Date.now();
+  const anomalyTime = new Date(anomaly.ts).getTime();
+  const isOngoing = (now - anomalyTime) < 30 * 60 * 1000; // Within last 30 min = ongoing
+  
+  return {
+    id: `INC-${Date.now()}-${idx}`,
+    title: generateIncidentTitle(anomaly),
+    startTime: anomaly.ts,
+    endTime: isOngoing ? null : anomaly.ts,
+    severity,
+    subsystems: [subsystem],
+    status: isOngoing ? 'open' : 'monitoring',
+    anomalyIds: [anomaly.id],
+    peakValues: extractPeakValues(anomaly),
+  };
+};
+
+const getSubsystemFromAnomaly = (anomaly) => {
+  if (anomaly.type?.includes('temp')) return 'thermals';
+  if (anomaly.type?.includes('cpu') || anomaly.type?.includes('ram')) return 'services';
+  if (anomaly.type?.includes('disk') || anomaly.type?.includes('backup')) return 'storage';
+  if (anomaly.type?.includes('comms')) return 'comms';
+  if (anomaly.type?.includes('gps')) return 'gps';
+  return 'services';
+};
+
+const generateIncidentTitle = (anomaly) => {
+  const duration = Math.floor(Math.random() * 15) + 3;
+  if (anomaly.type?.includes('temp')) return `Temp Spike (${duration}m)`;
+  if (anomaly.type?.includes('cpu')) return `CPU Spike (${duration}m)`;
+  if (anomaly.type?.includes('backup')) return `Backup Failed`;
+  if (anomaly.type?.includes('comms')) return `Comms Degraded (${duration}m)`;
+  if (anomaly.type?.includes('gps')) return `GPS Accuracy Low`;
+  return `System Anomaly (${duration}m)`;
+};
+
+const extractPeakValues = (anomaly) => {
+  const peaks = {};
+  if (anomaly.value) peaks[anomaly.type?.split('_')[0] || 'value'] = anomaly.value;
+  return peaks;
+};
+
+const updatePeakValues = (existing, anomaly) => {
+  const peaks = { ...existing };
+  if (anomaly.value) {
+    const key = anomaly.type?.split('_')[0] || 'value';
+    peaks[key] = Math.max(peaks[key] || 0, anomaly.value);
+  }
+  return peaks;
+};
+
+// Generate top drivers for an incident (root cause analysis)
+const generateTopDrivers = (incident, snapshots) => {
+  // Mocked driver analysis - in production would compare incident window vs baseline
+  const drivers = [];
+  
+  if (incident.subsystems.includes('thermals')) {
+    drivers.push({ metric: 'CPU Load', delta: '+38%', correlation: 'high', explanation: 'Sustained CPU activity during incident window' });
+    drivers.push({ metric: 'Disk I/O', delta: '+25%', correlation: 'medium', explanation: 'Heavy write operations detected' });
+    drivers.push({ metric: 'Ambient Temp', delta: '+5°C', correlation: 'medium', explanation: 'External temperature rise' });
+  }
+  
+  if (incident.subsystems.includes('storage')) {
+    drivers.push({ metric: 'Disk Usage', delta: '+12%', correlation: 'high', explanation: 'Rapid storage consumption' });
+    drivers.push({ metric: 'Write Latency', delta: '+180ms', correlation: 'high', explanation: 'Storage becoming slow' });
+    drivers.push({ metric: 'Backup Size', delta: '+2.1GB', correlation: 'medium', explanation: 'Larger than usual backup payload' });
+  }
+  
+  if (incident.subsystems.includes('comms')) {
+    drivers.push({ metric: 'Signal Strength', delta: '-15dB', correlation: 'high', explanation: 'Weak network signal' });
+    drivers.push({ metric: 'Packet Loss', delta: '+8%', correlation: 'high', explanation: 'Network congestion detected' });
+    drivers.push({ metric: 'Latency', delta: '+120ms', correlation: 'medium', explanation: 'Round-trip time increased' });
+  }
+  
+  if (incident.subsystems.includes('gps')) {
+    drivers.push({ metric: 'Satellites', delta: '-4', correlation: 'high', explanation: 'Fewer satellites in view' });
+    drivers.push({ metric: 'HDOP', delta: '+2.5', correlation: 'high', explanation: 'Poor satellite geometry' });
+    drivers.push({ metric: 'Signal Noise', delta: '+12dB', correlation: 'medium', explanation: 'RF interference detected' });
+  }
+  
+  if (incident.subsystems.includes('services')) {
+    drivers.push({ metric: 'CPU Usage', delta: '+45%', correlation: 'high', explanation: 'Process consuming excessive CPU' });
+    drivers.push({ metric: 'Memory', delta: '+1.2GB', correlation: 'medium', explanation: 'Memory leak suspected' });
+    drivers.push({ metric: 'Thread Count', delta: '+28', correlation: 'low', explanation: 'More threads spawned' });
+  }
+  
+  // Default if empty
+  if (drivers.length === 0) {
+    drivers.push({ metric: 'System Load', delta: '+20%', correlation: 'medium', explanation: 'General system stress' });
+  }
+  
+  return drivers.slice(0, 5);
+};
+
+// Generate likely causes for an incident
+const generateLikelyCauses = (incident) => {
+  const causes = [];
+  
+  if (incident.subsystems.includes('thermals')) {
+    causes.push({ cause: 'Backup workload drove CPU + disk I/O', confidence: 'high', likelihood: 75 });
+    causes.push({ cause: 'Poor ventilation or blocked airflow', confidence: 'medium', likelihood: 45 });
+    causes.push({ cause: 'External heat source nearby', confidence: 'low', likelihood: 20 });
+  }
+  
+  if (incident.subsystems.includes('storage')) {
+    causes.push({ cause: 'Destination storage full or near capacity', confidence: 'high', likelihood: 80 });
+    causes.push({ cause: 'Network path to backup target unavailable', confidence: 'medium', likelihood: 50 });
+    causes.push({ cause: 'Permissions changed on backup directory', confidence: 'low', likelihood: 15 });
+  }
+  
+  if (incident.subsystems.includes('comms')) {
+    causes.push({ cause: 'Network congestion or interference', confidence: 'high', likelihood: 70 });
+    causes.push({ cause: 'Access point overloaded or rebooting', confidence: 'medium', likelihood: 40 });
+    causes.push({ cause: 'Physical obstacle blocking signal', confidence: 'medium', likelihood: 35 });
+  }
+  
+  if (incident.subsystems.includes('gps')) {
+    causes.push({ cause: 'Indoor location or obstructed sky view', confidence: 'high', likelihood: 85 });
+    causes.push({ cause: 'RF interference from nearby electronics', confidence: 'medium', likelihood: 40 });
+    causes.push({ cause: 'GPS antenna issue', confidence: 'low', likelihood: 10 });
+  }
+  
+  if (incident.subsystems.includes('services')) {
+    causes.push({ cause: 'Heavy processing task (encoding, analysis)', confidence: 'high', likelihood: 65 });
+    causes.push({ cause: 'Runaway process or memory leak', confidence: 'medium', likelihood: 45 });
+    causes.push({ cause: 'Scheduled job overlap', confidence: 'low', likelihood: 25 });
+  }
+  
+  if (causes.length === 0) {
+    causes.push({ cause: 'System resource contention', confidence: 'medium', likelihood: 50 });
+  }
+  
+  return causes.slice(0, 4);
+};
+
+// Generate verify checklist for an incident
+const generateVerifyChecklist = (incident) => {
+  const checklist = [];
+  
+  // Common checks
+  checklist.push({ step: 'Check overall system status', command: 'sudo systemctl status omega-*', copyable: true });
+  
+  if (incident.subsystems.includes('thermals')) {
+    checklist.push({ step: 'Check CPU temperature', command: 'cat /sys/class/thermal/thermal_zone*/temp', copyable: true });
+    checklist.push({ step: 'Check running processes', command: 'top -bn1 | head -20', copyable: true });
+    checklist.push({ step: 'Verify fan status', command: 'cat /sys/class/hwmon/hwmon*/fan*_input', copyable: true });
+  }
+  
+  if (incident.subsystems.includes('storage')) {
+    checklist.push({ step: 'Check disk usage', command: 'df -h', copyable: true });
+    checklist.push({ step: 'Check backup service', command: 'sudo systemctl status omega-backup', copyable: true });
+    checklist.push({ step: 'Verify backup destination', command: 'ls -la /srv/omega/backups/', copyable: true });
+  }
+  
+  if (incident.subsystems.includes('comms')) {
+    checklist.push({ step: 'Check network interfaces', command: 'ip addr show', copyable: true });
+    checklist.push({ step: 'Test connectivity', command: 'ping -c 3 8.8.8.8', copyable: true });
+    checklist.push({ step: 'Check mesh service', command: 'sudo systemctl status omega-mesh', copyable: true });
+  }
+  
+  if (incident.subsystems.includes('gps')) {
+    checklist.push({ step: 'Check GPS daemon', command: 'sudo systemctl status gpsd', copyable: true });
+    checklist.push({ step: 'View GPS data', command: 'gpspipe -w -n 5', copyable: true });
+  }
+  
+  if (incident.subsystems.includes('services')) {
+    checklist.push({ step: 'Check all omega services', command: 'sudo systemctl list-units omega-*', copyable: true });
+    checklist.push({ step: 'View recent logs', command: 'journalctl -u omega-community --since "1 hour ago"', copyable: true });
+  }
+  
+  // Health endpoint check
+  checklist.push({ step: 'Curl health endpoint', command: 'curl http://127.0.0.1:8093/cgi-bin/health.py', copyable: true });
+  
+  return checklist.slice(0, 6);
+};
+
+// ============================================================
 // UTILITY FUNCTIONS
 // ============================================================
 
