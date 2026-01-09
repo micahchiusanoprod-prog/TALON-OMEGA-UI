@@ -1593,36 +1593,7 @@ export default function CommunityHub({ isOpen, onClose }) {
     }
   }, [validActiveTab, isOpen]);
   
-  // Parse URL params on open - using lazy initial state pattern
-  const initialTabFromUrl = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get('tab');
-  }, []);
-  
-  const initialFiltersFromUrl = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    const skills = params.get('skills')?.split(',').filter(Boolean);
-    const languages = params.get('languages')?.split(',').filter(Boolean);
-    const online = params.get('online') === 'true';
-    if (q || skills?.length || languages?.length || online) {
-      return { q, skills, languages, online };
-    }
-    return null;
-  }, []);
-  
-  // Apply URL params on mount
-  useEffect(() => {
-    if (isOpen && initialTabFromUrl && tabs.some(t => t.id === initialTabFromUrl)) {
-      setActiveTab(initialTabFromUrl);
-    }
-    if (isOpen && initialFiltersFromUrl) {
-      setDirectoryFilters(initialFiltersFromUrl);
-      if (initialTabFromUrl !== 'directory') setActiveTab('directory');
-    }
-  }, [isOpen, initialTabFromUrl, initialFiltersFromUrl, tabs]);
+  // URL sync is handled by lazy initial state - no effect needed for parsing
   
   if (!isOpen) return null;
   
