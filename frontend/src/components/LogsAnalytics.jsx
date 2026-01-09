@@ -1319,9 +1319,11 @@ const IncidentDetailDrawer = ({ incident, snapshots, onClose, onResolve }) => {
   const likelyCauses = generateLikelyCauses(incident);
   const verifyChecklist = generateVerifyChecklist(incident);
   
+  // Use a stable now value for duration calculation
+  const [nowTs] = useState(() => Date.now());
   const duration = incident.endTime 
     ? Math.floor((new Date(incident.endTime) - new Date(incident.startTime)) / 60000)
-    : Math.floor((Date.now() - new Date(incident.startTime)) / 60000);
+    : Math.floor((nowTs - new Date(incident.startTime)) / 60000);
   
   const severityColors = {
     critical: 'text-destructive bg-destructive/20 border-destructive/30',
