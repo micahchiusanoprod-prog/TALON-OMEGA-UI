@@ -1574,27 +1574,36 @@ export default function CommunityHub({ isOpen, onClose }) {
     }
   }, [validActiveTab, isOpen]);
   
-  // Parse URL params on open
-  useEffect(() => {
-    if (isOpen && typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const tab = params.get('tab');
-      if (tab && tabs.some(t => t.id === tab)) {
-        handleNavigate(tab);
-      }
-      
-      // Directory filters from URL
-      const q = params.get('q');
-      const skills = params.get('skills')?.split(',').filter(Boolean);
-      const languages = params.get('languages')?.split(',').filter(Boolean);
-      const online = params.get('online') === 'true';
-      
-      if (q || skills?.length || languages?.length || online) {
-        setDirectoryFilters({ q, skills, languages, online });
-        if (tab !== 'directory') setActiveTab('directory');
-      }
+  // Parse URL params on open - using lazy initial state pattern
+  const initialTabFromUrl = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tab');
+  }, []);
+  
+  const initialFiltersFromUrl = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const skills = params.get('skills')?.split(',').filter(Boolean);
+    const languages = params.get('languages')?.split(',').filter(Boolean);
+    const online = params.get('online') === 'true';
+    if (q || skills?.length || languages?.length || online) {
+      return { q, skills, languages, online };
     }
-  }, [isOpen]);
+    return null;
+  }, []);
+  
+  // Apply URL params on mount
+  useEffect(() => {
+    if (isOpen && initialTabFromUrl && tabs.some(t => t.id === initialTabFromUrl)) {
+      setActiveTab(initialTabFromUrl);
+    }
+    if (isOpen && initialFiltersFromUrl) {
+      setDirectoryFilters(initialFiltersFromUrl);
+      if (initialTabFromUrl !== 'directory') setActiveTab('directory');
+    }
+  }, [isOpen, initialTabFromUrl, initialFiltersFromUrl, tabs]);
   
   if (!isOpen) return null;
   
