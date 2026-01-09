@@ -573,24 +573,87 @@ const GalleryView = ({ onBack }) => {
   );
 };
 
+// Main Capture Section Cards
+const captureModes = [
+  {
+    id: 'diary',
+    name: 'Daily Diary',
+    icon: Video,
+    description: 'Record video diaries with data overlays',
+    color: 'text-primary',
+    bgColor: 'bg-primary/10',
+    gradient: 'from-primary/20 to-primary/5'
+  },
+  {
+    id: 'photo',
+    name: 'Photo',
+    icon: Image,
+    description: 'Capture photos with timestamps',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    gradient: 'from-success/20 to-success/5'
+  },
+  {
+    id: 'video',
+    name: 'Video',
+    icon: Video,
+    description: 'Record videos with overlays',
+    color: 'text-warning',
+    bgColor: 'bg-warning/10',
+    gradient: 'from-warning/20 to-warning/5'
+  },
+  {
+    id: 'voice',
+    name: 'Voice Memo',
+    icon: Mic,
+    description: 'Quick audio notes',
+    color: 'text-cyan-500',
+    bgColor: 'bg-cyan-500/10',
+    gradient: 'from-cyan-500/20 to-cyan-500/5'
+  },
+];
+
+const CaptureModeCard = ({ mode, onSelect, overlayCount }) => {
+  const Icon = mode.icon;
+  return (
+    <button
+      onClick={() => onSelect(mode.id)}
+      className={`glass rounded-xl p-4 text-left hover:bg-secondary/50 transition-all group relative overflow-hidden`}
+      data-testid={`camera-mode-${mode.id}`}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${mode.gradient} opacity-50`} />
+      <div className="relative z-10">
+        <div className={`w-12 h-12 rounded-xl ${mode.bgColor} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+          <Icon className={`w-6 h-6 ${mode.color}`} />
+        </div>
+        <h3 className="text-sm font-bold mb-1">{mode.name}</h3>
+        <p className="text-xs text-muted-foreground">{mode.description}</p>
+        {overlayCount > 0 && (
+          <div className="flex items-center gap-1 mt-2 text-[10px] text-primary">
+            <Activity className="w-3 h-3" />
+            {overlayCount} overlays
+          </div>
+        )}
+      </div>
+      <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+    </button>
+  );
+};
+
 export default function CameraTile() {
-  const [activeSection, setActiveSection] = useState(null);
+  const [activeMode, setActiveMode] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [overlayOptions, setOverlayOptions] = useState({
+    date: true,
+    time: true,
+    location: false,
+    temperature: false,
+    battery: false,
+    allMetrics: false,
+  });
   
-  const renderSection = () => {
-    switch (activeSection) {
-      case 'diary':
-        return <DiaryView onBack={() => setActiveSection(null)} />;
-      case 'photos':
-        return <PhotosView onBack={() => setActiveSection(null)} />;
-      case 'videos':
-        return <VideosView onBack={() => setActiveSection(null)} />;
-      case 'voice':
-        return <VoiceMemoView onBack={() => setActiveSection(null)} />;
-      default:
-        return null;
-    }
-  };
+  const overlayCount = Object.values(overlayOptions).filter(Boolean).length;
   
   // Help view
   if (showHelp) {
@@ -618,6 +681,70 @@ export default function CameraTile() {
     );
   }
   
+  // Gallery view
+  if (showGallery) {
+    return (
+      <Card className="glass-strong border-border-strong" data-testid="camera-tile">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-2">
+              <CameraIcon className="w-5 h-5 text-primary" />
+              Camera
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowHelp(true)}
+              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+              title="Help & Troubleshooting"
+              data-testid="camera-help-btn"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <GalleryView onBack={() => setShowGallery(false)} />
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  // Capture mode active
+  if (activeMode) {
+    return (
+      <Card className="glass-strong border-border-strong" data-testid="camera-tile">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-2">
+              <CameraIcon className="w-5 h-5 text-primary" />
+              Camera
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowHelp(true)}
+              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+              title="Help & Troubleshooting"
+              data-testid="camera-help-btn"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CaptureMode 
+            mode={activeMode} 
+            onBack={() => setActiveMode(null)} 
+            overlayOptions={overlayOptions}
+            setOverlayOptions={setOverlayOptions}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  // Main view
   return (
     <Card className="glass-strong border-border-strong" data-testid="camera-tile">
       <CardHeader className="pb-3">
@@ -638,23 +765,53 @@ export default function CameraTile() {
           </Button>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        {activeSection ? (
-          renderSection()
-        ) : (
-          <>
-            <QuickHelpTips tips={cameraQuickTips} />
-            <div className="grid grid-cols-2 gap-3" data-testid="camera-sections">
-              {sections.map((section) => (
-                <SectionCard
-                  key={section.id}
-                  section={section}
-                  onSelect={setActiveSection}
-                />
-              ))}
+      <CardContent className="space-y-4">
+        {/* Quick Tips */}
+        <QuickHelpTips tips={cameraQuickTips} />
+        
+        {/* Capture Mode Grid */}
+        <div className="grid grid-cols-2 gap-3" data-testid="camera-modes">
+          {captureModes.map((mode) => (
+            <CaptureModeCard
+              key={mode.id}
+              mode={mode}
+              onSelect={setActiveMode}
+              overlayCount={overlayCount}
+            />
+          ))}
+        </div>
+        
+        {/* Gallery Access */}
+        <Button 
+          variant="outline" 
+          className="w-full gap-2"
+          onClick={() => setShowGallery(true)}
+          data-testid="open-gallery-btn"
+        >
+          <Folder className="w-4 h-4" />
+          View Gallery
+          <span className="text-xs text-muted-foreground ml-auto">{mockGallery.length} items</span>
+        </Button>
+        
+        {/* Current Overlay Status */}
+        <div className="glass rounded-lg p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Activity className="w-4 h-4 text-primary" />
+              <span className="text-xs font-semibold">Data Overlays</span>
             </div>
-          </>
-        )}
+            <span className="text-xs text-muted-foreground">{overlayCount} active</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {overlayOptions.date && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary">Date</span>}
+            {overlayOptions.time && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary">Time</span>}
+            {overlayOptions.location && <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/20 text-success">Location</span>}
+            {overlayOptions.temperature && <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400">Temp</span>}
+            {overlayOptions.battery && <span className="text-[10px] px-2 py-0.5 rounded-full bg-warning/20 text-warning">Battery</span>}
+            {overlayOptions.allMetrics && <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400">All Metrics</span>}
+            {overlayCount === 0 && <span className="text-[10px] text-muted-foreground">No overlays enabled</span>}
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
