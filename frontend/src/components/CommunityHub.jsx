@@ -1,213 +1,31 @@
-import React, { useState, useMemo, useCallback, createContext, useContext, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, createContext, useContext, useEffect, useRef } from 'react';
 import {
-  X,
-  Users,
-  BarChart3,
-  MessageSquare,
-  FileText,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  Eye,
-  EyeOff,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Calendar,
-  MapPin,
-  Heart,
-  Star,
-  Award,
-  ChevronRight,
-  ChevronDown,
-  ChevronUp,
-  Search,
-  Filter,
-  MoreVertical,
-  Pin,
-  Trash2,
-  Plus,
-  Edit,
-  Info,
-  HelpCircle,
-  User,
-  Home,
-  Briefcase,
-  GraduationCap,
-  Languages,
-  Activity,
-  Stethoscope,
-  Wrench,
-  Radio,
-  Utensils,
-  Car,
-  Cpu,
-  Tent,
-  Target,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  Globe,
-  UserCheck,
-  Ban,
-  Lock,
-  Unlock,
-  Download,
-  RefreshCw,
-  Zap,
-  Compass,
-  Megaphone,
-  ListChecks,
-  BarChart2,
-  PieChart,
-  History,
-  Lightbulb,
-  UserPlus,
-  Settings,
-  Send,
-  Vote,
-  ClipboardList,
-  Bell,
-  ArrowLeft,
-  Copy,
-  CheckCheck
+  X, Users, BarChart3, MessageSquare, FileText, Shield, ShieldAlert, ShieldCheck,
+  Eye, EyeOff, AlertTriangle, CheckCircle, Clock, Calendar,
+  Heart, Star, Award, ChevronRight, ChevronDown, ChevronUp, Search, Filter,
+  Info, User, Home, GraduationCap, Languages, Activity, Stethoscope, Wrench, Radio,
+  Utensils, Target, TrendingUp, AlertCircle, Globe, UserCheck, Lock,
+  Zap, Compass, Megaphone, ListChecks, BarChart2, Lightbulb, UserPlus,
+  Send, Vote, ClipboardList, Bell, ArrowLeft, Copy, CheckCheck, ExternalLink,
+  Briefcase, MapPin, SortAsc, SortDesc, XCircle, Plus, RefreshCw
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
+import {
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription
+} from './ui/sheet';
+import {
+  SKILL_DOMAINS, CANONICAL_SKILLS, LANGUAGES, EDUCATION_LEVELS, ROLES, MOCK_CURRENT_USERS,
+  getSkillLabel, getSkillDomain, getLanguageLabel,
+  generateMockProfiles, generateAnalyticsSummary, generateCommsPreview,
+  generateMockIncidents, generateMockScoreConfig, calculateMemberScores
+} from '../mock/communityMockData';
 
 // ============================================================
-// PHASE 0: RBAC GUARD COMPONENT
+// RBAC CONTEXT & HOOKS
 // ============================================================
 
-// Role hierarchy for comparison
-const ROLE_HIERARCHY = { guest: 0, member: 1, admin: 2 };
-
-// RequireRole Guard Component - Wraps content that requires minimum role
-const RequireRole = ({ minRole, children, onAccessDenied, fallback }) => {
-  const { currentUser, isAdmin, isMember } = useRBAC();
-  const userRoleLevel = ROLE_HIERARCHY[currentUser?.role] || 0;
-  const requiredLevel = ROLE_HIERARCHY[minRole] || 0;
-  
-  const hasAccess = userRoleLevel >= requiredLevel;
-  
-  useEffect(() => {
-    if (!hasAccess && onAccessDenied) {
-      onAccessDenied();
-    }
-  }, [hasAccess, onAccessDenied]);
-  
-  if (!hasAccess) {
-    if (fallback) return fallback;
-    return (
-      <AccessDeniedCard 
-        minRole={minRole} 
-        currentRole={currentUser?.role} 
-      />
-    );
-  }
-  
-  return children;
-};
-
-// Access Denied Card with return button
-const AccessDeniedCard = ({ minRole, currentRole, onReturn }) => (
-  <div className="flex flex-col items-center justify-center py-16 glass rounded-xl" data-testid="access-denied">
-    <ShieldAlert className="w-16 h-16 text-destructive/50 mb-4" />
-    <h3 className="text-lg font-semibold mb-2">Access Denied</h3>
-    <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
-      This section requires <span className="font-semibold text-amber-400">{minRole}</span> role or higher.
-      <br />
-      Your current role: <span className="font-semibold">{currentRole || 'guest'}</span>
-    </p>
-    {onReturn && (
-      <Button onClick={onReturn} variant="outline" size="sm" className="gap-2">
-        <ArrowLeft className="w-4 h-4" />
-        Return to Overview
-      </Button>
-    )}
-  </div>
-);
-
-// ============================================================
-// PHASE 0: RBAC + PRIVACY + DATA CONTRACTS
-// ============================================================
-
-// Role Definitions with Permissions
-const ROLES = {
-  guest: {
-    id: 'guest',
-    name: 'Guest',
-    color: 'text-muted-foreground',
-    bg: 'bg-muted/20',
-    permissions: {
-      viewOverview: true,
-      viewAnalytics: false, // Limited aggregated only
-      viewDirectory: true,  // No drill-down
-      viewComms: false,
-      viewIncidents: false,
-      viewSensitiveFields: false,
-      viewDetailedProfiles: false,
-      createIncident: false,
-      editIncident: false,
-      resolveIncident: false,
-      manageScoring: false,
-      postAnnouncement: false,
-      createPoll: true,
-      createTask: false,
-      downloadReports: false,
-    }
-  },
-  member: {
-    id: 'member',
-    name: 'Member',
-    color: 'text-primary',
-    bg: 'bg-primary/20',
-    permissions: {
-      viewOverview: true,
-      viewAnalytics: true,
-      viewDirectory: true,
-      viewComms: true,
-      viewIncidents: false,
-      viewSensitiveFields: false, // Only with opt-in
-      viewDetailedProfiles: true,
-      createIncident: false, // Can report to admin
-      editIncident: false,
-      resolveIncident: false,
-      manageScoring: false,
-      postAnnouncement: false,
-      createPoll: true,
-      createTask: true,
-      downloadReports: true, // Redacted version
-    }
-  },
-  admin: {
-    id: 'admin',
-    name: 'Admin',
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/20',
-    permissions: {
-      viewOverview: true,
-      viewAnalytics: true,
-      viewDirectory: true,
-      viewComms: true,
-      viewIncidents: true,
-      viewSensitiveFields: true,
-      viewDetailedProfiles: true,
-      createIncident: true,
-      editIncident: true,
-      resolveIncident: true,
-      manageScoring: true,
-      postAnnouncement: true,
-      createPoll: true,
-      createTask: true,
-      downloadReports: true, // Full version
-    }
-  }
-};
-
-// RBAC Context
 const RBACContext = createContext(null);
 
 export const useRBAC = () => {
@@ -216,1108 +34,1293 @@ export const useRBAC = () => {
   return context;
 };
 
-const RBACProvider = ({ children, currentUser }) => {
+const RBACProvider = ({ children, currentUser, onUpdatePrivacy }) => {
   const role = ROLES[currentUser?.role] || ROLES.guest;
-  
-  const can = useCallback((permission) => {
-    return role.permissions[permission] === true;
-  }, [role]);
-  
+  const can = useCallback((permission) => role.permissions[permission] === true, [role]);
   const isAdmin = currentUser?.role === 'admin';
   const isMember = currentUser?.role === 'member' || isAdmin;
-  const isGuest = currentUser?.role === 'guest';
   
   return (
-    <RBACContext.Provider value={{ currentUser, role, can, isAdmin, isMember, isGuest }}>
+    <RBACContext.Provider value={{ currentUser, role, can, isAdmin, isMember, onUpdatePrivacy }}>
       {children}
     </RBACContext.Provider>
   );
 };
 
 // ============================================================
-// PHASE 0: PRIVACY REDACTION SYSTEM
+// RBAC GUARD COMPONENT
 // ============================================================
 
-/**
- * Privacy Redaction Helper
- * Redacts sensitive profile fields based on viewer role and opt-in settings
- * 
- * Rules:
- * - Admin: Always sees full profile (all fields)
- * - Member/Guest: Only sees fields where privacy opt-in is TRUE
- * - When hidden: Returns null (UI renders as "Hidden")
- * 
- * @param {Object} profile - The profile object to redact
- * @param {string} viewerRole - 'guest' | 'member' | 'admin'
- * @returns {Object} - Redacted profile with nulls for hidden fields
- */
+const RequireRole = ({ minRole, children, onAccessDenied, fallback }) => {
+  const { currentUser } = useRBAC();
+  const ROLE_HIERARCHY = { guest: 0, member: 1, admin: 2 };
+  const userLevel = ROLE_HIERARCHY[currentUser?.role] || 0;
+  const requiredLevel = ROLE_HIERARCHY[minRole] || 0;
+  const hasAccess = userLevel >= requiredLevel;
+  
+  useEffect(() => {
+    if (!hasAccess && onAccessDenied) onAccessDenied();
+  }, [hasAccess, onAccessDenied]);
+  
+  if (!hasAccess) {
+    return fallback || <AccessDeniedCard minRole={minRole} currentRole={currentUser?.role} />;
+  }
+  return children;
+};
+
+const AccessDeniedCard = ({ minRole, currentRole, onReturn }) => (
+  <div className="flex flex-col items-center justify-center py-16 glass rounded-xl" data-testid="access-denied">
+    <ShieldAlert className="w-16 h-16 text-destructive/50 mb-4" />
+    <h3 className="text-lg font-semibold mb-2">Access Denied</h3>
+    <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
+      This section requires <span className="font-semibold text-amber-400">{minRole}</span> role or higher.
+      <br />Your current role: <span className="font-semibold">{currentRole || 'guest'}</span>
+    </p>
+    {onReturn && (
+      <Button onClick={onReturn} variant="outline" size="sm" className="gap-2">
+        <ArrowLeft className="w-4 h-4" />Return to Overview
+      </Button>
+    )}
+  </div>
+);
+
+// ============================================================
+// PRIVACY REDACTION SYSTEM
+// ============================================================
+
 const redactProfile = (profile, viewerRole) => {
   if (!profile) return null;
+  if (viewerRole === 'admin') return { ...profile, _redacted: false };
   
-  // Admin sees everything
-  if (viewerRole === 'admin') {
-    return { ...profile, _redacted: false };
-  }
-  
-  // Get privacy settings with defaults
-  const privacy = profile.privacySettings || {
-    showAge: false,
-    showHeight: false,
-    showWeight: false,
-    showMedical: false,
-    showEducation: true, // Default public
-  };
-  
-  // Create redacted copy
-  const redacted = {
+  const privacy = profile.privacy || { showAge: false, showHeightWeight: false, showEducation: true };
+  return {
     ...profile,
     _redacted: true,
-    // Redact based on opt-in flags
     age: privacy.showAge ? profile.age : null,
-    heightIn: privacy.showHeight ? profile.heightIn : null,
-    weightLb: privacy.showWeight ? profile.weightLb : null,
-    // Education is usually public unless explicitly hidden
+    anthro: privacy.showHeightWeight ? profile.anthro : { heightIn: null, weightLb: null },
     educationLevel: privacy.showEducation !== false ? profile.educationLevel : null,
-    // Always hide admin-only fields from non-admins
-    adminNotes: null,
-    notes: null,
   };
-  
-  return redacted;
 };
 
-/**
- * Helper to check if a specific field is visible
- */
-const isFieldVisible = (profile, fieldName, viewerRole) => {
-  if (viewerRole === 'admin') return true;
-  
-  const privacy = profile?.privacySettings || {};
-  const fieldToOptIn = {
-    age: 'showAge',
-    heightIn: 'showHeight',
-    weightLb: 'showWeight',
-    educationLevel: 'showEducation',
-  };
-  
-  const optInKey = fieldToOptIn[fieldName];
-  return optInKey ? privacy[optInKey] === true : true;
-};
-
-/**
- * Format height from inches to readable string
- */
 const formatHeight = (inches) => {
   if (!inches) return null;
-  const feet = Math.floor(inches / 12);
-  const remainingInches = inches % 12;
-  return `${feet}'${remainingInches}"`;
+  return `${Math.floor(inches / 12)}'${inches % 12}"`;
 };
 
-/**
- * Format weight in lbs
- */
-const formatWeight = (lbs) => {
-  if (!lbs) return null;
-  return `${lbs} lbs`;
-};
-
-// ============================================================
-// DATA CONTRACTS (Matching Future API)
-// ============================================================
-
-// Profile Schema
-const PROFILE_SCHEMA = {
-  id: 'string',
-  displayName: 'string',
-  profilePhotoUrl: 'string|null',
-  age: 'number|null',
-  heightIn: 'number|null', // Height in inches
-  weightLb: 'number|null', // Weight in pounds
-  educationLevel: 'enum:None|HS|SomeCollege|Bachelors|Masters|Doctorate|Trade|Other',
-  languages: 'string[]',
-  skillSets: 'string[]',
-  certifications: 'string[]|null',
-  availabilityStatus: 'enum:available|busy|away|offline',
-  roleClass: 'string|null', // e.g., "Medic", "Security Lead"
-  notes: 'string|null', // Private to admin
-  adminNotes: 'string|null', // Admin-only field
-  privacySettings: {
-    showAge: 'boolean',
-    showHeight: 'boolean',
-    showWeight: 'boolean',
-    showMedical: 'boolean',
-  },
-  createdAt: 'ISO8601',
-  updatedAt: 'ISO8601',
-};
-
-// Incident Schema
-const INCIDENT_SCHEMA = {
-  id: 'string',
-  userId: 'string',
-  type: 'enum:GOOD|BAD',
-  category: 'enum:safety|conduct|contribution|leadership|teamwork|violation|other',
-  severity: 'number:1-5',
-  points: 'number', // Signed integer
-  summary: 'string',
-  details: 'string|null',
-  evidenceLinks: 'string[]|null',
-  status: 'enum:Open|Closed|UnderReview|Appealed',
-  resolutionNotes: 'string|null',
-  tags: 'string[]',
-  createdAt: 'ISO8601',
-  createdByAdminId: 'string',
-  updatedAt: 'ISO8601',
-  updatedByAdminId: 'string|null',
-  requiresTwoAdminApproval: 'boolean',
-  approvals: [{ adminId: 'string', approvedAt: 'ISO8601' }],
-  appealStatus: 'enum:None|Open|Reviewed|Closed',
-  appealNotes: 'string|null',
-};
-
-// Audit Log Schema
-const AUDIT_SCHEMA = {
-  id: 'string',
-  entityType: 'enum:incident|profile|scoring',
-  entityId: 'string',
-  action: 'enum:create|update|delete|approve|reject|appeal',
-  changes: 'object', // { field: { old, new } }
-  performedBy: 'string', // Admin ID
-  performedAt: 'ISO8601',
-  ipAddress: 'string|null',
-  notes: 'string|null',
-};
-
-// Score Config Schema
-const SCORE_CONFIG_SCHEMA = {
-  baseScore: 'number:100',
-  goodIncidentPoints: { 1: 1, 2: 2, 3: 4, 4: 7, 5: 10 },
-  badIncidentPoints: { 1: -5, 2: -10, 3: -15, 4: -20, 5: -25 },
-  decayHalfLifeDays: 90,
-  thresholds: {
-    monitor: 70,
-    restricted: 50,
-    intervention: 30,
-  },
-  requireTwoAdminForSeverity5: true,
-};
-
-// Analytics Summary Schema (Pre-aggregated)
-const ANALYTICS_SUMMARY_SCHEMA = {
-  totalMembers: 'number',
-  onlineCount: 'number',
-  offlineCount: 'number',
-  newMembersThisWeek: 'number',
-  announcementsCount: 'number',
-  openIncidentsCount: 'number', // Admin only
-  recentCommsActivity: 'number',
-  skillsCoverage: { skillName: 'count' },
-  skillGaps: [{ skill: 'string', count: 'number', priority: 'P0|P1|P2' }],
-  languagesCoverage: { language: 'count' },
-  educationBreakdown: { level: 'count' },
-  ageDistribution: { range: 'count' },
-  redundancyIndex: { criticalSkill: 'memberCount' },
-  recommendations: [{ priority: 'P0|P1|P2', message: 'string', action: 'string' }],
-  lastUpdated: 'ISO8601',
-};
-
-// ============================================================
-// MOCK DATA GENERATION
-// ============================================================
-
-const SKILL_SETS = [
-  'Medical', 'FirstAid', 'CPR', 'Trauma', 'Nursing', 'EMT',
-  'Comms', 'HAM', 'MorseCode', 'SignalProcessing',
-  'Security', 'Firearms', 'SelfDefense', 'Perimeter',
-  'Logistics', 'SupplyChain', 'Inventory', 'Navigation',
-  'Engineering', 'Electrical', 'Plumbing', 'Carpentry', 'Welding',
-  'Farming', 'Gardening', 'FoodPreservation', 'WaterPurification', 'Hunting',
-  'Tech', 'Programming', 'Networking', 'SolarSystems', 'Electronics',
-];
-
-const EDUCATION_LEVELS = ['None', 'HS', 'SomeCollege', 'Bachelors', 'Masters', 'Doctorate', 'Trade', 'Other'];
-
-const INCIDENT_CATEGORIES = ['safety', 'conduct', 'contribution', 'leadership', 'teamwork', 'violation', 'other'];
-
-const generateMockProfiles = () => [
-  {
-    id: 'user-001',
-    displayName: 'Sarah Chen',
-    profilePhotoUrl: null,
-    age: 38,
-    heightIn: 66,
-    weightLb: 140,
-    educationLevel: 'Bachelors',
-    languages: ['English', 'Mandarin'],
-    skillSets: ['Medical', 'FirstAid', 'CPR', 'Trauma', 'Nursing'],
-    certifications: ['RN', 'BLS', 'ACLS'],
-    availabilityStatus: 'available',
-    roleClass: 'Lead Medic',
-    notes: null,
-    adminNotes: 'Reliable, natural leader',
-    privacySettings: { showAge: true, showHeight: true, showWeight: true, showMedical: false },
-    createdAt: '2025-06-15T10:00:00Z',
-    updatedAt: '2025-12-01T14:30:00Z',
-  },
-  {
-    id: 'user-002',
-    displayName: 'Marcus Johnson',
-    profilePhotoUrl: null,
-    age: 52,
-    heightIn: 73,
-    weightLb: 195,
-    educationLevel: 'Trade',
-    languages: ['English', 'Spanish'],
-    skillSets: ['Security', 'Firearms', 'Comms', 'HAM', 'SelfDefense'],
-    certifications: ['HAM-Extra', 'CPL'],
-    availabilityStatus: 'available',
-    roleClass: 'Security Lead',
-    notes: null,
-    adminNotes: 'Former military, 20 years',
-    privacySettings: { showAge: true, showHeight: true, showWeight: true, showMedical: true },
-    createdAt: '2025-05-20T08:00:00Z',
-    updatedAt: '2025-11-28T09:15:00Z',
-  },
-  {
-    id: 'user-003',
-    displayName: 'Elena Rodriguez',
-    profilePhotoUrl: null,
-    age: 31,
-    heightIn: 64,
-    weightLb: 135,
-    educationLevel: 'SomeCollege',
-    languages: ['English', 'Spanish', 'Portuguese'],
-    skillSets: ['Logistics', 'SupplyChain', 'Inventory', 'FoodPreservation', 'Farming'],
-    certifications: ['ServSafe'],
-    availabilityStatus: 'busy',
-    roleClass: 'Logistics Coordinator',
-    notes: 'Has two young children',
-    adminNotes: null,
-    privacySettings: { showAge: true, showHeight: false, showWeight: false, showMedical: false },
-    createdAt: '2025-07-01T12:00:00Z',
-    updatedAt: '2025-12-05T16:45:00Z',
-  },
-  {
-    id: 'user-004',
-    displayName: 'David Park',
-    profilePhotoUrl: null,
-    age: 29,
-    heightIn: 69,
-    weightLb: 165,
-    educationLevel: 'Masters',
-    languages: ['English', 'Korean'],
-    skillSets: ['Tech', 'Programming', 'Networking', 'SolarSystems', 'Electronics', 'Engineering'],
-    certifications: ['CCNA', 'AWS-SA'],
-    availabilityStatus: 'available',
-    roleClass: 'Tech Lead',
-    notes: null,
-    adminNotes: 'Built the mesh network',
-    privacySettings: { showAge: true, showHeight: true, showWeight: true, showMedical: true },
-    createdAt: '2025-06-10T09:30:00Z',
-    updatedAt: '2025-12-08T11:00:00Z',
-  },
-  {
-    id: 'user-005',
-    displayName: 'Amanda Foster',
-    profilePhotoUrl: null,
-    age: 34,
-    heightIn: 68,
-    weightLb: 145,
-    educationLevel: 'Bachelors',
-    languages: ['English'],
-    skillSets: ['Security', 'Navigation', 'Hunting', 'Farming', 'SelfDefense'],
-    certifications: ['Wilderness First Responder'],
-    availabilityStatus: 'away',
-    roleClass: 'Scout',
-    notes: null,
-    adminNotes: 'Former park ranger',
-    privacySettings: { showAge: true, showHeight: true, showWeight: false, showMedical: false },
-    createdAt: '2025-08-05T14:00:00Z',
-    updatedAt: '2025-11-20T08:30:00Z',
-  },
-  {
-    id: 'user-006',
-    displayName: 'Robert Thompson',
-    profilePhotoUrl: null,
-    age: 61,
-    heightIn: 71,
-    weightLb: 200,
-    educationLevel: 'Trade',
-    languages: ['English', 'German'],
-    skillSets: ['Engineering', 'Carpentry', 'Plumbing', 'Electrical', 'Welding'],
-    certifications: ['Master Electrician'],
-    availabilityStatus: 'available',
-    roleClass: 'Builder',
-    notes: 'Heart condition',
-    adminNotes: 'Monitor physical tasks',
-    privacySettings: { showAge: true, showHeight: true, showWeight: true, showMedical: false },
-    createdAt: '2025-05-15T07:00:00Z',
-    updatedAt: '2025-12-02T10:20:00Z',
-  },
-  {
-    id: 'user-007',
-    displayName: 'Lisa Wong',
-    profilePhotoUrl: null,
-    age: 42,
-    heightIn: 63,
-    weightLb: 120,
-    educationLevel: 'Doctorate',
-    languages: ['English', 'Mandarin', 'Japanese'],
-    skillSets: ['Medical', 'Trauma', 'Nursing', 'FirstAid', 'EMT'],
-    certifications: ['MD', 'ACLS', 'ATLS', 'PALS'],
-    availabilityStatus: 'available',
-    roleClass: 'Chief Medical Officer',
-    notes: null,
-    adminNotes: 'ER physician, critical asset',
-    privacySettings: { showAge: true, showHeight: true, showWeight: true, showMedical: true },
-    createdAt: '2025-04-01T06:00:00Z',
-    updatedAt: '2025-12-09T07:45:00Z',
-  },
-  {
-    id: 'user-008',
-    displayName: 'James Miller',
-    profilePhotoUrl: null,
-    age: 48,
-    heightIn: 70,
-    weightLb: 175,
-    educationLevel: 'Bachelors',
-    languages: ['English', 'French'],
-    skillSets: ['Comms', 'HAM', 'MorseCode', 'SignalProcessing', 'Electronics'],
-    certifications: ['HAM-Amateur Extra'],
-    availabilityStatus: 'busy',
-    roleClass: 'Comms Specialist',
-    notes: null,
-    adminNotes: 'Manages radio network',
-    privacySettings: { showAge: true, showHeight: false, showWeight: false, showMedical: false },
-    createdAt: '2025-06-20T11:00:00Z',
-    updatedAt: '2025-11-25T15:30:00Z',
-  },
-  {
-    id: 'user-009',
-    displayName: 'Maria Santos',
-    profilePhotoUrl: null,
-    age: 28,
-    heightIn: 65,
-    weightLb: 140,
-    educationLevel: 'Bachelors',
-    languages: ['English', 'Spanish'],
-    skillSets: ['FirstAid', 'FoodPreservation', 'Farming', 'Gardening'],
-    certifications: ['First Aid', 'CPR'],
-    availabilityStatus: 'available',
-    roleClass: null,
-    notes: 'Two children (7, 4)',
-    adminNotes: null,
-    privacySettings: { showAge: true, showHeight: false, showWeight: false, showMedical: false },
-    createdAt: '2025-07-15T13:00:00Z',
-    updatedAt: '2025-12-07T09:00:00Z',
-  },
-  {
-    id: 'user-010',
-    displayName: 'Kevin OBrien',
-    profilePhotoUrl: null,
-    age: 24,
-    heightIn: 72,
-    weightLb: 180,
-    educationLevel: 'SomeCollege',
-    languages: ['English'],
-    skillSets: ['Security', 'SelfDefense'],
-    certifications: [],
-    availabilityStatus: 'offline',
-    roleClass: null,
-    notes: null,
-    adminNotes: 'Under monitoring - 2 incidents',
-    privacySettings: { showAge: true, showHeight: true, showWeight: true, showMedical: true },
-    createdAt: '2025-09-01T16:00:00Z',
-    updatedAt: '2025-12-01T12:00:00Z',
-  },
-  {
-    id: 'user-011',
-    displayName: 'Jennifer Lee',
-    profilePhotoUrl: null,
-    age: 39,
-    heightIn: 66,
-    weightLb: 130,
-    educationLevel: 'Masters',
-    languages: ['English', 'Korean'],
-    skillSets: ['Logistics', 'SupplyChain', 'Inventory', 'Navigation'],
-    certifications: ['PMP', 'CSCP'],
-    availabilityStatus: 'available',
-    roleClass: 'Supply Chain Manager',
-    notes: null,
-    adminNotes: null,
-    privacySettings: { showAge: true, showHeight: false, showWeight: false, showMedical: false },
-    createdAt: '2025-06-25T10:30:00Z',
-    updatedAt: '2025-11-30T14:00:00Z',
-  },
-  {
-    id: 'user-012',
-    displayName: 'Michael Brown',
-    profilePhotoUrl: null,
-    age: 44,
-    heightIn: 71,
-    weightLb: 185,
-    educationLevel: 'HS',
-    languages: ['English'],
-    skillSets: ['Hunting', 'Farming', 'WaterPurification', 'Navigation'],
-    certifications: ['Hunters Safety'],
-    availabilityStatus: 'busy',
-    roleClass: 'Forager',
-    notes: 'Son (12) learning skills',
-    adminNotes: null,
-    privacySettings: { showAge: true, showHeight: true, showWeight: true, showMedical: true },
-    createdAt: '2025-08-10T08:00:00Z',
-    updatedAt: '2025-12-04T11:30:00Z',
-  },
-];
-
-const generateMockIncidents = () => [
-  {
-    id: 'INC-2025-001',
-    userId: 'user-010',
-    type: 'BAD',
-    category: 'violation',
-    severity: 3,
-    points: -15,
-    summary: 'Unauthorized entry to restricted storage area',
-    details: 'Entered Building B storage without clearance. No items taken but protocol violated.',
-    evidenceLinks: ['cam-footage-001.mp4'],
-    status: 'Closed',
-    resolutionNotes: 'First offense. Verbal warning issued. User acknowledged.',
-    tags: ['security', 'protocol'],
-    createdAt: '2025-10-15T14:30:00Z',
-    createdByAdminId: 'user-002',
-    updatedAt: '2025-10-16T09:00:00Z',
-    updatedByAdminId: 'user-007',
-    requiresTwoAdminApproval: false,
-    approvals: [{ adminId: 'user-007', approvedAt: '2025-10-16T09:00:00Z' }],
-    appealStatus: 'None',
-    appealNotes: null,
-  },
-  {
-    id: 'INC-2025-002',
-    userId: 'user-006',
-    type: 'BAD',
-    category: 'safety',
-    severity: 2,
-    points: -10,
-    summary: 'Improper tool storage leading to minor injury',
-    details: 'Left power tools unsecured. Another member sustained minor cut.',
-    evidenceLinks: ['photo-001.jpg', 'medical-report-002.pdf'],
-    status: 'Closed',
-    resolutionNotes: 'Safety refresher completed. Storage area reorganized.',
-    tags: ['safety', 'workshop'],
-    createdAt: '2025-11-02T10:15:00Z',
-    createdByAdminId: 'user-002',
-    updatedAt: '2025-11-03T11:00:00Z',
-    updatedByAdminId: 'user-002',
-    requiresTwoAdminApproval: false,
-    approvals: [{ adminId: 'user-002', approvedAt: '2025-11-03T11:00:00Z' }],
-    appealStatus: 'None',
-    appealNotes: null,
-  },
-  {
-    id: 'INC-2025-003',
-    userId: 'user-010',
-    type: 'BAD',
-    category: 'conduct',
-    severity: 3,
-    points: 0, // Pending
-    summary: 'Verbal altercation during resource distribution',
-    details: 'Heated argument with user-012 over supply allocation. Multiple witnesses.',
-    evidenceLinks: null,
-    status: 'UnderReview',
-    resolutionNotes: null,
-    tags: ['conduct', 'conflict'],
-    createdAt: '2025-12-01T16:45:00Z',
-    createdByAdminId: 'user-007',
-    updatedAt: '2025-12-01T16:45:00Z',
-    updatedByAdminId: null,
-    requiresTwoAdminApproval: false,
-    approvals: [],
-    appealStatus: 'None',
-    appealNotes: null,
-  },
-  {
-    id: 'INC-2025-004',
-    userId: 'user-005',
-    type: 'GOOD',
-    category: 'leadership',
-    severity: 4,
-    points: 7,
-    summary: 'Exceptional service during emergency evacuation',
-    details: 'Led evacuation of 15 people during fire drill. Calm and effective leadership.',
-    evidenceLinks: null,
-    status: 'Closed',
-    resolutionNotes: 'Commendation added to record.',
-    tags: ['leadership', 'emergency'],
-    createdAt: '2025-11-20T08:00:00Z',
-    createdByAdminId: 'user-007',
-    updatedAt: '2025-11-21T10:00:00Z',
-    updatedByAdminId: 'user-007',
-    requiresTwoAdminApproval: false,
-    approvals: [{ adminId: 'user-007', approvedAt: '2025-11-21T10:00:00Z' }],
-    appealStatus: 'None',
-    appealNotes: null,
-  },
-  {
-    id: 'INC-2025-005',
-    userId: 'user-001',
-    type: 'GOOD',
-    category: 'contribution',
-    severity: 5,
-    points: 10,
-    summary: 'Life-saving emergency medical response',
-    details: 'Provided critical first aid to cardiac event victim. Patient stabilized.',
-    evidenceLinks: ['medical-report-005.pdf'],
-    status: 'Closed',
-    resolutionNotes: 'Outstanding service. Community award recommended.',
-    tags: ['medical', 'lifesaving'],
-    createdAt: '2025-11-15T19:30:00Z',
-    createdByAdminId: 'user-007',
-    updatedAt: '2025-11-16T08:00:00Z',
-    updatedByAdminId: 'user-002',
-    requiresTwoAdminApproval: true,
-    approvals: [
-      { adminId: 'user-007', approvedAt: '2025-11-15T20:00:00Z' },
-      { adminId: 'user-002', approvedAt: '2025-11-16T08:00:00Z' },
-    ],
-    appealStatus: 'None',
-    appealNotes: null,
-  },
-];
-
-const generateMockAuditLog = () => [
-  {
-    id: 'AUD-001',
-    entityType: 'incident',
-    entityId: 'INC-2025-001',
-    action: 'create',
-    changes: { status: { old: null, new: 'Open' } },
-    performedBy: 'user-002',
-    performedAt: '2025-10-15T14:30:00Z',
-    ipAddress: '192.168.1.10',
-    notes: 'Initial report',
-  },
-  {
-    id: 'AUD-002',
-    entityType: 'incident',
-    entityId: 'INC-2025-001',
-    action: 'update',
-    changes: { status: { old: 'Open', new: 'Closed' }, points: { old: 0, new: -15 } },
-    performedBy: 'user-007',
-    performedAt: '2025-10-16T09:00:00Z',
-    ipAddress: '192.168.1.15',
-    notes: 'Resolved with warning',
-  },
-  {
-    id: 'AUD-003',
-    entityType: 'scoring',
-    entityId: 'config',
-    action: 'update',
-    changes: { 'thresholds.monitor': { old: 75, new: 70 } },
-    performedBy: 'user-007',
-    performedAt: '2025-11-01T10:00:00Z',
-    ipAddress: '192.168.1.15',
-    notes: 'Adjusted monitor threshold',
-  },
-];
-
-const generateMockScoreConfig = () => ({
-  baseScore: 100,
-  goodIncidentPoints: { 1: 1, 2: 2, 3: 4, 4: 7, 5: 10 },
-  badIncidentPoints: { 1: -5, 2: -10, 3: -15, 4: -20, 5: -25 },
-  decayHalfLifeDays: 90,
-  thresholds: {
-    monitor: 70,
-    restricted: 50,
-    intervention: 30,
-  },
-  requireTwoAdminForSeverity5: true,
-  lastUpdated: '2025-11-01T10:00:00Z',
-  updatedBy: 'user-007',
-});
-
-const calculateMemberScores = (profiles, incidents, config) => {
-  const scores = {};
-  
-  profiles.forEach(profile => {
-    const userIncidents = incidents.filter(i => i.userId === profile.id && i.status === 'Closed');
-    let score = config.baseScore;
-    
-    userIncidents.forEach(incident => {
-      score += incident.points;
-    });
-    
-    // Clamp between 0-100
-    score = Math.max(0, Math.min(100, score));
-    
-    // Calculate trend (mock)
-    const recentIncidents = userIncidents.filter(i => 
-      new Date(i.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-    );
-    const trend = recentIncidents.reduce((sum, i) => sum + i.points, 0);
-    
-    // Flags
-    const flags = [];
-    if (score < config.thresholds.intervention) flags.push('intervention');
-    else if (score < config.thresholds.restricted) flags.push('restricted');
-    else if (score < config.thresholds.monitor) flags.push('monitor');
-    
-    const badIncidentsLast30d = recentIncidents.filter(i => i.type === 'BAD').length;
-    if (badIncidentsLast30d >= 2) flags.push('repeated-issues');
-    
-    scores[profile.id] = {
-      score,
-      trend,
-      recentIncidentsCount: recentIncidents.length,
-      flags,
-      lastUpdated: new Date().toISOString(),
-    };
-  });
-  
-  return scores;
-};
-
-const generateAnalyticsSummary = (profiles, incidents) => {
-  const onlineCount = profiles.filter(p => p.availabilityStatus === 'available').length;
-  const awayCount = profiles.filter(p => p.availabilityStatus === 'away' || p.availabilityStatus === 'busy').length;
-  const offlineCount = profiles.filter(p => p.availabilityStatus === 'offline').length;
-  
-  // Skills coverage
-  const skillsCoverage = {};
-  SKILL_SETS.forEach(skill => {
-    skillsCoverage[skill] = profiles.filter(p => p.skillSets.includes(skill)).length;
-  });
-  
-  // Critical skills and gaps
-  const criticalSkills = ['Medical', 'FirstAid', 'CPR', 'HAM', 'WaterPurification', 'Security', 'Engineering'];
-  const skillGaps = criticalSkills
-    .map(skill => ({ skill, count: skillsCoverage[skill] || 0 }))
-    .filter(s => s.count < 2)
-    .map(s => ({
-      ...s,
-      priority: s.count === 0 ? 'P0' : s.count === 1 ? 'P1' : 'P2'
-    }))
-    .sort((a, b) => a.count - b.count);
-  
-  // Languages
-  const allLanguages = [...new Set(profiles.flatMap(p => p.languages))];
-  const languagesCoverage = {};
-  allLanguages.forEach(lang => {
-    languagesCoverage[lang] = profiles.filter(p => p.languages.includes(lang)).length;
-  });
-  
-  // Education
-  const educationBreakdown = {};
-  EDUCATION_LEVELS.forEach(level => {
-    educationBreakdown[level] = profiles.filter(p => p.educationLevel === level).length;
-  });
-  
-  // Age distribution
-  const ageDistribution = {
-    '18-25': profiles.filter(p => p.age >= 18 && p.age <= 25).length,
-    '26-35': profiles.filter(p => p.age >= 26 && p.age <= 35).length,
-    '36-45': profiles.filter(p => p.age >= 36 && p.age <= 45).length,
-    '46-55': profiles.filter(p => p.age >= 46 && p.age <= 55).length,
-    '56-65': profiles.filter(p => p.age >= 56 && p.age <= 65).length,
-    '65+': profiles.filter(p => p.age > 65).length,
-  };
-  
-  // Redundancy index
-  const redundancyIndex = {};
-  criticalSkills.forEach(skill => {
-    redundancyIndex[skill] = skillsCoverage[skill] || 0;
-  });
-  
-  // Recommendations
-  const recommendations = [];
-  skillGaps.forEach(gap => {
-    if (gap.count === 0) {
-      recommendations.push({
-        priority: 'P0',
-        message: `No one has ${gap.skill} skills - critical gap`,
-        action: `Recruit or train members in ${gap.skill}`,
-      });
-    } else if (gap.count === 1) {
-      recommendations.push({
-        priority: 'P1',
-        message: `Only 1 person has ${gap.skill} - single point of failure`,
-        action: `Cross-train backup for ${gap.skill}`,
-      });
-    }
-  });
-  
-  // Check for skill concentration
-  const topSkillCount = Math.max(...Object.values(skillsCoverage));
-  if (topSkillCount > profiles.length * 0.5) {
-    recommendations.push({
-      priority: 'P2',
-      message: 'High concentration of similar skills detected',
-      action: 'Diversify training across different skill areas',
-    });
-  }
-  
-  return {
-    totalMembers: profiles.length,
-    onlineCount,
-    awayCount,
-    offlineCount,
-    newMembersThisWeek: 2, // Mock
-    announcementsCount: 3, // Mock
-    openIncidentsCount: incidents.filter(i => i.status !== 'Closed').length,
-    recentCommsActivity: 47, // Mock messages
-    skillsCoverage,
-    skillGaps,
-    languagesCoverage,
-    educationBreakdown,
-    ageDistribution,
-    redundancyIndex,
-    recommendations,
-    lastUpdated: new Date().toISOString(),
-  };
-};
-
-// Current user options for testing RBAC
-const MOCK_CURRENT_USERS = {
-  admin: {
-    id: 'user-007',
-    displayName: 'Lisa Wong',
-    role: 'admin',
-    profilePhotoUrl: null,
-  },
-  member: {
-    id: 'user-004',
-    displayName: 'David Park',
-    role: 'member',
-    profilePhotoUrl: null,
-  },
-  guest: {
-    id: 'guest-001',
-    displayName: 'Guest User',
-    role: 'guest',
-    profilePhotoUrl: null,
-  },
-};
+const formatWeight = (lbs) => lbs ? `${lbs} lbs` : null;
 
 // ============================================================
 // UTILITY COMPONENTS
 // ============================================================
 
-const Tooltip = ({ children, content }) => {
-  const [show, setShow] = useState(false);
+const RoleBadge = ({ role }) => {
+  const r = ROLES[role];
+  if (!r) return null;
   return (
-    <div className="relative inline-block">
-      <div onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-        {children}
-      </div>
-      {show && (
-        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs bg-popover border border-border rounded-lg shadow-lg max-w-xs whitespace-normal">
-          {content}
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${r.bg} ${r.color}`}>
+      {role === 'admin' && <ShieldCheck className="w-3 h-3" />}
+      {role === 'member' && <UserCheck className="w-3 h-3" />}
+      {role === 'guest' && <User className="w-3 h-3" />}
+      {r.name}
+    </span>
+  );
+};
+
+const StatusDot = ({ online }) => (
+  <div className={`w-2.5 h-2.5 rounded-full ${online ? 'bg-success animate-pulse' : 'bg-muted-foreground'}`} />
+);
+
+const PriorityBadge = ({ priority }) => {
+  const config = {
+    P0: { bg: 'bg-destructive/20', color: 'text-destructive', label: 'P0' },
+    P1: { bg: 'bg-orange-500/20', color: 'text-orange-400', label: 'P1' },
+    P2: { bg: 'bg-warning/20', color: 'text-warning', label: 'P2' },
+    WARN: { bg: 'bg-warning/20', color: 'text-warning', label: 'WARN' },
+    OK: { bg: 'bg-success/20', color: 'text-success', label: 'OK' },
+  };
+  const c = config[priority] || config.OK;
+  return <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${c.bg} ${c.color}`}>{c.label}</span>;
+};
+
+const DomainIcon = ({ domain, className = "w-4 h-4" }) => {
+  const icons = {
+    Medical: Stethoscope, Comms: Radio, Security: Shield,
+    FoodWater: Utensils, Engineering: Wrench, Logistics: Compass,
+  };
+  const Icon = icons[domain] || Target;
+  return <Icon className={className} />;
+};
+
+const SkillBadge = ({ tagKey, size = 'sm' }) => {
+  const domain = getSkillDomain(tagKey);
+  const domainConfig = SKILL_DOMAINS[domain];
+  const sizeClasses = size === 'sm' ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2 py-1';
+  return (
+    <span className={`inline-flex items-center gap-1 rounded ${sizeClasses} ${domainConfig?.bg || 'bg-secondary'} ${domainConfig?.color || 'text-foreground'}`}>
+      {getSkillLabel(tagKey)}
+    </span>
+  );
+};
+
+const LanguageBadge = ({ code }) => {
+  const lang = LANGUAGES[code];
+  return (
+    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-secondary text-[10px]">
+      {lang?.flag} {lang?.label || code}
+    </span>
+  );
+};
+
+// ============================================================
+// COLLAPSIBLE PRIVACY BANNER
+// ============================================================
+
+const PrivacyBanner = () => {
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('community-privacy-banner-collapsed') === 'true';
+    }
+    return false;
+  });
+  
+  const toggle = () => {
+    const newState = !collapsed;
+    setCollapsed(newState);
+    sessionStorage.setItem('community-privacy-banner-collapsed', String(newState));
+  };
+  
+  return (
+    <div className="glass rounded-xl border border-primary/30 mb-6 overflow-hidden">
+      <button onClick={toggle} className="w-full flex items-center justify-between p-3 hover:bg-white/5 transition-colors">
+        <div className="flex items-center gap-2">
+          <Info className="w-4 h-4 text-primary" />
+          <span className="font-semibold text-sm">Privacy & Data Use</span>
+        </div>
+        {collapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+      </button>
+      {!collapsed && (
+        <div className="px-4 pb-4 text-xs text-muted-foreground">
+          Analytics show aggregated data only. Height/weight and age are visible only with member opt-in.
+          Incident tracking is admin-only with strict approval workflows. All actions are audited.
         </div>
       )}
     </div>
   );
 };
 
-const RoleBadge = ({ role }) => {
-  const roleConfig = ROLES[role];
-  if (!roleConfig) return null;
-  return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${roleConfig.bg} ${roleConfig.color}`}>
-      {role === 'admin' && <ShieldCheck className="w-3 h-3" />}
-      {role === 'member' && <UserCheck className="w-3 h-3" />}
-      {role === 'guest' && <User className="w-3 h-3" />}
-      {roleConfig.name}
-    </span>
-  );
-};
-
-const PrivacyBadge = ({ level }) => {
-  const config = {
-    public: { icon: Globe, label: 'Public', color: 'text-success', bg: 'bg-success/20' },
-    member: { icon: Users, label: 'Members', color: 'text-primary', bg: 'bg-primary/20' },
-    admin: { icon: Shield, label: 'Admin Only', color: 'text-amber-400', bg: 'bg-amber-500/20' },
-    sensitive: { icon: Lock, label: 'Sensitive', color: 'text-destructive', bg: 'bg-destructive/20' },
-  };
-  const c = config[level] || config.public;
-  const Icon = c.icon;
-  return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] ${c.bg} ${c.color}`}>
-      <Icon className="w-2.5 h-2.5" />
-      {c.label}
-    </span>
-  );
-};
-
-const StatusDot = ({ status }) => {
-  const colors = {
-    available: 'bg-success',
-    busy: 'bg-warning',
-    away: 'bg-orange-400',
-    offline: 'bg-muted-foreground',
-  };
-  return <div className={`w-2.5 h-2.5 rounded-full ${colors[status] || colors.offline}`} />;
-};
-
-const ScoreBadge = ({ score, thresholds }) => {
-  let color = 'text-success';
-  let bg = 'bg-success/20';
-  
-  if (score < thresholds.intervention) {
-    color = 'text-destructive';
-    bg = 'bg-destructive/20';
-  } else if (score < thresholds.restricted) {
-    color = 'text-orange-400';
-    bg = 'bg-orange-500/20';
-  } else if (score < thresholds.monitor) {
-    color = 'text-warning';
-    bg = 'bg-warning/20';
-  }
-  
-  return (
-    <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg ${bg}`}>
-      <Award className={`w-4 h-4 ${color}`} />
-      <span className={`font-bold ${color}`}>{score}</span>
-    </div>
-  );
-};
-
-// Access Denied Component
-const AccessDenied = ({ message = "You don't have permission to view this content" }) => (
-  <div className="flex flex-col items-center justify-center py-16 glass rounded-xl">
-    <ShieldAlert className="w-16 h-16 text-destructive/50 mb-4" />
-    <h3 className="text-lg font-semibold mb-2">Access Denied</h3>
-    <p className="text-sm text-muted-foreground text-center max-w-md">{message}</p>
-  </div>
-);
-
-// Privacy Banner
-const PrivacyBanner = () => (
-  <div className="glass rounded-xl p-4 border border-primary/30 mb-6">
-    <div className="flex items-start gap-3">
-      <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-      <div>
-        <h4 className="font-semibold text-sm">Privacy & Data Use</h4>
-        <p className="text-xs text-muted-foreground mt-1">
-          Analytics show aggregated data only. Height/weight and medical info are visible only with member opt-in. 
-          Incident tracking is admin-only and follows strict approval workflows. All actions are audited.
-        </p>
-      </div>
-    </div>
-  </div>
-);
-
 // ============================================================
-// TAB COMPONENTS
+// OVERVIEW TAB - OPERATIONS HUB
 // ============================================================
 
-// Overview Tab
-const OverviewTab = ({ profiles, analytics, incidents }) => {
-  const { can, isAdmin } = useRBAC();
+const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScores, scoreConfig, onNavigate, onFilterDirectory }) => {
+  const { isAdmin, currentUser, onUpdatePrivacy } = useRBAC();
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [addressedRecs, setAddressedRecs] = useState(new Set());
   
-  // Top 5 strengths and gaps
-  const topStrengths = Object.entries(analytics.skillsCoverage)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
+  const openIncidents = incidents.filter(i => i.status !== 'Closed').length;
+  const incidentsLast7d = incidents.filter(i => {
+    const created = new Date(i.createdAt);
+    return created > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  }).length;
+  
+  // Members below thresholds
+  const atRiskMembers = useMemo(() => {
+    return Object.entries(memberScores)
+      .filter(([, s]) => s.flag)
+      .map(([userId, score]) => {
+        const profile = profiles.find(p => p.userId === userId);
+        return { ...profile, ...score };
+      })
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 3);
+  }, [memberScores, profiles]);
+  
+  const thresholdCounts = useMemo(() => {
+    const counts = { monitor: 0, restricted: 0, intervention: 0 };
+    Object.values(memberScores).forEach(s => {
+      if (s.flag) counts[s.flag]++;
+    });
+    return counts;
+  }, [memberScores]);
   
   return (
     <div className="space-y-6">
       <PrivacyBanner />
       
+      {/* Readiness Snapshot - 6 Domain Tiles */}
+      <div className="glass rounded-xl p-4">
+        <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+          <Target className="w-5 h-5 text-primary" />
+          Readiness Snapshot
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {Object.entries(analytics.coverage.domains).map(([domain, data]) => (
+            <button
+              key={domain}
+              onClick={() => onNavigate('analytics', { domain })}
+              className="glass rounded-lg p-3 text-left hover:bg-white/5 transition-colors group"
+              data-testid={`domain-tile-${domain}`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className={`p-1.5 rounded ${SKILL_DOMAINS[domain]?.bg}`}>
+                  <DomainIcon domain={domain} className={`w-4 h-4 ${SKILL_DOMAINS[domain]?.color}`} />
+                </div>
+                <PriorityBadge priority={data.status} />
+              </div>
+              <h4 className="text-xs font-semibold truncate">{SKILL_DOMAINS[domain]?.label || domain}</h4>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Qualified: <span className="font-medium text-foreground">{data.qualifiedCount}</span>
+                <span className="text-success"> ({data.onlineQualifiedCount} online)</span>
+              </p>
+              <p className="text-[10px] text-muted-foreground">
+                Redundancy: <span className={data.redundancy === 'Low' ? 'text-warning' : 'text-foreground'}>{data.redundancy}</span>
+              </p>
+              <ChevronRight className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2" />
+            </button>
+          ))}
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Community Pulse */}
+        {/* Left Column */}
         <div className="lg:col-span-2 space-y-4">
+          {/* Community Pulse */}
           <div className="glass rounded-xl p-4">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Activity className="w-5 h-5 text-primary" />
               Community Pulse
             </h2>
-            
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="glass rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-success">{analytics.onlineCount}</div>
+                <div className="text-2xl font-bold text-success">{analytics.population.onlineNow}</div>
                 <p className="text-xs text-muted-foreground">Online</p>
               </div>
               <div className="glass rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-muted-foreground">{analytics.offlineCount}</div>
+                <div className="text-2xl font-bold">{analytics.population.membersTotal - analytics.population.onlineNow}</div>
                 <p className="text-xs text-muted-foreground">Offline</p>
               </div>
               <div className="glass rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-primary">{analytics.newMembersThisWeek}</div>
-                <p className="text-xs text-muted-foreground">New This Week</p>
+                <div className="text-2xl font-bold text-primary">{analytics.population.newMembersWeek}</div>
+                <p className="text-xs text-muted-foreground">New Members (7d)</p>
               </div>
               <div className="glass rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-cyan-400">{analytics.recentCommsActivity}</div>
-                <p className="text-xs text-muted-foreground">Messages (24h)</p>
+                <div className="text-2xl font-bold text-cyan-400">{commsPreview.stats.messagesLast24h}</div>
+                <p className="text-xs text-muted-foreground">Comms Activity (24h)</p>
               </div>
             </div>
             
-            {isAdmin && (
-              <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
-                    Open Incidents
-                  </span>
-                  <span className="text-lg font-bold text-amber-400">{analytics.openIncidentsCount}</span>
-                </div>
-              </div>
-            )}
+            {/* Open Incidents Row */}
+            <button
+              onClick={() => {
+                if (isAdmin) {
+                  onNavigate('incidents');
+                } else {
+                  toast.error('Access denied', { description: 'Incident Reports are admin-only.' });
+                }
+              }}
+              className={`mt-4 w-full p-3 rounded-lg flex items-center justify-between transition-colors ${
+                isAdmin ? 'bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20' : 'bg-muted/20 border border-border'
+              }`}
+              data-testid="open-incidents-row"
+            >
+              <span className="text-sm flex items-center gap-2">
+                <AlertTriangle className={`w-4 h-4 ${isAdmin ? 'text-amber-400' : 'text-muted-foreground'}`} />
+                Open Incidents
+                {!isAdmin && <Lock className="w-3 h-3 text-muted-foreground" />}
+              </span>
+              <span className={`text-lg font-bold ${isAdmin ? 'text-amber-400' : 'text-muted-foreground'}`}>
+                {isAdmin ? openIncidents : '—'}
+              </span>
+            </button>
           </div>
           
-          {/* Quick Actions */}
-          <div className="glass rounded-xl p-4">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-primary" />
-              Quick Actions
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {can('postAnnouncement') && (
-                <Button size="sm" variant="outline" className="gap-1.5">
-                  <Megaphone className="w-3.5 h-3.5" />
-                  Post Announcement
-                </Button>
-              )}
-              {can('createPoll') && (
-                <Button size="sm" variant="outline" className="gap-1.5">
-                  <Vote className="w-3.5 h-3.5" />
-                  Start Poll
-                </Button>
-              )}
-              {can('createTask') && (
-                <Button size="sm" variant="outline" className="gap-1.5">
-                  <ClipboardList className="w-3.5 h-3.5" />
-                  New Task
-                </Button>
-              )}
-              <Button size="sm" variant="outline" className="gap-1.5">
-                <Users className="w-3.5 h-3.5" />
-                View Directory
-              </Button>
+          {/* Single Point of Failure Panel */}
+          {analytics.singlePointsOfFailure.length > 0 && (
+            <div className="glass rounded-xl p-4 border border-destructive/30">
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-destructive" />
+                Single Points of Failure
+                <span className="text-xs text-muted-foreground ml-auto">Skills with 0-1 qualified members</span>
+              </h3>
+              <div className="space-y-2">
+                {analytics.singlePointsOfFailure.slice(0, 4).map(spof => (
+                  <div key={spof.tagKey} className="flex items-center justify-between p-2 rounded-lg bg-background/50">
+                    <div className="flex items-center gap-2">
+                      <PriorityBadge priority={spof.priority} />
+                      <span className="text-sm font-medium">{spof.label}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({spof.holdersTotal} total, {spof.holdersOnline} online)
+                      </span>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          toast.success('Training task created', { description: `Task for ${spof.label} training added.` });
+                        }}
+                      >
+                        <Plus className="w-3 h-3 mr-1" />Task
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-xs"
+                        onClick={() => onFilterDirectory({ skills: [spof.tagKey] })}
+                      >
+                        Candidates
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Strengths & Gaps */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="glass rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-success" />
+                  Top Strengths
+                </h3>
+                <button
+                  onClick={() => onNavigate('analytics')}
+                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                >
+                  Full breakdown <ChevronRight className="w-3 h-3" />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {analytics.topStrengths.map(s => (
+                  <button
+                    key={s.tagKey}
+                    onClick={() => onFilterDirectory({ skills: [s.tagKey] })}
+                    className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-sm">{s.label}</span>
+                    <span className="text-xs">
+                      <span className="font-medium">{s.countTotal}</span>
+                      <span className="text-success"> / {s.countOnline} online</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="glass rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-warning" />
+                  Skill Gaps
+                </h3>
+                <button
+                  onClick={() => onNavigate('analytics')}
+                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                >
+                  Full breakdown <ChevronRight className="w-3 h-3" />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {analytics.topGaps.map(g => (
+                  <button
+                    key={g.tagKey}
+                    onClick={() => onFilterDirectory({ skills: [g.tagKey] })}
+                    className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-sm">{g.label}</span>
+                    <span className={`text-xs ${g.countTotal === 0 ? 'text-destructive' : g.countTotal === 1 ? 'text-warning' : ''}`}>
+                      <span className="font-medium">{g.countTotal}</span>
+                      <span className="text-success"> / {g.countOnline} online</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Right: Strengths & Gaps */}
-        <div className="space-y-4">
+          
+          {/* System Recommendations */}
           <div className="glass rounded-xl p-4">
             <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-success" />
-              Top Strengths
+              <Lightbulb className="w-4 h-4 text-primary" />
+              System Recommendations
             </h3>
             <div className="space-y-2">
-              {topStrengths.map(([skill, count]) => (
-                <div key={skill} className="flex items-center justify-between text-sm">
-                  <span>{skill}</span>
-                  <span className="text-success font-medium">{count}</span>
+              {analytics.recommendations.filter(r => !addressedRecs.has(r.id)).slice(0, 4).map(rec => (
+                <div key={rec.id} className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <PriorityBadge priority={rec.priority} />
+                        <span className="text-sm font-medium">{rec.title}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{rec.detail}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 text-[10px]"
+                      onClick={() => setAddressedRecs(prev => new Set([...prev, rec.id]))}
+                    >
+                      <CheckCheck className="w-3 h-3" />
+                    </Button>
+                  </div>
+                  <div className="flex gap-1 mt-2">
+                    {rec.actions?.includes('Create Training Task') && (
+                      <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => toast.success('Task created')}>
+                        <ClipboardList className="w-3 h-3 mr-1" />Task
+                      </Button>
+                    )}
+                    {rec.actions?.includes('Start Discussion') && (
+                      <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => toast.success('Discussion started')}>
+                        <MessageSquare className="w-3 h-3 mr-1" />Discuss
+                      </Button>
+                    )}
+                    {rec.filterSkill && (
+                      <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => onFilterDirectory({ skills: [rec.filterSkill] })}>
+                        <Users className="w-3 h-3 mr-1" />Members
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="glass rounded-xl p-4 border border-warning/30">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <TrendingDown className="w-4 h-4 text-warning" />
-              Skill Gaps
-            </h3>
-            {analytics.skillGaps.length > 0 ? (
-              <div className="space-y-2">
-                {analytics.skillGaps.slice(0, 5).map(gap => (
-                  <div key={gap.skill} className="flex items-center justify-between text-sm">
-                    <span>{gap.skill}</span>
-                    <span className={`font-medium ${gap.count === 0 ? 'text-destructive' : 'text-warning'}`}>
-                      {gap.count === 0 ? 'None' : gap.count}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-success">All critical skills covered!</p>
-            )}
-          </div>
-          
+          {/* Member Roster Preview */}
           <div className="glass rounded-xl p-4">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <Languages className="w-4 h-4 text-primary" />
-              Languages
-            </h3>
-            <div className="flex flex-wrap gap-1.5">
-              {Object.entries(analytics.languagesCoverage)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 6)
-                .map(([lang, count]) => (
-                  <span key={lang} className="px-2 py-1 rounded-full bg-secondary text-xs">
-                    {lang} ({count})
-                  </span>
-                ))}
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Users className="w-4 h-4 text-primary" />
+                Member Roster
+              </h3>
+              <Button size="sm" variant="ghost" onClick={() => onNavigate('directory')} className="text-xs">
+                View All <ChevronRight className="w-3 h-3 ml-1" />
+              </Button>
+            </div>
+            
+            {/* Search field */}
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search members..."
+                className="pl-9 h-9"
+                onFocus={() => onNavigate('directory')}
+                data-testid="roster-search"
+              />
+            </div>
+            
+            {/* Mini roster grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {profiles.slice(0, 8).map(profile => {
+                const redacted = redactProfile(profile, currentUser?.role);
+                return (
+                  <button
+                    key={profile.userId}
+                    onClick={() => onFilterDirectory({ q: profile.displayName })}
+                    className="glass rounded-lg p-2 text-left hover:bg-white/5 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center text-xs font-bold">
+                        {profile.displayName.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <StatusDot online={profile.stats.online} />
+                    </div>
+                    <p className="text-xs font-medium truncate">{profile.displayName}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{profile.class || 'Member'}</p>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Recommendations Panel */}
-      {analytics.recommendations.length > 0 && (
-        <div className="glass rounded-xl p-4">
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <Lightbulb className="w-4 h-4 text-amber-400" />
-            System Recommendations
-          </h3>
-          <div className="space-y-3">
-            {analytics.recommendations.map((rec, idx) => (
-              <div 
-                key={idx} 
-                className={`p-3 rounded-lg ${
-                  rec.priority === 'P0' ? 'bg-destructive/10 border border-destructive/30' :
-                  rec.priority === 'P1' ? 'bg-warning/10 border border-warning/30' :
-                  'bg-primary/10 border border-primary/30'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                    rec.priority === 'P0' ? 'bg-destructive text-white' :
-                    rec.priority === 'P1' ? 'bg-warning text-black' :
-                    'bg-primary text-white'
-                  }`}>
-                    {rec.priority}
-                  </span>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{rec.message}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{rec.action}</p>
+        
+        {/* Right Column */}
+        <div className="space-y-4">
+          {/* Comms Preview */}
+          <div className="glass rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Bell className="w-4 h-4 text-cyan-400" />
+                Pinned Bulletins
+              </h3>
+              <Button size="sm" variant="ghost" onClick={() => onNavigate('comms')} className="text-xs">
+                View all <ChevronRight className="w-3 h-3 ml-1" />
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {commsPreview.pinnedBulletins.map(b => (
+                <div key={b.id} className="p-2 rounded-lg bg-background/50 hover:bg-white/5 transition-colors cursor-pointer">
+                  <div className="flex items-start gap-2">
+                    <div className={`w-2 h-2 rounded-full mt-1.5 ${b.severity === 'warning' ? 'bg-warning' : 'bg-primary'}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{b.title}</p>
+                      <p className="text-[10px] text-muted-foreground">{b.author} • {new Date(b.createdAt).toLocaleDateString()}</p>
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+            
+            <div className="mt-4 pt-3 border-t border-border/50">
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2">Recent Activity</h4>
+              <div className="space-y-1">
+                {commsPreview.recentActivity.slice(0, 3).map((a, i) => (
+                  <p key={i} className="text-xs text-muted-foreground truncate">{a.label}</p>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
+          
+          {/* Data Quality Card */}
+          <div className="glass rounded-xl p-4">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-violet-400" />
+              Data Quality
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-muted-foreground">Profile Completeness</span>
+                  <span className="font-medium">{analytics.dataQuality.avgCompleteness}%</span>
+                </div>
+                <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-primary to-accent"
+                    style={{ width: `${analytics.dataQuality.avgCompleteness}%` }}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2 rounded bg-background/50">
+                  <p className="text-muted-foreground">Incomplete</p>
+                  <p className="font-bold text-warning">{analytics.dataQuality.incompleteProfiles}</p>
+                </div>
+                <div className="p-2 rounded bg-background/50">
+                  <p className="text-muted-foreground">Missing Skills</p>
+                  <p className="font-bold text-warning">{analytics.dataQuality.missingSkills}</p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full text-xs"
+                onClick={() => setProfileModalOpen(true)}
+              >
+                <Send className="w-3 h-3 mr-1" />Ask members to complete profiles
+              </Button>
+            </div>
+          </div>
+          
+          {/* Languages */}
+          <div className="glass rounded-xl p-4">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-400" />
+              Languages
+            </h3>
+            <div className="flex flex-wrap gap-1">
+              {analytics.languages.slice(0, 8).map(l => (
+                <button
+                  key={l.code}
+                  onClick={() => onFilterDirectory({ languages: [l.code] })}
+                  className="px-2 py-1 rounded bg-secondary hover:bg-secondary/80 text-xs"
+                >
+                  {LANGUAGES[l.code]?.flag} {l.label} ({l.count})
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Member Privacy Controls */}
+          <div className="glass rounded-xl p-4">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <Lock className="w-4 h-4 text-amber-400" />
+              My Privacy Settings
+            </h3>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full"
+              onClick={() => setPrivacyModalOpen(true)}
+            >
+              <Eye className="w-3 h-3 mr-1" />Manage my privacy
+            </Button>
+          </div>
+          
+          {/* Admin Governance Snapshot */}
+          {isAdmin && (
+            <div className="glass rounded-xl p-4 border border-amber-500/30">
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-amber-400" />
+                Admin Governance
+              </h3>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2 rounded bg-amber-500/10">
+                    <p className="text-muted-foreground">Open Incidents</p>
+                    <p className="font-bold text-amber-400">{openIncidents}</p>
+                  </div>
+                  <div className="p-2 rounded bg-amber-500/10">
+                    <p className="text-muted-foreground">Last 7 Days</p>
+                    <p className="font-bold text-amber-400">{incidentsLast7d}</p>
+                  </div>
+                </div>
+                
+                <div className="text-xs">
+                  <p className="text-muted-foreground mb-1">Members Below Thresholds:</p>
+                  <div className="flex gap-2">
+                    <span className="px-2 py-0.5 rounded bg-warning/20 text-warning">Monitor: {thresholdCounts.monitor}</span>
+                    <span className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400">Restricted: {thresholdCounts.restricted}</span>
+                    <span className="px-2 py-0.5 rounded bg-destructive/20 text-destructive">Critical: {thresholdCounts.intervention}</span>
+                  </div>
+                </div>
+                
+                {atRiskMembers.length > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">At-Risk Members:</p>
+                    <div className="space-y-1">
+                      {atRiskMembers.map(m => (
+                        <div key={m.userId} className="flex items-center justify-between p-2 rounded bg-background/50">
+                          <span className="text-xs">{m.displayName}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold ${
+                              m.flag === 'intervention' ? 'text-destructive' : 
+                              m.flag === 'restricted' ? 'text-orange-400' : 'text-warning'
+                            }`}>{m.score}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 text-[10px]"
+                              onClick={() => onNavigate('incidents')}
+                            >
+                              Review
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Privacy Modal */}
+      <Sheet open={privacyModalOpen} onOpenChange={setPrivacyModalOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Privacy Settings</SheetTitle>
+            <SheetDescription>Control what information is visible to other members</SheetDescription>
+          </SheetHeader>
+          <PrivacySettingsPanel currentUser={currentUser} onUpdate={onUpdatePrivacy} onClose={() => setPrivacyModalOpen(false)} />
+        </SheetContent>
+      </Sheet>
+      
+      {/* Profile Reminder Modal */}
+      <Sheet open={profileModalOpen} onOpenChange={setProfileModalOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Profile Completion Reminder</SheetTitle>
+            <SheetDescription>Copy this announcement to encourage profile updates</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4 space-y-4">
+            <div className="p-4 rounded-lg bg-secondary text-sm">
+              <p className="font-medium mb-2">📋 Action Needed: Complete Your Profile</p>
+              <p className="text-muted-foreground">
+                Hey team! We noticed some profiles are missing key information. 
+                Please take a moment to update your skills, languages, and availability status.
+                Complete profiles help us coordinate better during emergencies.
+              </p>
+            </div>
+            <Button
+              className="w-full"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  "📋 Action Needed: Complete Your Profile\n\nHey team! We noticed some profiles are missing key information. Please take a moment to update your skills, languages, and availability status. Complete profiles help us coordinate better during emergencies."
+                );
+                toast.success('Copied to clipboard');
+              }}
+            >
+              <Copy className="w-4 h-4 mr-2" />Copy Announcement
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+};
+
+// Privacy Settings Panel
+const PrivacySettingsPanel = ({ currentUser, onUpdate, onClose }) => {
+  const [privacy, setPrivacy] = useState(currentUser?.privacy || {
+    showAge: false,
+    showHeightWeight: false,
+    showEducation: true,
+  });
+  
+  const handleSave = () => {
+    onUpdate?.(privacy);
+    toast.success('Privacy settings updated');
+    onClose();
+  };
+  
+  return (
+    <div className="mt-4 space-y-4">
+      <div className="space-y-3">
+        {[
+          { key: 'showAge', label: 'Share my age', desc: 'Allow members to see your age' },
+          { key: 'showHeightWeight', label: 'Share height & weight', desc: 'Allow members to see physical stats' },
+          { key: 'showEducation', label: 'Share education level', desc: 'Allow members to see your education' },
+        ].map(item => (
+          <label key={item.key} className="flex items-start gap-3 p-3 rounded-lg hover:bg-secondary cursor-pointer">
+            <input
+              type="checkbox"
+              checked={privacy[item.key]}
+              onChange={(e) => setPrivacy({ ...privacy, [item.key]: e.target.checked })}
+              className="mt-1"
+            />
+            <div>
+              <p className="font-medium text-sm">{item.label}</p>
+              <p className="text-xs text-muted-foreground">{item.desc}</p>
+            </div>
+          </label>
+        ))}
+      </div>
+      <Button onClick={handleSave} className="w-full">Save Privacy Settings</Button>
+    </div>
+  );
+};
+
+// ============================================================
+// DIRECTORY TAB - FULL ROSTER
+// ============================================================
+
+const DirectoryTab = ({ profiles, memberScores, scoreConfig, initialFilters, onOpenProfile }) => {
+  const { currentUser, isAdmin } = useRBAC();
+  const viewerRole = currentUser?.role || 'guest';
+  
+  // Search & filters
+  const [searchQuery, setSearchQuery] = useState(initialFilters?.q || '');
+  const [onlineOnly, setOnlineOnly] = useState(initialFilters?.online || false);
+  const [selectedSkills, setSelectedSkills] = useState(initialFilters?.skills || []);
+  const [selectedLanguages, setSelectedLanguages] = useState(initialFilters?.languages || []);
+  const [selectedEducation, setSelectedEducation] = useState('');
+  const [selectedClass, setSelectedClass] = useState('');
+  const [sortBy, setSortBy] = useState('online'); // online, name, skills
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Available options
+  const allSkills = useMemo(() => Object.keys(CANONICAL_SKILLS), []);
+  const allLanguages = useMemo(() => Object.keys(LANGUAGES), []);
+  const allClasses = useMemo(() => [...new Set(profiles.map(p => p.class).filter(Boolean))], [profiles]);
+  
+  // Filter profiles
+  const filteredProfiles = useMemo(() => {
+    let result = profiles.map(p => redactProfile(p, viewerRole));
+    
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(p =>
+        p.displayName.toLowerCase().includes(q) ||
+        p.skills.some(s => getSkillLabel(s).toLowerCase().includes(q)) ||
+        p.languages.some(l => getLanguageLabel(l).toLowerCase().includes(q))
+      );
+    }
+    
+    if (onlineOnly) {
+      result = result.filter(p => p.stats.online);
+    }
+    
+    if (selectedSkills.length > 0) {
+      result = result.filter(p => selectedSkills.some(s => p.skills.includes(s)));
+    }
+    
+    if (selectedLanguages.length > 0) {
+      result = result.filter(p => selectedLanguages.some(l => p.languages.includes(l)));
+    }
+    
+    if (selectedEducation) {
+      result = result.filter(p => p.educationLevel === selectedEducation);
+    }
+    
+    if (selectedClass) {
+      result = result.filter(p => p.class === selectedClass);
+    }
+    
+    // Sort
+    if (sortBy === 'online') {
+      result.sort((a, b) => (b.stats.online ? 1 : 0) - (a.stats.online ? 1 : 0));
+    } else if (sortBy === 'name') {
+      result.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    } else if (sortBy === 'skills') {
+      result.sort((a, b) => b.skills.length - a.skills.length);
+    }
+    
+    return result;
+  }, [profiles, viewerRole, searchQuery, onlineOnly, selectedSkills, selectedLanguages, selectedEducation, selectedClass, sortBy]);
+  
+  const clearFilters = () => {
+    setSearchQuery('');
+    setOnlineOnly(false);
+    setSelectedSkills([]);
+    setSelectedLanguages([]);
+    setSelectedEducation('');
+    setSelectedClass('');
+  };
+  
+  const hasActiveFilters = searchQuery || onlineOnly || selectedSkills.length > 0 || selectedLanguages.length > 0 || selectedEducation || selectedClass;
+  
+  return (
+    <div className="space-y-4">
+      {/* Search & Filter Bar */}
+      <div className="glass rounded-xl p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search name, skills, or languages..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+              data-testid="directory-search"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={onlineOnly ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setOnlineOnly(!onlineOnly)}
+              className="gap-1"
+            >
+              <StatusDot online={true} />
+              Online Only
+            </Button>
+            <Button
+              variant={showFilters ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="gap-1"
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+              {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-primary" />}
+            </Button>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-secondary rounded-lg px-3 text-sm"
+            >
+              <option value="online">Online First</option>
+              <option value="name">Name A-Z</option>
+              <option value="skills">Most Skilled</option>
+            </select>
+          </div>
+        </div>
+        
+        {/* Expanded Filters */}
+        {showFilters && (
+          <div className="mt-4 pt-4 border-t border-border space-y-3">
+            {/* Skills Filter */}
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Skills</label>
+              <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                {allSkills.slice(0, 20).map(skill => (
+                  <button
+                    key={skill}
+                    onClick={() => setSelectedSkills(prev => 
+                      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
+                    )}
+                    className={`px-2 py-1 rounded text-xs transition-colors ${
+                      selectedSkills.includes(skill) ? 'bg-primary text-white' : 'bg-secondary hover:bg-secondary/80'
+                    }`}
+                  >
+                    {getSkillLabel(skill)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Languages Filter */}
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Languages</label>
+              <div className="flex flex-wrap gap-1">
+                {allLanguages.map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => setSelectedLanguages(prev =>
+                      prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
+                    )}
+                    className={`px-2 py-1 rounded text-xs transition-colors ${
+                      selectedLanguages.includes(lang) ? 'bg-primary text-white' : 'bg-secondary hover:bg-secondary/80'
+                    }`}
+                  >
+                    {LANGUAGES[lang]?.flag} {LANGUAGES[lang]?.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Education & Class */}
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Education</label>
+                <select
+                  value={selectedEducation}
+                  onChange={(e) => setSelectedEducation(e.target.value)}
+                  className="w-full bg-secondary rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">Any</option>
+                  {Object.entries(EDUCATION_LEVELS).map(([key, val]) => (
+                    <option key={key} value={key}>{val.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Role/Class</label>
+                <select
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                  className="w-full bg-secondary rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">Any</option>
+                  {allClasses.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            {hasActiveFilters && (
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs">
+                <XCircle className="w-3 h-3 mr-1" />Clear all filters
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Results Count */}
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">
+          Showing <span className="font-medium text-foreground">{filteredProfiles.length}</span> of {profiles.length} members
+        </span>
+        {hasActiveFilters && (
+          <span className="text-xs text-primary">Filtered results</span>
+        )}
+      </div>
+      
+      {/* Profile Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filteredProfiles.map(profile => (
+          <ProfileCard
+            key={profile.userId}
+            profile={profile}
+            score={memberScores[profile.userId]}
+            scoreConfig={scoreConfig}
+            onOpen={() => onOpenProfile(profile)}
+            isAdmin={isAdmin}
+          />
+        ))}
+      </div>
+      
+      {filteredProfiles.length === 0 && (
+        <div className="text-center py-12 glass rounded-xl">
+          <Users className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
+          <p className="text-muted-foreground">No members match your filters</p>
+          <Button variant="link" onClick={clearFilters} className="mt-2">Clear filters</Button>
         </div>
       )}
     </div>
   );
 };
 
-// Placeholder tabs for Phase 2+
-const AnalyticsTab = () => {
+// Profile Card Component
+const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
+  const isRedacted = profile._redacted;
+  
+  return (
+    <div
+      className="glass rounded-xl p-4 hover:bg-white/5 transition-colors cursor-pointer group"
+      onClick={onOpen}
+      data-testid={`profile-card-${profile.userId}`}
+    >
+      {/* Header */}
+      <div className="flex items-start gap-3 mb-3">
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center font-bold text-sm">
+            {profile.displayName?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+          </div>
+          <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-background ${
+            profile.stats.online ? 'bg-success' : 'bg-muted-foreground'
+          }`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold truncate">{profile.displayName}</h3>
+          <p className="text-xs text-muted-foreground truncate">{profile.class || 'Member'}</p>
+        </div>
+        {isAdmin && score && (
+          <div className={`px-2 py-0.5 rounded text-xs font-bold ${
+            score.flag === 'intervention' ? 'bg-destructive/20 text-destructive' :
+            score.flag === 'restricted' ? 'bg-orange-500/20 text-orange-400' :
+            score.flag === 'monitor' ? 'bg-warning/20 text-warning' :
+            'bg-success/20 text-success'
+          }`}>
+            {score.score}
+          </div>
+        )}
+      </div>
+      
+      {/* Skills */}
+      <div className="flex flex-wrap gap-1 mb-3">
+        {profile.skills.slice(0, 3).map(skill => (
+          <SkillBadge key={skill} tagKey={skill} />
+        ))}
+        {profile.skills.length > 3 && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
+            +{profile.skills.length - 3}
+          </span>
+        )}
+      </div>
+      
+      {/* Languages */}
+      <div className="flex items-center gap-1 mb-3">
+        <Globe className="w-3 h-3 text-muted-foreground" />
+        <div className="flex gap-1 overflow-hidden">
+          {profile.languages.slice(0, 3).map(lang => (
+            <span key={lang} className="text-[10px]">{LANGUAGES[lang]?.flag}</span>
+          ))}
+          <span className="text-[10px] text-muted-foreground">
+            {profile.languages.map(l => getLanguageLabel(l)).join(', ')}
+          </span>
+        </div>
+      </div>
+      
+      {/* Conditional Fields */}
+      <div className="grid grid-cols-2 gap-2 text-[10px] border-t border-border/50 pt-3">
+        <div>
+          <span className="text-muted-foreground">Age: </span>
+          {profile.age !== null ? (
+            <span>{profile.age}y</span>
+          ) : (
+            <span className="text-amber-400 flex items-center gap-0.5 inline-flex">
+              <EyeOff className="w-2.5 h-2.5" />Hidden
+            </span>
+          )}
+        </div>
+        <div>
+          <span className="text-muted-foreground">Height: </span>
+          {profile.anthro?.heightIn !== null ? (
+            <span>{formatHeight(profile.anthro?.heightIn)}</span>
+          ) : (
+            <span className="text-amber-400 flex items-center gap-0.5 inline-flex">
+              <EyeOff className="w-2.5 h-2.5" />Hidden
+            </span>
+          )}
+        </div>
+        <div>
+          <span className="text-muted-foreground">Weight: </span>
+          {profile.anthro?.weightLb !== null ? (
+            <span>{formatWeight(profile.anthro?.weightLb)}</span>
+          ) : (
+            <span className="text-amber-400 flex items-center gap-0.5 inline-flex">
+              <EyeOff className="w-2.5 h-2.5" />Hidden
+            </span>
+          )}
+        </div>
+        <div>
+          <span className="text-muted-foreground">Edu: </span>
+          {profile.educationLevel !== null ? (
+            <span>{EDUCATION_LEVELS[profile.educationLevel]?.label || profile.educationLevel}</span>
+          ) : (
+            <span className="text-amber-400 flex items-center gap-0.5 inline-flex">
+              <EyeOff className="w-2.5 h-2.5" />Hidden
+            </span>
+          )}
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="flex items-center justify-between mt-3 pt-2 border-t border-border/50">
+        {isRedacted && !isAdmin ? (
+          <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+            <Lock className="w-3 h-3" />Some fields hidden
+          </p>
+        ) : isAdmin ? (
+          <p className="text-[10px] text-amber-400 flex items-center gap-1">
+            <ShieldCheck className="w-3 h-3" />Full profile
+          </p>
+        ) : (
+          <div />
+        )}
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
+            View
+          </Button>
+          <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={(e) => { e.stopPropagation(); toast.info('DM feature coming soon'); }}>
+            DM
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Profile Drawer
+const ProfileDrawer = ({ profile, isOpen, onClose, memberScores, scoreConfig }) => {
+  const { isAdmin } = useRBAC();
+  const score = memberScores?.[profile?.userId];
+  
+  if (!profile) return null;
+  
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetHeader>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center font-bold text-lg">
+              {profile.displayName?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            </div>
+            <div>
+              <SheetTitle className="flex items-center gap-2">
+                {profile.displayName}
+                <StatusDot online={profile.stats.online} />
+              </SheetTitle>
+              <SheetDescription>{profile.class || 'Community Member'}</SheetDescription>
+            </div>
+          </div>
+        </SheetHeader>
+        
+        <div className="mt-6 space-y-6">
+          {/* Admin Score */}
+          {isAdmin && score && (
+            <div className={`p-3 rounded-lg ${
+              score.flag === 'intervention' ? 'bg-destructive/10 border border-destructive/30' :
+              score.flag === 'restricted' ? 'bg-orange-500/10 border border-orange-500/30' :
+              score.flag === 'monitor' ? 'bg-warning/10 border border-warning/30' :
+              'bg-success/10 border border-success/30'
+            }`}>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Community Score</span>
+                <span className={`text-2xl font-bold ${
+                  score.flag === 'intervention' ? 'text-destructive' :
+                  score.flag === 'restricted' ? 'text-orange-400' :
+                  score.flag === 'monitor' ? 'text-warning' :
+                  'text-success'
+                }`}>{score.score}</span>
+              </div>
+              {score.flag && (
+                <p className="text-xs text-muted-foreground mt-1">Status: {score.flag}</p>
+              )}
+            </div>
+          )}
+          
+          {/* Personal Info */}
+          <div>
+            <h4 className="text-sm font-semibold mb-2">Personal Information</h4>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <InfoRow label="Age" value={profile.age !== null ? `${profile.age} years` : null} />
+              <InfoRow label="Height" value={formatHeight(profile.anthro?.heightIn)} />
+              <InfoRow label="Weight" value={formatWeight(profile.anthro?.weightLb)} />
+              <InfoRow label="Education" value={profile.educationLevel !== null ? EDUCATION_LEVELS[profile.educationLevel]?.label : null} />
+            </div>
+          </div>
+          
+          {/* Skills */}
+          <div>
+            <h4 className="text-sm font-semibold mb-2">Skills ({profile.skills.length})</h4>
+            <div className="flex flex-wrap gap-1">
+              {profile.skills.map(skill => (
+                <SkillBadge key={skill} tagKey={skill} size="md" />
+              ))}
+            </div>
+          </div>
+          
+          {/* Languages */}
+          <div>
+            <h4 className="text-sm font-semibold mb-2">Languages</h4>
+            <div className="flex flex-wrap gap-1">
+              {profile.languages.map(lang => (
+                <LanguageBadge key={lang} code={lang} />
+              ))}
+            </div>
+          </div>
+          
+          {/* Certifications */}
+          {profile.certifications?.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold mb-2">Certifications</h4>
+              <div className="flex flex-wrap gap-1">
+                {profile.certifications.map(cert => (
+                  <span key={cert} className="px-2 py-1 rounded bg-primary/20 text-primary text-xs">
+                    {cert}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Actions */}
+          <div className="flex gap-2">
+            <Button className="flex-1" onClick={() => toast.info('DM feature coming soon')}>
+              <Send className="w-4 h-4 mr-2" />Send Message
+            </Button>
+            <Button variant="outline" onClick={() => toast.info('Help request feature coming soon')}>
+              Request Help
+            </Button>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+const InfoRow = ({ label, value }) => (
+  <div className="p-2 rounded bg-secondary/50">
+    <p className="text-xs text-muted-foreground">{label}</p>
+    {value !== null ? (
+      <p className="font-medium">{value}</p>
+    ) : (
+      <p className="text-amber-400 flex items-center gap-1 text-sm">
+        <EyeOff className="w-3 h-3" />Hidden
+      </p>
+    )}
+  </div>
+);
+
+// ============================================================
+// ANALYTICS TAB (Placeholder with domain filter support)
+// ============================================================
+
+const AnalyticsTab = ({ filterDomain }) => {
   const { can, currentUser } = useRBAC();
+  
   if (!can('viewAnalytics')) {
-    return (
-      <AccessDeniedCard 
-        minRole="member" 
-        currentRole={currentUser?.role} 
-      />
-    );
+    return <AccessDeniedCard minRole="member" currentRole={currentUser?.role} />;
   }
   
   return (
     <div className="space-y-6">
-      {/* Placeholder Header */}
+      {filterDomain && (
+        <div className="glass rounded-xl p-4 border border-primary/30">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-primary" />
+            <span className="text-sm">Filtered by domain: <span className="font-semibold">{SKILL_DOMAINS[filterDomain]?.label || filterDomain}</span></span>
+            <Button size="sm" variant="ghost" className="ml-auto text-xs">Clear filter</Button>
+          </div>
+        </div>
+      )}
+      
       <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-border">
         <BarChart2 className="w-16 h-16 mx-auto mb-4 text-primary/50" />
         <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Coming in Phase 3 - Comprehensive community analytics
-        </p>
+        <p className="text-sm text-muted-foreground mb-4">Coming in Phase 3</p>
         <ul className="text-sm text-muted-foreground space-y-1 text-left max-w-md mx-auto">
-          <li>• Skills coverage matrix</li>
+          <li>• Skills coverage matrix by domain</li>
           <li>• Gap analysis with recommendations</li>
           <li>• Member activity trends</li>
           <li>• Downloadable reports (redacted by role)</li>
@@ -1327,210 +1330,49 @@ const AnalyticsTab = () => {
   );
 };
 
-const DirectoryTab = ({ profiles, scoreConfig, memberScores, onTabChange }) => {
-  const { can, currentUser, isAdmin } = useRBAC();
-  
-  // Get redacted profiles based on viewer role
-  const viewerRole = currentUser?.role || 'guest';
-  const redactedProfiles = useMemo(() => 
-    profiles.map(p => redactProfile(p, viewerRole)),
-    [profiles, viewerRole]
-  );
-  
-  // Show only first 3 profiles as preview (per Phase 1 requirements)
-  const previewProfiles = redactedProfiles.slice(0, 3);
-  
-  if (!can('viewDirectory')) return <AccessDeniedCard minRole="guest" currentRole={currentUser?.role} />;
-  
-  return (
-    <div className="space-y-6">
-      {/* Privacy Notice */}
-      <div className="glass rounded-xl p-4 border border-primary/30">
-        <div className="flex items-start gap-3">
-          <Eye className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-sm">Privacy Redaction Active</h4>
-            <p className="text-xs text-muted-foreground mt-1">
-              Sensitive fields (age, height, weight) are shown only when members opt-in.
-              {isAdmin ? (
-                <span className="text-amber-400 ml-1">As an admin, you see all fields.</span>
-              ) : (
-                <span className="text-muted-foreground ml-1">Fields marked &quot;Hidden&quot; are not shared by the member.</span>
-              )}
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Directory Preview Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold flex items-center gap-2">
-          <Users className="w-5 h-5 text-primary" />
-          Member Directory Preview
-        </h2>
-        <span className="text-xs text-muted-foreground">
-          Showing {previewProfiles.length} of {profiles.length} members
-        </span>
-      </div>
-      
-      {/* Profile Cards Grid - Shows redaction behavior */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {previewProfiles.map(profile => (
-          <ProfilePreviewCard 
-            key={profile.id} 
-            profile={profile} 
-            viewerRole={viewerRole}
-            score={memberScores[profile.id]}
-            thresholds={scoreConfig.thresholds}
-          />
-        ))}
-      </div>
-      
-      {/* Placeholder for full directory */}
-      <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-border">
-        <Users className="w-12 h-12 mx-auto mb-4 text-primary/30" />
-        <h3 className="font-semibold mb-2">Full Directory Coming in Phase 4</h3>
-        <ul className="text-sm text-muted-foreground space-y-1">
-          <li>• Advanced search & filtering</li>
-          <li>• Skill-based member discovery</li>
-          <li>• Team Builder tool</li>
-          <li>• Bulk export (redacted for role)</li>
-        </ul>
-      </div>
-    </div>
-  );
-};
+// ============================================================
+// COMMS TAB (Shows pinned bulletins)
+// ============================================================
 
-// Profile Preview Card - Shows privacy redaction behavior
-const ProfilePreviewCard = ({ profile, viewerRole, score, thresholds }) => {
-  const { isAdmin } = useRBAC();
-  const isRedacted = profile._redacted;
-  
-  // Helper to render field with redaction indicator
-  const renderField = (label, value, icon) => {
-    const Icon = icon;
-    const isHidden = value === null;
-    
-    return (
-      <div className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
-        <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-          <Icon className="w-3 h-3" />
-          {label}
-        </span>
-        {isHidden ? (
-          <span className="text-xs text-amber-400/70 flex items-center gap-1" data-testid={`field-hidden-${label.toLowerCase()}`}>
-            <EyeOff className="w-3 h-3" />
-            Hidden
-          </span>
-        ) : (
-          <span className="text-xs font-medium">{value}</span>
-        )}
-      </div>
-    );
-  };
-  
-  return (
-    <div 
-      className="glass rounded-xl p-4 hover:bg-white/5 transition-colors"
-      data-testid={`profile-card-${profile.id}`}
-    >
-      {/* Header */}
-      <div className="flex items-start gap-3 mb-4">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center font-bold text-white flex-shrink-0">
-          {profile.displayName?.split(' ').map(n => n[0]).join('').slice(0, 2)}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="font-semibold truncate">{profile.displayName}</h3>
-            {score && (
-              <ScoreBadge score={score.score} thresholds={thresholds} />
-            )}
-          </div>
-          <div className="flex items-center gap-2 mt-1">
-            <StatusDot status={profile.availabilityStatus} />
-            <span className="text-xs text-muted-foreground capitalize">{profile.availabilityStatus}</span>
-            {profile.roleClass && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-primary/20 text-primary">
-                {profile.roleClass}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      {/* Redacted Fields Display */}
-      <div className="space-y-0 mb-4">
-        {renderField('Age', profile.age ? `${profile.age} years` : null, Calendar)}
-        {renderField('Height', formatHeight(profile.heightIn), Activity)}
-        {renderField('Weight', formatWeight(profile.weightLb), Activity)}
-        {renderField('Education', profile.educationLevel, GraduationCap)}
-      </div>
-      
-      {/* Skills Preview */}
-      <div className="flex flex-wrap gap-1 mb-3">
-        {profile.skillSets?.slice(0, 3).map(skill => (
-          <span key={skill} className="text-[10px] px-1.5 py-0.5 rounded bg-secondary">
-            {skill}
-          </span>
-        ))}
-        {profile.skillSets?.length > 3 && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
-            +{profile.skillSets.length - 3} more
-          </span>
-        )}
-      </div>
-      
-      {/* Languages */}
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Languages className="w-3 h-3" />
-        {profile.languages?.join(', ')}
-      </div>
-      
-      {/* Redaction indicator for non-admins */}
-      {isRedacted && !isAdmin && (
-        <div className="mt-3 pt-3 border-t border-border/50">
-          <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-            <Lock className="w-3 h-3" />
-            Some fields hidden by member privacy settings
-          </p>
-        </div>
-      )}
-      
-      {/* Admin badge */}
-      {isAdmin && (
-        <div className="mt-3 pt-3 border-t border-border/50">
-          <p className="text-[10px] text-amber-400 flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3" />
-            Full profile visible (admin)
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const CommsTab = () => {
+const CommsTab = ({ commsPreview }) => {
   const { can, currentUser } = useRBAC();
+  
   if (!can('viewComms')) {
-    return (
-      <AccessDeniedCard 
-        minRole="member" 
-        currentRole={currentUser?.role} 
-      />
-    );
+    return <AccessDeniedCard minRole="member" currentRole={currentUser?.role} />;
   }
   
   return (
     <div className="space-y-6">
-      {/* Placeholder Content */}
+      {/* Pinned Bulletins */}
+      <div className="glass rounded-xl p-4">
+        <h3 className="font-semibold mb-4 flex items-center gap-2">
+          <Bell className="w-4 h-4 text-cyan-400" />
+          Pinned Bulletins
+        </h3>
+        <div className="space-y-3">
+          {commsPreview.pinnedBulletins.map(b => (
+            <div key={b.id} className="p-4 rounded-lg bg-background/50 hover:bg-white/5 transition-colors">
+              <div className="flex items-start gap-3">
+                <div className={`w-3 h-3 rounded-full mt-1 ${b.severity === 'warning' ? 'bg-warning' : 'bg-primary'}`} />
+                <div className="flex-1">
+                  <h4 className="font-medium">{b.title}</h4>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Posted by {b.author} on {new Date(b.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Coming Soon */}
       <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-border">
         <MessageSquare className="w-16 h-16 mx-auto mb-4 text-primary/50" />
-        <h3 className="text-lg font-semibold mb-2">Communications Hub</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Coming in Phase 5 - Unified community communications
-        </p>
+        <h3 className="text-lg font-semibold mb-2">Full Communications Hub</h3>
+        <p className="text-sm text-muted-foreground mb-4">Coming in Phase 5</p>
         <ul className="text-sm text-muted-foreground space-y-1 text-left max-w-md mx-auto">
-          <li>• Announcements feed</li>
+          <li>• Announcements & broadcasts</li>
           <li>• Community polls</li>
           <li>• Task management</li>
           <li>• Role-gated channels</li>
@@ -1540,60 +1382,41 @@ const CommsTab = () => {
   );
 };
 
-const IncidentReportsTab = ({ onTabChange }) => {
-  const { can, isAdmin, currentUser } = useRBAC();
+// ============================================================
+// INCIDENTS TAB (Admin-only)
+// ============================================================
+
+const IncidentsTab = ({ onNavigate }) => {
+  const { isAdmin, currentUser } = useRBAC();
   
-  // Route-level protection with redirect + toast
   useEffect(() => {
     if (!isAdmin) {
-      toast.error('Access denied: Admin-only section', {
-        description: 'Redirecting to Overview...',
-        duration: 3000,
-      });
-      // Redirect after short delay to show toast
-      const timer = setTimeout(() => {
-        if (onTabChange) onTabChange('overview');
-      }, 100);
+      toast.error('Access denied: Admin-only section', { description: 'Redirecting to Overview...' });
+      const timer = setTimeout(() => onNavigate('overview'), 100);
       return () => clearTimeout(timer);
     }
-  }, [isAdmin, onTabChange]);
+  }, [isAdmin, onNavigate]);
   
-  // Strict admin-only check with RequireRole
   return (
-    <RequireRole 
-      minRole="admin" 
-      onAccessDenied={() => {
-        if (onTabChange) onTabChange('overview');
-      }}
-      fallback={
-        <AccessDeniedCard 
-          minRole="admin" 
-          currentRole={currentUser?.role}
-          onReturn={() => onTabChange && onTabChange('overview')}
-        />
-      }
+    <RequireRole
+      minRole="admin"
+      fallback={<AccessDeniedCard minRole="admin" currentRole={currentUser?.role} onReturn={() => onNavigate('overview')} />}
     >
       <div className="space-y-6">
-        {/* Admin Verification Banner */}
         <div className="glass rounded-xl p-4 border border-amber-500/30 bg-amber-500/5">
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-6 h-6 text-amber-400" />
             <div>
               <h4 className="font-semibold text-sm text-amber-400">Admin Access Verified</h4>
-              <p className="text-xs text-muted-foreground">
-                You have full access to incident reports and scoring management.
-              </p>
+              <p className="text-xs text-muted-foreground">Full access to incident reports and scoring management.</p>
             </div>
           </div>
         </div>
         
-        {/* Placeholder Content */}
         <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-amber-500/30">
           <FileText className="w-16 h-16 mx-auto mb-4 text-amber-400/50" />
           <h3 className="text-lg font-semibold mb-2">Incident Reports Dashboard</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Coming in Phase 6 - Full incident management system
-          </p>
+          <p className="text-sm text-muted-foreground mb-4">Coming in Phase 6</p>
           <ul className="text-sm text-muted-foreground space-y-1 text-left max-w-md mx-auto">
             <li>• Incident log with filters & search</li>
             <li>• Member scoreboard with trends</li>
@@ -1609,116 +1432,55 @@ const IncidentReportsTab = ({ onTabChange }) => {
 };
 
 // ============================================================
-// QA CHECKLIST COMPONENT (Dev-only)
+// QA CHECKLIST (Dev-only)
 // ============================================================
 
 const QAChecklist = ({ currentRole, onRoleChange }) => {
   const [expanded, setExpanded] = useState(false);
   const [checkedItems, setCheckedItems] = useState({});
   
-  const toggleCheck = (id) => {
-    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-  
-  const checklistItems = [
-    {
-      id: 'admin-tab-visible',
-      test: 'Switch role to admin: Incident Reports tab appears',
-      action: () => onRoleChange('admin'),
-      expect: 'Tab should be visible in navigation',
-    },
-    {
-      id: 'member-tab-hidden',
-      test: 'Switch role to member: Incident Reports tab disappears',
-      action: () => onRoleChange('member'),
-      expect: 'Tab should be hidden from navigation',
-    },
-    {
-      id: 'guest-limited',
-      test: 'Switch role to guest: Limited tab access',
-      action: () => onRoleChange('guest'),
-      expect: 'Only Overview and Directory tabs visible',
-    },
-    {
-      id: 'direct-nav-redirect',
-      test: 'Attempt direct nav to Incident Reports as member: redirect + banner',
-      action: null,
-      expect: 'Should redirect to Overview and show toast error',
-    },
-    {
-      id: 'privacy-redaction',
-      test: 'Privacy redaction: hidden fields show as "Hidden"',
-      action: null,
-      expect: 'In Directory tab, non-opted-in fields show "Hidden" for non-admins',
-    },
-    {
-      id: 'admin-sees-all',
-      test: 'Admin sees all profile fields',
-      action: () => onRoleChange('admin'),
-      expect: 'All fields visible in Directory for admin',
-    },
+  const items = [
+    { id: 'admin-tab', test: 'Switch to admin: Incidents tab + Governance card visible', action: () => onRoleChange('admin') },
+    { id: 'member-tab', test: 'Switch to member: Incidents tab hidden, Governance hidden', action: () => onRoleChange('member') },
+    { id: 'guest-limited', test: 'Switch to guest: Only Overview + Directory tabs', action: () => onRoleChange('guest') },
+    { id: 'direct-nav', test: 'Direct URL to incidents as member: redirect + toast', action: null },
+    { id: 'privacy-modal', test: 'Privacy modal toggles update current user display', action: null },
+    { id: 'redaction', test: 'Non-admin sees "Hidden" for non-opted fields in cards/drawer', action: null },
+    { id: 'deep-link', test: 'Overview strength/gap clicks deep-link to Directory with filter', action: null },
   ];
   
   return (
     <div className="glass rounded-xl p-4 border border-cyan-500/30 bg-cyan-500/5" data-testid="qa-checklist">
-      <button 
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between"
-      >
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between">
         <h4 className="font-semibold text-sm flex items-center gap-2 text-cyan-400">
-          <ListChecks className="w-4 h-4" />
-          QA Checklist (Dev Only)
+          <ListChecks className="w-4 h-4" />QA Checklist (Dev Only)
         </h4>
         {expanded ? <ChevronUp className="w-4 h-4 text-cyan-400" /> : <ChevronDown className="w-4 h-4 text-cyan-400" />}
       </button>
       
       {expanded && (
         <div className="mt-4 space-y-2">
-          <p className="text-xs text-muted-foreground mb-3">
-            Current role: <span className="font-semibold text-primary">{currentRole}</span>
-          </p>
-          
-          {checklistItems.map(item => (
-            <div 
-              key={item.id}
-              className={`p-2 rounded-lg transition-colors ${
-                checkedItems[item.id] ? 'bg-success/10 border border-success/30' : 'bg-secondary/50'
-              }`}
-            >
+          <p className="text-xs text-muted-foreground">Current role: <span className="font-semibold text-primary">{currentRole}</span></p>
+          {items.map(item => (
+            <div key={item.id} className={`p-2 rounded-lg ${checkedItems[item.id] ? 'bg-success/10 border border-success/30' : 'bg-secondary/50'}`}>
               <div className="flex items-start gap-2">
                 <button
-                  onClick={() => toggleCheck(item.id)}
-                  className={`w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center mt-0.5 transition-colors ${
-                    checkedItems[item.id] 
-                      ? 'bg-success border-success text-white' 
-                      : 'border-border hover:border-primary'
+                  onClick={() => setCheckedItems(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
+                  className={`w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center ${
+                    checkedItems[item.id] ? 'bg-success border-success text-white' : 'border-border hover:border-primary'
                   }`}
                 >
                   {checkedItems[item.id] && <CheckCheck className="w-3 h-3" />}
                 </button>
                 <div className="flex-1">
-                  <p className="text-xs font-medium">{item.test}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Expected: {item.expect}</p>
+                  <p className="text-xs">{item.test}</p>
                   {item.action && (
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={item.action}
-                      className="h-6 text-[10px] mt-1 px-2"
-                    >
-                      Run Test
-                    </Button>
+                    <Button size="sm" variant="ghost" onClick={item.action} className="h-6 text-[10px] mt-1 px-2">Run Test</Button>
                   )}
                 </div>
               </div>
             </div>
           ))}
-          
-          <div className="pt-2 border-t border-border/50 mt-3">
-            <p className="text-[10px] text-muted-foreground">
-              This panel is for development/QA purposes only and will not appear in production.
-            </p>
-          </div>
         </div>
       )}
     </div>
@@ -1730,69 +1492,79 @@ const QAChecklist = ({ currentRole, onRoleChange }) => {
 // ============================================================
 
 export default function CommunityHub({ isOpen, onClose }) {
-  // Role switching for testing (in production, this comes from auth)
   const [currentUserRole, setCurrentUserRole] = useState('admin');
-  const currentUser = MOCK_CURRENT_USERS[currentUserRole];
+  const [currentUserPrivacy, setCurrentUserPrivacy] = useState({ showAge: true, showHeightWeight: true, showEducation: true });
+  const currentUser = { ...MOCK_CURRENT_USERS[currentUserRole], privacy: currentUserPrivacy };
   
   const [activeTab, setActiveTab] = useState('overview');
+  const [directoryFilters, setDirectoryFilters] = useState({});
+  const [analyticsFilter, setAnalyticsFilter] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState(null);
   
   // Load mock data
   const [profiles] = useState(() => generateMockProfiles());
   const [incidents] = useState(() => generateMockIncidents());
-  const [auditLog] = useState(() => generateMockAuditLog());
+  const [commsPreview] = useState(() => generateCommsPreview());
   const [scoreConfig] = useState(() => generateMockScoreConfig());
   
   // Computed data
-  const analytics = useMemo(() => generateAnalyticsSummary(profiles, incidents), [profiles, incidents]);
+  const analytics = useMemo(() => generateAnalyticsSummary(profiles), [profiles]);
   const memberScores = useMemo(() => calculateMemberScores(profiles, incidents, scoreConfig), [profiles, incidents, scoreConfig]);
   
   // Tab configuration with RBAC
   const tabs = useMemo(() => {
     const role = ROLES[currentUser.role];
-    const allTabs = [
+    return [
       { id: 'overview', name: 'Overview', icon: Home, visible: true },
       { id: 'analytics', name: 'Analytics', icon: BarChart3, visible: role.permissions.viewAnalytics },
       { id: 'directory', name: 'Directory', icon: Users, visible: role.permissions.viewDirectory },
       { id: 'comms', name: 'Comms', icon: MessageSquare, visible: role.permissions.viewComms },
       { id: 'incidents', name: 'Incident Reports', icon: FileText, visible: role.permissions.viewIncidents, adminOnly: true },
-    ];
-    return allTabs.filter(tab => tab.visible);
+    ].filter(tab => tab.visible);
   }, [currentUser.role]);
   
-  // Handle tab change with RBAC check
-  const handleTabChange = useCallback((tabId) => {
+  // Navigation handler with deep linking
+  const handleNavigate = useCallback((tabId, params = {}) => {
     const role = ROLES[currentUser.role];
     
-    // Check if trying to access incidents without admin
     if (tabId === 'incidents' && !role.permissions.viewIncidents) {
-      toast.error('Access denied: Admin-only section', {
-        description: 'Incident Reports require administrator privileges.',
-        duration: 3000,
-      });
+      toast.error('Access denied: Admin-only section');
       return;
+    }
+    
+    if (tabId === 'directory' && params) {
+      setDirectoryFilters(params);
+    }
+    
+    if (tabId === 'analytics' && params?.domain) {
+      setAnalyticsFilter(params.domain);
     }
     
     setActiveTab(tabId);
   }, [currentUser.role]);
   
-  // Derive valid active tab - if current tab isn't valid for role, use overview
+  // Filter directory from Overview
+  const handleFilterDirectory = useCallback((filters) => {
+    setDirectoryFilters(filters);
+    setActiveTab('directory');
+  }, []);
+  
+  // Validate active tab on role change
   const validActiveTab = useMemo(() => {
-    const validTab = tabs.find(t => t.id === activeTab);
-    return validTab ? activeTab : 'overview';
+    const valid = tabs.find(t => t.id === activeTab);
+    return valid ? activeTab : 'overview';
   }, [tabs, activeTab]);
   
-  // Track previous valid tab to show toast on role-based redirect
-  const prevValidTabRef = React.useRef(validActiveTab);
+  // Redirect on invalid tab
+  const prevTabRef = useRef(validActiveTab);
   useEffect(() => {
-    if (prevValidTabRef.current !== validActiveTab && activeTab === 'incidents' && validActiveTab === 'overview') {
-      toast.error('Access denied', {
-        description: 'You were redirected because your role changed.',
-      });
+    if (prevTabRef.current !== validActiveTab && activeTab === 'incidents') {
+      toast.error('Access denied', { description: 'Redirected due to role change.' });
     }
-    prevValidTabRef.current = validActiveTab;
+    prevTabRef.current = validActiveTab;
   }, [validActiveTab, activeTab]);
   
-  // Update URL when tab changes (external system sync - allowed)
+  // URL param sync
   useEffect(() => {
     if (isOpen && typeof window !== 'undefined') {
       const url = new URL(window.location.href);
@@ -1801,10 +1573,32 @@ export default function CommunityHub({ isOpen, onClose }) {
     }
   }, [validActiveTab, isOpen]);
   
+  // Parse URL params on open
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab && tabs.some(t => t.id === tab)) {
+        handleNavigate(tab);
+      }
+      
+      // Directory filters from URL
+      const q = params.get('q');
+      const skills = params.get('skills')?.split(',').filter(Boolean);
+      const languages = params.get('languages')?.split(',').filter(Boolean);
+      const online = params.get('online') === 'true';
+      
+      if (q || skills?.length || languages?.length || online) {
+        setDirectoryFilters({ q, skills, languages, online });
+        if (tab !== 'directory') setActiveTab('directory');
+      }
+    }
+  }, [isOpen]);
+  
   if (!isOpen) return null;
   
   return (
-    <RBACProvider currentUser={currentUser}>
+    <RBACProvider currentUser={currentUser} onUpdatePrivacy={setCurrentUserPrivacy}>
       <div className="fixed inset-0 z-50 bg-background overflow-y-auto" data-testid="community-hub">
         {/* Header */}
         <div className="sticky top-0 z-10 glass border-b border-border">
@@ -1816,28 +1610,26 @@ export default function CommunityHub({ isOpen, onClose }) {
                 </div>
                 <div>
                   <h1 className="text-lg font-bold">Community Hub</h1>
-                  <p className="text-xs text-muted-foreground hidden sm:block">
-                    Connect, coordinate, and collaborate
-                  </p>
+                  <p className="text-xs text-muted-foreground hidden sm:block">Operations • Roster • Comms • Governance</p>
                 </div>
                 
-                {/* HUD Stats - Online / Total */}
+                {/* HUD Stats */}
                 <div className="hidden md:flex items-center gap-3 ml-4 pl-4 border-l border-border">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                    <span className="text-sm font-medium text-success">{analytics.onlineCount}</span>
+                    <span className="text-sm font-medium text-success">{analytics.population.onlineNow}</span>
                     <span className="text-xs text-muted-foreground">online</span>
                   </div>
                   <div className="text-xs text-muted-foreground">/</div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-medium">{analytics.totalMembers}</span>
+                    <span className="text-sm font-medium">{analytics.population.membersTotal}</span>
                     <span className="text-xs text-muted-foreground">total</span>
                   </div>
                 </div>
               </div>
               
               <div className="flex items-center gap-3">
-                {/* Role Switcher (Dev-only) */}
+                {/* Role Switcher */}
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 glass rounded-lg border border-cyan-500/30" data-testid="role-switcher">
                   <span className="text-[10px] text-cyan-400">DEV:</span>
                   <select
@@ -1853,37 +1645,26 @@ export default function CommunityHub({ isOpen, onClose }) {
                   <RoleBadge role={currentUserRole} />
                 </div>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onClose}
-                  className="gap-2"
-                  data-testid="community-close"
-                >
-                  <X className="w-4 h-4" />
-                  <span className="hidden sm:inline">Back to Dashboard</span>
+                <Button variant="outline" size="sm" onClick={onClose} className="gap-2" data-testid="community-close">
+                  <X className="w-4 h-4" /><span className="hidden sm:inline">Back to Dashboard</span>
                 </Button>
               </div>
             </div>
             
-            {/* Sub-Navigation Tabs */}
+            {/* Tab Navigation */}
             <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
+                  onClick={() => handleNavigate(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                    validActiveTab === tab.id 
-                      ? 'bg-primary text-white' 
-                      : 'glass hover:bg-secondary'
+                    validActiveTab === tab.id ? 'bg-primary text-white' : 'glass hover:bg-secondary'
                   } ${tab.adminOnly ? 'border border-amber-500/30' : ''}`}
                   data-testid={`tab-${tab.id}`}
                 >
                   <tab.icon className={`w-4 h-4 ${tab.adminOnly && validActiveTab !== tab.id ? 'text-amber-400' : ''}`} />
                   {tab.name}
-                  {tab.adminOnly && (
-                    <ShieldCheck className="w-3 h-3 text-amber-400" />
-                  )}
+                  {tab.adminOnly && <ShieldCheck className="w-3 h-3 text-amber-400" />}
                 </button>
               ))}
             </div>
@@ -1893,28 +1674,33 @@ export default function CommunityHub({ isOpen, onClose }) {
         {/* Content */}
         <div className="container mx-auto px-4 py-6 pb-32 sm:pb-6">
           {validActiveTab === 'overview' && (
-            <OverviewTab profiles={profiles} analytics={analytics} incidents={incidents} />
-          )}
-          {validActiveTab === 'analytics' && <AnalyticsTab />}
-          {validActiveTab === 'directory' && (
-            <DirectoryTab 
-              profiles={profiles} 
-              scoreConfig={scoreConfig} 
+            <OverviewTab
+              profiles={profiles}
+              analytics={analytics}
+              incidents={incidents}
+              commsPreview={commsPreview}
               memberScores={memberScores}
-              onTabChange={handleTabChange}
+              scoreConfig={scoreConfig}
+              onNavigate={handleNavigate}
+              onFilterDirectory={handleFilterDirectory}
             />
           )}
-          {validActiveTab === 'comms' && <CommsTab />}
-          {validActiveTab === 'incidents' && (
-            <IncidentReportsTab onTabChange={handleTabChange} />
+          {validActiveTab === 'analytics' && <AnalyticsTab filterDomain={analyticsFilter} />}
+          {validActiveTab === 'directory' && (
+            <DirectoryTab
+              profiles={profiles}
+              memberScores={memberScores}
+              scoreConfig={scoreConfig}
+              initialFilters={directoryFilters}
+              onOpenProfile={setSelectedProfile}
+            />
           )}
+          {validActiveTab === 'comms' && <CommsTab commsPreview={commsPreview} />}
+          {validActiveTab === 'incidents' && <IncidentsTab onNavigate={handleNavigate} />}
           
-          {/* QA Checklist (Dev-only) - Always visible at bottom */}
+          {/* QA Checklist */}
           <div className="mt-8">
-            <QAChecklist 
-              currentRole={currentUserRole} 
-              onRoleChange={setCurrentUserRole}
-            />
+            <QAChecklist currentRole={currentUserRole} onRoleChange={setCurrentUserRole} />
           </div>
         </div>
         
@@ -1938,6 +1724,15 @@ export default function CommunityHub({ isOpen, onClose }) {
             </div>
           </div>
         </div>
+        
+        {/* Profile Drawer */}
+        <ProfileDrawer
+          profile={selectedProfile}
+          isOpen={!!selectedProfile}
+          onClose={() => setSelectedProfile(null)}
+          memberScores={memberScores}
+          scoreConfig={scoreConfig}
+        />
       </div>
     </RBACProvider>
   );
