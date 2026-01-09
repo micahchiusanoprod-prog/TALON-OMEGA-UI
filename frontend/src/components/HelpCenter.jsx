@@ -622,9 +622,12 @@ export default function HelpCenter({ isOpen, onClose }) {
         c.description.toLowerCase().includes(query)
       ),
       troubleshooting: TROUBLESHOOTING_ENTRIES.filter(t =>
+        t.id.toLowerCase().includes(query) ||
         t.title.toLowerCase().includes(query) ||
         t.symptom.toLowerCase().includes(query) ||
-        t.causes.some(c => c.toLowerCase().includes(query))
+        t.causes.some(c => c.toLowerCase().includes(query)) ||
+        t.basicFix.some(f => f.toLowerCase().includes(query)) ||
+        (t.operatorFix && t.operatorFix.toLowerCase().includes(query))
       ),
       glossary: GLOSSARY.filter(g =>
         g.term.toLowerCase().includes(query) ||
@@ -632,7 +635,10 @@ export default function HelpCenter({ isOpen, onClose }) {
       ),
       comms: COMMS_METHODS.filter(m =>
         m.name.toLowerCase().includes(query) ||
-        m.whatItIs.toLowerCase().includes(query)
+        m.whatItIs.toLowerCase().includes(query) ||
+        m.howItWorks.toLowerCase().includes(query) ||
+        m.analogy.toLowerCase().includes(query) ||
+        m.useWhen.toLowerCase().includes(query)
       )
     };
     
