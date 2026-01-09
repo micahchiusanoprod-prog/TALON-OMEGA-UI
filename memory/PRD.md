@@ -11,6 +11,58 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: Community Hub Phase 0 + Phase 1 (January 9, 2026)
+
+### Phase 0: RBAC + Privacy + Data Contracts
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **RBAC Model** | ✅ | Three roles: guest, member, admin with granular permissions |
+| **Role Switcher (Dev-only)** | ✅ | Dropdown in header to test role switching at runtime |
+| **RequireRole Guard** | ✅ | Reusable component that blocks access and shows "Access Denied" |
+| **Route-level Protection** | ✅ | Incident Reports tab hidden for non-admins; direct nav shows toast and redirects |
+| **Privacy Redaction Helper** | ✅ | `redactProfile(profile, viewerRole)` returns nulls for non-opted-in fields |
+| **Per-profile Privacy Flags** | ✅ | showAge, showHeight, showWeight, showEducation opt-in booleans |
+| **Mock Data Contracts** | ✅ | 12 profiles with varied privacy flags, incidents, scores, audit logs |
+| **Profile Schema** | ✅ | Canonical shape with userId, displayName, age, anthro fields, privacy settings |
+| **Incident Schema** | ✅ | GOOD/BAD type, severity 1-5, points, two-admin approval workflow |
+| **Score Config** | ✅ | Base score 100, thresholds (monitor/restricted/intervention), decay half-life |
+| **Analytics Summary** | ✅ | Pre-aggregated stats for skills coverage, gaps, recommendations |
+
+### Phase 1: Navigation + Page Shell
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Header Navigation** | ✅ | "Community" button in Header.jsx with violet gradient style |
+| **CommunityHub.jsx** | ✅ | Complete rewrite replacing outdated Community.jsx |
+| **HUD Stats** | ✅ | Online/Total counts in header (7 online / 12 total) |
+| **Sub-tab Navigation** | ✅ | Overview, Analytics, Directory, Comms, Incident Reports |
+| **Tab Visibility by Role** | ✅ | Admin sees 5 tabs, Member sees 4, Guest sees 2 |
+| **Incident Reports Admin-only** | ✅ | Tab has amber border + shield icon; hidden for non-admins |
+| **Directory Preview** | ✅ | 3 profile cards showing privacy redaction behavior |
+| **Privacy Redaction in Cards** | ✅ | Hidden fields show "Hidden" with eye-off icon |
+| **Admin Full Access** | ✅ | Admin sees all fields with "Full profile visible (admin)" indicator |
+| **Access Denied Component** | ✅ | Compact card with role requirement and "Return to Overview" button |
+| **QA Checklist Panel** | ✅ | Dev-only collapsible checklist at bottom with test scenarios |
+| **Mobile Role Switcher** | ✅ | Fixed bottom bar for role testing on mobile |
+| **Query Param Sync** | ✅ | Tab state syncs with `?tab=` URL parameter |
+
+### Data Models Created
+```javascript
+// Profile (src/components/CommunityHub.jsx)
+{ id, displayName, profilePhotoUrl, age, heightIn, weightLb, educationLevel, languages[], skillSets[], certifications[], availabilityStatus, roleClass, notes, adminNotes, privacySettings: { showAge, showHeight, showWeight, showMedical }, createdAt, updatedAt }
+
+// Incident
+{ id, userId, type: 'GOOD'|'BAD', category, severity: 1-5, points, summary, details, evidenceLinks[], status, resolutionNotes, tags[], requiresTwoAdminApproval, approvals[], appealStatus, appealNotes }
+
+// Score Config
+{ baseScore: 100, goodIncidentPoints: {1:1,...,5:10}, badIncidentPoints: {1:-5,...,5:-25}, decayHalfLifeDays: 90, thresholds: {monitor:70, restricted:50, intervention:30} }
+```
+
+### Files Modified/Created
+- `/app/frontend/src/components/CommunityHub.jsx` - Complete Phase 0+1 implementation (~1900 lines)
+- `/app/frontend/src/components/Header.jsx` - Added Community button
+
+---
+
 ## ✅ COMPLETED: LOGS "True Observability" Phase 1 (P0) (January 9, 2026)
 
 ### P0 Features Implemented
