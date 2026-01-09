@@ -561,17 +561,17 @@ export default function FAQPage({ onClose }) {
         </div>
         
         {/* Still Need Help */}
-        <div className="mt-8 glass rounded-2xl p-6 text-center">
-          <AlertTriangle className="w-8 h-8 mx-auto mb-3 text-warning" />
-          <h3 className="font-semibold text-lg mb-2">Still Need Help?</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            If you can't find what you're looking for, contact your operator with:
+        <div className="mt-6 sm:mt-8 glass rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center">
+          <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-warning" />
+          <h3 className="font-semibold text-base sm:text-lg mb-1.5 sm:mb-2">Still Need Help?</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Contact your operator with:
           </p>
-          <div className="text-left glass rounded-xl p-4 text-xs text-muted-foreground space-y-1">
-            <p>• What tile you were in and what action you attempted</p>
+          <div className="text-left glass rounded-lg sm:rounded-xl p-3 sm:p-4 text-[11px] sm:text-xs text-muted-foreground space-y-0.5 sm:space-y-1">
+            <p>• What tile and action you attempted</p>
             <p>• What you expected vs what happened</p>
             <p>• Time of the issue</p>
-            <p>• Device type (iPhone/Android/laptop)</p>
+            <p>• Device type</p>
             <p>• Screenshot if possible</p>
           </div>
         </div>
