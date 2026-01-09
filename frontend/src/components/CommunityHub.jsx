@@ -1887,13 +1887,13 @@ export default function CommunityHub({ isOpen, onClose }) {
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                    activeTab === tab.id 
+                    validActiveTab === tab.id 
                       ? 'bg-primary text-white' 
                       : 'glass hover:bg-secondary'
                   } ${tab.adminOnly ? 'border border-amber-500/30' : ''}`}
                   data-testid={`tab-${tab.id}`}
                 >
-                  <tab.icon className={`w-4 h-4 ${tab.adminOnly && activeTab !== tab.id ? 'text-amber-400' : ''}`} />
+                  <tab.icon className={`w-4 h-4 ${tab.adminOnly && validActiveTab !== tab.id ? 'text-amber-400' : ''}`} />
                   {tab.name}
                   {tab.adminOnly && (
                     <ShieldCheck className="w-3 h-3 text-amber-400" />
@@ -1906,11 +1906,11 @@ export default function CommunityHub({ isOpen, onClose }) {
         
         {/* Content */}
         <div className="container mx-auto px-4 py-6 pb-32 sm:pb-6">
-          {activeTab === 'overview' && (
+          {validActiveTab === 'overview' && (
             <OverviewTab profiles={profiles} analytics={analytics} incidents={incidents} />
           )}
-          {activeTab === 'analytics' && <AnalyticsTab />}
-          {activeTab === 'directory' && (
+          {validActiveTab === 'analytics' && <AnalyticsTab />}
+          {validActiveTab === 'directory' && (
             <DirectoryTab 
               profiles={profiles} 
               scoreConfig={scoreConfig} 
