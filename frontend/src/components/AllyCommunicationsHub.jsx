@@ -634,22 +634,40 @@ export default function AllyCommunicationsHub() {
               </div>
             </CardTitle>
             
-            <div className="flex items-center gap-2">
+            {/* Broadcast button - hidden on mobile, shown on sm+ */}
+            <div className="hidden sm:flex items-center gap-2">
               <Button
                 size="sm"
                 onClick={handleOpenBroadcast}
-                className="btn-apple-primary relative text-xs sm:text-sm h-8 sm:h-9"
-                data-testid="broadcast-btn"
+                className="btn-apple-primary relative text-sm h-9"
+                data-testid="broadcast-btn-desktop"
               >
-                <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
+                <AlertTriangle className="w-4 h-4 mr-1.5" />
                 Broadcast
                 {criticalAlerts > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 bg-destructive text-white text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
                     {criticalAlerts}
                   </span>
                 )}
               </Button>
             </div>
+          </div>
+          
+          {/* Mobile Broadcast button - full width to match tabs */}
+          <div className="sm:hidden mt-3">
+            <Button
+              onClick={handleOpenBroadcast}
+              className="btn-apple-primary relative w-full h-10 text-sm font-medium"
+              data-testid="broadcast-btn-mobile"
+            >
+              <AlertTriangle className="w-4 h-4 mr-2" />
+              Broadcast
+              {criticalAlerts > 0 && (
+                <span className="absolute top-1/2 -translate-y-1/2 right-3 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                  {criticalAlerts}
+                </span>
+              )}
+            </Button>
           </div>
         </CardHeader>
         
