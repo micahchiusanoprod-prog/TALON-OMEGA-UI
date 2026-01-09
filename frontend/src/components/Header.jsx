@@ -6,7 +6,7 @@ import AdminConsole from './AdminConsole';
 import FAQPage from './FAQPage';
 import HelpCenter from './HelpCenter';
 import LogsAnalytics from './LogsAnalytics';
-import Community from './Community';
+import CommunityHub from './CommunityHub';
 
 export default function Header({ metrics, health, theme, onToggleTheme }) {
   const [showAdminConsole, setShowAdminConsole] = useState(false);
