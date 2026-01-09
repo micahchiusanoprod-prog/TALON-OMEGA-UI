@@ -3294,7 +3294,7 @@ export default function LogsAnalytics({ isOpen, onClose }) {
   const anomalies = useMemo(() => detectAnomalies(thisDeviceSnapshots), [thisDeviceSnapshots]);
   
   // P0: Generate incidents from anomalies (and add mock historical incidents)
-  const [incidentsState, setIncidentsState] = useState({ resolved: {}, mockTs: Date.now() });
+  const [incidentsState, setIncidentsState] = useState(() => ({ resolved: {}, mockTs: Date.now() }));
   
   const incidents = useMemo(() => {
     const generatedIncidents = generateIncidentsFromAnomalies(anomalies, detectionRules);
