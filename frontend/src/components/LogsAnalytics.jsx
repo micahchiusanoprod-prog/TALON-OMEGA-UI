@@ -952,7 +952,7 @@ const MetricVisibilityPanel = ({ visibleMetrics, setVisibleMetrics }) => {
 
 // Last Snapshot Info Component
 const LastSnapshotInfo = ({ snapshot, capturing }) => {
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
   
   // Update the time every second when capturing
   useEffect(() => {
