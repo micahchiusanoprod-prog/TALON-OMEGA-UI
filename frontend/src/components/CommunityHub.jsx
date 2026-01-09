@@ -1297,16 +1297,32 @@ const OverviewTab = ({ profiles, analytics, incidents }) => {
 
 // Placeholder tabs for Phase 2+
 const AnalyticsTab = () => {
-  const { can } = useRBAC();
-  if (!can('viewAnalytics')) return <AccessDenied message="Members and admins can view analytics" />;
+  const { can, currentUser } = useRBAC();
+  if (!can('viewAnalytics')) {
+    return (
+      <AccessDeniedCard 
+        minRole="member" 
+        currentRole={currentUser?.role} 
+      />
+    );
+  }
   
   return (
-    <div className="glass rounded-xl p-8 text-center">
-      <BarChart2 className="w-16 h-16 mx-auto mb-4 text-primary/50" />
-      <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
-      <p className="text-sm text-muted-foreground">
-        Charts, coverage matrix, skills overlap, gap analysis, and reports will be available in Phase 3.
-      </p>
+    <div className="space-y-6">
+      {/* Placeholder Header */}
+      <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-border">
+        <BarChart2 className="w-16 h-16 mx-auto mb-4 text-primary/50" />
+        <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Coming in Phase 3 - Comprehensive community analytics
+        </p>
+        <ul className="text-sm text-muted-foreground space-y-1 text-left max-w-md mx-auto">
+          <li>• Skills coverage matrix</li>
+          <li>• Gap analysis with recommendations</li>
+          <li>• Member activity trends</li>
+          <li>• Downloadable reports (redacted by role)</li>
+        </ul>
+      </div>
     </div>
   );
 };
@@ -1494,16 +1510,32 @@ const ProfilePreviewCard = ({ profile, viewerRole, score, thresholds }) => {
 };
 
 const CommsTab = () => {
-  const { can } = useRBAC();
-  if (!can('viewComms')) return <AccessDenied message="Members and admins can access communications" />;
+  const { can, currentUser } = useRBAC();
+  if (!can('viewComms')) {
+    return (
+      <AccessDeniedCard 
+        minRole="member" 
+        currentRole={currentUser?.role} 
+      />
+    );
+  }
   
   return (
-    <div className="glass rounded-xl p-8 text-center">
-      <MessageSquare className="w-16 h-16 mx-auto mb-4 text-primary/50" />
-      <h3 className="text-lg font-semibold mb-2">Communications Hub</h3>
-      <p className="text-sm text-muted-foreground">
-        Announcements, feeds, polls, and tasks will be available in Phase 5.
-      </p>
+    <div className="space-y-6">
+      {/* Placeholder Content */}
+      <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-border">
+        <MessageSquare className="w-16 h-16 mx-auto mb-4 text-primary/50" />
+        <h3 className="text-lg font-semibold mb-2">Communications Hub</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Coming in Phase 5 - Unified community communications
+        </p>
+        <ul className="text-sm text-muted-foreground space-y-1 text-left max-w-md mx-auto">
+          <li>• Announcements feed</li>
+          <li>• Community polls</li>
+          <li>• Task management</li>
+          <li>• Role-gated channels</li>
+        </ul>
+      </div>
     </div>
   );
 };
