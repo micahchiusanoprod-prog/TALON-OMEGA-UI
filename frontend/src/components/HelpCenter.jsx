@@ -1000,7 +1000,7 @@ export default function HelpCenter({ isOpen, onClose }) {
                 </h2>
                 <div className="glass rounded-xl p-4 mb-4 bg-amber-500/10 border border-amber-500/30">
                   <p className="text-sm">
-                    <strong>Important:</strong> A tile can be visible even if its required hardware isn't installed yet. That's not "broken"—it's "not present." If something shows "Unavailable," first check whether the required hardware exists before troubleshooting software.
+                    <strong>Important:</strong> A tile can be visible even if its required hardware isn&apos;t installed yet. That&apos;s not &ldquo;broken&rdquo;—it&apos;s &ldquo;not present.&rdquo; If something shows &ldquo;Unavailable,&rdquo; first check whether the required hardware exists before troubleshooting software.
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
