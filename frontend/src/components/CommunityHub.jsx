@@ -1508,28 +1508,71 @@ const CommsTab = () => {
   );
 };
 
-const IncidentReportsTab = () => {
-  const { can, isAdmin } = useRBAC();
+const IncidentReportsTab = ({ onTabChange }) => {
+  const { can, isAdmin, currentUser } = useRBAC();
   
-  // Strict admin-only check
-  if (!isAdmin || !can('viewIncidents')) {
-    return <AccessDenied message="Incident Reports are restricted to administrators only" />;
-  }
+  // Route-level protection with redirect + toast
+  useEffect(() => {
+    if (!isAdmin) {
+      toast.error('Access denied: Admin-only section', {
+        description: 'Redirecting to Overview...',
+        duration: 3000,
+      });
+      // Redirect after short delay to show toast
+      const timer = setTimeout(() => {
+        if (onTabChange) onTabChange('overview');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAdmin, onTabChange]);
   
+  // Strict admin-only check with RequireRole
   return (
-    <div className="glass rounded-xl p-8 text-center">
-      <FileText className="w-16 h-16 mx-auto mb-4 text-amber-400/50" />
-      <h3 className="text-lg font-semibold mb-2">Incident Reports</h3>
-      <p className="text-sm text-muted-foreground">
-        Incident log, member scoreboard, and scoring policy will be available in Phase 6.
-      </p>
-      <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg inline-block">
-        <p className="text-xs text-amber-400 flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4" />
-          Admin access verified
-        </p>
+    <RequireRole 
+      minRole="admin" 
+      onAccessDenied={() => {
+        if (onTabChange) onTabChange('overview');
+      }}
+      fallback={
+        <AccessDeniedCard 
+          minRole="admin" 
+          currentRole={currentUser?.role}
+          onReturn={() => onTabChange && onTabChange('overview')}
+        />
+      }
+    >
+      <div className="space-y-6">
+        {/* Admin Verification Banner */}
+        <div className="glass rounded-xl p-4 border border-amber-500/30 bg-amber-500/5">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="w-6 h-6 text-amber-400" />
+            <div>
+              <h4 className="font-semibold text-sm text-amber-400">Admin Access Verified</h4>
+              <p className="text-xs text-muted-foreground">
+                You have full access to incident reports and scoring management.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Placeholder Content */}
+        <div className="glass rounded-xl p-8 text-center border-2 border-dashed border-amber-500/30">
+          <FileText className="w-16 h-16 mx-auto mb-4 text-amber-400/50" />
+          <h3 className="text-lg font-semibold mb-2">Incident Reports Dashboard</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Coming in Phase 6 - Full incident management system
+          </p>
+          <ul className="text-sm text-muted-foreground space-y-1 text-left max-w-md mx-auto">
+            <li>• Incident log with filters & search</li>
+            <li>• Member scoreboard with trends</li>
+            <li>• Scoring policy configuration</li>
+            <li>• Two-admin approval workflows</li>
+            <li>• Full audit trail access</li>
+            <li>• Appeal management</li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </RequireRole>
   );
 };
 
