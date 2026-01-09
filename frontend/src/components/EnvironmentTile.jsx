@@ -362,72 +362,74 @@ export default function EnvironmentTile() {
         </CardHeader>
         
         <CardContent className="px-4 lg:px-6 pb-4 lg:pb-6">
-          {/* Desktop: Vertical stack, Mobile: Compact grid */}
+          {/* Desktop: 2-column grid, Mobile: Compact */}
           <div className="hidden lg:block space-y-4">
-            {/* Temperature */}
-            <MetricCard
-              icon={Thermometer}
-              iconColor="text-red-400"
-              iconBg="bg-red-500/20"
-              title="Temperature"
-              value={toFahrenheit(data.temperature)}
-              unit="°F"
-              secondaryValue={`${data.temperature.toFixed(1)}°C`}
-              status={tempStatus.label}
-              statusColor={tempStatus.textColor}
-              statusBg={tempStatus.bgColor}
-              description="Ambient air temperature measured by the sensor. Important for comfort assessment, clothing decisions, and safety planning."
-              ranges={tempRanges}
-              currentRangeIndex={tempRangeIdx}
-            />
+            {/* Row 1: Temperature & Humidity */}
+            <div className="grid grid-cols-2 gap-4">
+              <MetricCard
+                icon={Thermometer}
+                iconColor="text-red-400"
+                iconBg="bg-red-500/20"
+                title="Temperature"
+                value={toFahrenheit(data.temperature)}
+                unit="°F"
+                secondaryValue={`${data.temperature.toFixed(1)}°C`}
+                status={tempStatus.label}
+                statusColor={tempStatus.textColor}
+                statusBg={tempStatus.bgColor}
+                description="Ambient air temperature for comfort and safety."
+                ranges={tempRanges}
+                currentRangeIndex={tempRangeIdx}
+              />
+              
+              <MetricCard
+                icon={Droplets}
+                iconColor="text-blue-400"
+                iconBg="bg-blue-500/20"
+                title="Humidity"
+                value={data.humidity.toFixed(0)}
+                unit="%"
+                status={humidityStatus.label}
+                statusColor={humidityStatus.textColor}
+                statusBg={humidityStatus.bgColor}
+                description="Moisture in air. Affects comfort and weather."
+                ranges={humidityRanges}
+                currentRangeIndex={humidityRangeIdx}
+              />
+            </div>
             
-            {/* Humidity */}
-            <MetricCard
-              icon={Droplets}
-              iconColor="text-blue-400"
-              iconBg="bg-blue-500/20"
-              title="Humidity"
-              value={data.humidity.toFixed(0)}
-              unit="%"
-              status={humidityStatus.label}
-              statusColor={humidityStatus.textColor}
-              statusBg={humidityStatus.bgColor}
-              description="Relative humidity - the percentage of moisture in the air. Affects comfort, sweat efficiency, and can indicate approaching weather changes."
-              ranges={humidityRanges}
-              currentRangeIndex={humidityRangeIdx}
-            />
-            
-            {/* Pressure */}
-            <MetricCard
-              icon={Gauge}
-              iconColor="text-purple-400"
-              iconBg="bg-purple-500/20"
-              title="Barometric Pressure"
-              value={data.pressure.toFixed(0)}
-              unit="hPa"
-              status={pressureStatus.label}
-              statusColor={pressureStatus.textColor}
-              statusBg={pressureStatus.bgColor}
-              description="Atmospheric pressure is the key weather predictor. Falling pressure indicates storms approaching; rising pressure means clearing weather."
-              ranges={pressureRanges}
-              currentRangeIndex={pressureRangeIdx}
-            />
-            
-            {/* Air Quality */}
-            <MetricCard
-              icon={Wind}
-              iconColor="text-green-400"
-              iconBg="bg-green-500/20"
-              title="Air Quality (IAQ)"
-              value={data.iaq}
-              unit="index"
-              status={aqiStatus.label}
-              statusColor={aqiStatus.textColor}
-              statusBg={aqiStatus.bgColor}
-              description="Indoor Air Quality index from the sensor. Detects smoke, VOCs, CO2 buildup, and ventilation issues. Higher numbers = better air."
-              ranges={aqiRanges}
-              currentRangeIndex={aqiRangeIdx}
-            />
+            {/* Row 2: Pressure & Air Quality */}
+            <div className="grid grid-cols-2 gap-4">
+              <MetricCard
+                icon={Gauge}
+                iconColor="text-purple-400"
+                iconBg="bg-purple-500/20"
+                title="Barometric Pressure"
+                value={data.pressure.toFixed(0)}
+                unit="hPa"
+                status={pressureStatus.label}
+                statusColor={pressureStatus.textColor}
+                statusBg={pressureStatus.bgColor}
+                description="Key weather predictor. Watch the trend."
+                ranges={pressureRanges}
+                currentRangeIndex={pressureRangeIdx}
+              />
+              
+              <MetricCard
+                icon={Wind}
+                iconColor="text-green-400"
+                iconBg="bg-green-500/20"
+                title="Air Quality (IAQ)"
+                value={data.iaq}
+                unit="index"
+                status={aqiStatus.label}
+                statusColor={aqiStatus.textColor}
+                statusBg={aqiStatus.bgColor}
+                description="Detects smoke, VOCs, CO2. Higher = better."
+                ranges={aqiRanges}
+                currentRangeIndex={aqiRangeIdx}
+              />
+            </div>
           </div>
           
           {/* Mobile: Compact View */}
