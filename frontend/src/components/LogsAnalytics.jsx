@@ -3243,6 +3243,12 @@ export default function LogsAnalytics({ isOpen, onClose }) {
   const [retention, setRetention] = useState('24h');
   const [logCategories, setLogCategories] = useState(LOG_CATEGORIES);
   
+  // P0: Detection Rules State
+  const [detectionRules, setDetectionRules] = useState(DEFAULT_DETECTION_RULES);
+  const [sensitivity, setSensitivity] = useState('medium');
+  const [smoothingWindow, setSmoothingWindow] = useState(5);
+  const [baselineWindow, setBaselineWindow] = useState('12h');
+  
   // Generate mock data
   const [thisDeviceSnapshots] = useState(() => generateSnapshots(THIS_DEVICE.node_id, THIS_DEVICE.node_name, 24, 1));
   
@@ -3259,8 +3265,28 @@ export default function LogsAnalytics({ isOpen, onClose }) {
     return data;
   });
   
+  // P0: Capture Health (mocked)
+  const [captureHealth] = useState(() => generateCaptureHealth());
+  
+  // P0: Generate anomalies and incidents
+  const anomalies = useMemo(() => detectAnomalies(thisDeviceSnapshots), [thisDeviceSnapshots]);
+  
+  const [incidents, setIncidents] = useState(() => generateIncidentsFromAnomalies(anomalies, detectionRules));
+  
+  // P0: Resolve incident handler
+  const handleResolveIncident = useCallback((incidentId, notes) => {
+    setIncidents(prev => prev.map(inc => 
+      inc.id === incidentId 
+        ? { ...inc, status: 'resolved', resolutionNotes: notes, endTime: new Date().toISOString() }
+        : inc
+    ));
+  }, []);
+  
   // Calculate active log count
   const activeLogCount = logCategories.filter(c => c.enabled).length;
+  
+  // P0: Incident counts for header
+  const openIncidentCount = incidents.filter(i => i.status === 'open').length;
   
   if (!isOpen) return null;
   
@@ -3294,17 +3320,31 @@ export default function LogsAnalytics({ isOpen, onClose }) {
           
           {/* Tabs + Quick Stats */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3">
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('this-device')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'this-device' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'this-device' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
                 data-testid="tab-this-device"
               >
                 This Device
               </button>
               <button
+                onClick={() => setActiveTab('incidents')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'incidents' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
+                data-testid="tab-incidents"
+              >
+                Incidents
+                {openIncidentCount > 0 && (
+                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    activeTab === 'incidents' ? 'bg-white/20' : 'bg-destructive text-white'
+                  }`}>
+                    {openIncidentCount}
+                  </span>
+                )}
+              </button>
+              <button
                 onClick={() => setActiveTab('all-nodes')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'all-nodes' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'all-nodes' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
                 data-testid="tab-all-nodes"
               >
                 All Nodes ({FLEET_NODES.length})
@@ -3332,7 +3372,7 @@ export default function LogsAnalytics({ isOpen, onClose }) {
       
       {/* Content */}
       <div className="container mx-auto px-4 py-6">
-        {activeTab === 'this-device' ? (
+        {activeTab === 'this-device' && (
           <ThisDeviceTab
             snapshots={thisDeviceSnapshots}
             capturing={capturing}
@@ -3343,8 +3383,26 @@ export default function LogsAnalytics({ isOpen, onClose }) {
             setRetention={setRetention}
             logCategories={logCategories}
             setLogCategories={setLogCategories}
+            captureHealth={captureHealth}
+            detectionRules={detectionRules}
+            setDetectionRules={setDetectionRules}
+            sensitivity={sensitivity}
+            setSensitivity={setSensitivity}
+            smoothingWindow={smoothingWindow}
+            setSmoothingWindow={setSmoothingWindow}
+            baselineWindow={baselineWindow}
+            setBaselineWindow={setBaselineWindow}
           />
-        ) : (
+        )}
+        {activeTab === 'incidents' && (
+          <IncidentsTab
+            incidents={incidents}
+            snapshots={thisDeviceSnapshots}
+            rules={detectionRules}
+            onResolveIncident={handleResolveIncident}
+          />
+        )}
+        {activeTab === 'all-nodes' && (
           <AllNodesTab nodesData={nodesData} />
         )}
       </div>
