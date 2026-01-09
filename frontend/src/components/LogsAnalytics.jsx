@@ -1973,22 +1973,40 @@ export default function LogsAnalytics({ isOpen, onClose }) {
             </Button>
           </div>
           
-          {/* Tabs */}
-          <div className="flex gap-2 mt-3">
-            <button
-              onClick={() => setActiveTab('this-device')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'this-device' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
-              data-testid="tab-this-device"
-            >
-              This Device
-            </button>
-            <button
-              onClick={() => setActiveTab('all-nodes')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'all-nodes' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
-              data-testid="tab-all-nodes"
-            >
-              All Nodes ({FLEET_NODES.length})
-            </button>
+          {/* Tabs + Quick Stats */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab('this-device')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'this-device' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
+                data-testid="tab-this-device"
+              >
+                This Device
+              </button>
+              <button
+                onClick={() => setActiveTab('all-nodes')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'all-nodes' ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
+                data-testid="tab-all-nodes"
+              >
+                All Nodes ({FLEET_NODES.length})
+              </button>
+            </div>
+            
+            {/* Quick Stats in Header */}
+            <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-1.5 glass px-2 py-1 rounded-lg">
+                <Archive className="w-3.5 h-3.5 text-primary" />
+                <span>{activeLogCount}/{logCategories.length} logs active</span>
+              </div>
+              <div className="flex items-center gap-1.5 glass px-2 py-1 rounded-lg">
+                <Database className="w-3.5 h-3.5 text-cyan-400" />
+                <span>{thisDeviceSnapshots.length} snapshots</span>
+              </div>
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg ${capturing ? 'bg-success/20 text-success' : 'bg-secondary text-muted-foreground'}`}>
+                {capturing ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+                <span>{capturing ? 'Live' : 'Paused'}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2004,6 +2022,8 @@ export default function LogsAnalytics({ isOpen, onClose }) {
             setInterval={setInterval}
             retention={retention}
             setRetention={setRetention}
+            logCategories={logCategories}
+            setLogCategories={setLogCategories}
           />
         ) : (
           <AllNodesTab nodesData={nodesData} />
