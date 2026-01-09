@@ -1775,39 +1775,31 @@ export default function CommunityHub({ isOpen, onClose }) {
     setActiveTab(tabId);
   }, [currentUser.role]);
   
-  // Ensure active tab is valid for current role - use useMemo to derive valid state
+  // Derive valid active tab - if current tab isn't valid for role, use overview
   const validActiveTab = useMemo(() => {
     const validTab = tabs.find(t => t.id === activeTab);
     return validTab ? activeTab : 'overview';
   }, [tabs, activeTab]);
   
-  // Show toast if redirected due to role change
+  // Track previous valid tab to show toast on role-based redirect
+  const prevValidTabRef = React.useRef(validActiveTab);
   useEffect(() => {
-    if (validActiveTab !== activeTab) {
-      setActiveTab(validActiveTab);
-      if (activeTab === 'incidents') {
-        toast.error('Access denied', {
-          description: 'You were redirected because your role changed.',
-        });
-      }
+    if (prevValidTabRef.current !== validActiveTab && activeTab === 'incidents' && validActiveTab === 'overview') {
+      toast.error('Access denied', {
+        description: 'You were redirected because your role changed.',
+      });
     }
+    prevValidTabRef.current = validActiveTab;
   }, [validActiveTab, activeTab]);
   
-  // Query param sync for tabs - run once on mount
-  const initialTabFromParams = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get('tab');
-  }, []);
-  
+  // Update URL when tab changes (external system sync - allowed)
   useEffect(() => {
-    if (initialTabFromParams && tabs.some(t => t.id === initialTabFromParams)) {
-      setActiveTab(initialTabFromParams);
+    if (isOpen && typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', validActiveTab);
+      window.history.replaceState({}, '', url.toString());
     }
-  }, [initialTabFromParams, tabs]);
-  
-  // Update URL when tab changes
-  useEffect(() => {
+  }, [validActiveTab, isOpen]);
     if (isOpen) {
       const url = new URL(window.location.href);
       url.searchParams.set('tab', validActiveTab);
