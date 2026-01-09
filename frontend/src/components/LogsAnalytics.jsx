@@ -1310,8 +1310,10 @@ const DetectionRulesPanel = ({ rules, setRules, sensitivity, setSensitivity, smo
 // ============================================================
 
 const IncidentDetailDrawer = ({ incident, snapshots, onClose, onResolve }) => {
-  const [resolutionNotes, setResolutionNotes] = useState(incident.resolutionNotes || '');
+  const [resolutionNotes, setResolutionNotes] = useState(incident?.resolutionNotes || '');
   const [copiedCommand, setCopiedCommand] = useState(null);
+  // Use a stable now value for duration calculation
+  const [nowTs] = useState(() => Date.now());
   
   if (!incident) return null;
   
@@ -1319,8 +1321,6 @@ const IncidentDetailDrawer = ({ incident, snapshots, onClose, onResolve }) => {
   const likelyCauses = generateLikelyCauses(incident);
   const verifyChecklist = generateVerifyChecklist(incident);
   
-  // Use a stable now value for duration calculation
-  const [nowTs] = useState(() => Date.now());
   const duration = incident.endTime 
     ? Math.floor((new Date(incident.endTime) - new Date(incident.startTime)) / 60000)
     : Math.floor((nowTs - new Date(incident.startTime)) / 60000);
