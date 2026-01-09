@@ -79,6 +79,35 @@ import {
 } from 'recharts';
 
 // ============================================================
+// ACTIVE LOG CATEGORIES CONFIGURATION
+// ============================================================
+
+const LOG_CATEGORIES = [
+  { id: 'system', name: 'System Metrics', icon: Cpu, description: 'CPU, RAM, Disk usage', enabled: true, color: 'text-blue-400' },
+  { id: 'environment', name: 'Environment', icon: Thermometer, description: 'Temperature, Humidity, Pressure, IAQ', enabled: true, color: 'text-red-400' },
+  { id: 'gps', name: 'GPS & Location', icon: MapPin, description: 'Fix status, Accuracy, Coordinates', enabled: true, color: 'text-green-400' },
+  { id: 'comms', name: 'Communications', icon: Radio, description: 'LAN, Mesh, Radio status', enabled: true, color: 'text-emerald-400' },
+  { id: 'backup', name: 'Backup Status', icon: Database, description: 'Backup success/fail, Last run', enabled: true, color: 'text-violet-400' },
+  { id: 'health', name: 'Health Status', icon: Activity, description: 'Overall system health', enabled: true, color: 'text-primary' },
+  { id: 'errors', name: 'Errors & Warnings', icon: AlertTriangle, description: 'System errors and warnings', enabled: true, color: 'text-warning' },
+  { id: 'network', name: 'Network Traffic', icon: Wifi, description: 'Bandwidth, Connections', enabled: false, color: 'text-cyan-400' },
+  { id: 'power', name: 'Power & Battery', icon: Zap, description: 'Power consumption, Battery level', enabled: false, color: 'text-yellow-400' },
+];
+
+// Default visible metrics for charts
+const DEFAULT_VISIBLE_METRICS = {
+  cpu: true,
+  ram: true,
+  disk: true,
+  temp: true,
+  humidity: true,
+  pressure: false,
+  iaq: false,
+  gpsAccuracy: true,
+  comms: true,
+};
+
+// ============================================================
 // MOCK DATA GENERATION
 // ============================================================
 
