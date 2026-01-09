@@ -652,26 +652,28 @@ export default function AllyCommunicationsHub() {
               </Button>
             </div>
           </div>
-          
-          {/* Mobile Broadcast button - full width to match tabs */}
-          <div className="sm:hidden mt-3">
-            <Button
-              onClick={handleOpenBroadcast}
-              className="btn-apple-primary relative w-full h-10 text-sm font-medium"
-              data-testid="broadcast-btn-mobile"
-            >
-              <AlertTriangle className="w-4 h-4 mr-2" />
-              Broadcast
-              {criticalAlerts > 0 && (
-                <span className="absolute top-1/2 -translate-y-1/2 right-3 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                  {criticalAlerts}
-                </span>
-              )}
-            </Button>
-          </div>
         </CardHeader>
         
         <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+          {/* Mobile Broadcast button - positioned directly above tabs for alignment */}
+          <div className="sm:hidden">
+            <div className="p-1 rounded-xl bg-secondary/30">
+              <Button
+                onClick={handleOpenBroadcast}
+                className="btn-apple-primary relative w-full h-12 text-sm font-medium rounded-lg"
+                data-testid="broadcast-btn-mobile"
+              >
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                Broadcast
+                {criticalAlerts > 0 && (
+                  <span className="absolute top-1/2 -translate-y-1/2 right-4 w-5 h-5 bg-destructive text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                    {criticalAlerts}
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
+          
           {/* View Toggle - TALLER for glove-friendly tapping */}
           <div className="flex gap-0.5 sm:gap-1 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl bg-secondary/30">
             {[
