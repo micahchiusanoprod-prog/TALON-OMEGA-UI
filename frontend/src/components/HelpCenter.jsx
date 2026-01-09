@@ -1374,7 +1374,7 @@ export default function HelpCenter({ isOpen, onClose }) {
                       <thead>
                         <tr className="text-left border-b border-border">
                           <th className="pb-2">Scenario</th>
-                          <th className="pb-2">What's Running</th>
+                          <th className="pb-2">What&apos;s Running</th>
                           <th className="pb-2">Avg Load</th>
                           <th className="pb-2">Est. Runtime</th>
                         </tr>
