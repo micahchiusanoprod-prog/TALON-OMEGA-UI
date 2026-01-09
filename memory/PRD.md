@@ -11,6 +11,36 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: Camera Tile Redesign & Music Player Verification (January 9, 2026)
+
+### Camera Tile Redesign
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **No Constant Live Feed** | ✅ | Camera activates ONLY when user taps capture button |
+| **4 Capture Modes** | ✅ | Daily Diary, Photo, Video, Voice Memo with unique gradients |
+| **Data Overlay Options** | ✅ | Date, Time, Location, Temperature, Battery, All Metrics |
+| **Overlay Preview** | ✅ | Live preview of selected overlays on camera view |
+| **Select All/Clear All** | ✅ | Quick buttons to toggle all overlay options |
+| **Media Gallery** | ✅ | List/Grid view with filters (All, Photos, Videos, Voice) |
+| **Timestamps** | ✅ | All media items show date/time, duration, tagged person |
+| **"DATA" Badge** | ✅ | Indicates media with overlay data embedded |
+| **Storage Info** | ✅ | Shows storage usage (2.4 GB / 32 GB) with progress bar |
+| **Tag Person** | ✅ | Option to associate media with a person |
+
+### Music Player (Already Implemented - Verified)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Album Art** | ✅ | Gradient-colored album art with animated visualizer |
+| **Player Controls** | ✅ | Play/Pause, Skip, Previous, Shuffle, Repeat |
+| **Progress Bar** | ✅ | Clickable scrubber with time display |
+| **Volume Control** | ✅ | Slider with mute toggle |
+| **Lyrics Section** | ✅ | Toggleable lyrics panel with verse/chorus sections |
+| **Favoriting** | ✅ | Pink heart icon to favorite tracks |
+| **Playlist Management** | ✅ | "Add to Playlist" button, "Create New Playlist" option |
+| **Track List** | ✅ | All tracks with artist, duration, favorite status |
+
+---
+
 ## ✅ COMPLETED: FAQ Page & Tile Improvements (January 9, 2026)
 
 ### FAQ Help Center Page
