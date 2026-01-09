@@ -198,11 +198,12 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 │   ├── Dashboard.jsx                # Main dashboard
 │   ├── AllyCommunicationsHub.jsx    # Ally Hub with 5 tabs
 │   ├── HotkeysBar.jsx               # UPDATED: Minimal design, larger tap targets
-│   ├── CameraTile.jsx               # Help/Troubleshoot integrated
+│   ├── CameraTile.jsx               # REWRITTEN: Activate-on-click, data overlays, gallery
 │   ├── SecurityTile.jsx             # Help/Troubleshoot integrated
 │   ├── MusicTile.jsx                # Help/Troubleshoot integrated
 │   ├── PowerTile.jsx                # UPDATED: Field-use summary, Fahrenheit, checklist
 │   ├── CommunityTile.jsx            # UPDATED: Status Report, image polls
+│   ├── EntertainmentTile.jsx        # Full Music Player with lyrics, playlists
 │   └── ally/
 │       ├── NodeAvatarStrip.jsx      # UPDATED: Larger avatars, always-visible status
 │       ├── NodeDetailsDrawer.jsx    # UPDATED: Copy/Expand/Maps buttons
