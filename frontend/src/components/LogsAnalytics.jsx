@@ -1456,55 +1456,45 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
             </div>
           </div>
         </div>
-          <button
-            onClick={() => setShowTable(!showTable)}
-            className="flex items-center gap-1 text-xs text-primary hover:underline"
-          >
-            {showTable ? 'Hide' : 'Show'} Table
-            {showTable ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-          </button>
-        </div>
         
-        {showTable && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="pb-2 pr-4">Time</th>
-                  <th className="pb-2 pr-4">OK</th>
-                  <th className="pb-2 pr-4">CPU</th>
-                  <th className="pb-2 pr-4">RAM</th>
-                  <th className="pb-2 pr-4">Disk</th>
-                  <th className="pb-2 pr-4">Temp</th>
-                  <th className="pb-2 pr-4">GPS</th>
-                  <th className="pb-2 pr-4">Comms</th>
-                  <th className="pb-2">Backup</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-border text-left">
+                <th className="pb-2 pr-4">Time</th>
+                <th className="pb-2 pr-4">OK</th>
+                <th className="pb-2 pr-4">CPU</th>
+                <th className="pb-2 pr-4">RAM</th>
+                <th className="pb-2 pr-4">Disk</th>
+                <th className="pb-2 pr-4">Temp</th>
+                <th className="pb-2 pr-4">GPS</th>
+                <th className="pb-2 pr-4">Comms</th>
+                <th className="pb-2">Backup</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTableSnapshots.slice(-30).reverse().map((snapshot, idx) => (
+                <tr 
+                  key={snapshot.ts} 
+                  className="border-b border-border/50 hover:bg-white/5 cursor-pointer"
+                  onClick={() => setSelectedSnapshot({ snapshot, previous: filteredTableSnapshots[filteredTableSnapshots.length - 2 - idx] })}
+                >
+                  <td className="py-2 pr-4">{new Date(snapshot.ts).toLocaleTimeString()}</td>
+                  <td className="py-2 pr-4">
+                    <div className={`w-2 h-2 rounded-full ${snapshot.ok ? 'bg-success' : 'bg-destructive'}`} />
+                  </td>
+                  <td className="py-2 pr-4">{snapshot.metrics.cpu.toFixed(0)}%</td>
+                  <td className="py-2 pr-4">{snapshot.metrics.ram.toFixed(0)}%</td>
+                  <td className="py-2 pr-4">{snapshot.metrics.disk.toFixed(0)}%</td>
+                  <td className="py-2 pr-4">{snapshot.sensors.temperature.toFixed(0)}°C</td>
+                  <td className="py-2 pr-4 capitalize">{snapshot.gps.fix}</td>
+                  <td className="py-2 pr-4 capitalize">{snapshot.comms.lan}</td>
+                  <td className="py-2 capitalize">{snapshot.backup.status}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredSnapshots.slice(-20).reverse().map((snapshot, idx) => (
-                  <tr 
-                    key={snapshot.ts} 
-                    className="border-b border-border/50 hover:bg-white/5 cursor-pointer"
-                    onClick={() => setSelectedSnapshot({ snapshot, previous: filteredSnapshots[filteredSnapshots.length - 2 - idx] })}
-                  >
-                    <td className="py-2 pr-4">{new Date(snapshot.ts).toLocaleTimeString()}</td>
-                    <td className="py-2 pr-4">
-                      <div className={`w-2 h-2 rounded-full ${snapshot.ok ? 'bg-success' : 'bg-destructive'}`} />
-                    </td>
-                    <td className="py-2 pr-4">{snapshot.metrics.cpu.toFixed(0)}%</td>
-                    <td className="py-2 pr-4">{snapshot.metrics.ram.toFixed(0)}%</td>
-                    <td className="py-2 pr-4">{snapshot.metrics.disk.toFixed(0)}%</td>
-                    <td className="py-2 pr-4">{snapshot.sensors.temperature.toFixed(0)}°C</td>
-                    <td className="py-2 pr-4 capitalize">{snapshot.gps.fix}</td>
-                    <td className="py-2 pr-4 capitalize">{snapshot.comms.lan}</td>
-                    <td className="py-2 capitalize">{snapshot.backup.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              ))}
+            </tbody>
+          </table>
+        </div>
         
         <p className="text-xs text-muted-foreground mt-3">
           Click any row to view full snapshot details and compare with previous.
