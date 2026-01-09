@@ -1922,6 +1922,7 @@ export default function LogsAnalytics({ isOpen, onClose }) {
   const [capturing, setCapturing] = useState(true);
   const [interval, setInterval] = useState('60s');
   const [retention, setRetention] = useState('24h');
+  const [logCategories, setLogCategories] = useState(LOG_CATEGORIES);
   
   // Generate mock data
   const [thisDeviceSnapshots] = useState(() => generateSnapshots(THIS_DEVICE.node_id, THIS_DEVICE.node_name, 24, 1));
@@ -1938,6 +1939,9 @@ export default function LogsAnalytics({ isOpen, onClose }) {
     });
     return data;
   });
+  
+  // Calculate active log count
+  const activeLogCount = logCategories.filter(c => c.enabled).length;
   
   if (!isOpen) return null;
   
