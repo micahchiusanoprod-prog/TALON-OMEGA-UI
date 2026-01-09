@@ -11,6 +11,58 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: FAQ Page & Tile Improvements (January 9, 2026)
+
+### FAQ Help Center Page
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **FAQ Button in Header** | ✅ | HelpCircle icon with "FAQ" label, opens full-page modal |
+| **Search Functionality** | ✅ | Search across all 12 categories and FAQ items |
+| **Quick Navigation** | ✅ | Icon grid for all 12 categories (Connect, Navigate, Comms Hub, etc.) |
+| **Expandable Categories** | ✅ | Each category shows count, expands to show Q&A items |
+| **Category Content** | ✅ | 12 categories from PDF: Connect, Navigate, Comms Hub, Map & GPS, Sensors, Power, Library, Media, Files, Profiles, Admin, Fix It |
+| **Still Need Help** | ✅ | Footer section with operator contact guidance |
+
+### Environment Tile Improvements
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Hero Temperature** | ✅ | Large 4xl font with °F and °C display |
+| **Status Labels** | ✅ | Colored badges (Ideal, Comfortable, Normal, Good, etc.) |
+| **Secondary Metrics** | ✅ | Humidity, Pressure, IAQ in 3-column grid |
+| **Help Modal** | ✅ | Expandable sections for each metric |
+| **Reference Ranges** | ✅ | Color-coded ranges with advice for each metric |
+| **Status Legend** | ✅ | Optimal/Good/Caution/Alert with color indicators |
+| **Pro Tips** | ✅ | Contextual tips for each sensor type |
+
+### Device Info Tile Improvements
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **2x2 Grid Layout** | ✅ | CPU, RAM, Storage, Temperature in clean grid |
+| **Progress Bars** | ✅ | Visual bars with status-based colors |
+| **Status Labels** | ✅ | Low/Normal/High/Critical with color coding |
+| **Uptime & Services** | ✅ | Combined row with service health dots |
+| **Help Modal** | ✅ | All metrics documented with ranges and advice |
+| **Status Legend** | ✅ | Good/Normal/High/Critical with descriptions |
+
+### Weather Tile Improvements
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **OMEGA Sensors Section** | ✅ | Shows pressure trend from device sensors |
+| **Pressure Trend** | ✅ | Rising/Falling/Steady with weather prediction |
+| **Help Modal with Tabs** | ✅ | OMEGA Sensors, Forecast, Icons, Tips tabs |
+| **Sensor Weather Data** | ✅ | Detailed explanations of how OMEGA sensors predict weather |
+| **Reference Ranges** | ✅ | Pressure, Temperature, Humidity ranges for weather |
+| **Icon Legend** | ✅ | Weather icon descriptions (Sunny, Cloudy, Rain, etc.) |
+
+### Search & QuickTools Centering
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Centered Layout** | ✅ | Both SearchBar and QuickToolsBar now centered |
+| **max-w-3xl Container** | ✅ | Unified container for both elements |
+| **Mobile & Desktop** | ✅ | Responsive centering on all viewports |
+
+---
+
 ## ✅ COMPLETED: X/Twitter Style Community Feed (January 8, 2026)
 
 ### Community Tile Redesign
