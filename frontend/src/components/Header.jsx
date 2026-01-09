@@ -53,9 +53,20 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           </div>
 
-          {/* Center: Metrics Pills (desktop only, or compact on mobile) */}
+          {/* Center: Help Center Button + Metrics Pills (desktop) */}
           {!useCompactHeader && (
-            <div className="hidden md:flex items-center gap-2 flex-wrap">
+            <div className="hidden md:flex items-center gap-3 flex-wrap">
+              {/* Help Center Button - Centered & Premium */}
+              <button
+                onClick={() => setShowHelpCenter(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 hover:from-primary/30 hover:to-accent/30 hover:border-primary/50 transition-all shadow-sm"
+                title="Open Help Center"
+                data-testid="help-center-btn"
+              >
+                <BookOpen className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold">Help Center</span>
+              </button>
+              
               {/* CPU % - Priority 1 */}
               {metrics && metrics.cpu !== null && (
                 <div className="metric-pill hover:bg-secondary">
@@ -90,9 +101,20 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           )}
 
-          {/* Mobile: Show only temp */}
+          {/* Mobile: Help Center Button + Temp */}
           {useCompactHeader && (
             <div className="flex md:hidden items-center gap-2">
+              {/* Help Center Button - Mobile */}
+              <button
+                onClick={() => setShowHelpCenter(true)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 hover:border-primary/50 transition-all"
+                title="Open Help Center"
+                data-testid="help-center-btn-mobile"
+              >
+                <BookOpen className="w-4 h-4 text-primary" />
+                <span className="text-xs font-semibold">Help</span>
+              </button>
+              
               {metrics && metrics.temp !== null && (
                 <div className="metric-pill hover:bg-secondary">
                   <span className="text-muted-foreground text-xs">Temp</span>
