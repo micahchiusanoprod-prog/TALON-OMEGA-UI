@@ -1237,47 +1237,6 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
       {showStats && (
         <StatisticsSummary snapshots={filteredSnapshots} timeRange={timeRange} />
       )}
-            <span className="text-xs text-muted-foreground block mb-2">Interval</span>
-            <select
-              value={interval}
-              onChange={(e) => setInterval(e.target.value)}
-              className="w-full bg-secondary rounded-lg px-2 py-1.5 text-sm"
-            >
-              <option value="15s">15s</option>
-              <option value="30s">30s</option>
-              <option value="60s">60s</option>
-              <option value="5m">5m</option>
-            </select>
-          </div>
-          
-          {/* Retention */}
-          <div className="glass rounded-lg p-3">
-            <span className="text-xs text-muted-foreground block mb-2">Retention</span>
-            <select
-              value={retention}
-              onChange={(e) => setRetention(e.target.value)}
-              className="w-full bg-secondary rounded-lg px-2 py-1.5 text-sm"
-            >
-              <option value="12h">12 hours</option>
-              <option value="24h">24 hours</option>
-              <option value="7d">7 days</option>
-            </select>
-          </div>
-          
-          {/* Actions */}
-          <div className="glass rounded-lg p-3">
-            <span className="text-xs text-muted-foreground block mb-2">Actions</span>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={handleExport} className="h-8">
-                <Download className="w-3 h-3" />
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleClearHistory} className="h-8 text-destructive">
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
       
       {/* Health Index + Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -1295,18 +1254,33 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
         </div>
       </div>
       
-      {/* Time Range Selector */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Time range:</span>
-        {['1h', '6h', '12h', '24h', '7d'].map(range => (
-          <button
-            key={range}
-            onClick={() => setTimeRange(range)}
-            className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${timeRange === range ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
-          >
-            {range}
-          </button>
-        ))}
+      {/* Time Range + Metric Visibility */}
+      <div className="glass rounded-xl p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Time Range:</span>
+            {['1h', '6h', '12h', '24h', '7d'].map(range => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${timeRange === range ? 'bg-primary text-white' : 'glass hover:bg-secondary'}`}
+              >
+                {range}
+              </button>
+            ))}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {filteredSnapshots.length} snapshots in range
+          </div>
+        </div>
+        
+        <div className="border-t border-border/50 pt-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Eye className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs font-medium">Visible Metrics:</span>
+          </div>
+          <MetricVisibilityPanel visibleMetrics={visibleMetrics} setVisibleMetrics={setVisibleMetrics} />
+        </div>
       </div>
       
       {/* Charts */}
