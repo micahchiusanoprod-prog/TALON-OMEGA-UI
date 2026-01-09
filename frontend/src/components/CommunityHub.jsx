@@ -1577,6 +1577,123 @@ const IncidentReportsTab = ({ onTabChange }) => {
 };
 
 // ============================================================
+// QA CHECKLIST COMPONENT (Dev-only)
+// ============================================================
+
+const QAChecklist = ({ currentRole, onRoleChange }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [checkedItems, setCheckedItems] = useState({});
+  
+  const toggleCheck = (id) => {
+    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+  
+  const checklistItems = [
+    {
+      id: 'admin-tab-visible',
+      test: 'Switch role to admin: Incident Reports tab appears',
+      action: () => onRoleChange('admin'),
+      expect: 'Tab should be visible in navigation',
+    },
+    {
+      id: 'member-tab-hidden',
+      test: 'Switch role to member: Incident Reports tab disappears',
+      action: () => onRoleChange('member'),
+      expect: 'Tab should be hidden from navigation',
+    },
+    {
+      id: 'guest-limited',
+      test: 'Switch role to guest: Limited tab access',
+      action: () => onRoleChange('guest'),
+      expect: 'Only Overview and Directory tabs visible',
+    },
+    {
+      id: 'direct-nav-redirect',
+      test: 'Attempt direct nav to Incident Reports as member: redirect + banner',
+      action: null,
+      expect: 'Should redirect to Overview and show toast error',
+    },
+    {
+      id: 'privacy-redaction',
+      test: 'Privacy redaction: hidden fields show as "Hidden"',
+      action: null,
+      expect: 'In Directory tab, non-opted-in fields show "Hidden" for non-admins',
+    },
+    {
+      id: 'admin-sees-all',
+      test: 'Admin sees all profile fields',
+      action: () => onRoleChange('admin'),
+      expect: 'All fields visible in Directory for admin',
+    },
+  ];
+  
+  return (
+    <div className="glass rounded-xl p-4 border border-cyan-500/30 bg-cyan-500/5" data-testid="qa-checklist">
+      <button 
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between"
+      >
+        <h4 className="font-semibold text-sm flex items-center gap-2 text-cyan-400">
+          <ListChecks className="w-4 h-4" />
+          QA Checklist (Dev Only)
+        </h4>
+        {expanded ? <ChevronUp className="w-4 h-4 text-cyan-400" /> : <ChevronDown className="w-4 h-4 text-cyan-400" />}
+      </button>
+      
+      {expanded && (
+        <div className="mt-4 space-y-2">
+          <p className="text-xs text-muted-foreground mb-3">
+            Current role: <span className="font-semibold text-primary">{currentRole}</span>
+          </p>
+          
+          {checklistItems.map(item => (
+            <div 
+              key={item.id}
+              className={`p-2 rounded-lg transition-colors ${
+                checkedItems[item.id] ? 'bg-success/10 border border-success/30' : 'bg-secondary/50'
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                <button
+                  onClick={() => toggleCheck(item.id)}
+                  className={`w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center mt-0.5 transition-colors ${
+                    checkedItems[item.id] 
+                      ? 'bg-success border-success text-white' 
+                      : 'border-border hover:border-primary'
+                  }`}
+                >
+                  {checkedItems[item.id] && <CheckCheck className="w-3 h-3" />}
+                </button>
+                <div className="flex-1">
+                  <p className="text-xs font-medium">{item.test}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Expected: {item.expect}</p>
+                  {item.action && (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={item.action}
+                      className="h-6 text-[10px] mt-1 px-2"
+                    >
+                      Run Test
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          <div className="pt-2 border-t border-border/50 mt-3">
+            <p className="text-[10px] text-muted-foreground">
+              This panel is for development/QA purposes only and will not appear in production.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================
 // MAIN COMPONENT
 // ============================================================
 
@@ -1610,13 +1727,52 @@ export default function CommunityHub({ isOpen, onClose }) {
     return allTabs.filter(tab => tab.visible);
   }, [currentUser.role]);
   
+  // Handle tab change with RBAC check
+  const handleTabChange = useCallback((tabId) => {
+    const role = ROLES[currentUser.role];
+    
+    // Check if trying to access incidents without admin
+    if (tabId === 'incidents' && !role.permissions.viewIncidents) {
+      toast.error('Access denied: Admin-only section', {
+        description: 'Incident Reports require administrator privileges.',
+        duration: 3000,
+      });
+      return;
+    }
+    
+    setActiveTab(tabId);
+  }, [currentUser.role]);
+  
   // Ensure active tab is valid for current role
-  React.useEffect(() => {
+  useEffect(() => {
     const validTab = tabs.find(t => t.id === activeTab);
     if (!validTab) {
       setActiveTab('overview');
+      if (activeTab === 'incidents') {
+        toast.error('Access denied', {
+          description: 'You were redirected because your role changed.',
+        });
+      }
     }
   }, [tabs, activeTab]);
+  
+  // Query param sync for tabs (optional enhancement)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam && tabs.some(t => t.id === tabParam)) {
+      handleTabChange(tabParam);
+    }
+  }, []);
+  
+  // Update URL when tab changes
+  useEffect(() => {
+    if (isOpen) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', activeTab);
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [activeTab, isOpen]);
   
   if (!isOpen) return null;
   
@@ -1637,16 +1793,31 @@ export default function CommunityHub({ isOpen, onClose }) {
                     Connect, coordinate, and collaborate
                   </p>
                 </div>
+                
+                {/* HUD Stats - Online / Total */}
+                <div className="hidden md:flex items-center gap-3 ml-4 pl-4 border-l border-border">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                    <span className="text-sm font-medium text-success">{analytics.onlineCount}</span>
+                    <span className="text-xs text-muted-foreground">online</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">/</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-medium">{analytics.totalMembers}</span>
+                    <span className="text-xs text-muted-foreground">total</span>
+                  </div>
+                </div>
               </div>
               
               <div className="flex items-center gap-3">
-                {/* Role Switcher (for testing) */}
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 glass rounded-lg">
-                  <span className="text-[10px] text-muted-foreground">Role:</span>
+                {/* Role Switcher (Dev-only) */}
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 glass rounded-lg border border-cyan-500/30" data-testid="role-switcher">
+                  <span className="text-[10px] text-cyan-400">DEV:</span>
                   <select
                     value={currentUserRole}
                     onChange={(e) => setCurrentUserRole(e.target.value)}
                     className="bg-transparent text-xs font-medium focus:outline-none cursor-pointer"
+                    data-testid="role-select"
                   >
                     <option value="admin">Admin</option>
                     <option value="member">Member</option>
@@ -1673,7 +1844,7 @@ export default function CommunityHub({ isOpen, onClose }) {
               {tabs.map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     activeTab === tab.id 
                       ? 'bg-primary text-white' 
@@ -1693,20 +1864,37 @@ export default function CommunityHub({ isOpen, onClose }) {
         </div>
         
         {/* Content */}
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6 pb-32 sm:pb-6">
           {activeTab === 'overview' && (
             <OverviewTab profiles={profiles} analytics={analytics} incidents={incidents} />
           )}
           {activeTab === 'analytics' && <AnalyticsTab />}
-          {activeTab === 'directory' && <DirectoryTab />}
+          {activeTab === 'directory' && (
+            <DirectoryTab 
+              profiles={profiles} 
+              scoreConfig={scoreConfig} 
+              memberScores={memberScores}
+              onTabChange={handleTabChange}
+            />
+          )}
           {activeTab === 'comms' && <CommsTab />}
-          {activeTab === 'incidents' && <IncidentReportsTab />}
+          {activeTab === 'incidents' && (
+            <IncidentReportsTab onTabChange={handleTabChange} />
+          )}
+          
+          {/* QA Checklist (Dev-only) - Always visible at bottom */}
+          <div className="mt-8">
+            <QAChecklist 
+              currentRole={currentUserRole} 
+              onRoleChange={setCurrentUserRole}
+            />
+          </div>
         </div>
         
         {/* Mobile Role Switcher */}
-        <div className="sm:hidden fixed bottom-4 left-4 right-4">
-          <div className="glass rounded-xl p-3 flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">Testing Role:</span>
+        <div className="sm:hidden fixed bottom-4 left-4 right-4 z-20">
+          <div className="glass rounded-xl p-3 flex items-center justify-between border border-cyan-500/30">
+            <span className="text-xs text-cyan-400">DEV Role:</span>
             <div className="flex items-center gap-2">
               {['guest', 'member', 'admin'].map(role => (
                 <button
@@ -1715,6 +1903,7 @@ export default function CommunityHub({ isOpen, onClose }) {
                   className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                     currentUserRole === role ? 'bg-primary text-white' : 'bg-secondary'
                   }`}
+                  data-testid={`mobile-role-${role}`}
                 >
                   {role}
                 </button>
