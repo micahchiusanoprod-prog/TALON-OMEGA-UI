@@ -108,6 +108,66 @@ const DEFAULT_VISIBLE_METRICS = {
 };
 
 // ============================================================
+// P0: DETECTION RULES CONFIGURATION
+// ============================================================
+
+const DEFAULT_DETECTION_RULES = {
+  cpu: { enabled: true, warning: 70, critical: 85 },
+  ram: { enabled: true, warning: 75, critical: 90 },
+  disk: { enabled: true, warning: 80, critical: 92 },
+  temp: { enabled: true, warning: 65, critical: 75 },
+  gpsAccuracy: { enabled: true, warning: 15, critical: 50 },
+  commsDegradeDuration: { enabled: true, warning: 5, critical: 15 }, // minutes
+  backupFails: { enabled: true, warning: 1, critical: 3 }, // consecutive fails
+};
+
+const SENSITIVITY_PRESETS = {
+  low: { multiplier: 1.3, description: 'Fewer alerts, higher thresholds' },
+  medium: { multiplier: 1.0, description: 'Balanced sensitivity' },
+  high: { multiplier: 0.7, description: 'More alerts, lower thresholds' },
+};
+
+const SMOOTHING_WINDOWS = [
+  { value: 3, label: '3 samples' },
+  { value: 5, label: '5 samples' },
+  { value: 10, label: '10 samples' },
+  { value: 15, label: '15 min avg' },
+];
+
+const BASELINE_WINDOWS = [
+  { value: '6h', label: '6 hours' },
+  { value: '12h', label: '12 hours' },
+  { value: '24h', label: '24 hours' },
+  { value: '7d', label: '7 days' },
+];
+
+// ============================================================
+// P0: CAPTURE HEALTH CONFIGURATION
+// ============================================================
+
+const ENDPOINT_SOURCES = [
+  { id: 'health', name: 'Health', endpoint: '/cgi-bin/health.py' },
+  { id: 'metrics', name: 'Metrics', endpoint: '/cgi-bin/metrics.py' },
+  { id: 'sensors', name: 'Sensors', endpoint: '/cgi-bin/sensors.py' },
+  { id: 'gps', name: 'GPS', endpoint: '/cgi-bin/gps.py' },
+  { id: 'backup', name: 'Backup', endpoint: '/cgi-bin/backup.py' },
+];
+
+// ============================================================
+// P0: INCIDENT SUBSYSTEMS
+// ============================================================
+
+const SUBSYSTEMS = [
+  { id: 'power', name: 'Power', icon: Zap, color: 'text-yellow-400' },
+  { id: 'thermals', name: 'Thermals', icon: Thermometer, color: 'text-red-400' },
+  { id: 'storage', name: 'Storage', icon: HardDrive, color: 'text-amber-400' },
+  { id: 'services', name: 'Services', icon: Server, color: 'text-blue-400' },
+  { id: 'comms', name: 'Comms', icon: Radio, color: 'text-emerald-400' },
+  { id: 'gps', name: 'GPS', icon: MapPin, color: 'text-green-400' },
+  { id: 'sensors', name: 'Sensors', icon: Gauge, color: 'text-cyan-400' },
+];
+
+// ============================================================
 // MOCK DATA GENERATION
 // ============================================================
 
