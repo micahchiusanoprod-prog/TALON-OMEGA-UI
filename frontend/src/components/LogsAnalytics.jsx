@@ -724,13 +724,14 @@ const ThisDeviceTab = ({ snapshots, capturing, setCapturing, interval, setInterv
   const [timeRange, setTimeRange] = useState('12h');
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const [showTable, setShowTable] = useState(false);
+  const [now] = useState(() => Date.now()); // Stable timestamp for filtering
   
   // Filter snapshots by time range
   const filteredSnapshots = useMemo(() => {
     const hours = timeRange === '1h' ? 1 : timeRange === '6h' ? 6 : timeRange === '12h' ? 12 : timeRange === '24h' ? 24 : 168;
-    const cutoff = Date.now() - hours * 60 * 60 * 1000;
+    const cutoff = now - hours * 60 * 60 * 1000;
     return snapshots.filter(s => new Date(s.ts).getTime() > cutoff);
-  }, [snapshots, timeRange]);
+  }, [snapshots, timeRange, now]);
   
   // Calculate stats
   const latestSnapshot = snapshots[snapshots.length - 1];
