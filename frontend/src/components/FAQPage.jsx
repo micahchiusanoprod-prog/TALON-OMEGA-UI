@@ -360,10 +360,10 @@ const FAQItem = ({ faq, isOpen, onToggle }) => (
   <div className="border-b border-border/50 last:border-b-0">
     <button
       onClick={onToggle}
-      className="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+      className="w-full px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between text-left hover:bg-white/5 transition-colors active:bg-white/10"
       data-testid={`faq-item-${faq.q.slice(0, 20)}`}
     >
-      <span className="font-medium text-sm pr-4">{faq.q}</span>
+      <span className="font-medium text-[13px] sm:text-sm pr-3 leading-snug">{faq.q}</span>
       {isOpen ? (
         <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
       ) : (
@@ -371,8 +371,8 @@ const FAQItem = ({ faq, isOpen, onToggle }) => (
       )}
     </button>
     {isOpen && (
-      <div className="px-4 pb-4 animate-fade-in">
-        <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+      <div className="px-3 sm:px-4 pb-3 sm:pb-4 animate-fade-in">
+        <p className="text-[13px] sm:text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
       </div>
     )}
   </div>
@@ -395,25 +395,25 @@ const CategorySection = ({ category, openItems, toggleItem, searchQuery }) => {
   if (searchQuery && filteredFaqs.length === 0) return null;
   
   return (
-    <div className="glass rounded-2xl overflow-hidden" data-testid={`faq-category-${category.id}`}>
+    <div className="glass rounded-xl sm:rounded-2xl overflow-hidden" data-testid={`faq-category-${category.id}`}>
       {/* Category Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-4 flex items-center gap-4 hover:bg-white/5 transition-colors"
+        className="w-full p-3 sm:p-4 flex items-center gap-3 hover:bg-white/5 transition-colors active:bg-white/10"
       >
-        <div className={`p-3 rounded-xl ${category.bgColor}`}>
-          <Icon className={`w-6 h-6 ${category.color}`} />
+        <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${category.bgColor} flex-shrink-0`}>
+          <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${category.color}`} />
         </div>
-        <div className="flex-1 text-left">
-          <h3 className="font-semibold text-base">{category.name}</h3>
-          <p className="text-xs text-muted-foreground">{category.description}</p>
+        <div className="flex-1 text-left min-w-0">
+          <h3 className="font-semibold text-sm sm:text-base">{category.name}</h3>
+          <p className="text-[11px] sm:text-xs text-muted-foreground truncate">{category.description}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">{filteredFaqs.length} items</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <span className="text-[10px] sm:text-xs text-muted-foreground">{filteredFaqs.length}</span>
           {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-muted-foreground" />
+            <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
           )}
         </div>
       </button>
