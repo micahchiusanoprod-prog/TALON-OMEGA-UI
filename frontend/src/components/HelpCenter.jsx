@@ -1428,7 +1428,7 @@ export default function HelpCenter({ isOpen, onClose }) {
               <section id="help-appendix" className="scroll-mt-40">
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <Database className="w-5 h-5 text-slate-400" />
-                  Appendix (What's Estimated vs Exact)
+                  Appendix (What&apos;s Estimated vs Exact)
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="glass rounded-xl p-4">
