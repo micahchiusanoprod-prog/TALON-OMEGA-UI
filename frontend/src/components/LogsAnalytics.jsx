@@ -572,6 +572,17 @@ const NodeCard = ({ node, snapshots, onClick, selected }) => {
   );
 };
 
+// Diff Badge Component (moved outside)
+const DiffBadge = ({ value }) => {
+  if (value === null) return null;
+  const color = value > 0 ? 'text-red-400' : value < 0 ? 'text-green-400' : 'text-muted-foreground';
+  return (
+    <span className={`text-xs ${color} ml-2`}>
+      {value > 0 ? '+' : ''}{value.toFixed(1)}
+    </span>
+  );
+};
+
 // Snapshot Detail Drawer
 const SnapshotDrawer = ({ snapshot, previousSnapshot, onClose }) => {
   const [viewMode, setViewMode] = useState('formatted');
@@ -584,16 +595,6 @@ const SnapshotDrawer = ({ snapshot, previousSnapshot, onClose }) => {
     const prev = key.split('.').reduce((o, k) => o?.[k], previousSnapshot);
     if (typeof curr !== 'number' || typeof prev !== 'number') return null;
     return curr - prev;
-  };
-  
-  const DiffBadge = ({ value }) => {
-    if (value === null) return null;
-    const color = value > 0 ? 'text-red-400' : value < 0 ? 'text-green-400' : 'text-muted-foreground';
-    return (
-      <span className={`text-xs ${color} ml-2`}>
-        {value > 0 ? '+' : ''}{value.toFixed(1)}
-      </span>
-    );
   };
   
   return (
