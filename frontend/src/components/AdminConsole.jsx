@@ -793,10 +793,14 @@ export default function AdminConsole({ isOpen, onClose }) {
     </div>
     
     {/* Audit Panel - Rendered separately to stack above admin console */}
-    <AuditPanel 
-      isOpen={showAuditPanel}
-      onClose={() => setShowAuditPanel(false)}
-    />
+    {showAuditPanel && (
+      <React.Suspense fallback={<div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"><div className="text-white">Loading...</div></div>}>
+        <AuditPanel 
+          isOpen={showAuditPanel}
+          onClose={() => setShowAuditPanel(false)}
+        />
+      </React.Suspense>
+    )}
     </>
   );
 }
