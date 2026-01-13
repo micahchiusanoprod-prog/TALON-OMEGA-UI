@@ -82,10 +82,12 @@ export default function SearchBar() {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-              placeholder="Search Kiwix, files, or commands..."
+              placeholder="Search anything... (files, people, knowledge, commands)"
               className="flex-1 bg-transparent border-none outline-none text-sm sm:text-base text-foreground placeholder:text-muted-foreground/70 min-w-0"
+              title="Search for files, community members, offline knowledge, or run commands"
             />
             <kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-muted-foreground rounded-lg flex-shrink-0 search-kbd"
+              title="Press ⌘/ or just / to focus search"
             >
               <Command className="w-3 h-3" />
               /
