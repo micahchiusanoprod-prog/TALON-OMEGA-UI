@@ -2199,9 +2199,11 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
   );
 };
 
-// Profile Card Component
+// Profile Card Component - Enhanced with Node Card Data
 const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
   const isRedacted = profile._redacted;
+  const userStatusConfig = USER_STATUS[profile.userStatus] || USER_STATUS.OFFLINE;
+  const connectionConfig = CONNECTION_TYPES[profile.connection?.type] || CONNECTION_TYPES.OFFLINE;
   
   return (
     <div
@@ -2209,7 +2211,7 @@ const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
       onClick={onOpen}
       data-testid={`profile-card-${profile.userId}`}
     >
-      {/* Header */}
+      {/* Header with Status Badge */}
       <div className="flex items-start gap-3 mb-3">
         <div className="relative">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center font-bold text-sm">
@@ -2220,17 +2222,39 @@ const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
           }`} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold truncate">{profile.displayName}</h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-semibold truncate">{profile.displayName}</h3>
+            {profile.callsign && (
+              <span className="text-[10px] text-primary/70 font-mono">"{profile.callsign}"</span>
+            )}
+          </div>
           <p className="text-xs text-muted-foreground truncate">{profile.class || 'Member'}</p>
         </div>
-        {isAdmin && score && (
-          <div className={`px-2 py-0.5 rounded text-xs font-bold ${
-            score.flag === 'intervention' ? 'bg-destructive/20 text-destructive' :
-            score.flag === 'restricted' ? 'bg-orange-500/20 text-orange-400' :
-            score.flag === 'monitor' ? 'bg-warning/20 text-warning' :
-            'bg-success/20 text-success'
-          }`}>
-            {score.score}
+        {/* User Status Badge */}
+        <div className={`px-2 py-0.5 rounded text-[10px] font-bold ${userStatusConfig.color}`}>
+          {userStatusConfig.label}
+        </div>
+      </div>
+      
+      {/* Connection & Device Row */}
+      <div className="flex items-center gap-3 mb-3 text-[10px]">
+        <div className="flex items-center gap-1">
+          <span className={connectionConfig.color}>●</span>
+          <span className="text-muted-foreground">{connectionConfig.label}</span>
+          {profile.connection?.strength > 0 && (
+            <span className="text-foreground font-medium">{profile.connection.strength}%</span>
+          )}
+        </div>
+        {profile.device?.battery > 0 && (
+          <div className="flex items-center gap-1">
+            <span className={profile.device.battery > 50 ? 'text-success' : profile.device.battery > 20 ? 'text-warning' : 'text-destructive'}>⚡</span>
+            <span>{profile.device.battery}%</span>
+          </div>
+        )}
+        {profile.medical?.bloodType && isAdmin && (
+          <div className="flex items-center gap-1 text-rose-400">
+            <span>🩸</span>
+            <span>{profile.medical.bloodType}</span>
           </div>
         )}
       </div>
@@ -2259,6 +2283,14 @@ const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
           </span>
         </div>
       </div>
+      
+      {/* Equipment Count */}
+      {profile.equipment?.length > 0 && (
+        <div className="flex items-center gap-1 mb-3 text-[10px] text-muted-foreground">
+          <span>🎒</span>
+          <span>{profile.equipment.length} equipment items</span>
+        </div>
+      )}
       
       {/* Conditional Fields */}
       <div className="grid grid-cols-2 gap-2 text-[10px] border-t border-border/50 pt-3">
@@ -2303,6 +2335,19 @@ const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
           )}
         </div>
       </div>
+      
+      {/* Admin Score Badge */}
+      {isAdmin && score && (
+        <div className={`mt-3 p-2 rounded-lg text-center ${
+          score.flag === 'intervention' ? 'bg-destructive/20 text-destructive' :
+          score.flag === 'restricted' ? 'bg-orange-500/20 text-orange-400' :
+          score.flag === 'monitor' ? 'bg-warning/20 text-warning' :
+          'bg-success/20 text-success'
+        }`}>
+          <span className="text-[10px]">Community Score: </span>
+          <span className="font-bold">{score.score}</span>
+        </div>
+      )}
       
       {/* Footer */}
       <div className="flex items-center justify-between mt-3 pt-2 border-t border-border/50">
