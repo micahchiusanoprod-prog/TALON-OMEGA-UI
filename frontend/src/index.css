@@ -15,11 +15,11 @@ code {
 
 @layer base {
     :root {
-        /* Light mode - Enhanced depth with multiple shades */
-        --background: 210 20% 98%;
+        /* Light mode - Enhanced with MUCH better depth and colors */
+        --background: 215 30% 97%;
         --foreground: 222 47% 11%;
         
-        /* Cards with elevation layers */
+        /* Cards with strong elevation - visible layers */
         --card: 0 0% 100%;
         --card-foreground: 222 47% 11%;
         --card-elevated: 210 30% 99%;
@@ -28,54 +28,54 @@ code {
         --popover: 0 0% 100%;
         --popover-foreground: 222 47% 11%;
         
-        /* Primary - Vibrant cyan with depth */
-        --primary: 187 85% 45%;
-        --primary-hover: 187 85% 40%;
-        --primary-light: 187 75% 88%;
+        /* Primary - Rich vibrant cyan */
+        --primary: 195 90% 40%;
+        --primary-hover: 195 90% 35%;
+        --primary-light: 195 80% 92%;
         --primary-foreground: 0 0% 100%;
         
-        /* Secondary - Layered grays */
-        --secondary: 210 25% 94%;
-        --secondary-hover: 210 25% 90%;
+        /* Secondary - Visible distinction from background */
+        --secondary: 215 30% 90%;
+        --secondary-hover: 215 30% 85%;
         --secondary-foreground: 222 47% 11%;
         
-        /* Muted surfaces with depth */
-        --muted: 210 20% 96%;
-        --muted-hover: 210 20% 92%;
-        --muted-foreground: 215 15% 45%;
+        /* Muted surfaces - clear depth */
+        --muted: 215 25% 93%;
+        --muted-hover: 215 25% 88%;
+        --muted-foreground: 215 20% 40%;
         
-        /* Accent - Matching primary */
-        --accent: 187 85% 45%;
-        --accent-hover: 187 85% 40%;
+        /* Accent - Vibrant for visibility */
+        --accent: 195 90% 40%;
+        --accent-hover: 195 90% 35%;
         --accent-foreground: 0 0% 100%;
         
-        /* Status colors with light backgrounds */
-        --destructive: 0 72% 51%;
-        --destructive-light: 0 72% 95%;
+        /* Status colors - bold and clear */
+        --destructive: 0 75% 50%;
+        --destructive-light: 0 80% 95%;
         --destructive-foreground: 0 0% 100%;
         
-        --success: 142 71% 45%;
-        --success-light: 142 71% 95%;
+        --success: 145 75% 38%;
+        --success-light: 145 70% 92%;
         --success-foreground: 0 0% 100%;
         
-        --warning: 38 92% 50%;
-        --warning-light: 38 92% 95%;
+        --warning: 38 95% 45%;
+        --warning-light: 38 95% 92%;
         --warning-foreground: 222 47% 11%;
         
-        /* Borders with subtle color */
-        --border: 210 20% 88%;
-        --border-strong: 210 25% 80%;
-        --input: 210 20% 90%;
-        --ring: 187 85% 45%;
+        /* Borders - MUCH more visible */
+        --border: 215 30% 82%;
+        --border-strong: 215 35% 70%;
+        --input: 215 30% 85%;
+        --ring: 195 90% 40%;
         
         --radius: 0.75rem;
         
-        /* Chart colors */
-        --chart-1: 187 85% 45%;
-        --chart-2: 142 71% 45%;
-        --chart-3: 38 92% 50%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
+        /* Chart colors - vibrant */
+        --chart-1: 195 90% 40%;
+        --chart-2: 145 75% 38%;
+        --chart-3: 38 95% 45%;
+        --chart-4: 280 70% 55%;
+        --chart-5: 340 80% 50%;
     }
     
     .dark {
