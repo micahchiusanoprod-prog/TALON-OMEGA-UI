@@ -25,10 +25,10 @@ export default function Dashboard({ theme, onToggleTheme }) {
       <main className="container mx-auto px-4 pb-8 pt-20 max-w-[1600px] space-y-2">
         
         {/* ===== QUICK TOOLS & SEARCH (CENTERED TOGETHER) ===== */}
-        <section className="animate-fade-in">
+        <section className="animate-fade-in relative z-20">
           <div className="max-w-3xl mx-auto space-y-3">
             {/* Quick Tools - Above Search */}
-            <div className="flex justify-center">
+            <div className="flex justify-center relative z-20">
               <QuickToolsBar />
             </div>
             
