@@ -315,7 +315,8 @@ const EndpointResult = ({ endpoint, result }) => {
 };
 
 export default function AuditPanel({ isOpen, onClose }) {
-  const { checkEndpoint, config: connConfig } = useConnection();
+  const connection = useConnection();
+  const { checkEndpoint, config: connConfig = {} } = connection || {};
   const [expandedSections, setExpandedSections] = useState(['ui', 'endpoints', 'features']);
   const [endpointResults, setEndpointResults] = useState({});
   const [isRunningTests, setIsRunningTests] = useState(false);
