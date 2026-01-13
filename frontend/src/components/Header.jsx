@@ -187,7 +187,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           )}
 
-          {/* Right: Language + Connection + Admin + Theme */}
+          {/* Right: Language + Connection + System Status + Admin + Theme */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Language Selector */}
             <LanguageSelector compact={useCompactHeader} />
@@ -196,6 +196,9 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             {useCompactHeader && (
               <ConnectionStatusChip className="hidden xs:flex" />
             )}
+            
+            {/* System Status Button */}
+            <SystemStatusButton onClick={() => setShowSystemStatus(true)} />
             
             {/* Admin Console Button - Clear text label */}
             <button
@@ -254,6 +257,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
     <CommunityHub
       isOpen={showCommunity}
       onClose={() => setShowCommunity(false)}
+    />
+    
+    {/* System Status Panel */}
+    <SystemStatusPanel
+      isOpen={showSystemStatus}
+      onClose={() => setShowSystemStatus(false)}
     />
   </>
   );
