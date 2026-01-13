@@ -170,30 +170,9 @@ function HelpGuideContent({
         {activeTab === 'legend' && legendItems.length > 0 && (
           <div className="space-y-2">
             {legendItems.map((item, idx) => {
-              // Handle different icon types
-              let iconElement = null;
-              if (item.icon) {
-                if (typeof item.icon === 'function') {
-                  // Check if it's a React component (has $$typeof) or a function returning JSX
-                  try {
-                    const result = item.icon({});
-                    // If it returns JSX directly (from arrow function), use it as-is
-                    if (result && result.props !== undefined) {
-                      iconElement = result;
-                    } else {
-                      // It's a proper component
-                      const IconComponent = item.icon;
-                      iconElement = <IconComponent className={`w-3.5 h-3.5 ${item.color || 'text-primary'}`} />;
-                    }
-                  } catch {
-                    // Fallback - treat as component
-                    const IconComponent = item.icon;
-                    iconElement = <IconComponent className={`w-3.5 h-3.5 ${item.color || 'text-primary'}`} />;
-                  }
-                } else {
-                  iconElement = item.icon;
-                }
-              }
+              // Handle icon - either a React component or a pre-rendered element
+              const IconComponent = item.icon;
+              const iconElement = item.iconElement || (IconComponent ? <IconComponent className={`w-3.5 h-3.5 ${item.color || 'text-primary'}`} /> : null);
               
               return (
                 <div key={idx} className="flex items-start gap-2 p-2 rounded-lg bg-secondary/30">
