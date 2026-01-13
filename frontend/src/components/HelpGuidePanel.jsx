@@ -169,25 +169,48 @@ function HelpGuideContent({
         {/* Legend Tab */}
         {activeTab === 'legend' && legendItems.length > 0 && (
           <div className="space-y-2">
-            {legendItems.map((item, idx) => (
-              <div key={idx} className="flex items-start gap-2 p-2 rounded-lg bg-secondary/30">
-                {item.icon && (
-                  <div className={`p-1 rounded ${item.bgColor || 'bg-primary/20'}`}>
-                    {typeof item.icon === 'function' ? (
-                      <item.icon className={`w-3.5 h-3.5 ${item.color || 'text-primary'}`} />
-                    ) : (
-                      item.icon
+            {legendItems.map((item, idx) => {
+              // Handle different icon types
+              let iconElement = null;
+              if (item.icon) {
+                if (typeof item.icon === 'function') {
+                  // Check if it's a React component (has $$typeof) or a function returning JSX
+                  try {
+                    const result = item.icon({});
+                    // If it returns JSX directly (from arrow function), use it as-is
+                    if (result && result.props !== undefined) {
+                      iconElement = result;
+                    } else {
+                      // It's a proper component
+                      const IconComponent = item.icon;
+                      iconElement = <IconComponent className={`w-3.5 h-3.5 ${item.color || 'text-primary'}`} />;
+                    }
+                  } catch {
+                    // Fallback - treat as component
+                    const IconComponent = item.icon;
+                    iconElement = <IconComponent className={`w-3.5 h-3.5 ${item.color || 'text-primary'}`} />;
+                  }
+                } else {
+                  iconElement = item.icon;
+                }
+              }
+              
+              return (
+                <div key={idx} className="flex items-start gap-2 p-2 rounded-lg bg-secondary/30">
+                  {iconElement && (
+                    <div className={`p-1 rounded ${item.bgColor || 'bg-primary/20'} flex items-center justify-center`}>
+                      {iconElement}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium">{item.label}</p>
+                    {item.description && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
                     )}
                   </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium">{item.label}</p>
-                  {item.description && (
-                    <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
-                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
