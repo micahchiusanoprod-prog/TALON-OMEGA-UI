@@ -376,7 +376,8 @@ const DrillMode = ({ isOpen, onClose, profiles, memberScores, onOpenTeamBuilder 
   const timerRef = useRef(null);
   
   const startDrill = (selectedScenario) => {
-    setScenario(selectedScenario || DRILL_SCENARIOS[Math.floor(Math.random() * DRILL_SCENARIOS.length)]);
+    const scenarioToUse = selectedScenario || DRILL_SCENARIOS[Math.floor(Math.random() * DRILL_SCENARIOS.length)];
+    setScenario(scenarioToUse);
     setDrillState('active');
     setElapsedTime(0);
     setSelectedTeam([]);
