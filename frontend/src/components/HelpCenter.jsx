@@ -580,6 +580,70 @@ const CopyButton = ({ text }) => {
   );
 };
 
+// FAQ Category Component with collapsible questions
+const FAQCategory = ({ id, title, icon: Icon, color, bgColor, description, faqs }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [openItems, setOpenItems] = useState({});
+  
+  const toggleItem = (index) => {
+    setOpenItems(prev => ({ ...prev, [index]: !prev[index] }));
+  };
+  
+  return (
+    <div className="glass rounded-xl overflow-hidden" data-testid={`faq-category-${id}`}>
+      {/* Category Header */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg ${bgColor}`}>
+            <Icon className={`w-4 h-4 ${color}`} />
+          </div>
+          <div className="text-left">
+            <h3 className="font-semibold text-sm">{title}</h3>
+            <p className="text-xs text-muted-foreground">{description}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">{faqs.length} questions</span>
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          )}
+        </div>
+      </button>
+      
+      {/* FAQ Items */}
+      {isExpanded && (
+        <div className="border-t border-border/50">
+          {faqs.map((faq, index) => (
+            <div key={index} className="border-b border-border/50 last:border-b-0">
+              <button
+                onClick={() => toggleItem(index)}
+                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+              >
+                <span className="font-medium text-sm pr-3">{faq.q}</span>
+                {openItems[index] ? (
+                  <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                )}
+              </button>
+              {openItems[index] && (
+                <div className="px-4 pb-3 animate-fade-in">
+                  <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ============================================================
 // MAIN HELP CENTER COMPONENT
 // ============================================================
