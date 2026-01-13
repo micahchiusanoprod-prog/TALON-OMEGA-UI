@@ -2,12 +2,13 @@ import React, { useState, useCallback } from 'react';
 import {
   Settings, Wifi, WifiOff, AlertTriangle, CheckCircle, XCircle,
   Server, Database, Clock, Copy, Play, RefreshCw, X, ExternalLink,
-  Info, ChevronDown, ChevronUp, Zap
+  Info, ChevronDown, ChevronUp, Zap, ClipboardCheck
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { useConnection, CONNECTION_STATES } from '../contexts/ConnectionContext';
 import config from '../config';
+import AuditPanel from './AuditPanel';
 
 // ============================================================
 // SYSTEM STATUS PANEL
@@ -32,6 +33,7 @@ export default function SystemStatusPanel({ isOpen, onClose }) {
   const [isRunningTest, setIsRunningTest] = useState(false);
   const [testResults, setTestResults] = useState(null);
   const [showEndpoints, setShowEndpoints] = useState(false);
+  const [showAuditPanel, setShowAuditPanel] = useState(false);
 
   // Status configurations
   const statusConfig = {
