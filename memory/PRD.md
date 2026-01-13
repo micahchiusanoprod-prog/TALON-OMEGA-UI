@@ -3,11 +3,76 @@
 ## Overview
 OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi "cyberdeck" device. The UI features a premium, Apple-like design, responsive layout, and polished dark/light mode themes.
 
+**OMEGA = Offline Modular Emergency Guidance Archive**
+
 ## Target Users
 - Family members using OMEGA cyberdeck devices
 - Non-technical users who need clear visual indicators and intuitive controls (designed for elderly family members!)
 - Users in offline or low-connectivity environments
 - Operators under stress who need larger tap targets and clear status indicators
+
+---
+
+## ✅ COMPLETED: i18n, Connection Indicators & UI Polish (January 13, 2026)
+
+### NEW: Global Language Switcher (i18n-ready)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Language Selector** | ✅ | Globe icon dropdown in header (top right) |
+| **English (EN)** | ✅ | Full UI translation - default language |
+| **Spanish (ES)** | ✅ | Full UI translation for all major labels |
+| **"More soon..." Placeholder** | ✅ | Disabled option showing future language support |
+| **Centralized Translations Map** | ✅ | `/app/frontend/src/contexts/LanguageContext.jsx` with t(key) helper |
+| **Persistent Selection** | ✅ | Stored in localStorage (omega-language), survives refresh |
+| **Immediate UI Update** | ✅ | Language change updates all visible text instantly |
+
+### NEW: OMEGA Header Subtitle
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Acronym Subtitle** | ✅ | "Offline Modular Emergency Guidance Archive" under OMEGA logo |
+| **i18n Support** | ✅ | Translates to Spanish: "Archivo de Guía de Emergencia Modular Sin Conexión" |
+| **Styling** | ✅ | Smaller font, muted color, uppercase, letter-spacing increased |
+| **Mobile Responsive** | ✅ | Hidden on smallest screens to preserve space |
+
+### NEW: Backend Connection Indicators
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Global Connection Chip** | ✅ | Header status chip with 3 states: Connected (green), Degraded (yellow), Not Connected (muted) |
+| **Tooltip Explanations** | ✅ | Hover shows "Live data from OMEGA backend" / "Using mock data" / "Some endpoints failing" |
+| **MOCK DATA Badge** | ✅ | Yellow badge with database icon on panels showing mocked data |
+| **LIVE Badge** | ✅ | Green pulsing badge for real-time data (ready for backend) |
+| **ConnectionContext** | ✅ | React context managing connection state globally |
+
+### NEW: Standardized Data State Components
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **LoadingSkeleton** | ✅ | Animated skeleton with spinner icon |
+| **ErrorState** | ✅ | Red alert box with retry button |
+| **EmptyState** | ✅ | Inbox icon with customizable message |
+| **DataWrapper** | ✅ | Combines loading/error/empty/data states in one component |
+| **PanelHeader** | ✅ | Reusable header with icon, title, subtitle, and data source badge |
+
+### NEW: HelpGuidePanel Component
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Reusable Help Panel** | ✅ | Same help experience across Community, Help Center, Logs pages |
+| **Compact Mode** | ✅ | Expandable "Quick Help" button with dropdown |
+| **Full Mode** | ✅ | Always-visible help panel |
+| **Tabbed Sections** | ✅ | Legend, Troubleshooting, "What this page does" tabs |
+| **Pre-built Legend Items** | ✅ | COMMON_LEGEND_ITEMS for status dots, severity badges, data sources |
+| **Pre-built Troubleshooting** | ✅ | COMMON_TROUBLESHOOTING for common issues |
+
+### Files Created
+- `/app/frontend/src/contexts/LanguageContext.jsx` - i18n provider with translations
+- `/app/frontend/src/contexts/ConnectionContext.jsx` - Connection status provider
+- `/app/frontend/src/components/LanguageSelector.jsx` - Language dropdown component
+- `/app/frontend/src/components/DataStateIndicators.jsx` - ConnectionStatusChip, DataSourceBadge, LoadingSkeleton, ErrorState, EmptyState
+- `/app/frontend/src/components/HelpGuidePanel.jsx` - Reusable help panel
+
+### Files Modified
+- `/app/frontend/src/App.js` - Wrapped with LanguageProvider and ConnectionProvider
+- `/app/frontend/src/components/Header.jsx` - Added language selector, connection chip, OMEGA subtitle
+- `/app/frontend/src/components/OfficialTeamsBulletins.jsx` - Added DataSourceBadge
 
 ---
 
