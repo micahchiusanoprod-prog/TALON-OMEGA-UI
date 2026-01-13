@@ -397,7 +397,7 @@ code {
         color: hsl(215, 20%, 55%);
     }
     
-    /* Status indicators */
+    /* Status indicators - enhanced for light mode */
     .status-dot {
         @apply w-2 h-2 rounded-full;
     }
@@ -407,9 +407,19 @@ code {
         box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
     }
     
+    :root:not(.dark) .status-healthy {
+        @apply bg-green-600;
+        box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
+    }
+    
     .status-degraded {
         @apply bg-amber-500;
         box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+    }
+    
+    :root:not(.dark) .status-degraded {
+        @apply bg-amber-600;
+        box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
     }
     
     .status-down {
@@ -417,14 +427,33 @@ code {
         box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
     }
     
-    /* Metric pill */
+    :root:not(.dark) .status-down {
+        @apply bg-red-600;
+        box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+    }
+    
+    /* Metric pill - enhanced for light mode */
     .metric-pill {
         @apply glass px-3 py-1.5 rounded-full text-xs font-medium;
         @apply flex items-center gap-2 transition-all duration-200;
     }
     
+    :root:not(.dark) .metric-pill {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid hsl(215, 35%, 78%);
+        box-shadow: 0 2px 6px rgba(0, 50, 100, 0.08);
+        color: hsl(222, 47%, 20%);
+    }
+    
     .metric-pill:hover {
         @apply glass-strong;
+        transform: translateY(-1px);
+    }
+    
+    :root:not(.dark) .metric-pill:hover {
+        background: rgba(255, 255, 255, 1);
+        border-color: hsl(215, 40%, 70%);
+        box-shadow: 0 4px 12px rgba(0, 50, 100, 0.12);
         transform: translateY(-1px);
     }
     
