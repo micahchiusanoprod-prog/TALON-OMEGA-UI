@@ -14,6 +14,7 @@ import {
 import {
   OFFICIAL_TEAMS, BULLETIN_SEVERITY, generateTeamBulletins, SKILL_DOMAINS
 } from '../mock/communityMockData';
+import { DataSourceBadge } from './DataStateIndicators';
 
 // ============================================================
 // ICON MAP
