@@ -8,7 +8,9 @@ import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { useConnection, CONNECTION_STATES } from '../contexts/ConnectionContext';
 import config from '../config';
-import AuditPanel from './AuditPanel';
+
+// Lazy load AuditPanel to avoid circular dependency
+const AuditPanel = React.lazy(() => import('./AuditPanel'));
 
 // ============================================================
 // SYSTEM STATUS PANEL
