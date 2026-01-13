@@ -816,6 +816,7 @@ const DirectoryTab = ({ profiles, memberScores, scoreConfig, initialFilters, onO
   const [selectedClass, setSelectedClass] = useState('');
   const [sortBy, setSortBy] = useState('online'); // online, name, skills
   const [showFilters, setShowFilters] = useState(false);
+  const [showTeamBuilder, setShowTeamBuilder] = useState(false);
   
   // Available options
   const allSkills = useMemo(() => Object.keys(CANONICAL_SKILLS), []);
