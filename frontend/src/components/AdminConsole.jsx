@@ -21,12 +21,14 @@ import {
   ChevronDown,
   ChevronUp,
   Loader2,
-  ClipboardList
+  ClipboardList,
+  ClipboardCheck
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
 import RosterSection from './RosterSection';
+import AuditPanel from './AuditPanel';
 
 // ============================================
 // MOCK DATA
