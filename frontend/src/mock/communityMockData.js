@@ -922,3 +922,246 @@ export const MOCK_CURRENT_USERS = {
   member: { id: 'user-004', displayName: 'David Park', role: 'member', privacy: { showAge: true, showHeightWeight: true, showEducation: true } },
   guest: { id: 'guest-001', displayName: 'Guest User', role: 'guest', privacy: { showAge: false, showHeightWeight: false, showEducation: false } },
 };
+
+// ============================================================
+// OFFICIAL TEAMS - Emergency Response Teams
+// ============================================================
+
+export const OFFICIAL_TEAMS = [
+  {
+    id: 'team-medical',
+    name: 'Medical Response Team',
+    icon: 'Stethoscope',
+    color: 'rose',
+    description: 'First responders for medical emergencies',
+    lead: 'user-007', // Lisa Wong
+    members: ['user-007', 'user-001', 'user-013'],
+    domain: 'Medical',
+    isActive: true,
+  },
+  {
+    id: 'team-security',
+    name: 'Security & Perimeter',
+    icon: 'Shield',
+    color: 'amber',
+    description: 'Perimeter defense and security operations',
+    lead: 'user-002', // Marcus Johnson
+    members: ['user-002', 'user-005'],
+    domain: 'Security',
+    isActive: true,
+  },
+  {
+    id: 'team-comms',
+    name: 'Communications Team',
+    icon: 'Radio',
+    color: 'cyan',
+    description: 'HAM radio, mesh network, and comms operations',
+    lead: 'user-008', // James Miller
+    members: ['user-008', 'user-002', 'user-004'],
+    domain: 'Comms',
+    isActive: true,
+  },
+  {
+    id: 'team-engineering',
+    name: 'Engineering & Power',
+    icon: 'Wrench',
+    color: 'orange',
+    description: 'Infrastructure, electrical, and solar systems',
+    lead: 'user-004', // David Park
+    members: ['user-004', 'user-006', 'user-014'],
+    domain: 'Engineering',
+    isActive: true,
+  },
+  {
+    id: 'team-supply',
+    name: 'Supply & Logistics',
+    icon: 'Compass',
+    color: 'violet',
+    description: 'Supply runs, inventory, and resource management',
+    lead: 'user-011', // Jennifer Lee
+    members: ['user-011', 'user-003', 'user-012'],
+    domain: 'Logistics',
+    isActive: true,
+  },
+  {
+    id: 'team-nature',
+    name: 'Nature & Foraging',
+    icon: 'Utensils',
+    color: 'emerald',
+    description: 'Gardening, foraging, hunting, and food safety',
+    lead: 'user-015', // Rosa Martinez
+    members: ['user-015', 'user-009', 'user-012'],
+    domain: 'FoodWater',
+    isActive: true,
+  },
+];
+
+// ============================================================
+// TEAM BULLETINS - Official Team Updates
+// ============================================================
+
+export const BULLETIN_SEVERITY = {
+  critical: { label: 'CRITICAL', color: 'destructive', bg: 'bg-destructive/20', icon: 'AlertTriangle' },
+  warning: { label: 'WARNING', color: 'warning', bg: 'bg-warning/20', icon: 'AlertCircle' },
+  info: { label: 'INFO', color: 'primary', bg: 'bg-primary/20', icon: 'Info' },
+  success: { label: 'RESOLVED', color: 'success', bg: 'bg-success/20', icon: 'CheckCircle' },
+};
+
+export const generateTeamBulletins = () => [
+  {
+    id: 'bulletin-001',
+    teamId: 'team-nature',
+    title: 'Poison Oak Spotted - North Trail',
+    content: 'Found poison oak patches along the north trail near marker 7. I\'ve flagged the area with orange tape. AVOID CONTACT. If exposed, wash immediately with cold water and soap. See attached photos for identification.',
+    severity: 'warning',
+    author: 'user-015', // Rosa Martinez
+    createdAt: '2026-01-13T08:30:00Z',
+    updatedAt: '2026-01-13T08:30:00Z',
+    attachments: [
+      { type: 'image', name: 'poison_oak_1.jpg', url: '/images/placeholder.jpg' },
+      { type: 'image', name: 'poison_oak_2.jpg', url: '/images/placeholder.jpg' },
+    ],
+    tags: ['hazard', 'plants', 'north-trail'],
+    readBy: ['user-001', 'user-002', 'user-004'],
+    isNew: true,
+    isPinned: true,
+  },
+  {
+    id: 'bulletin-002',
+    teamId: 'team-medical',
+    title: 'Flu Season Advisory - Hygiene Protocols',
+    content: 'We\'re seeing increased cold symptoms in the community. Please follow enhanced hygiene protocols: wash hands frequently, cover coughs, and report any fever above 100°F to medical immediately. We have limited Tylenol supplies.',
+    severity: 'info',
+    author: 'user-007', // Lisa Wong
+    createdAt: '2026-01-12T14:00:00Z',
+    updatedAt: '2026-01-12T14:00:00Z',
+    attachments: [],
+    tags: ['health', 'hygiene', 'flu'],
+    readBy: ['user-001', 'user-002', 'user-003', 'user-004', 'user-005'],
+    isNew: true,
+    isPinned: true,
+  },
+  {
+    id: 'bulletin-003',
+    teamId: 'team-security',
+    title: 'Perimeter Check Schedule Change',
+    content: 'Effective immediately, perimeter checks will run every 4 hours instead of 6 hours due to recent wildlife activity. Night shift volunteers needed - contact Marcus if available.',
+    severity: 'info',
+    author: 'user-002', // Marcus Johnson
+    createdAt: '2026-01-12T09:00:00Z',
+    updatedAt: '2026-01-12T09:00:00Z',
+    attachments: [],
+    tags: ['schedule', 'perimeter', 'volunteers'],
+    readBy: ['user-001', 'user-004', 'user-005', 'user-006', 'user-007'],
+    isNew: false,
+    isPinned: false,
+  },
+  {
+    id: 'bulletin-004',
+    teamId: 'team-engineering',
+    title: 'Solar Panel Maintenance Complete',
+    content: 'Completed maintenance on all 6 solar panels. Panel #3 had dirt buildup reducing efficiency by 15%. All panels now operating at full capacity. Next maintenance scheduled for Jan 20.',
+    severity: 'success',
+    author: 'user-014', // Tom Nguyen
+    createdAt: '2026-01-11T16:30:00Z',
+    updatedAt: '2026-01-11T16:30:00Z',
+    attachments: [
+      { type: 'document', name: 'maintenance_report.pdf', url: '/docs/placeholder.pdf' },
+    ],
+    tags: ['solar', 'maintenance', 'power'],
+    readBy: ['user-001', 'user-002', 'user-003', 'user-004', 'user-005', 'user-006', 'user-007'],
+    isNew: false,
+    isPinned: false,
+  },
+  {
+    id: 'bulletin-005',
+    teamId: 'team-supply',
+    title: 'Supply Run Results - Jan 10',
+    content: 'Successful supply run to the cache at Grid CM87wq. Retrieved: 20 gallons water, 30 MREs, 2 propane tanks, batteries (AA x48, D x12). Inventory updated. Next run scheduled for Jan 15.',
+    severity: 'info',
+    author: 'user-011', // Jennifer Lee
+    createdAt: '2026-01-10T18:00:00Z',
+    updatedAt: '2026-01-10T18:00:00Z',
+    attachments: [
+      { type: 'document', name: 'inventory_update.xlsx', url: '/docs/placeholder.xlsx' },
+    ],
+    tags: ['supply-run', 'inventory', 'cache'],
+    readBy: ['user-001', 'user-002', 'user-003', 'user-004', 'user-005', 'user-006', 'user-007', 'user-011'],
+    isNew: false,
+    isPinned: false,
+  },
+  {
+    id: 'bulletin-006',
+    teamId: 'team-comms',
+    title: 'HAM Repeater Down - Emergency Frequencies Active',
+    content: 'The main HAM repeater at hilltop is experiencing issues. Use backup frequency 146.520 MHz for emergency comms. Repair team dispatched - ETA 4 hours. Mesh network remains operational.',
+    severity: 'critical',
+    author: 'user-008', // James Miller
+    createdAt: '2026-01-13T06:00:00Z',
+    updatedAt: '2026-01-13T10:00:00Z',
+    attachments: [],
+    tags: ['ham', 'emergency', 'comms-down'],
+    readBy: ['user-001', 'user-002', 'user-004'],
+    isNew: true,
+    isPinned: true,
+  },
+  {
+    id: 'bulletin-007',
+    teamId: 'team-nature',
+    title: 'Berry Season Starting - Safe Foraging Guide',
+    content: 'Blackberries and wild raspberries are starting to ripen in the southeast meadow. Remember: only harvest berries from MARKED SAFE ZONES. If unsure, bring a sample to Rosa or Maria for identification.',
+    severity: 'info',
+    author: 'user-009', // Maria Santos
+    createdAt: '2026-01-09T11:00:00Z',
+    updatedAt: '2026-01-09T11:00:00Z',
+    attachments: [
+      { type: 'image', name: 'safe_berries_guide.jpg', url: '/images/placeholder.jpg' },
+    ],
+    tags: ['foraging', 'berries', 'food'],
+    readBy: ['user-001', 'user-003', 'user-009', 'user-011', 'user-015'],
+    isNew: false,
+    isPinned: false,
+  },
+];
+
+// ============================================================
+// ACTIVITY LOGS - Track member activities
+// ============================================================
+
+export const ACTIVITY_TYPES = {
+  SUPPLY_RUN: { label: 'Supply Run', icon: 'Truck', color: 'violet' },
+  PERIMETER_CHECK: { label: 'Perimeter Check', icon: 'Shield', color: 'amber' },
+  MEDICAL_ASSIST: { label: 'Medical Assist', icon: 'Stethoscope', color: 'rose' },
+  COMMS_CHECK: { label: 'Comms Check', icon: 'Radio', color: 'cyan' },
+  MAINTENANCE: { label: 'Maintenance', icon: 'Wrench', color: 'orange' },
+  GARDEN_WORK: { label: 'Garden Work', icon: 'Utensils', color: 'emerald' },
+  TRAINING: { label: 'Training', icon: 'GraduationCap', color: 'primary' },
+  MEETING: { label: 'Meeting', icon: 'Users', color: 'blue' },
+};
+
+export const generateActivityLogs = () => ({
+  'user-001': [
+    { id: 'act-001', type: 'MEDICAL_ASSIST', description: 'Treated minor cut for Kevin', timestamp: '2026-01-12T14:30:00Z' },
+    { id: 'act-002', type: 'TRAINING', description: 'CPR refresher course', timestamp: '2026-01-10T09:00:00Z' },
+  ],
+  'user-002': [
+    { id: 'act-003', type: 'PERIMETER_CHECK', description: 'Night shift patrol', timestamp: '2026-01-13T02:00:00Z' },
+    { id: 'act-004', type: 'COMMS_CHECK', description: 'HAM radio check-in', timestamp: '2026-01-12T08:00:00Z' },
+    { id: 'act-005', type: 'MEETING', description: 'Security team briefing', timestamp: '2026-01-11T16:00:00Z' },
+  ],
+  'user-003': [
+    { id: 'act-006', type: 'SUPPLY_RUN', description: 'Cache retrieval at Grid CM87wq', timestamp: '2026-01-10T10:00:00Z' },
+  ],
+  'user-004': [
+    { id: 'act-007', type: 'MAINTENANCE', description: 'Fixed mesh node #3', timestamp: '2026-01-12T11:00:00Z' },
+    { id: 'act-008', type: 'TRAINING', description: 'Solar panel workshop', timestamp: '2026-01-09T14:00:00Z' },
+  ],
+  'user-011': [
+    { id: 'act-009', type: 'SUPPLY_RUN', description: 'Led supply run to cache', timestamp: '2026-01-10T08:00:00Z' },
+    { id: 'act-010', type: 'SUPPLY_RUN', description: 'Inventory audit', timestamp: '2026-01-08T09:00:00Z' },
+  ],
+  'user-015': [
+    { id: 'act-011', type: 'GARDEN_WORK', description: 'Harvested winter greens', timestamp: '2026-01-12T10:00:00Z' },
+    { id: 'act-012', type: 'TRAINING', description: 'Foraging identification class', timestamp: '2026-01-11T13:00:00Z' },
+  ],
+});
