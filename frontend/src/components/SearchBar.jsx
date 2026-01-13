@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Book, FileText, Users, Terminal, Command } from 'lucide-react';
+import { Search, Book, FileText, Users, Terminal, Command, Info } from 'lucide-react';
 import { Card } from './ui/card';
 import config from '../config';
 
 const SEARCH_CATEGORIES = [
-  { id: 'kiwix', label: 'Offline Knowledge (Kiwix)', icon: Book },
-  { id: 'files', label: 'Files / Assets', icon: FileText },
-  { id: 'community', label: 'Community', icon: Users },
-  { id: 'commands', label: 'Commands / Tools', icon: Terminal },
+  { id: 'kiwix', label: 'Offline Knowledge (Kiwix)', icon: Book, hint: 'Search Wikipedia, medical guides, how-to articles' },
+  { id: 'files', label: 'Files & Documents', icon: FileText, hint: 'Find shared files, maps, and documents' },
+  { id: 'community', label: 'People & Teams', icon: Users, hint: 'Find community members by name or skill' },
+  { id: 'commands', label: 'Commands & Tools', icon: Terminal, hint: 'Run system commands and quick actions' },
 ];
 
 export default function SearchBar() {
