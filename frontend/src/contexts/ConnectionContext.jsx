@@ -281,10 +281,10 @@ export function ConnectionProvider({ children }) {
     startPolling,
     stopPolling,
     config: {
-      apiBase: config.API_BASE,
-      kiwixBase: config.KIWIX_BASE,
-      useMockData: config.USE_MOCK_DATA,
-      build: config.build,
+      apiBase: config?.API_BASE || 'http://127.0.0.1:8093',
+      kiwixBase: config?.KIWIX_BASE || 'http://127.0.0.1:8090',
+      useMockData: config?.USE_MOCK_DATA ?? true,
+      build: config?.build || { version: 'dev', timestamp: new Date().toISOString(), environment: 'development' },
     },
   };
 
