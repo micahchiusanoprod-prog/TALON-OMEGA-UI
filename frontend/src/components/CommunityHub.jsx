@@ -1996,14 +1996,22 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
   
   const saveTeam = () => {
     if (!generatedTeam) return;
-    const teamName = `${selectedPreset?.name || 'Custom'} Team - ${new Date().toLocaleDateString()}`;
-    setSavedTeams(prev => [...prev, { name: teamName, ...generatedTeam, savedAt: new Date().toISOString() }]);
+    const teamName = generatedTeam.name || `${selectedPreset?.name || 'Custom'} Team - ${new Date().toLocaleDateString()}`;
+    setSavedTeams(prev => [...prev, { 
+      name: teamName, 
+      ...generatedTeam, 
+      savedAt: new Date().toISOString(),
+    }]);
     toast.success('Team saved!', { description: teamName });
   };
   
   const copyTeamList = () => {
     if (!generatedTeam) return;
-    const text = generatedTeam.members.map(m => `${m.displayName} (${m.class || 'Member'})`).join('\n');
+    const realMembers = generatedTeam.members.filter(m => !m.isPlaceholder);
+    const text = realMembers.map(m => `${m.displayName} (${m.class || 'Member'})`).join('\n');
+    if (generatedTeam.stats.placeholderCount > 0) {
+      text += `\n\n+ ${generatedTeam.stats.placeholderCount} placeholder slot(s) to be filled`;
+    }
     navigator.clipboard.writeText(text);
     toast.success('Team list copied to clipboard');
   };
@@ -2014,6 +2022,11 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
     setRequiredSkills([]);
     setOptionalSkills([]);
     setGeneratedTeam(null);
+    setCustomTeamName('');
+    setSelectedTeamIcon('Users');
+    setSelectedTeamColor('violet');
+    setIncludePlaceholders(false);
+    setPlaceholderCount(0);
   };
   
   return (
