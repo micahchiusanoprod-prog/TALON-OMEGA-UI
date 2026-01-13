@@ -695,6 +695,168 @@ code {
         background: hsl(215, 30%, 92%);
         color: hsl(222, 47%, 25%);
     }
+    
+    /* ===== COMMUNITY TILE LIGHT MODE ENHANCEMENTS ===== */
+    
+    /* Community tile container */
+    :root:not(.dark) [data-testid="community-tile"] {
+        background: linear-gradient(to bottom, hsl(195, 60%, 98%), hsl(210, 50%, 97%)) !important;
+        border: 1px solid hsl(215, 35%, 82%) !important;
+        box-shadow: 0 2px 12px rgba(0, 50, 100, 0.08) !important;
+    }
+    
+    /* Community tile header - vibrant teal gradient */
+    :root:not(.dark) [data-testid="community-tile"] > .sticky {
+        background: linear-gradient(135deg, hsl(195, 85%, 35%) 0%, hsl(200, 80%, 40%) 100%) !important;
+        backdrop-filter: none !important;
+        border-bottom: 1px solid hsl(195, 70%, 30%) !important;
+    }
+    
+    /* Community header title - WHITE text on teal background */
+    :root:not(.dark) [data-testid="community-tile"] .text-xl.font-bold {
+        color: white !important;
+    }
+    
+    /* Header buttons on teal background */
+    :root:not(.dark) [data-testid="community-tile"] .sticky button {
+        color: white !important;
+    }
+    
+    :root:not(.dark) [data-testid="community-tile"] .sticky button:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    /* Tab buttons in Community tile */
+    :root:not(.dark) [data-testid="community-tile"] [data-testid^="filter-"] {
+        color: rgba(255, 255, 255, 0.85) !important;
+    }
+    
+    :root:not(.dark) [data-testid="community-tile"] [data-testid^="filter-"]:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    /* Active tab - white text */
+    :root:not(.dark) [data-testid="community-tile"] .text-\[\#e7e9ea\] {
+        color: white !important;
+    }
+    
+    /* Tab underline - white instead of blue */
+    :root:not(.dark) [data-testid="community-tile"] .bg-\[\#1d9bf0\] {
+        background: white !important;
+    }
+    
+    /* Post content area - WHITE BACKGROUND */
+    :root:not(.dark) [data-testid="community-feed"] {
+        background: white !important;
+    }
+    
+    /* Individual posts */
+    :root:not(.dark) [data-testid^="post-"] {
+        background: white !important;
+        border-bottom: 1px solid hsl(215, 35%, 88%) !important;
+    }
+    
+    :root:not(.dark) [data-testid^="post-"]:hover {
+        background: hsl(210, 40%, 98%) !important;
+    }
+    
+    /* User names - BLACK BOLD */
+    :root:not(.dark) [data-testid^="post-"] .font-bold.text-\[15px\] {
+        color: hsl(0, 0%, 5%) !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Post content text - BLACK normal weight */
+    :root:not(.dark) [data-testid^="post-"] .text-\[15px\].leading-\[20px\] {
+        color: hsl(0, 0%, 10%) !important;
+        font-weight: 400 !important;
+    }
+    
+    /* Handles and timestamps - darker gray */
+    :root:not(.dark) [data-testid^="post-"] .text-\[\#71767b\] {
+        color: hsl(215, 15%, 45%) !important;
+    }
+    
+    /* Poll options - SOLID COLORS */
+    :root:not(.dark) [data-testid^="poll-option-"] {
+        background: white !important;
+        border: 2px solid hsl(215, 35%, 80%) !important;
+    }
+    
+    :root:not(.dark) [data-testid^="poll-option-"]:hover {
+        border-color: hsl(195, 90%, 45%) !important;
+        background: hsl(195, 80%, 97%) !important;
+    }
+    
+    /* Poll progress bar - solid teal */
+    :root:not(.dark) [data-testid^="poll-option-"] .bg-\[\#1d9bf0\]\/30 {
+        background: hsl(195, 90%, 50%) !important;
+    }
+    
+    /* Poll option winning bar - solid gray */
+    :root:not(.dark) [data-testid^="poll-option-"] .bg-\[\#71767b\]\/30,
+    :root:not(.dark) [data-testid^="poll-option-"] .bg-\[\#71767b\]\/20 {
+        background: hsl(215, 25%, 75%) !important;
+    }
+    
+    /* Poll text on progress bars */
+    :root:not(.dark) [data-testid^="poll-option-"] .text-\[\#e7e9ea\] {
+        color: hsl(0, 0%, 10%) !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Poll percentage - BLACK */
+    :root:not(.dark) [data-testid^="poll-option-"] span:last-child {
+        color: hsl(0, 0%, 15%) !important;
+    }
+    
+    /* Poll meta text (votes count) */
+    :root:not(.dark) [data-testid^="poll-"] > .text-\[13px\] {
+        color: hsl(215, 20%, 40%) !important;
+    }
+    
+    /* Action buttons (reply, retweet, like) - darker icons */
+    :root:not(.dark) [data-testid^="post-"] button .text-\[\#71767b\] {
+        color: hsl(215, 15%, 40%) !important;
+    }
+    
+    /* Action button hover backgrounds */
+    :root:not(.dark) [data-testid^="post-"] .group-hover\:bg-\[\#1d9bf0\]\/10:hover {
+        background: hsl(195, 80%, 92%) !important;
+    }
+    
+    :root:not(.dark) [data-testid^="post-"] .group-hover\:bg-\[\#00ba7c\]\/10:hover {
+        background: hsl(155, 70%, 92%) !important;
+    }
+    
+    :root:not(.dark) [data-testid^="post-"] .group-hover\:bg-\[\#f91880\]\/10:hover {
+        background: hsl(330, 80%, 94%) !important;
+    }
+    
+    /* Empty state text */
+    :root:not(.dark) [data-testid="community-feed"] .text-\[\#71767b\] {
+        color: hsl(215, 15%, 45%) !important;
+    }
+    
+    :root:not(.dark) [data-testid="community-feed"] .text-\[\#e7e9ea\] {
+        color: hsl(0, 0%, 10%) !important;
+    }
+    
+    /* Skeleton loaders in Community tile */
+    :root:not(.dark) [data-testid="community-tile"] .skeleton {
+        background: hsl(215, 30%, 90%) !important;
+    }
+    
+    /* Border colors inside Community tile */
+    :root:not(.dark) [data-testid="community-tile"] .border-\[\#2f3336\] {
+        border-color: hsl(215, 35%, 88%) !important;
+    }
+    
+    /* New post composer in light mode */
+    :root:not(.dark) [data-testid="community-tile"] .border-b.border-\[\#2f3336\].p-4 {
+        background: hsl(210, 40%, 98%) !important;
+        border-color: hsl(215, 35%, 88%) !important;
+    }
 }
 
 /* Custom scrollbar */
