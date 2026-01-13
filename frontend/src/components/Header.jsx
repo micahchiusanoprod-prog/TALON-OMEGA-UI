@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Sun, Moon, Settings, BookOpen, BarChart3, Users } from 'lucide-react';
+import { Sun, Moon, Settings, BookOpen, BarChart3, Users, HelpCircle, Shield } from 'lucide-react';
 import config from '../config';
 import { toast } from 'sonner';
 import AdminConsole from './AdminConsole';
