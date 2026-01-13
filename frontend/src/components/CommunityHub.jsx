@@ -2845,6 +2845,7 @@ export default function CommunityHub({ isOpen, onClose }) {
               scoreConfig={scoreConfig}
               onNavigate={handleNavigate}
               onFilterDirectory={handleFilterDirectory}
+              onOpenDrill={() => setShowDrill(true)}
             />
           )}
           {validActiveTab === 'analytics' && <AnalyticsTab filterDomain={analyticsFilter} />}
