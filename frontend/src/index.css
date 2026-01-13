@@ -790,18 +790,24 @@ code {
     
     /* Poll progress bar - solid teal */
     :root:not(.dark) [data-testid^="poll-option-"] .bg-\[\#1d9bf0\]\/30 {
-        background: hsl(195, 90%, 50%) !important;
+        background: hsl(195, 90%, 45%) !important;
     }
     
     /* Poll option winning bar - solid gray */
     :root:not(.dark) [data-testid^="poll-option-"] .bg-\[\#71767b\]\/30,
     :root:not(.dark) [data-testid^="poll-option-"] .bg-\[\#71767b\]\/20 {
-        background: hsl(215, 25%, 75%) !important;
+        background: hsl(215, 25%, 70%) !important;
     }
     
-    /* Poll text on progress bars */
+    /* Poll text on progress bars - WHITE text on filled bars */
+    :root:not(.dark) [data-testid^="poll-option-"] .relative span.font-bold {
+        color: white !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Poll text when not voted - BLACK */
     :root:not(.dark) [data-testid^="poll-option-"] .text-\[\#e7e9ea\] {
-        color: hsl(0, 0%, 10%) !important;
+        color: hsl(0, 0%, 15%) !important;
         font-weight: 600 !important;
     }
     
