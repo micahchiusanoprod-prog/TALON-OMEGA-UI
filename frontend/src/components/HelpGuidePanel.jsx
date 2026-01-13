@@ -48,9 +48,11 @@ export default function HelpGuidePanel({
   useEffect(() => {
     if (isExpanded && buttonRef.current && variant === 'compact') {
       const rect = buttonRef.current.getBoundingClientRect();
+      const isMobile = window.innerWidth < 640;
       setDropdownPosition({
         top: rect.bottom + 8,
-        right: window.innerWidth - rect.right,
+        right: isMobile ? 16 : Math.max(16, window.innerWidth - rect.right),
+        isMobile,
       });
     }
   }, [isExpanded, variant]);
