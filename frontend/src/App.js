@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from './components/ui/sonner';
 import Dashboard from './components/Dashboard';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { ConnectionProvider } from './contexts/ConnectionContext';
 import './App.css';
 
 export default function App() {
@@ -21,9 +23,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Dashboard theme={theme} onToggleTheme={toggleTheme} />
-      <Toaster />
-    </div>
+    <LanguageProvider>
+      <ConnectionProvider>
+        <div className="min-h-screen bg-background">
+          <Dashboard theme={theme} onToggleTheme={toggleTheme} />
+          <Toaster />
+        </div>
+      </ConnectionProvider>
+    </LanguageProvider>
   );
 }
+
