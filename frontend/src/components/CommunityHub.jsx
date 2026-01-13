@@ -390,9 +390,9 @@ const DrillMode = ({ isOpen, onClose, profiles, memberScores, onOpenTeamBuilder 
     timerRef.current = setInterval(() => {
       setElapsedTime(prev => prev + 1);
     }, 1000);
-  };
+  }, [getRandomScenario]);
   
-  const completeDrill = () => {
+  const completeDrill = useCallback(() => {
     clearInterval(timerRef.current);
     setDrillState('complete');
     
@@ -412,9 +412,9 @@ const DrillMode = ({ isOpen, onClose, profiles, memberScores, onOpenTeamBuilder 
       score: totalScore,
       date: new Date().toISOString(),
     }]);
-  };
+  }, [scenario, elapsedTime, selectedTeam]);
   
-  const toggleTeamMember = (profile) => {
+  const toggleTeamMember = useCallback((profile) => {
     setSelectedTeam(prev => {
       const exists = prev.find(m => m.userId === profile.userId);
       if (exists) return prev.filter(m => m.userId !== profile.userId);
