@@ -542,7 +542,7 @@ export default function QuickToolsBar() {
   
   return (
     <>
-      <div className="w-full" data-testid="quick-tools-bar">
+      <div className="w-full relative" data-testid="quick-tools-bar">
         {/* Single row with horizontal scroll on mobile */}
         <div className="flex justify-center gap-2 overflow-x-auto pb-2 scrollbar-thin -mx-2 px-2">
           {QUICK_TOOLS.map((tool) => {
@@ -551,7 +551,7 @@ export default function QuickToolsBar() {
               <button
                 key={tool.id}
                 onClick={() => handleToolClick(tool)}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl btn-apple whitespace-nowrap group flex-shrink-0`}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl btn-apple whitespace-nowrap group flex-shrink-0 pointer-events-auto`}
                 title={tool.description}
                 data-testid={`tool-${tool.id}`}
               >
