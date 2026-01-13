@@ -172,23 +172,34 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
 
           {/* Right: Quick Actions with improved depth */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Admin Console Button - Clear text label */}
             <button
               onClick={() => setShowAdminConsole(true)}
-              className="glass px-2 sm:px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm"
-              title="Admin Console"
+              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 hover:border-amber-500/50 transition-all shadow-sm"
+              title="Open Admin Console - Manage fleet, broadcasts, and system settings"
               data-testid="admin-console-btn"
             >
-              <Settings className="w-4 h-4" />
+              <Shield className="w-4 h-4 text-amber-400" />
+              <span className="text-xs sm:text-sm font-semibold">Admin Console</span>
             </button>
+            
+            {/* Theme Toggle */}
             <button
               onClick={onToggleTheme}
-              className="glass px-2 sm:px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm"
+              className="glass px-2.5 sm:px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm flex items-center gap-1.5"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              data-testid="theme-toggle-btn"
             >
               {theme === 'dark' ? (
-                <Sun className="w-4 h-4" />
+                <>
+                  <Sun className="w-4 h-4" />
+                  <span className="hidden sm:inline text-xs">Light</span>
+                </>
               ) : (
-                <Moon className="w-4 h-4" />
+                <>
+                  <Moon className="w-4 h-4" />
+                  <span className="hidden sm:inline text-xs">Dark</span>
+                </>
               )}
             </button>
           </div>
