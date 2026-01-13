@@ -424,7 +424,7 @@ const QuickGuideModal = ({ onClose }) => {
     {
       icon: '👥',
       title: 'Community Hub',
-      content: 'See who\'s online, their skills, equipment, and status. Great for coordinating teams and checking on family members.',
+      content: 'See who is online, their skills, equipment, and status. Great for coordinating teams and checking on family members.',
       highlight: 'Click "Community" in the header'
     },
     {
@@ -436,7 +436,7 @@ const QuickGuideModal = ({ onClose }) => {
     {
       icon: '🔍',
       title: 'Search Everything',
-      content: 'Use the search bar to quickly find files, Kiwix articles, commands, or people. Press ⌘/ for quick access.',
+      content: 'Use the search bar to quickly find files, Kiwix articles, commands, or people. Press Cmd+/ for quick access.',
       highlight: 'Type anything to search'
     },
     {
@@ -448,7 +448,7 @@ const QuickGuideModal = ({ onClose }) => {
     {
       icon: '🆘',
       title: 'Need Help?',
-      content: 'Tap "Help Center" for detailed guides on every feature. Tap "Admin Console" if you\'re an operator.',
+      content: 'Tap "Help Center" for detailed guides on every feature. Tap "Admin Console" if you are an operator.',
       highlight: 'Help is always one tap away'
     },
   ];
@@ -456,27 +456,27 @@ const QuickGuideModal = ({ onClose }) => {
   const tip = tips[currentTip];
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md glass-strong rounded-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="p-4 border-b border-border/50 flex items-center justify-between bg-gradient-to-r from-amber-500/20 to-orange-500/20">
+        <div className="p-4 border-b border-border flex items-center justify-between bg-gradient-to-r from-amber-500/20 to-orange-500/20">
           <div className="flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-amber-400" />
+            <HelpCircle className="w-5 h-5 text-amber-500" />
             <h2 className="text-lg font-bold">Quick Guide</h2>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-secondary rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
         
         {/* Progress dots */}
-        <div className="flex justify-center gap-1.5 py-3 bg-secondary/30">
+        <div className="flex justify-center gap-1.5 py-3 bg-secondary/50">
           {tips.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentTip(i)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                i === currentTip ? 'bg-primary w-6' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+              className={`h-2 rounded-full transition-all ${
+                i === currentTip ? 'bg-primary w-6' : 'bg-muted-foreground/30 w-2 hover:bg-muted-foreground/50'
               }`}
             />
           ))}
@@ -487,17 +487,17 @@ const QuickGuideModal = ({ onClose }) => {
           <div className="text-5xl mb-4">{tip.icon}</div>
           <h3 className="text-xl font-bold mb-3">{tip.title}</h3>
           <p className="text-muted-foreground mb-4 leading-relaxed">{tip.content}</p>
-          <div className="inline-block px-4 py-2 rounded-full bg-primary/20 text-primary text-sm font-medium">
+          <div className="inline-block px-4 py-2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-sm font-medium">
             💡 {tip.highlight}
           </div>
         </div>
         
         {/* Navigation */}
-        <div className="p-4 border-t border-border/50 flex items-center justify-between">
+        <div className="p-4 border-t border-border flex items-center justify-between bg-secondary/30">
           <button
             onClick={() => setCurrentTip(Math.max(0, currentTip - 1))}
             disabled={currentTip === 0}
-            className="px-4 py-2 rounded-lg btn-apple disabled:opacity-30 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             Previous
           </button>
@@ -509,14 +509,14 @@ const QuickGuideModal = ({ onClose }) => {
           {currentTip < tips.length - 1 ? (
             <button
               onClick={() => setCurrentTip(currentTip + 1)}
-              className="px-4 py-2 rounded-lg btn-apple-primary"
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Next
             </button>
           ) : (
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg btn-apple-primary"
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Get Started!
             </button>
