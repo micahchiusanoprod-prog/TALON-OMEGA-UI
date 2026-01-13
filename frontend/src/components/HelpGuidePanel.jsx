@@ -40,6 +40,7 @@ export default function HelpGuidePanel({
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('legend');
+  const dropdownRef = useRef(null);
 
   const tabs = [
     { id: 'legend', label: 'Legend', icon: List, show: legendItems.length > 0 },
