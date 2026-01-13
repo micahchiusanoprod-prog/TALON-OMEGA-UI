@@ -15,12 +15,12 @@ import QuickToolsBar from './QuickToolsBar';
 import EntertainmentTile from './EntertainmentTile';
 import api from '../services/api';
 import config from '../config';
-export default function Dashboard() {
+export default function Dashboard({ theme, onToggleTheme }) {
   const [showDiagnostics, setShowDiagnostics] = useState(false);
 
   return (
     <div className="min-h-screen">
-      <Header onDiagnosticsClick={() => setShowDiagnostics(true)} />
+      <Header theme={theme} onToggleTheme={onToggleTheme} onDiagnosticsClick={() => setShowDiagnostics(true)} />
       
       <main className="container mx-auto px-4 pb-8 pt-20 max-w-[1600px] space-y-2">
         
