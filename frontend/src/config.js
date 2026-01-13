@@ -106,6 +106,11 @@ const getConfig = () => {
 // Export singleton config
 const config = getConfig();
 
+// Ensure config is valid before exporting
+if (!config || !config.API_BASE) {
+  console.error('OMEGA Config Error: Config not properly initialized');
+}
+
 // Helper to get full endpoint URL
 export const getEndpointUrl = (endpoint) => {
   const baseUrl = config.API_BASE;
