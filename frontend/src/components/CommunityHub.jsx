@@ -2640,6 +2640,25 @@ export default function CommunityHub({ isOpen, onClose }) {
   const [currentUserPrivacy, setCurrentUserPrivacy] = useState({ showAge: true, showHeightWeight: true, showEducation: true });
   const currentUser = { ...MOCK_CURRENT_USERS[currentUserRole], privacy: currentUserPrivacy };
   
+  // Welcome modal & drill mode
+  const [showWelcome, setShowWelcome] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('community-welcome-seen') !== 'true';
+    }
+    return true;
+  });
+  const [showDrill, setShowDrill] = useState(false);
+  
+  const dismissWelcome = () => {
+    setShowWelcome(false);
+    sessionStorage.setItem('community-welcome-seen', 'true');
+  };
+  
+  const startDrillFromWelcome = () => {
+    dismissWelcome();
+    setShowDrill(true);
+  };
+  
   // Get initial values from URL params (lazy evaluation)
   const getInitialTab = () => {
     if (typeof window === 'undefined') return 'overview';
@@ -2678,11 +2697,11 @@ export default function CommunityHub({ isOpen, onClose }) {
   const tabs = useMemo(() => {
     const role = ROLES[currentUser.role];
     return [
-      { id: 'overview', name: 'Overview', icon: Home, visible: true },
-      { id: 'analytics', name: 'Analytics', icon: BarChart3, visible: role.permissions.viewAnalytics },
-      { id: 'directory', name: 'Directory', icon: Users, visible: role.permissions.viewDirectory },
-      { id: 'comms', name: 'Comms', icon: MessageSquare, visible: role.permissions.viewComms },
-      { id: 'incidents', name: 'Incident Reports', icon: FileText, visible: role.permissions.viewIncidents, adminOnly: true },
+      { id: 'overview', name: 'Overview', icon: Home, visible: true, desc: 'See who is online and check our readiness' },
+      { id: 'analytics', name: 'Analytics', icon: BarChart3, visible: role.permissions.viewAnalytics, desc: 'View skill coverage charts and reports' },
+      { id: 'directory', name: 'Directory', icon: Users, visible: role.permissions.viewDirectory, desc: 'Search and browse all family members' },
+      { id: 'comms', name: 'Comms', icon: MessageSquare, visible: role.permissions.viewComms, desc: 'Announcements and messages' },
+      { id: 'incidents', name: 'Incident Reports', icon: FileText, visible: role.permissions.viewIncidents, adminOnly: true, desc: 'Admin-only incident tracking' },
     ].filter(tab => tab.visible);
   }, [currentUser.role]);
   
