@@ -66,7 +66,11 @@ export default function HelpGuidePanel({
         </button>
 
         {isExpanded && (
-          <div className="absolute top-full left-0 mt-2 w-80 sm:w-96 glass rounded-xl border border-border shadow-xl z-50 overflow-hidden" data-testid="help-guide-panel">
+          <div 
+            className="fixed sm:absolute top-auto sm:top-full right-4 sm:right-0 sm:left-auto mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-md glass rounded-xl border border-border shadow-2xl overflow-hidden" 
+            style={{ zIndex: 9999 }}
+            data-testid="help-guide-panel"
+          >
             <HelpGuideContent
               pageTitle={pageTitle}
               quickHelp={quickHelp}
