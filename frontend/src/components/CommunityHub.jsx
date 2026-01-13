@@ -174,6 +174,523 @@ const LanguageBadge = ({ code }) => {
 };
 
 // ============================================================
+// HELP TIP COMPONENT - Friendly explainer text
+// ============================================================
+
+const HelpTip = ({ title, children, variant = 'default' }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const variants = {
+    default: 'border-primary/30 bg-primary/5',
+    warning: 'border-warning/30 bg-warning/5',
+    success: 'border-success/30 bg-success/5',
+  };
+  
+  return (
+    <div className="relative inline-block">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-5 h-5 rounded-full bg-primary/20 hover:bg-primary/30 flex items-center justify-center transition-colors"
+        aria-label="Help"
+      >
+        <HelpCircle className="w-3 h-3 text-primary" />
+      </button>
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className={`absolute z-50 left-0 top-7 w-72 p-3 rounded-lg glass border ${variants[variant]} shadow-lg`}>
+            {title && <p className="font-semibold text-sm mb-1">{title}</p>}
+            <p className="text-xs text-muted-foreground leading-relaxed">{children}</p>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// Section Header with built-in explainer
+const SectionHeader = ({ icon: Icon, title, helpText, children, iconColor = 'text-primary' }) => (
+  <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center gap-2">
+      {Icon && <Icon className={`w-5 h-5 ${iconColor}`} />}
+      <h2 className="text-lg font-bold">{title}</h2>
+      {helpText && <HelpTip>{helpText}</HelpTip>}
+    </div>
+    {children}
+  </div>
+);
+
+// Inline explainer for sections
+const SectionExplainer = ({ children, className = '' }) => (
+  <p className={`text-sm text-muted-foreground mb-4 leading-relaxed ${className}`}>
+    {children}
+  </p>
+);
+
+// ============================================================
+// WELCOME MODAL - First-time user introduction
+// ============================================================
+
+const WelcomeModal = ({ isOpen, onClose, onStartTour }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="glass rounded-2xl p-6 max-w-lg w-full border border-primary/30 shadow-2xl">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30 flex items-center justify-center">
+            <Users className="w-8 h-8 text-violet-400" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Welcome to the Community Hub!</h2>
+          <p className="text-muted-foreground">
+            This is your family&apos;s coordination center. Here&apos;s what you can do:
+          </p>
+        </div>
+        
+        <div className="space-y-3 mb-6">
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/50">
+            <Home className="w-5 h-5 text-primary mt-0.5" />
+            <div>
+              <p className="font-medium text-sm">Overview</p>
+              <p className="text-xs text-muted-foreground">See who&apos;s online and check if we have enough people with important skills</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/50">
+            <Users className="w-5 h-5 text-primary mt-0.5" />
+            <div>
+              <p className="font-medium text-sm">Directory</p>
+              <p className="text-xs text-muted-foreground">Find family members by name or skills. See who can help with what</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/50">
+            <Wand2 className="w-5 h-5 text-violet-400 mt-0.5" />
+            <div>
+              <p className="font-medium text-sm">Team Builder</p>
+              <p className="text-xs text-muted-foreground">Quickly assemble the right people for emergencies or tasks</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex gap-3">
+          <Button variant="outline" className="flex-1" onClick={onClose}>
+            Got it, thanks!
+          </Button>
+          <Button className="flex-1 gap-2" onClick={onStartTour}>
+            <Zap className="w-4 h-4" />
+            Try a Practice Drill
+          </Button>
+        </div>
+        
+        <p className="text-center text-xs text-muted-foreground mt-4">
+          Tip: Look for the <span className="inline-flex items-center"><HelpCircle className="w-3 h-3 mx-1 text-primary" /></span> icons for helpful explanations
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================
+// DRILL MODE - Emergency Simulation
+// ============================================================
+
+const DRILL_SCENARIOS = [
+  {
+    id: 'medical-emergency',
+    name: 'Medical Emergency',
+    icon: Stethoscope,
+    color: 'text-rose-400',
+    bg: 'bg-rose-500/20',
+    description: 'Someone is injured and needs immediate medical attention!',
+    urgency: 'CRITICAL',
+    requiredSkills: ['Medical.FirstAid', 'Medical.CPR'],
+    optionalSkills: ['Medical.Trauma', 'Medical.EMT'],
+    targetTime: 30, // seconds
+    targetTeamSize: 2,
+  },
+  {
+    id: 'power-outage',
+    name: 'Power Outage',
+    icon: Zap,
+    color: 'text-amber-400',
+    bg: 'bg-amber-500/20',
+    description: 'The power is out! We need to restore electricity.',
+    urgency: 'HIGH',
+    requiredSkills: ['Engineering.Electrical', 'Engineering.SolarSystems'],
+    optionalSkills: ['Engineering.Electronics'],
+    targetTime: 45,
+    targetTeamSize: 2,
+  },
+  {
+    id: 'water-contamination',
+    name: 'Water Contamination',
+    icon: Utensils,
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-500/20',
+    description: 'Our water supply may be unsafe. We need to purify it.',
+    urgency: 'HIGH',
+    requiredSkills: ['FoodWater.WaterPurification'],
+    optionalSkills: ['FoodWater.FoodPreservation', 'Medical.FirstAid'],
+    targetTime: 60,
+    targetTeamSize: 2,
+  },
+  {
+    id: 'security-breach',
+    name: 'Perimeter Alert',
+    icon: Shield,
+    color: 'text-orange-400',
+    bg: 'bg-orange-500/20',
+    description: 'Unknown activity detected at the perimeter!',
+    urgency: 'CRITICAL',
+    requiredSkills: ['Security.Perimeter', 'Comms.HAM'],
+    optionalSkills: ['Security.SelfDefense', 'Logistics.Navigation'],
+    targetTime: 20,
+    targetTeamSize: 3,
+  },
+  {
+    id: 'comms-down',
+    name: 'Communications Down',
+    icon: Radio,
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-500/20',
+    description: 'We&apos;ve lost contact with the outside. Need to restore comms.',
+    urgency: 'MEDIUM',
+    requiredSkills: ['Comms.HAM', 'Comms.Networking'],
+    optionalSkills: ['Engineering.Electronics'],
+    targetTime: 90,
+    targetTeamSize: 2,
+  },
+];
+
+const DrillMode = ({ isOpen, onClose, profiles, memberScores, onOpenTeamBuilder }) => {
+  const [drillState, setDrillState] = useState('ready'); // ready, active, complete
+  const [scenario, setScenario] = useState(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [selectedTeam, setSelectedTeam] = useState([]);
+  const [drillHistory, setDrillHistory] = useState([]);
+  const timerRef = useRef(null);
+  
+  const startDrill = (selectedScenario) => {
+    setScenario(selectedScenario || DRILL_SCENARIOS[Math.floor(Math.random() * DRILL_SCENARIOS.length)]);
+    setDrillState('active');
+    setElapsedTime(0);
+    setSelectedTeam([]);
+    
+    timerRef.current = setInterval(() => {
+      setElapsedTime(prev => prev + 1);
+    }, 1000);
+  };
+  
+  const completeDrill = () => {
+    clearInterval(timerRef.current);
+    setDrillState('complete');
+    
+    // Calculate score
+    const timeBonus = Math.max(0, scenario.targetTime - elapsedTime);
+    const teamScore = selectedTeam.length >= scenario.targetTeamSize ? 50 : 25;
+    const skillsCovered = scenario.requiredSkills.filter(skill =>
+      selectedTeam.some(m => m.skills.includes(skill))
+    ).length;
+    const skillScore = (skillsCovered / scenario.requiredSkills.length) * 100;
+    
+    const totalScore = Math.round((timeBonus * 2) + teamScore + skillScore);
+    
+    setDrillHistory(prev => [...prev, {
+      scenario: scenario.name,
+      time: elapsedTime,
+      score: totalScore,
+      date: new Date().toISOString(),
+    }]);
+  };
+  
+  const toggleTeamMember = (profile) => {
+    setSelectedTeam(prev => {
+      const exists = prev.find(m => m.userId === profile.userId);
+      if (exists) return prev.filter(m => m.userId !== profile.userId);
+      return [...prev, profile];
+    });
+  };
+  
+  const resetDrill = () => {
+    clearInterval(timerRef.current);
+    setDrillState('ready');
+    setScenario(null);
+    setElapsedTime(0);
+    setSelectedTeam([]);
+  };
+  
+  useEffect(() => {
+    return () => clearInterval(timerRef.current);
+  }, []);
+  
+  if (!isOpen) return null;
+  
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  const getGrade = (time, target) => {
+    if (time <= target * 0.5) return { grade: 'A+', color: 'text-success', message: 'Outstanding! Lightning fast response!' };
+    if (time <= target * 0.75) return { grade: 'A', color: 'text-success', message: 'Excellent! Well under target time.' };
+    if (time <= target) return { grade: 'B', color: 'text-primary', message: 'Good job! You met the target.' };
+    if (time <= target * 1.5) return { grade: 'C', color: 'text-warning', message: 'Okay, but could be faster.' };
+    return { grade: 'D', color: 'text-destructive', message: 'Needs practice. Try again!' };
+  };
+  
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
+        <SheetHeader>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-orange-500/20 to-red-500/20">
+              <Flame className="w-5 h-5 text-orange-400" />
+            </div>
+            <div>
+              <SheetTitle className="flex items-center gap-2">
+                Drill Mode
+                <span className="text-xs px-2 py-0.5 rounded bg-orange-500/20 text-orange-400">PRACTICE</span>
+              </SheetTitle>
+              <SheetDescription>Practice assembling teams for emergency scenarios</SheetDescription>
+            </div>
+          </div>
+        </SheetHeader>
+        
+        {/* Ready State - Choose Scenario */}
+        {drillState === 'ready' && (
+          <div className="mt-6 space-y-6">
+            <SectionExplainer>
+              Drill Mode helps you practice responding to emergencies. 
+              Select a scenario and try to assemble the right team as quickly as possible!
+            </SectionExplainer>
+            
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm">Choose a Scenario:</h3>
+              {DRILL_SCENARIOS.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => startDrill(s)}
+                  className="w-full p-4 rounded-xl glass hover:bg-white/5 transition-colors text-left group"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-lg ${s.bg}`}>
+                      <s.icon className={`w-5 h-5 ${s.color}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium">{s.name}</h4>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                          s.urgency === 'CRITICAL' ? 'bg-destructive/20 text-destructive' :
+                          s.urgency === 'HIGH' ? 'bg-orange-500/20 text-orange-400' :
+                          'bg-warning/20 text-warning'
+                        }`}>{s.urgency}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">{s.description}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Target: {s.targetTime}s • Team size: {s.targetTeamSize}+
+                      </p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            <Button variant="outline" className="w-full gap-2" onClick={() => startDrill(null)}>
+              <Sparkles className="w-4 h-4" />
+              Random Scenario
+            </Button>
+            
+            {drillHistory.length > 0 && (
+              <div className="pt-4 border-t border-border">
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">Recent Drills</h4>
+                <div className="space-y-2">
+                  {drillHistory.slice(-3).reverse().map((drill, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded bg-secondary/50 text-sm">
+                      <span>{drill.scenario}</span>
+                      <span className="text-muted-foreground">{formatTime(drill.time)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Active State - Build Team */}
+        {drillState === 'active' && scenario && (
+          <div className="mt-6 space-y-4">
+            {/* Scenario Alert */}
+            <div className={`p-4 rounded-xl ${scenario.bg} border ${scenario.bg.replace('/20', '/30')}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <scenario.icon className={`w-5 h-5 ${scenario.color}`} />
+                <span className={`font-bold ${scenario.color}`}>{scenario.urgency}!</span>
+              </div>
+              <h3 className="font-bold text-lg">{scenario.name}</h3>
+              <p className="text-sm text-muted-foreground mt-1">{scenario.description}</p>
+            </div>
+            
+            {/* Timer */}
+            <div className="text-center py-4">
+              <p className="text-5xl font-mono font-bold">{formatTime(elapsedTime)}</p>
+              <p className="text-sm text-muted-foreground">Target: {scenario.targetTime}s</p>
+            </div>
+            
+            {/* Required Skills */}
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs font-medium text-muted-foreground mb-2">We need people with:</p>
+              <div className="flex flex-wrap gap-1">
+                {scenario.requiredSkills.map(skill => {
+                  const covered = selectedTeam.some(m => m.skills.includes(skill));
+                  return (
+                    <span key={skill} className={`px-2 py-1 rounded text-xs ${
+                      covered ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'
+                    }`}>
+                      {covered && <CheckCircle className="w-3 h-3 inline mr-1" />}
+                      {getSkillLabel(skill)}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            
+            {/* Team Selection */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium">Select team members ({selectedTeam.length}/{scenario.targetTeamSize}+):</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                {profiles.filter(p => p.stats.online).map(profile => {
+                  const isSelected = selectedTeam.find(m => m.userId === profile.userId);
+                  const hasRequiredSkill = scenario.requiredSkills.some(s => profile.skills.includes(s));
+                  return (
+                    <button
+                      key={profile.userId}
+                      onClick={() => toggleTeamMember(profile)}
+                      className={`p-2 rounded-lg text-left transition-colors ${
+                        isSelected ? 'bg-primary/20 border border-primary' : 
+                        hasRequiredSkill ? 'bg-success/10 border border-success/30 hover:bg-success/20' :
+                        'glass hover:bg-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center text-xs font-bold">
+                          {profile.displayName.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium truncate">{profile.displayName}</p>
+                          {hasRequiredSkill && (
+                            <p className="text-[10px] text-success">Has needed skills!</p>
+                          )}
+                        </div>
+                        {isSelected && <CheckCircle className="w-4 h-4 text-primary" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={resetDrill}>Cancel</Button>
+              <Button 
+                className="flex-1 gap-2" 
+                onClick={completeDrill}
+                disabled={selectedTeam.length === 0}
+              >
+                <CheckCircle className="w-4 h-4" />
+                Team Assembled!
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Complete State - Results */}
+        {drillState === 'complete' && scenario && (
+          <div className="mt-6 space-y-6">
+            {(() => {
+              const result = getGrade(elapsedTime, scenario.targetTime);
+              const skillsCovered = scenario.requiredSkills.filter(skill =>
+                selectedTeam.some(m => m.skills.includes(skill))
+              ).length;
+              const allSkillsCovered = skillsCovered === scenario.requiredSkills.length;
+              
+              return (
+                <>
+                  <div className="text-center py-6">
+                    <div className={`text-6xl font-bold ${result.color}`}>{result.grade}</div>
+                    <p className="text-lg mt-2">{result.message}</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-4 rounded-xl glass text-center">
+                      <p className="text-3xl font-bold font-mono">{formatTime(elapsedTime)}</p>
+                      <p className="text-xs text-muted-foreground">Your Time</p>
+                      <p className="text-xs text-muted-foreground">(Target: {scenario.targetTime}s)</p>
+                    </div>
+                    <div className="p-4 rounded-xl glass text-center">
+                      <p className="text-3xl font-bold">{selectedTeam.length}</p>
+                      <p className="text-xs text-muted-foreground">Team Members</p>
+                      <p className="text-xs text-muted-foreground">(Need: {scenario.targetTeamSize}+)</p>
+                    </div>
+                  </div>
+                  
+                  <div className={`p-4 rounded-xl ${allSkillsCovered ? 'bg-success/10 border border-success/30' : 'bg-warning/10 border border-warning/30'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {allSkillsCovered ? (
+                        <CheckCircle className="w-5 h-5 text-success" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5 text-warning" />
+                      )}
+                      <span className="font-medium">
+                        {allSkillsCovered ? 'All required skills covered!' : 'Some skills missing'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {skillsCovered} of {scenario.requiredSkills.length} required skills covered
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 rounded-xl bg-secondary/50">
+                    <h4 className="font-medium mb-2">Your Team:</h4>
+                    <div className="space-y-2">
+                      {selectedTeam.map(member => (
+                        <div key={member.userId} className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center text-[10px] font-bold">
+                            {member.displayName.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <span className="text-sm">{member.displayName}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="flex-1" onClick={resetDrill}>
+                      Try Another
+                    </Button>
+                    <Button className="flex-1 gap-2" onClick={() => { resetDrill(); startDrill(scenario); }}>
+                      <RotateCcw className="w-4 h-4" />
+                      Retry Same
+                    </Button>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+// ============================================================
 // COLLAPSIBLE PRIVACY BANNER
 // ============================================================
 
