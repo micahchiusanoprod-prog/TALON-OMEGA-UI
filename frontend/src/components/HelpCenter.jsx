@@ -166,6 +166,14 @@ const CATEGORIES = [
     color: 'text-slate-400',
     bgColor: 'bg-slate-500/20'
   },
+  { 
+    id: 'faq', 
+    title: 'Frequently Asked Questions', 
+    icon: HelpCircle, 
+    description: 'Quick answers to common questions',
+    color: 'text-indigo-400',
+    bgColor: 'bg-indigo-500/20'
+  },
 ];
 
 // Quick Fix entries for the "Need help fast?" panel
