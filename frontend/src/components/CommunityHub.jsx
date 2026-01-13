@@ -2315,11 +2315,37 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
               </div>
             ) : generatedTeam && (
               <>
+                {/* Team Header with Custom Name & Icon */}
+                <div className={`p-4 rounded-xl ${generatedTeam.color?.bg} border ${generatedTeam.color?.border}`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-xl ${generatedTeam.color?.bg}`}>
+                      {generatedTeam.icon && <generatedTeam.icon.icon className={`w-6 h-6 ${generatedTeam.color?.text}`} />}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg">{generatedTeam.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                          generatedTeam.stats.coverageGrade === 'COMPLETE' ? 'bg-success/20 text-success' :
+                          generatedTeam.stats.coverageGrade === 'GOOD' ? 'bg-primary/20 text-primary' :
+                          generatedTeam.stats.coverageGrade === 'PARTIAL' ? 'bg-warning/20 text-warning' :
+                          'bg-destructive/20 text-destructive'
+                        }`}>
+                          {generatedTeam.stats.coverageGrade}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {generatedTeam.stats.totalWithPlaceholders} members
+                          {generatedTeam.stats.placeholderCount > 0 && ` (${generatedTeam.stats.placeholderCount} TBD)`}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 {/* Team Stats */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 rounded-lg glass text-center">
                     <p className="text-2xl font-bold text-primary">{generatedTeam.stats.totalMembers}</p>
-                    <p className="text-xs text-muted-foreground">Team Size</p>
+                    <p className="text-xs text-muted-foreground">Active Members</p>
                   </div>
                   <div className="p-3 rounded-lg glass text-center">
                     <p className="text-2xl font-bold text-success">{generatedTeam.stats.onlineMembers}</p>
@@ -2336,6 +2362,24 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
                     <p className="text-xs text-muted-foreground">Unique Skills</p>
                   </div>
                 </div>
+                
+                {/* Coverage Completeness Indicator */}
+                {generatedTeam.stats.rolesCoverage && generatedTeam.stats.rolesCoverage.length > 0 && (
+                  <div className="p-3 rounded-lg bg-secondary/30">
+                    <h4 className="text-xs font-medium text-muted-foreground mb-2">Role Coverage</h4>
+                    <div className="space-y-1">
+                      {generatedTeam.stats.rolesCoverage.map(role => (
+                        <div key={role.skill} className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${role.isCovered ? 'bg-success' : 'bg-destructive'}`} />
+                          <span className="text-xs flex-1">{role.label}</span>
+                          <span className={`text-xs font-medium ${role.isCovered ? 'text-success' : 'text-destructive'}`}>
+                            {role.membersCovering > 0 ? `${role.membersCovering}x` : 'MISSING'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 {/* Missing Skills Warning */}
                 {generatedTeam.stats.missingRequired.length > 0 && (
@@ -2360,25 +2404,45 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">Team Members</h4>
                   {generatedTeam.members.map((member, idx) => (
-                    <div key={member.userId} className="p-3 rounded-lg glass flex items-center gap-3">
+                    <div 
+                      key={member.userId} 
+                      className={`p-3 rounded-lg flex items-center gap-3 ${
+                        member.isPlaceholder 
+                          ? 'bg-amber-500/10 border border-dashed border-amber-500/30' 
+                          : 'glass'
+                      }`}
+                    >
                       <div className="relative">
-                        {idx === 0 && (
+                        {idx === 0 && !member.isPlaceholder && (
                           <Crown className="w-4 h-4 text-amber-400 absolute -top-2 -right-1" />
                         )}
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center text-sm font-bold">
-                          {member.displayName.split(' ').map(n => n[0]).join('')}
-                        </div>
-                        <StatusDot online={member.stats.online} />
+                        {member.isPlaceholder ? (
+                          <div className="w-10 h-10 rounded-full bg-amber-500/20 border-2 border-dashed border-amber-500/50 flex items-center justify-center">
+                            <Plus className="w-4 h-4 text-amber-400" />
+                          </div>
+                        ) : (
+                          <>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${generatedTeam.color?.bg}`}>
+                              {member.displayName.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <StatusDot online={member.stats.online} />
+                          </>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{member.displayName}</p>
-                        <p className="text-xs text-muted-foreground">{member.class || 'Member'}</p>
+                        <p className={`font-medium text-sm truncate ${member.isPlaceholder ? 'text-amber-400' : ''}`}>
+                          {member.displayName}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {member.isPlaceholder ? 'To Be Assigned' : member.class || 'Member'}
+                        </p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">Match</p>
-                        <p className={`text-sm font-bold ${
-                          member.requiredCoverage >= 0.5 ? 'text-success' : 'text-warning'
-                        }`}>{Math.round(member.requiredCoverage * 100)}%</p>
+                      {!member.isPlaceholder && (
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">Match</p>
+                          <p className={`text-sm font-bold ${
+                            member.requiredCoverage >= 0.5 ? 'text-success' : 'text-warning'
+                          }`}>{Math.round(member.requiredCoverage * 100)}%</p>
                       </div>
                     </div>
                   ))}
