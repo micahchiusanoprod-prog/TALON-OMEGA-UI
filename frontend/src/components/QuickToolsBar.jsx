@@ -461,7 +461,7 @@ const QuickGuideModal = ({ onClose }) => {
         {/* Header */}
         <div className="p-4 border-b border-border/50 flex items-center justify-between bg-gradient-to-r from-amber-500/20 to-orange-500/20">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400" />
+            <HelpCircle className="w-5 h-5 text-amber-400" />
             <h2 className="text-lg font-bold">Quick Guide</h2>
           </div>
           <button onClick={onClose} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
