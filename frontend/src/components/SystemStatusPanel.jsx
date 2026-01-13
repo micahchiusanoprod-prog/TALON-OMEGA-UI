@@ -126,6 +126,7 @@ Captured: ${debugInfo.timestamp}`;
   if (!isOpen) return null;
 
   return (
+    <>
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
       <div 
         className="w-full max-w-lg glass rounded-2xl border border-border shadow-2xl overflow-hidden"
@@ -147,6 +148,16 @@ Captured: ${debugInfo.timestamp}`;
               <X className="w-4 h-4" />
             </Button>
           </div>
+          
+          {/* Audit Report Link */}
+          <button
+            onClick={() => setShowAuditPanel(true)}
+            className="mt-3 flex items-center gap-1.5 text-xs text-amber-500 hover:underline"
+            data-testid="audit-link-btn"
+          >
+            <ClipboardCheck className="w-3.5 h-3.5" />
+            View Audit Report
+          </button>
         </div>
 
         {/* Content */}
