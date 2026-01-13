@@ -1889,6 +1889,7 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
           matchedRequired,
           matchedOptional,
           requiredCoverage: requiredSkills.length > 0 ? matchedRequired / requiredSkills.length : 1,
+          isPlaceholder: false,
         };
       });
       
@@ -1901,8 +1902,9 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
       const coveredOptional = new Set();
       
       // First pass: prioritize covering required skills
+      const actualTeamSize = Math.min(teamSize, maxTeamSize);
       for (const profile of scoredProfiles) {
-        if (team.length >= teamSize) break;
+        if (team.length >= actualTeamSize) break;
         
         const coversNewRequired = requiredSkills.some(s => 
           profile.skills.includes(s) && !coveredRequired.has(s)
@@ -1919,7 +1921,7 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
       
       // Fill remaining slots with best remaining candidates
       for (const profile of scoredProfiles) {
-        if (team.length >= teamSize) break;
+        if (team.length >= actualTeamSize) break;
         if (!team.find(t => t.userId === profile.userId)) {
           team.push(profile);
           profile.skills.forEach(s => {
@@ -1929,9 +1931,35 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
         }
       }
       
+      // Add placeholder members if enabled
+      const placeholders = [];
+      if (includePlaceholders && placeholderCount > 0) {
+        for (let i = 0; i < placeholderCount; i++) {
+          placeholders.push({
+            userId: `placeholder-${i}`,
+            displayName: `TBD Slot ${i + 1}`,
+            class: 'Placeholder',
+            skills: [],
+            stats: { online: false },
+            isPlaceholder: true,
+            teamScore: 0,
+            requiredCoverage: 0,
+          });
+        }
+      }
+      
+      // Calculate coverage completeness per required role/skill
+      const rolesCoverage = requiredSkills.map(skill => ({
+        skill,
+        label: getSkillLabel(skill),
+        isCovered: coveredRequired.has(skill),
+        membersCovering: team.filter(m => m.skills?.includes(skill)).length,
+      }));
+      
       // Calculate team stats
       const teamStats = {
         totalMembers: team.length,
+        totalWithPlaceholders: team.length + placeholders.length,
         onlineMembers: team.filter(m => m.stats.online).length,
         requiredCoverage: requiredSkills.length > 0 
           ? Math.round((coveredRequired.size / requiredSkills.length) * 100) 
@@ -1941,14 +1969,30 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
           : 100,
         missingRequired: requiredSkills.filter(s => !coveredRequired.has(s)),
         coveredOptional: [...coveredOptional],
-        uniqueSkills: [...new Set(team.flatMap(m => m.skills))].length,
+        uniqueSkills: [...new Set(team.flatMap(m => m.skills || []))].length,
+        rolesCoverage,
+        placeholderCount: placeholders.length,
+        // Coverage completeness indicator
+        coverageGrade: coveredRequired.size === requiredSkills.length ? 'COMPLETE' 
+          : coveredRequired.size >= requiredSkills.length * 0.75 ? 'GOOD'
+          : coveredRequired.size >= requiredSkills.length * 0.5 ? 'PARTIAL'
+          : 'INSUFFICIENT',
       };
       
-      setGeneratedTeam({ members: team, stats: teamStats });
+      const teamColor = TEAM_COLOR_OPTIONS.find(c => c.id === selectedTeamColor) || TEAM_COLOR_OPTIONS[0];
+      const teamIcon = TEAM_ICON_OPTIONS.find(i => i.id === selectedTeamIcon) || TEAM_ICON_OPTIONS[0];
+      
+      setGeneratedTeam({ 
+        members: [...team, ...placeholders], 
+        stats: teamStats,
+        name: customTeamName || `${selectedPreset?.name || 'Custom'} Team`,
+        icon: teamIcon,
+        color: teamColor,
+      });
       setIsGenerating(false);
       setStep(3);
     }, 800);
-  }, [profiles, memberScores, requiredSkills, optionalSkills, preferOnline, teamSize]);
+  }, [profiles, memberScores, requiredSkills, optionalSkills, preferOnline, teamSize, maxTeamSize, includePlaceholders, placeholderCount, customTeamName, selectedTeamIcon, selectedTeamColor, selectedPreset]);
   
   const saveTeam = () => {
     if (!generatedTeam) return;
