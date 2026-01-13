@@ -420,15 +420,15 @@ const DrillMode = ({ isOpen, onClose, profiles, memberScores, onOpenTeamBuilder 
       if (exists) return prev.filter(m => m.userId !== profile.userId);
       return [...prev, profile];
     });
-  };
+  }, []);
   
-  const resetDrill = () => {
+  const resetDrill = useCallback(() => {
     clearInterval(timerRef.current);
     setDrillState('ready');
     setScenario(null);
     setElapsedTime(0);
     setSelectedTeam([]);
-  };
+  }, []);
   
   useEffect(() => {
     return () => clearInterval(timerRef.current);
