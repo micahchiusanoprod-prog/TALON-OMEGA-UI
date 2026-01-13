@@ -881,6 +881,7 @@ const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScore
           <h3 className="font-semibold flex items-center gap-2">
             <Layers className="w-4 h-4 text-violet-400" />
             Skill Coverage Overview
+            <DataSourceBadge panelId="skill-coverage" />
           </h3>
           <HelpTip>
             The colored bars show how well-covered each area is. 
