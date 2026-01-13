@@ -799,34 +799,45 @@ code {
         background: hsl(215, 25%, 70%) !important;
     }
     
-    /* Poll text on progress bars - WHITE text on filled bars */
+    /* All poll option text - ensure visibility */
+    :root:not(.dark) [data-testid^="poll-option-"] .relative {
+        color: hsl(0, 0%, 10%) !important;
+    }
+    
+    /* Poll text on voted/selected option - WHITE with shadow */
     :root:not(.dark) [data-testid^="poll-option-"] .relative span.font-bold {
         color: white !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
     }
     
     /* Poll text when not voted - BLACK */
     :root:not(.dark) [data-testid^="poll-option-"] .text-\[\#e7e9ea\] {
-        color: hsl(0, 0%, 15%) !important;
+        color: hsl(0, 0%, 10%) !important;
         font-weight: 600 !important;
     }
     
     /* CHECKMARK ICON on voted poll option - WHITE */
     :root:not(.dark) [data-testid^="poll-option-"] .text-\[\#1d9bf0\] {
         color: white !important;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)) !important;
     }
     
-    /* Poll percentage on voted option - WHITE and visible */
+    /* Poll percentage - ensure BLACK and bold */
     :root:not(.dark) [data-testid^="poll-option-"] .relative > span:last-child {
-        color: hsl(0, 0%, 15%) !important;
+        color: hsl(0, 0%, 10%) !important;
         font-weight: 700 !important;
     }
     
-    /* Poll percentage on winning/voted option with background - make WHITE */
-    :root:not(.dark) [data-testid^="poll-option-"] .font-bold.text-\[\#e7e9ea\]:last-child,
-    :root:not(.dark) [data-testid^="poll-option-"] span.font-bold:last-child {
+    /* Poll percentage on the SELECTED option (with teal background) - WHITE */
+    :root:not(.dark) [data-testid^="poll-option-"] .relative span.font-bold.text-\[\#e7e9ea\]:last-child {
         color: white !important;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    /* Ensure all spans inside voted option have white text */
+    :root:not(.dark) [data-testid^="poll-option-"]:has(.text-\[\#1d9bf0\]) .relative span {
+        color: white !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
     }
     
     /* Poll percentage - BLACK */
