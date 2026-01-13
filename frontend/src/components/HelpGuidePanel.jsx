@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   HelpCircle, ChevronDown, ChevronUp, BookOpen, AlertTriangle, 
   Info, List, ExternalLink, CheckCircle, XCircle, Lightbulb
