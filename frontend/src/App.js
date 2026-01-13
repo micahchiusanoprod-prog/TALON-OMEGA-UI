@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from './components/ui/sonner';
 import Dashboard from './components/Dashboard';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -23,14 +24,18 @@ export default function App() {
   };
 
   return (
-    <LanguageProvider>
-      <ConnectionProvider>
-        <div className="min-h-screen bg-background">
-          <Dashboard theme={theme} onToggleTheme={toggleTheme} />
-          <Toaster />
-        </div>
-      </ConnectionProvider>
-    </LanguageProvider>
+    <HashRouter>
+      <LanguageProvider>
+        <ConnectionProvider>
+          <div className="min-h-screen bg-background">
+            <Routes>
+              <Route path="/*" element={<Dashboard theme={theme} onToggleTheme={toggleTheme} />} />
+            </Routes>
+            <Toaster />
+          </div>
+        </ConnectionProvider>
+      </LanguageProvider>
+    </HashRouter>
   );
 }
 
