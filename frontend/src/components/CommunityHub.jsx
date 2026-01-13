@@ -1064,6 +1064,527 @@ const DirectoryTab = ({ profiles, memberScores, scoreConfig, initialFilters, onO
   );
 };
 
+// ============================================================
+// TEAM BUILDER - AI-Powered Team Composition Tool
+// ============================================================
+
+const TEAM_PRESETS = [
+  {
+    id: 'emergency-response',
+    name: 'Emergency Response',
+    icon: AlertTriangle,
+    color: 'text-destructive',
+    bg: 'bg-destructive/20',
+    description: 'Quick deployment for urgent situations',
+    requiredSkills: ['Medical.FirstAid', 'Medical.Trauma', 'Security.Perimeter', 'Comms.HAM'],
+    optionalSkills: ['Medical.EMT', 'Logistics.Navigation'],
+    minSize: 3,
+    maxSize: 6,
+  },
+  {
+    id: 'supply-run',
+    name: 'Supply Run',
+    icon: Compass,
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/20',
+    description: 'Procurement and logistics mission',
+    requiredSkills: ['Logistics.Navigation', 'Security.SelfDefense', 'Logistics.Transport'],
+    optionalSkills: ['Logistics.Inventory', 'FoodWater.Foraging'],
+    minSize: 2,
+    maxSize: 4,
+  },
+  {
+    id: 'infrastructure',
+    name: 'Infrastructure Repair',
+    icon: Wrench,
+    color: 'text-orange-400',
+    bg: 'bg-orange-500/20',
+    description: 'Building and maintenance tasks',
+    requiredSkills: ['Engineering.Electrical', 'Engineering.Plumbing'],
+    optionalSkills: ['Engineering.Carpentry', 'Engineering.Welding', 'Engineering.SolarSystems'],
+    minSize: 2,
+    maxSize: 5,
+  },
+  {
+    id: 'medical-team',
+    name: 'Medical Team',
+    icon: Stethoscope,
+    color: 'text-rose-400',
+    bg: 'bg-rose-500/20',
+    description: 'Healthcare and wellness support',
+    requiredSkills: ['Medical.FirstAid', 'Medical.CPR'],
+    optionalSkills: ['Medical.Trauma', 'Medical.Nursing', 'Medical.EMT'],
+    minSize: 2,
+    maxSize: 4,
+  },
+  {
+    id: 'comms-setup',
+    name: 'Communications Setup',
+    icon: Radio,
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-500/20',
+    description: 'Establish or maintain comms network',
+    requiredSkills: ['Comms.HAM', 'Comms.Networking'],
+    optionalSkills: ['Engineering.Electronics', 'Comms.SignalProcessing'],
+    minSize: 2,
+    maxSize: 3,
+  },
+  {
+    id: 'custom',
+    name: 'Custom Team',
+    icon: Settings2,
+    color: 'text-violet-400',
+    bg: 'bg-violet-500/20',
+    description: 'Build your own team requirements',
+    requiredSkills: [],
+    optionalSkills: [],
+    minSize: 1,
+    maxSize: 10,
+  },
+];
+
+const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
+  const [step, setStep] = useState(1); // 1: Select preset, 2: Customize, 3: Results
+  const [selectedPreset, setSelectedPreset] = useState(null);
+  const [requiredSkills, setRequiredSkills] = useState([]);
+  const [optionalSkills, setOptionalSkills] = useState([]);
+  const [preferOnline, setPreferOnline] = useState(true);
+  const [teamSize, setTeamSize] = useState(4);
+  const [generatedTeam, setGeneratedTeam] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [savedTeams, setSavedTeams] = useState([]);
+  
+  const allSkills = useMemo(() => Object.keys(CANONICAL_SKILLS), []);
+  
+  const handlePresetSelect = (preset) => {
+    setSelectedPreset(preset);
+    setRequiredSkills(preset.requiredSkills || []);
+    setOptionalSkills(preset.optionalSkills || []);
+    setTeamSize(Math.min(preset.maxSize, Math.max(preset.minSize, 4)));
+    setStep(2);
+  };
+  
+  const generateTeam = useCallback(() => {
+    setIsGenerating(true);
+    
+    // Simulate AI processing delay
+    setTimeout(() => {
+      // Score each profile based on requirements
+      const scoredProfiles = profiles.map(profile => {
+        let score = 0;
+        let matchedRequired = 0;
+        let matchedOptional = 0;
+        
+        // Required skills (high weight)
+        requiredSkills.forEach(skill => {
+          if (profile.skills.includes(skill)) {
+            score += 100;
+            matchedRequired++;
+          }
+        });
+        
+        // Optional skills (medium weight)
+        optionalSkills.forEach(skill => {
+          if (profile.skills.includes(skill)) {
+            score += 30;
+            matchedOptional++;
+          }
+        });
+        
+        // Bonus for being online
+        if (preferOnline && profile.stats.online) {
+          score += 50;
+        }
+        
+        // Bonus for additional relevant skills
+        const allRequiredDomains = [...new Set([...requiredSkills, ...optionalSkills].map(getSkillDomain))];
+        profile.skills.forEach(skill => {
+          if (allRequiredDomains.includes(getSkillDomain(skill))) {
+            score += 5;
+          }
+        });
+        
+        // Penalty for low community score (if admin)
+        const memberScore = memberScores[profile.userId];
+        if (memberScore?.flag === 'intervention') score -= 30;
+        if (memberScore?.flag === 'restricted') score -= 15;
+        
+        return {
+          ...profile,
+          teamScore: score,
+          matchedRequired,
+          matchedOptional,
+          requiredCoverage: requiredSkills.length > 0 ? matchedRequired / requiredSkills.length : 1,
+        };
+      });
+      
+      // Sort by score
+      scoredProfiles.sort((a, b) => b.teamScore - a.teamScore);
+      
+      // Build team ensuring skill coverage
+      const team = [];
+      const coveredRequired = new Set();
+      const coveredOptional = new Set();
+      
+      // First pass: prioritize covering required skills
+      for (const profile of scoredProfiles) {
+        if (team.length >= teamSize) break;
+        
+        const coversNewRequired = requiredSkills.some(s => 
+          profile.skills.includes(s) && !coveredRequired.has(s)
+        );
+        
+        if (coversNewRequired || coveredRequired.size >= requiredSkills.length) {
+          team.push(profile);
+          profile.skills.forEach(s => {
+            if (requiredSkills.includes(s)) coveredRequired.add(s);
+            if (optionalSkills.includes(s)) coveredOptional.add(s);
+          });
+        }
+      }
+      
+      // Fill remaining slots with best remaining candidates
+      for (const profile of scoredProfiles) {
+        if (team.length >= teamSize) break;
+        if (!team.find(t => t.userId === profile.userId)) {
+          team.push(profile);
+          profile.skills.forEach(s => {
+            if (requiredSkills.includes(s)) coveredRequired.add(s);
+            if (optionalSkills.includes(s)) coveredOptional.add(s);
+          });
+        }
+      }
+      
+      // Calculate team stats
+      const teamStats = {
+        totalMembers: team.length,
+        onlineMembers: team.filter(m => m.stats.online).length,
+        requiredCoverage: requiredSkills.length > 0 
+          ? Math.round((coveredRequired.size / requiredSkills.length) * 100) 
+          : 100,
+        optionalCoverage: optionalSkills.length > 0
+          ? Math.round((coveredOptional.size / optionalSkills.length) * 100)
+          : 100,
+        missingRequired: requiredSkills.filter(s => !coveredRequired.has(s)),
+        coveredOptional: [...coveredOptional],
+        uniqueSkills: [...new Set(team.flatMap(m => m.skills))].length,
+      };
+      
+      setGeneratedTeam({ members: team, stats: teamStats });
+      setIsGenerating(false);
+      setStep(3);
+    }, 800);
+  }, [profiles, memberScores, requiredSkills, optionalSkills, preferOnline, teamSize]);
+  
+  const saveTeam = () => {
+    if (!generatedTeam) return;
+    const teamName = `${selectedPreset?.name || 'Custom'} Team - ${new Date().toLocaleDateString()}`;
+    setSavedTeams(prev => [...prev, { name: teamName, ...generatedTeam, savedAt: new Date().toISOString() }]);
+    toast.success('Team saved!', { description: teamName });
+  };
+  
+  const copyTeamList = () => {
+    if (!generatedTeam) return;
+    const text = generatedTeam.members.map(m => `${m.displayName} (${m.class || 'Member'})`).join('\n');
+    navigator.clipboard.writeText(text);
+    toast.success('Team list copied to clipboard');
+  };
+  
+  const reset = () => {
+    setStep(1);
+    setSelectedPreset(null);
+    setRequiredSkills([]);
+    setOptionalSkills([]);
+    setGeneratedTeam(null);
+  };
+  
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
+        <SheetHeader>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20">
+              <Wand2 className="w-5 h-5 text-violet-400" />
+            </div>
+            <div>
+              <SheetTitle className="flex items-center gap-2">
+                Team Builder
+                <Sparkles className="w-4 h-4 text-fuchsia-400" />
+              </SheetTitle>
+              <SheetDescription>Build optimal teams based on skill requirements</SheetDescription>
+            </div>
+          </div>
+        </SheetHeader>
+        
+        {/* Progress Steps */}
+        <div className="flex items-center justify-center gap-2 my-6">
+          {[1, 2, 3].map(s => (
+            <div key={s} className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+                step >= s ? 'bg-primary text-white' : 'bg-secondary text-muted-foreground'
+              }`}>
+                {s}
+              </div>
+              {s < 3 && <div className={`w-8 h-0.5 ${step > s ? 'bg-primary' : 'bg-secondary'}`} />}
+            </div>
+          ))}
+        </div>
+        
+        {/* Step 1: Select Preset */}
+        {step === 1 && (
+          <div className="space-y-4">
+            <h3 className="font-semibold">Select Team Type</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {TEAM_PRESETS.map(preset => (
+                <button
+                  key={preset.id}
+                  onClick={() => handlePresetSelect(preset)}
+                  className="p-4 rounded-xl glass hover:bg-white/5 transition-colors text-left group"
+                >
+                  <div className={`w-10 h-10 rounded-lg ${preset.bg} flex items-center justify-center mb-2`}>
+                    <preset.icon className={`w-5 h-5 ${preset.color}`} />
+                  </div>
+                  <h4 className="font-medium text-sm">{preset.name}</h4>
+                  <p className="text-xs text-muted-foreground mt-1">{preset.description}</p>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity absolute top-4 right-4" />
+                </button>
+              ))}
+            </div>
+            
+            {savedTeams.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-sm font-medium text-muted-foreground mb-2">Saved Teams</h4>
+                <div className="space-y-2">
+                  {savedTeams.slice(-3).map((team, i) => (
+                    <div key={i} className="p-3 rounded-lg bg-secondary/50 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">{team.name}</p>
+                        <p className="text-xs text-muted-foreground">{team.stats.totalMembers} members</p>
+                      </div>
+                      <Bookmark className="w-4 h-4 text-primary" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Step 2: Customize */}
+        {step === 2 && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <Button variant="ghost" size="sm" onClick={() => setStep(1)} className="gap-1">
+                <ChevronLeft className="w-4 h-4" />Back
+              </Button>
+              <h3 className="font-semibold">{selectedPreset?.name || 'Custom Team'}</h3>
+              <div />
+            </div>
+            
+            {/* Team Size */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Team Size: {teamSize}</label>
+              <input
+                type="range"
+                min={selectedPreset?.minSize || 1}
+                max={selectedPreset?.maxSize || 10}
+                value={teamSize}
+                onChange={(e) => setTeamSize(parseInt(e.target.value))}
+                className="w-full accent-primary"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{selectedPreset?.minSize || 1}</span>
+                <span>{selectedPreset?.maxSize || 10}</span>
+              </div>
+            </div>
+            
+            {/* Prefer Online */}
+            <label className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={preferOnline}
+                onChange={(e) => setPreferOnline(e.target.checked)}
+                className="accent-primary"
+              />
+              <div>
+                <p className="text-sm font-medium">Prefer online members</p>
+                <p className="text-xs text-muted-foreground">Prioritize members who are currently online</p>
+              </div>
+            </label>
+            
+            {/* Required Skills */}
+            <div>
+              <label className="text-sm font-medium mb-2 block flex items-center gap-2">
+                <span className="text-destructive">*</span> Required Skills
+              </label>
+              <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-2 rounded-lg bg-secondary/30">
+                {allSkills.map(skill => (
+                  <button
+                    key={skill}
+                    onClick={() => setRequiredSkills(prev =>
+                      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
+                    )}
+                    className={`px-2 py-1 rounded text-xs transition-colors ${
+                      requiredSkills.includes(skill) 
+                        ? 'bg-destructive/20 text-destructive border border-destructive/30' 
+                        : 'bg-secondary hover:bg-secondary/80'
+                    }`}
+                  >
+                    {getSkillLabel(skill)}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">{requiredSkills.length} required</p>
+            </div>
+            
+            {/* Optional Skills */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Nice-to-have Skills</label>
+              <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-2 rounded-lg bg-secondary/30">
+                {allSkills.filter(s => !requiredSkills.includes(s)).map(skill => (
+                  <button
+                    key={skill}
+                    onClick={() => setOptionalSkills(prev =>
+                      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
+                    )}
+                    className={`px-2 py-1 rounded text-xs transition-colors ${
+                      optionalSkills.includes(skill) 
+                        ? 'bg-primary/20 text-primary border border-primary/30' 
+                        : 'bg-secondary hover:bg-secondary/80'
+                    }`}
+                  >
+                    {getSkillLabel(skill)}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">{optionalSkills.length} optional</p>
+            </div>
+            
+            <Button
+              className="w-full gap-2"
+              onClick={generateTeam}
+              disabled={requiredSkills.length === 0 && optionalSkills.length === 0}
+            >
+              <Sparkles className="w-4 h-4" />
+              Generate Optimal Team
+            </Button>
+          </div>
+        )}
+        
+        {/* Step 3: Results */}
+        {step === 3 && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <Button variant="ghost" size="sm" onClick={() => setStep(2)} className="gap-1">
+                <ChevronLeft className="w-4 h-4" />Adjust
+              </Button>
+              <h3 className="font-semibold">Generated Team</h3>
+              <Button variant="ghost" size="sm" onClick={reset} className="gap-1">
+                <RotateCcw className="w-4 h-4" />New
+              </Button>
+            </div>
+            
+            {isGenerating ? (
+              <div className="py-12 text-center">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 animate-spin flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <p className="text-muted-foreground">Building optimal team...</p>
+              </div>
+            ) : generatedTeam && (
+              <>
+                {/* Team Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-lg glass text-center">
+                    <p className="text-2xl font-bold text-primary">{generatedTeam.stats.totalMembers}</p>
+                    <p className="text-xs text-muted-foreground">Team Size</p>
+                  </div>
+                  <div className="p-3 rounded-lg glass text-center">
+                    <p className="text-2xl font-bold text-success">{generatedTeam.stats.onlineMembers}</p>
+                    <p className="text-xs text-muted-foreground">Online Now</p>
+                  </div>
+                  <div className="p-3 rounded-lg glass text-center">
+                    <p className={`text-2xl font-bold ${
+                      generatedTeam.stats.requiredCoverage === 100 ? 'text-success' : 'text-warning'
+                    }`}>{generatedTeam.stats.requiredCoverage}%</p>
+                    <p className="text-xs text-muted-foreground">Required Coverage</p>
+                  </div>
+                  <div className="p-3 rounded-lg glass text-center">
+                    <p className="text-2xl font-bold">{generatedTeam.stats.uniqueSkills}</p>
+                    <p className="text-xs text-muted-foreground">Unique Skills</p>
+                  </div>
+                </div>
+                
+                {/* Missing Skills Warning */}
+                {generatedTeam.stats.missingRequired.length > 0 && (
+                  <div className="p-3 rounded-lg bg-warning/10 border border-warning/30">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-warning mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-warning">Missing Required Skills</p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {generatedTeam.stats.missingRequired.map(skill => (
+                            <span key={skill} className="text-xs px-1.5 py-0.5 rounded bg-warning/20">
+                              {getSkillLabel(skill)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Team Members */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Team Members</h4>
+                  {generatedTeam.members.map((member, idx) => (
+                    <div key={member.userId} className="p-3 rounded-lg glass flex items-center gap-3">
+                      <div className="relative">
+                        {idx === 0 && (
+                          <Crown className="w-4 h-4 text-amber-400 absolute -top-2 -right-1" />
+                        )}
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center text-sm font-bold">
+                          {member.displayName.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <StatusDot online={member.stats.online} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{member.displayName}</p>
+                        <p className="text-xs text-muted-foreground">{member.class || 'Member'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Match</p>
+                        <p className={`text-sm font-bold ${
+                          member.requiredCoverage >= 0.5 ? 'text-success' : 'text-warning'
+                        }`}>{Math.round(member.requiredCoverage * 100)}%</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <Button variant="outline" className="flex-1 gap-1" onClick={copyTeamList}>
+                    <Copy className="w-4 h-4" />Copy List
+                  </Button>
+                  <Button variant="outline" className="flex-1 gap-1" onClick={saveTeam}>
+                    <Bookmark className="w-4 h-4" />Save Team
+                  </Button>
+                  <Button className="flex-1 gap-1" onClick={() => {
+                    toast.success('Team notified!', { description: 'Members have been alerted of their assignment.' });
+                  }}>
+                    <Send className="w-4 h-4" />Notify
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 // Profile Card Component
 const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
   const isRedacted = profile._redacted;
