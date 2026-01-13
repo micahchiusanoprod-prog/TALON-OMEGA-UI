@@ -330,6 +330,13 @@ Captured: ${debugInfo.timestamp}`;
         </div>
       </div>
     </div>
+    
+    {/* Audit Panel - Rendered separately to stack above system status */}
+    <AuditPanel 
+      isOpen={showAuditPanel}
+      onClose={() => setShowAuditPanel(false)}
+    />
+    </>
   );
 }
 
