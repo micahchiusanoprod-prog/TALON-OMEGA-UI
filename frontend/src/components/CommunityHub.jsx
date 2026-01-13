@@ -7,7 +7,9 @@ import {
   Utensils, Target, TrendingUp, AlertCircle, Globe, UserCheck, Lock,
   Zap, Compass, Megaphone, ListChecks, BarChart2, Lightbulb, UserPlus,
   Send, Vote, ClipboardList, Bell, ArrowLeft, Copy, CheckCheck, ExternalLink,
-  Briefcase, MapPin, SortAsc, SortDesc, XCircle, Plus, RefreshCw
+  Briefcase, MapPin, SortAsc, SortDesc, XCircle, Plus, RefreshCw,
+  Sparkles, Wand2, Users2, CircleDot, Minus, ChevronLeft, RotateCcw,
+  Crown, Flame, Bookmark, Share2, Download, Settings2, Layers
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
