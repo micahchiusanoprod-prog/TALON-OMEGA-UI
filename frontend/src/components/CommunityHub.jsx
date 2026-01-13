@@ -1795,13 +1795,46 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [savedTeams, setSavedTeams] = useState([]);
   
+  // NEW: Custom team name and image
+  const [customTeamName, setCustomTeamName] = useState('');
+  const [selectedTeamIcon, setSelectedTeamIcon] = useState('Users');
+  const [selectedTeamColor, setSelectedTeamColor] = useState('violet');
+  const [includePlaceholders, setIncludePlaceholders] = useState(false);
+  const [placeholderCount, setPlaceholderCount] = useState(0);
+  
+  // Team size cap based on connected devices (mock: total profiles)
+  const connectedDeviceCount = useMemo(() => profiles.length, [profiles]);
+  const maxTeamSize = useMemo(() => Math.min(connectedDeviceCount, 12), [connectedDeviceCount]);
+  
   const allSkills = useMemo(() => Object.keys(CANONICAL_SKILLS), []);
+  
+  // Team icon options
+  const TEAM_ICON_OPTIONS = [
+    { id: 'Users', icon: Users, label: 'Team' },
+    { id: 'Shield', icon: Shield, label: 'Security' },
+    { id: 'Stethoscope', icon: Stethoscope, label: 'Medical' },
+    { id: 'Radio', icon: Radio, label: 'Comms' },
+    { id: 'Wrench', icon: Wrench, label: 'Engineering' },
+    { id: 'Compass', icon: Compass, label: 'Logistics' },
+    { id: 'Utensils', icon: Utensils, label: 'Food/Water' },
+    { id: 'Target', icon: Target, label: 'Mission' },
+  ];
+  
+  const TEAM_COLOR_OPTIONS = [
+    { id: 'violet', bg: 'bg-violet-500/20', text: 'text-violet-400', border: 'border-violet-500/30' },
+    { id: 'cyan', bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+    { id: 'rose', bg: 'bg-rose-500/20', text: 'text-rose-400', border: 'border-rose-500/30' },
+    { id: 'amber', bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
+    { id: 'emerald', bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
+    { id: 'blue', bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
+  ];
   
   const handlePresetSelect = (preset) => {
     setSelectedPreset(preset);
     setRequiredSkills(preset.requiredSkills || []);
     setOptionalSkills(preset.optionalSkills || []);
     setTeamSize(Math.min(preset.maxSize, Math.max(preset.minSize, 4)));
+    setCustomTeamName(preset.name);
     setStep(2);
   };
   
