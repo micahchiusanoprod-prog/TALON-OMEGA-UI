@@ -279,9 +279,45 @@ const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScore
               <p className="text-[10px] text-muted-foreground">
                 Redundancy: <span className={data.redundancy === 'Low' ? 'text-warning' : 'text-foreground'}>{data.redundancy}</span>
               </p>
-              <ChevronRight className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2" />
             </button>
           ))}
+        </div>
+      </div>
+      
+      {/* Skill Coverage Visualization */}
+      <div className="glass rounded-xl p-4">
+        <h3 className="font-semibold mb-4 flex items-center gap-2">
+          <Layers className="w-4 h-4 text-violet-400" />
+          Skill Coverage Overview
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {Object.entries(analytics.coverage.domains).map(([domain, data]) => {
+            const coveragePercent = Math.min(100, Math.round((data.qualifiedCount / Math.max(analytics.population.membersTotal * 0.3, 3)) * 100));
+            return (
+              <div key={domain} className="relative">
+                <div className="glass rounded-lg p-3 overflow-hidden">
+                  <div 
+                    className={`absolute inset-0 ${SKILL_DOMAINS[domain]?.bg} opacity-30`}
+                    style={{ 
+                      clipPath: `inset(${100 - coveragePercent}% 0 0 0)`,
+                      transition: 'clip-path 0.5s ease-out'
+                    }}
+                  />
+                  <div className="relative z-10">
+                    <DomainIcon domain={domain} className={`w-5 h-5 ${SKILL_DOMAINS[domain]?.color} mx-auto mb-1`} />
+                    <p className="text-xs text-center font-medium">{domain}</p>
+                    <p className={`text-lg font-bold text-center ${SKILL_DOMAINS[domain]?.color}`}>{data.qualifiedCount}</p>
+                    <div className="h-1 bg-secondary rounded-full mt-2 overflow-hidden">
+                      <div 
+                        className={`h-full ${SKILL_DOMAINS[domain]?.bg?.replace('/20', '')}`}
+                        style={{ width: `${coveragePercent}%`, transition: 'width 0.5s ease-out' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       
