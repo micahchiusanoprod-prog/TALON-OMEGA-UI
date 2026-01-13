@@ -731,7 +731,7 @@ const PrivacyBanner = () => {
 // OVERVIEW TAB - OPERATIONS HUB
 // ============================================================
 
-const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScores, scoreConfig, onNavigate, onFilterDirectory }) => {
+const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScores, scoreConfig, onNavigate, onFilterDirectory, onOpenDrill }) => {
   const { isAdmin, currentUser, onUpdatePrivacy } = useRBAC();
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
