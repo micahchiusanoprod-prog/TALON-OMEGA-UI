@@ -8,24 +8,35 @@ import {
   FileText,
   Compass,
   Flashlight,
-  X
+  X,
+  HelpCircle,
+  Lightbulb,
+  Info
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Quick Tools - Useful field utilities
 const QUICK_TOOLS = [
   { 
+    id: 'quickguide', 
+    name: 'Quick Guide', 
+    icon: Lightbulb, 
+    color: 'text-amber-400',
+    description: 'Learn how to use OMEGA - tap for a quick overview',
+    component: 'quickguide'
+  },
+  { 
     id: 'calculator', 
     name: 'Calculator', 
     icon: Calculator, 
-    description: 'Quick calculations',
+    description: 'Perform quick math calculations',
     component: 'calculator'
   },
   { 
     id: 'translator', 
     name: 'Translator', 
     icon: Languages, 
-    description: 'Translate text',
+    description: 'Translate text between languages',
     component: 'translator'
   },
   { 
@@ -33,28 +44,28 @@ const QUICK_TOOLS = [
     name: 'SOS Beacon', 
     icon: AlertTriangle, 
     color: 'text-destructive',
-    description: 'Emergency signal',
+    description: 'Send an emergency distress signal to all connected devices',
     component: 'sos'
   },
   { 
     id: 'currency', 
     name: 'Currency', 
     icon: DollarSign, 
-    description: 'Convert currency',
+    description: 'Convert between different currencies',
     component: 'currency'
   },
   { 
     id: 'dictionary', 
     name: 'Dictionary', 
     icon: BookOpen, 
-    description: 'Word definitions',
+    description: 'Look up word definitions offline',
     component: 'dictionary'
   },
   { 
     id: 'notes', 
     name: 'Field Notes', 
     icon: FileText, 
-    description: 'Quick notes',
+    description: 'Jot down quick notes and observations',
     component: 'notes'
   },
 ];
