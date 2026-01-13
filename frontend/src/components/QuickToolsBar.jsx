@@ -404,6 +404,129 @@ const NotesModal = ({ onClose }) => {
   );
 };
 
+// Quick Guide Modal - User-friendly introduction
+const QuickGuideModal = ({ onClose }) => {
+  const [currentTip, setCurrentTip] = useState(0);
+  
+  const tips = [
+    {
+      icon: '👋',
+      title: 'Welcome to OMEGA!',
+      content: 'OMEGA is your offline-first command center. It works without internet and helps you stay connected with your family and team.',
+      highlight: 'Everything works offline!'
+    },
+    {
+      icon: '📡',
+      title: 'Communication Hub',
+      content: 'The Ally Communications Hub shows all available ways to communicate. Green = available, Yellow = partial, Red = unavailable.',
+      highlight: 'Tap any method to see details'
+    },
+    {
+      icon: '👥',
+      title: 'Community Hub',
+      content: 'See who\'s online, their skills, equipment, and status. Great for coordinating teams and checking on family members.',
+      highlight: 'Click "Community" in the header'
+    },
+    {
+      icon: '📊',
+      title: 'LOGS & Analytics',
+      content: 'Monitor system health, view charts, and track performance over time. Perfect for diagnosing issues.',
+      highlight: 'Click "LOGS" in the header'
+    },
+    {
+      icon: '🔍',
+      title: 'Search Everything',
+      content: 'Use the search bar to quickly find files, Kiwix articles, commands, or people. Press ⌘/ for quick access.',
+      highlight: 'Type anything to search'
+    },
+    {
+      icon: '🛠️',
+      title: 'Quick Tools',
+      content: 'Calculator, Translator, SOS Beacon, and more. These tools work offline and are always available.',
+      highlight: 'Tap any tool button below'
+    },
+    {
+      icon: '🆘',
+      title: 'Need Help?',
+      content: 'Tap "Help Center" for detailed guides on every feature. Tap "Admin Console" if you\'re an operator.',
+      highlight: 'Help is always one tap away'
+    },
+  ];
+  
+  const tip = tips[currentTip];
+  
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-md glass-strong rounded-2xl overflow-hidden">
+        {/* Header */}
+        <div className="p-4 border-b border-border/50 flex items-center justify-between bg-gradient-to-r from-amber-500/20 to-orange-500/20">
+          <div className="flex items-center gap-2">
+            <Lightbulb className="w-5 h-5 text-amber-400" />
+            <h2 className="text-lg font-bold">Quick Guide</h2>
+          </div>
+          <button onClick={onClose} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Progress dots */}
+        <div className="flex justify-center gap-1.5 py-3 bg-secondary/30">
+          {tips.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentTip(i)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                i === currentTip ? 'bg-primary w-6' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+              }`}
+            />
+          ))}
+        </div>
+        
+        {/* Content */}
+        <div className="p-6 text-center">
+          <div className="text-5xl mb-4">{tip.icon}</div>
+          <h3 className="text-xl font-bold mb-3">{tip.title}</h3>
+          <p className="text-muted-foreground mb-4 leading-relaxed">{tip.content}</p>
+          <div className="inline-block px-4 py-2 rounded-full bg-primary/20 text-primary text-sm font-medium">
+            💡 {tip.highlight}
+          </div>
+        </div>
+        
+        {/* Navigation */}
+        <div className="p-4 border-t border-border/50 flex items-center justify-between">
+          <button
+            onClick={() => setCurrentTip(Math.max(0, currentTip - 1))}
+            disabled={currentTip === 0}
+            className="px-4 py-2 rounded-lg btn-apple disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          
+          <span className="text-sm text-muted-foreground">
+            {currentTip + 1} of {tips.length}
+          </span>
+          
+          {currentTip < tips.length - 1 ? (
+            <button
+              onClick={() => setCurrentTip(currentTip + 1)}
+              className="px-4 py-2 rounded-lg btn-apple-primary"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg btn-apple-primary"
+            >
+              Get Started!
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function QuickToolsBar() {
   const [activeModal, setActiveModal] = useState(null);
   
