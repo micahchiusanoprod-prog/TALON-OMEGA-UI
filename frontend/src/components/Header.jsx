@@ -6,26 +6,31 @@ import AdminConsole from './AdminConsole';
 import HelpCenter from './HelpCenter';
 import LogsAnalytics from './LogsAnalytics';
 import CommunityHub from './CommunityHub';
+import LanguageSelector from './LanguageSelector';
+import { ConnectionStatusChip } from './DataStateIndicators';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Header({ metrics, health, theme, onToggleTheme }) {
   const [showAdminConsole, setShowAdminConsole] = useState(false);
   const [showHelpCenter, setShowHelpCenter] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
   const [showCommunity, setShowCommunity] = useState(false);
+  const { t } = useLanguage();
+  
   // Derive device status from health
   const deviceStatus = useMemo(() => {
     if (!health) {
-      return { label: 'Unknown', color: 'bg-muted text-muted-foreground', dotColor: 'status-degraded' };
+      return { label: t('status.unknown'), color: 'bg-muted text-muted-foreground', dotColor: 'status-degraded' };
     }
     
     if (health.status === 'up') {
-      return { label: 'Up', color: 'bg-success-light text-success', dotColor: 'status-healthy' };
+      return { label: t('status.up'), color: 'bg-success-light text-success', dotColor: 'status-healthy' };
     } else if (health.status === 'degraded') {
       return { label: 'Degraded', color: 'bg-warning-light text-warning', dotColor: 'status-degraded' };
     } else {
-      return { label: 'Down', color: 'bg-destructive-light text-destructive', dotColor: 'status-down' };
+      return { label: t('status.down'), color: 'bg-destructive-light text-destructive', dotColor: 'status-down' };
     }
-  }, [health]);
+  }, [health, t]);
 
   // Check if header would be too cluttered (mobile/tablet)
   const [useCompactHeader, setUseCompactHeader] = React.useState(false);
@@ -45,14 +50,24 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
     <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
       <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between">
-          {/* Left: Logo & Status */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                OMEGA
+          {/* Left: Logo, Subtitle & Status */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  OMEGA
+                </div>
+                <div className={`status-dot ${deviceStatus.dotColor}`} title={`System Status: ${deviceStatus.label}`} />
               </div>
-              <div className={`status-dot ${deviceStatus.dotColor}`} title={`System Status: ${deviceStatus.label}`} />
+              {/* OMEGA Acronym Subtitle */}
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground tracking-wider uppercase leading-none hidden sm:block">
+                {t('header.subtitle')}
+              </span>
             </div>
+            {/* Connection Status Chip - Desktop */}
+            {!useCompactHeader && (
+              <ConnectionStatusChip className="hidden lg:flex" />
+            )}
           </div>
 
           {/* Center: LOGS Button + Community Button + Help Center Button + Metrics Pills (desktop) */}
@@ -66,7 +81,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="logs-btn"
               >
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-semibold">LOGS</span>
+                <span className="text-sm font-semibold">{t('nav.logs')}</span>
               </button>
               
               {/* Community Button - Premium */}
@@ -77,7 +92,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="community-btn"
               >
                 <Users className="w-4 h-4 text-violet-400" />
-                <span className="text-sm font-semibold">Community</span>
+                <span className="text-sm font-semibold">{t('nav.community')}</span>
               </button>
               
               {/* Help Center Button - Centered & Premium */}
@@ -88,13 +103,13 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="help-center-btn"
               >
                 <BookOpen className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold">Help Center</span>
+                <span className="text-sm font-semibold">{t('nav.helpCenter')}</span>
               </button>
               
               {/* CPU % - Priority 1 */}
               {metrics && metrics.cpu !== null && (
                 <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">CPU</span>
+                  <span className="text-muted-foreground">{t('metrics.cpu')}</span>
                   <span className="font-semibold">{metrics.cpu}%</span>
                 </div>
               )}
@@ -102,7 +117,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               {/* CPU Temp - Priority 3 */}
               {metrics && metrics.temp !== null && (
                 <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">Temp</span>
+                  <span className="text-muted-foreground">{t('metrics.temp')}</span>
                   <span className="font-semibold">{metrics.temp}°C</span>
                 </div>
               )}
@@ -110,7 +125,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               {/* RAM % - Priority 4 */}
               {metrics && metrics.ram !== null && (
                 <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">RAM</span>
+                  <span className="text-muted-foreground">{t('metrics.ram')}</span>
                   <span className="font-semibold">{metrics.ram}%</span>
                 </div>
               )}
@@ -118,7 +133,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               {/* Disk % - Priority 5 */}
               {metrics && metrics.disk !== null && (
                 <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">Disk</span>
+                  <span className="text-muted-foreground">{t('metrics.disk')}</span>
                   <span className="font-semibold">{metrics.disk}%</span>
                 </div>
               )}
@@ -136,7 +151,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="logs-btn-mobile"
               >
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-semibold">LOGS</span>
+                <span className="text-xs font-semibold">{t('nav.logs')}</span>
               </button>
               
               {/* Community Button - Mobile */}
@@ -147,7 +162,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="community-btn-mobile"
               >
                 <Users className="w-4 h-4 text-violet-400" />
-                <span className="text-xs font-semibold">Community</span>
+                <span className="text-xs font-semibold">{t('nav.community')}</span>
               </button>
               
               {/* Help Center Button - Mobile */}
@@ -158,20 +173,28 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="help-center-btn-mobile"
               >
                 <BookOpen className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold">Help</span>
+                <span className="text-xs font-semibold">{t('nav.help')}</span>
               </button>
               
               {metrics && metrics.temp !== null && (
                 <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground text-xs">Temp</span>
+                  <span className="text-muted-foreground text-xs">{t('metrics.temp')}</span>
                   <span className="font-semibold text-xs">{metrics.temp}°C</span>
                 </div>
               )}
             </div>
           )}
 
-          {/* Right: Quick Actions with improved depth */}
+          {/* Right: Language + Connection + Admin + Theme */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Language Selector */}
+            <LanguageSelector compact={useCompactHeader} />
+            
+            {/* Connection Status - Mobile */}
+            {useCompactHeader && (
+              <ConnectionStatusChip className="hidden xs:flex" />
+            )}
+            
             {/* Admin Console Button - Clear text label */}
             <button
               onClick={() => setShowAdminConsole(true)}
@@ -180,25 +203,25 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               data-testid="admin-console-btn"
             >
               <Shield className="w-4 h-4 text-amber-400" />
-              <span className="text-xs sm:text-sm font-semibold">Admin Console</span>
+              <span className="text-xs sm:text-sm font-semibold">{t('nav.adminConsole')}</span>
             </button>
             
             {/* Theme Toggle */}
             <button
               onClick={onToggleTheme}
               className="glass px-2.5 sm:px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm flex items-center gap-1.5"
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              title={theme === 'dark' ? t('theme.switchToLight') : t('theme.switchToDark')}
               data-testid="theme-toggle-btn"
             >
               {theme === 'dark' ? (
                 <>
                   <Sun className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">Light</span>
+                  <span className="hidden sm:inline text-xs">{t('theme.light')}</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">Dark</span>
+                  <span className="hidden sm:inline text-xs">{t('theme.dark')}</span>
                 </>
               )}
             </button>
