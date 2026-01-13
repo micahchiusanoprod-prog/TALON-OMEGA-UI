@@ -1,119 +1,133 @@
-// OMEGA Dashboard Configuration
-// Single source of truth for all configurable values
+// ============================================================
+// OMEGA Dashboard Runtime Configuration
+// Pi-Ready Deployment Configuration
+// ============================================================
+// This config supports both MOCK mode (offline development) and
+// LIVE mode (connected to Pi backend)
 
-const config = {
-  // API Configuration
-  api: {
-    // Base URL for the main OMEGA backend (port 8093 on Pi)
-    // In preview: uses mock data
-    // In production: set via REACT_APP_PI_API_URL environment variable
-    baseUrl: process.env.REACT_APP_PI_API_URL || 'http://127.0.0.1:8093/cgi-bin',
+// Build-time injected version (set during build)
+export const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION || 'dev';
+export const BUILD_TIMESTAMP = process.env.REACT_APP_BUILD_TIMESTAMP || new Date().toISOString();
+
+// ============================================================
+// Runtime Configuration - Can be overridden via window.OMEGA_CONFIG
+// ============================================================
+
+const getConfig = () => {
+  // Check for runtime override (allows config without rebuild)
+  const runtimeConfig = typeof window !== 'undefined' ? window.OMEGA_CONFIG : {};
+  
+  return {
+    // ========== Core URLs ==========
+    // API base for Pi backend (CGI scripts)
+    API_BASE: runtimeConfig.API_BASE || process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8093',
     
-    // API Key for authentication
-    // Set via REACT_APP_PI_API_KEY environment variable
-    apiKey: process.env.REACT_APP_PI_API_KEY || '',
+    // Kiwix offline wiki server
+    KIWIX_BASE: runtimeConfig.KIWIX_BASE || process.env.REACT_APP_KIWIX_BASE || 'http://127.0.0.1:8090',
     
-    // Request timeout in milliseconds
-    timeout: 5000,
-  },
-
-  // Base URLs for local services
-  endpoints: {
-    kiwix: 'http://127.0.0.1:8090',
-    kiwixAlt: 'http://talon.local:8090',
-    backend: 'http://127.0.0.1:8093',
-    // Backend CGI endpoints (existing API)
-    health: '/cgi-bin/health.py',
-    metrics: '/cgi-bin/metrics.py',
-    sensors: '/cgi-bin/sensors.py',
-    backup: '/cgi-bin/backup.py',
-    keys: '/cgi-bin/keys.py',
-    keysync: '/cgi-bin/keysync.py',
-    dm: '/cgi-bin/dm.py',
-    // Hotspot endpoints
-    hotspotStatus: '/api/hotspot/status',
-    hotspotToggle: '/api/hotspot/toggle',
-    hotspotClients: '/api/hotspot/clients',
-    hotspotUsage: '/api/hotspot/usage',
-    // Ally Communications endpoints
-    allyNodes: '/api/ally/nodes',
-    allyNodeStatus: '/api/ally/node',
-    allyGlobalChat: '/api/ally/chat/global',
-    allyDM: '/api/ally/chat/dm',
-    allyBroadcast: '/api/ally/broadcast',
-    allyPing: '/api/ally/node',
-    allyRefresh: '/api/ally/node',
-  },
-
-  // Hotspot configuration
-  hotspot: {
-    ssid: 'OMEGA-Hotspot', // Default SSID for display/QR
-    password: '', // Leave empty for security - don't store passwords in config
-    localUrl: 'http://talon.local/',
-    maxClients: 10, // Default max clients
-  },
-
-  // Ally Communications Hub API
-  ally: {
-    // Ally-specific API base (can be same as main or different)
-    apiBase: process.env.REACT_APP_PI_API_URL || 'http://127.0.0.1:8093/cgi-bin',
+    // ========== Data Mode ==========
+    // true = use mock data (offline/development)
+    // false = use live backend data
+    USE_MOCK_DATA: runtimeConfig.USE_MOCK_DATA !== undefined 
+      ? runtimeConfig.USE_MOCK_DATA 
+      : (process.env.REACT_APP_USE_MOCK_DATA !== 'false'),
     
-    // Message retry configuration
-    messageRetryInterval: 30000,  // 30 seconds
-    maxQueueSize: 100,
+    // ========== Backend Endpoints ==========
+    endpoints: {
+      health: '/cgi-bin/health.py',
+      metrics: '/cgi-bin/metrics.py',
+      sensors: '/cgi-bin/sensors.py',
+      backup: '/cgi-bin/backup.py',
+      keys: '/cgi-bin/keys.py',
+      keysync: '/cgi-bin/keysync.py',
+      dm: '/cgi-bin/dm.py',
+      gps: '/cgi-bin/gps.py',
+      // Hotspot
+      hotspotStatus: '/api/hotspot/status',
+      hotspotToggle: '/api/hotspot/toggle',
+      hotspotClients: '/api/hotspot/clients',
+      // Ally Communications
+      allyNodes: '/api/ally/nodes',
+      allyChat: '/api/ally/chat',
+    },
     
-    // Additional ally configuration
-    nodeOfflineThreshold: 60, // seconds
-    pollingOnline: 5000, // 5 seconds for online nodes
-    pollingOffline: 20000, // 20 seconds for offline nodes
-  },
+    // ========== Polling Intervals (ms) ==========
+    polling: {
+      healthCheck: 12000,      // 12 seconds for connection health
+      metrics: 3000,           // 3 seconds for system metrics
+      sensors: 5000,           // 5 seconds for BME680 sensors
+      community: 30000,        // 30 seconds for community updates
+    },
+    
+    // ========== Request Configuration ==========
+    request: {
+      timeout: 5000,           // 5 second timeout
+      retryAttempts: 2,        // Retry twice on failure
+      retryDelay: 1000,        // 1 second between retries
+    },
+    
+    // ========== Feature Flags ==========
+    features: {
+      enableDiagnostics: true,
+      enableAnimations: true,
+      enableHealthPolling: true,
+      enableOfflineMode: true,
+    },
+    
+    // ========== Build Info ==========
+    build: {
+      version: BUILD_VERSION,
+      timestamp: BUILD_TIMESTAMP,
+      environment: process.env.NODE_ENV || 'development',
+    },
+    
+    // ========== UI Configuration ==========
+    ui: {
+      searchDebounce: 300,
+      toastDuration: 3000,
+    },
+    
+    // ========== Hotspot Configuration ==========
+    hotspot: {
+      ssid: 'OMEGA-Hotspot',
+      localUrl: 'http://talon.local/',
+      maxClients: 10,
+    },
+    
+    // ========== GPS Configuration ==========
+    gps: {
+      breadcrumbLimit: 100,
+      accuracyThreshold: 10,
+      updateInterval: 3000,
+    },
+  };
+};
 
-  // Polling intervals (milliseconds)
-  polling: {
-    metrics: 3000,        // 3 seconds for system metrics (real-time feel)
-    sensors: 5000,        // 5 seconds for BME680 sensors
-    health: 15000,        // 15 seconds for health check
-    community: 30000,     // 30 seconds for community updates
-    hotspotOn: 4000,      // 4 seconds when hotspot is ON
-    hotspotOff: 12000,    // 12 seconds when hotspot is OFF
-    allyNodes: 5000,      // 5 seconds for Ally node status
-    allyChat: 3000,       // 3 seconds for chat messages
-  },
+// Export singleton config
+const config = getConfig();
 
-  // Retry configuration
-  retry: {
-    maxAttempts: 3,
-    baseDelay: 1000,      // Start with 1 second
-    maxDelay: 30000,      // Cap at 30 seconds
-    backoffFactor: 2,     // Exponential backoff
-  },
+// Helper to get full endpoint URL
+export const getEndpointUrl = (endpoint) => {
+  const baseUrl = config.API_BASE;
+  const path = config.endpoints[endpoint];
+  if (!path) {
+    console.warn(`Unknown endpoint: ${endpoint}`);
+    return null;
+  }
+  return `${baseUrl}${path}`;
+};
 
-  // GPS configuration
-  gps: {
-    breadcrumbLimit: 100,  // Keep last 100 GPS points
-    accuracyThreshold: 10, // Meters
-    updateInterval: 3000,  // 3 seconds
-  },
+// Helper to check if we're in mock mode
+export const isMockMode = () => config.USE_MOCK_DATA;
 
-  // Map configuration (for offline fallback)
-  map: {
-    defaultCenter: [0, 0],
-    defaultZoom: 13,
-    tileProvider: 'offline', // 'offline' or 'online' (if available)
-  },
+// Helper to get build info
+export const getBuildInfo = () => config.build;
 
-  // Feature flags
-  features: {
-    enableDiagnostics: true,
-    enableMockData: true,   // Preview: use mock data. Set false + env vars for Pi deployment
-    enableAnimations: true,
-  },
-
-  // UI Configuration
-  ui: {
-    searchDebounce: 300,   // ms
-    toastDuration: 3000,   // ms
-  },
+// Export for runtime config override
+export const updateRuntimeConfig = (newConfig) => {
+  if (typeof window !== 'undefined') {
+    window.OMEGA_CONFIG = { ...window.OMEGA_CONFIG, ...newConfig };
+  }
 };
 
 export default config;
