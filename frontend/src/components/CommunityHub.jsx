@@ -2112,20 +2112,77 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
               <div />
             </div>
             
-            {/* Team Size */}
+            {/* NEW: Custom Team Name */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Team Size: {teamSize}</label>
+              <label className="text-sm font-medium mb-2 block">Team Name</label>
+              <Input
+                value={customTeamName}
+                onChange={(e) => setCustomTeamName(e.target.value)}
+                placeholder="Enter custom team name..."
+                className="w-full"
+              />
+            </div>
+            
+            {/* NEW: Team Icon & Color */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Team Icon</label>
+                <div className="flex flex-wrap gap-2">
+                  {TEAM_ICON_OPTIONS.map(opt => {
+                    const Icon = opt.icon;
+                    const colorOpt = TEAM_COLOR_OPTIONS.find(c => c.id === selectedTeamColor);
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => setSelectedTeamIcon(opt.id)}
+                        className={`p-2 rounded-lg transition-colors ${
+                          selectedTeamIcon === opt.id 
+                            ? `${colorOpt?.bg} ${colorOpt?.border} border` 
+                            : 'bg-secondary hover:bg-secondary/80'
+                        }`}
+                        title={opt.label}
+                      >
+                        <Icon className={`w-4 h-4 ${selectedTeamIcon === opt.id ? colorOpt?.text : ''}`} />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Team Color</label>
+                <div className="flex flex-wrap gap-2">
+                  {TEAM_COLOR_OPTIONS.map(opt => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setSelectedTeamColor(opt.id)}
+                      className={`w-8 h-8 rounded-lg ${opt.bg} border-2 transition-all ${
+                        selectedTeamColor === opt.id ? `${opt.border} scale-110` : 'border-transparent'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Team Size with cap indicator */}
+            <div>
+              <label className="text-sm font-medium mb-2 block flex items-center justify-between">
+                <span>Team Size: {teamSize}</span>
+                <span className="text-xs text-muted-foreground">
+                  Max: {maxTeamSize} (connected devices)
+                </span>
+              </label>
               <input
                 type="range"
                 min={selectedPreset?.minSize || 1}
-                max={selectedPreset?.maxSize || 10}
+                max={Math.min(selectedPreset?.maxSize || 10, maxTeamSize)}
                 value={teamSize}
                 onChange={(e) => setTeamSize(parseInt(e.target.value))}
                 className="w-full accent-primary"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>{selectedPreset?.minSize || 1}</span>
-                <span>{selectedPreset?.maxSize || 10}</span>
+                <span>{Math.min(selectedPreset?.maxSize || 10, maxTeamSize)}</span>
               </div>
             </div>
             
@@ -2142,6 +2199,40 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
                 <p className="text-xs text-muted-foreground">Prioritize members who are currently online</p>
               </div>
             </label>
+            
+            {/* NEW: Placeholder Members for Simulations */}
+            <div className="p-3 rounded-lg bg-secondary/30 border border-dashed border-border">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includePlaceholders}
+                  onChange={(e) => setIncludePlaceholders(e.target.checked)}
+                  className="accent-primary"
+                />
+                <div>
+                  <p className="text-sm font-medium flex items-center gap-2">
+                    Include Placeholder Slots
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">SIMULATION</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">Add TBD slots for planning future recruitment</p>
+                </div>
+              </label>
+              {includePlaceholders && (
+                <div className="mt-3 pl-7">
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Placeholder slots: {placeholderCount}
+                  </label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={Math.max(0, maxTeamSize - teamSize)}
+                    value={placeholderCount}
+                    onChange={(e) => setPlaceholderCount(parseInt(e.target.value))}
+                    className="w-full accent-amber-500"
+                  />
+                </div>
+              )}
+            </div>
             
             {/* Required Skills */}
             <div>
