@@ -19,6 +19,7 @@ import {
 } from './ui/sheet';
 import {
   SKILL_DOMAINS, CANONICAL_SKILLS, LANGUAGES, EDUCATION_LEVELS, ROLES, MOCK_CURRENT_USERS,
+  USER_STATUS, CONNECTION_TYPES, BLOOD_TYPES,
   getSkillLabel, getSkillDomain, getLanguageLabel,
   generateMockProfiles, generateAnalyticsSummary, generateCommsPreview,
   generateMockIncidents, generateMockScoreConfig, calculateMemberScores
@@ -94,13 +95,22 @@ const redactProfile = (profile, viewerRole) => {
   if (!profile) return null;
   if (viewerRole === 'admin') return { ...profile, _redacted: false };
   
-  const privacy = profile.privacy || { showAge: false, showHeightWeight: false, showEducation: true };
+  const privacy = profile.privacy || { 
+    showAge: false, 
+    showHeightWeight: false, 
+    showEducation: true,
+    showMedical: false,
+    showLocation: false 
+  };
   return {
     ...profile,
     _redacted: true,
     age: privacy.showAge ? profile.age : null,
     anthro: privacy.showHeightWeight ? profile.anthro : { heightIn: null, weightLb: null },
     educationLevel: privacy.showEducation !== false ? profile.educationLevel : null,
+    physical: privacy.showHeightWeight ? profile.physical : null,
+    medical: privacy.showMedical ? profile.medical : null,
+    location: privacy.showLocation ? profile.location : null,
   };
 };
 
