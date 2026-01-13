@@ -72,6 +72,9 @@ const getConfig = () => {
       enableAnimations: true,
       enableHealthPolling: true,
       enableOfflineMode: true,
+      enableMockData: runtimeConfig.USE_MOCK_DATA !== undefined 
+        ? runtimeConfig.USE_MOCK_DATA 
+        : (process.env.REACT_APP_USE_MOCK_DATA !== 'false'),
     },
     
     // ========== Build Info ==========
