@@ -712,10 +712,12 @@ const BroadcastAssemblySection = () => {
 // ============================================
 export default function AdminConsole({ isOpen, onClose }) {
   const [activeSection, setActiveSection] = useState('fleet');
+  const [showAuditPanel, setShowAuditPanel] = useState(false);
 
   if (!isOpen) return null;
 
   return (
+    <>
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-8 pb-8 bg-black/70 backdrop-blur-sm overflow-y-auto" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="glass-strong rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden mx-4 animate-fade-in flex flex-col">
         {/* Header */}
@@ -769,6 +771,14 @@ export default function AdminConsole({ isOpen, onClose }) {
             <Radio className="w-4 h-4" />
             Broadcast & Assembly
           </button>
+          <button
+            onClick={() => setShowAuditPanel(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap btn-apple bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20"
+            data-testid="audit-tab-btn"
+          >
+            <ClipboardCheck className="w-4 h-4 text-amber-500" />
+            <span className="text-amber-500">Audit</span>
+          </button>
         </div>
 
         {/* Content */}
@@ -779,5 +789,12 @@ export default function AdminConsole({ isOpen, onClose }) {
         </div>
       </div>
     </div>
+    
+    {/* Audit Panel - Rendered separately to stack above admin console */}
+    <AuditPanel 
+      isOpen={showAuditPanel}
+      onClose={() => setShowAuditPanel(false)}
+    />
+    </>
   );
 }
