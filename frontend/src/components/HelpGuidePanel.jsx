@@ -66,25 +66,33 @@ export default function HelpGuidePanel({
         </button>
 
         {isExpanded && (
-          <div 
-            className="fixed sm:absolute top-auto sm:top-full right-4 sm:right-0 sm:left-auto mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-md glass rounded-xl border border-border shadow-2xl overflow-hidden" 
-            style={{ zIndex: 9999 }}
-            data-testid="help-guide-panel"
-          >
-            <HelpGuideContent
-              pageTitle={pageTitle}
-              quickHelp={quickHelp}
-              legendItems={legendItems}
-              troubleshootingItems={troubleshootingItems}
-              whatItDoes={whatItDoes}
-              additionalSections={additionalSections}
-              tabs={tabs}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              onOpenHelpCenter={onOpenHelpCenter}
-              onClose={() => setIsExpanded(false)}
+          <>
+            {/* Backdrop for mobile */}
+            <div 
+              className="fixed inset-0 bg-black/20 sm:hidden"
+              style={{ zIndex: 9998 }}
+              onClick={() => setIsExpanded(false)}
             />
-          </div>
+            <div 
+              className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-20 sm:top-full right-auto sm:right-0 sm:left-auto mt-0 sm:mt-2 w-auto sm:w-96 max-w-md glass rounded-xl border border-border shadow-2xl overflow-hidden" 
+              style={{ zIndex: 9999 }}
+              data-testid="help-guide-panel"
+            >
+              <HelpGuideContent
+                pageTitle={pageTitle}
+                quickHelp={quickHelp}
+                legendItems={legendItems}
+                troubleshootingItems={troubleshootingItems}
+                whatItDoes={whatItDoes}
+                additionalSections={additionalSections}
+                tabs={tabs}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                onOpenHelpCenter={onOpenHelpCenter}
+                onClose={() => setIsExpanded(false)}
+              />
+            </div>
+          </>
         )}
       </div>
     );
