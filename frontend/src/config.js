@@ -15,7 +15,7 @@ export const BUILD_TIMESTAMP = process.env.REACT_APP_BUILD_TIMESTAMP || new Date
 
 const getConfig = () => {
   // Check for runtime override (allows config without rebuild)
-  const runtimeConfig = typeof window !== 'undefined' ? window.OMEGA_CONFIG : {};
+  const runtimeConfig = (typeof window !== 'undefined' && window.OMEGA_CONFIG) ? window.OMEGA_CONFIG : {};
   
   return {
     // ========== Core URLs ==========
