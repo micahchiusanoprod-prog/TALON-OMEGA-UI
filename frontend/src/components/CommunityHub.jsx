@@ -25,6 +25,7 @@ import {
   generateMockProfiles, generateAnalyticsSummary, generateCommsPreview,
   generateMockIncidents, generateMockScoreConfig, calculateMemberScores
 } from '../mock/communityMockData';
+import OfficialTeamsBulletins from './OfficialTeamsBulletins';
 
 // ============================================================
 // RBAC CONTEXT & HOOKS
