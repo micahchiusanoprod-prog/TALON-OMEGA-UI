@@ -746,6 +746,23 @@ export default function HelpCenter({ isOpen, onClose }) {
             </div>
             
             <div className="flex items-center gap-2">
+              <HelpGuidePanel
+                pageTitle="Help Center"
+                quickHelp="The complete OMEGA Field Manual - everything you need to know."
+                variant="compact"
+                legendItems={[
+                  { icon: Zap, label: 'Getting Started', description: 'Quick 60-second start guide', color: 'text-emerald-400', bgColor: 'bg-emerald-500/20' },
+                  { icon: FileText, label: 'Cheat Sheet', description: 'URLs, ports, services, and data paths', color: 'text-cyan-400', bgColor: 'bg-cyan-500/20' },
+                  { icon: Server, label: 'How OMEGA Works', description: 'Simple architecture overview', color: 'text-violet-400', bgColor: 'bg-violet-500/20' },
+                  { icon: AlertTriangle, label: 'Troubleshooting', description: 'Fix common problems', color: 'text-warning', bgColor: 'bg-warning/20' },
+                ]}
+                troubleshootingItems={[
+                  { problem: 'Can\'t find what I need', solution: 'Use the search bar to search across all categories and topics.' },
+                  { problem: 'Instructions don\'t work', solution: 'Check you\'re connected to the OMEGA device. Some features need specific hardware.' },
+                  COMMON_TROUBLESHOOTING.offlineMode,
+                ]}
+                whatItDoes="The Help Center is your complete reference manual for OMEGA. Browse categories like Getting Started, Cheat Sheet, Troubleshooting, and more. Use search to find specific topics. Print any section for offline reference."
+              />
               <Button
                 variant="ghost"
                 size="sm"
