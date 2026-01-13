@@ -50,9 +50,39 @@ export default function HelpGuidePanel({
 
   // Compact variant - just a help button that expands
   if (variant === 'compact') {
+    const buttonRef = useRef(null);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+    
+    // Update dropdown position when expanded
+    useEffect(() => {
+      if (isExpanded && buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + 8,
+          right: window.innerWidth - rect.right,
+        });
+      }
+    }, [isExpanded]);
+    
+    // Close on click outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+            buttonRef.current && !buttonRef.current.contains(event.target)) {
+          setIsExpanded(false);
+        }
+      };
+
+      if (isExpanded) {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+      }
+    }, [isExpanded]);
+    
     return (
       <div className={`relative ${className}`}>
         <button
+          ref={buttonRef}
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary border border-border/50 transition-colors text-sm"
           data-testid="help-guide-toggle"
@@ -66,17 +96,23 @@ export default function HelpGuidePanel({
           )}
         </button>
 
-        {isExpanded && (
+        {isExpanded && createPortal(
           <>
-            {/* Backdrop for mobile */}
+            {/* Backdrop */}
             <div 
-              className="fixed inset-0 bg-black/20 sm:hidden"
+              className="fixed inset-0 bg-black/10"
               style={{ zIndex: 9998 }}
               onClick={() => setIsExpanded(false)}
             />
+            {/* Dropdown Panel */}
             <div 
-              className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-20 sm:top-full right-auto sm:right-0 sm:left-auto mt-0 sm:mt-2 w-auto sm:w-96 max-w-md glass rounded-xl border border-border shadow-2xl overflow-hidden" 
-              style={{ zIndex: 9999 }}
+              ref={dropdownRef}
+              className="fixed w-80 sm:w-96 max-w-[calc(100vw-2rem)] glass rounded-xl border border-border shadow-2xl overflow-hidden"
+              style={{ 
+                zIndex: 9999,
+                top: dropdownPosition.top,
+                right: Math.max(16, dropdownPosition.right),
+              }}
               data-testid="help-guide-panel"
             >
               <HelpGuideContent
@@ -93,7 +129,8 @@ export default function HelpGuidePanel({
                 onClose={() => setIsExpanded(false)}
               />
             </div>
-          </>
+          </>,
+          document.body
         )}
       </div>
     );
