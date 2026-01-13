@@ -20,7 +20,7 @@ const QUICK_TOOLS = [
   { 
     id: 'quickguide', 
     name: 'Quick Guide', 
-    icon: Sparkles, 
+    icon: HelpCircle, 
     color: 'text-amber-400',
     description: 'Learn how to use OMEGA - tap for a quick overview',
     component: 'quickguide'
