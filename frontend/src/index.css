@@ -811,6 +811,24 @@ code {
         font-weight: 600 !important;
     }
     
+    /* CHECKMARK ICON on voted poll option - WHITE */
+    :root:not(.dark) [data-testid^="poll-option-"] .text-\[\#1d9bf0\] {
+        color: white !important;
+    }
+    
+    /* Poll percentage on voted option - WHITE and visible */
+    :root:not(.dark) [data-testid^="poll-option-"] .relative > span:last-child {
+        color: hsl(0, 0%, 15%) !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Poll percentage on winning/voted option with background - make WHITE */
+    :root:not(.dark) [data-testid^="poll-option-"] .font-bold.text-\[\#e7e9ea\]:last-child,
+    :root:not(.dark) [data-testid^="poll-option-"] span.font-bold:last-child {
+        color: white !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+    }
+    
     /* Poll percentage - BLACK */
     :root:not(.dark) [data-testid^="poll-option-"] span:last-child {
         color: hsl(0, 0%, 15%) !important;
