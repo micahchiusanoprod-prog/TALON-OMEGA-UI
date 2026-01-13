@@ -560,6 +560,7 @@ export default function QuickToolsBar() {
       </div>
       
       {/* Modals */}
+      {activeModal === 'quickguide' && <QuickGuideModal onClose={closeModal} />}
       {activeModal === 'calculator' && <CalculatorModal onClose={closeModal} />}
       {activeModal === 'translator' && <TranslatorModal onClose={closeModal} />}
       {activeModal === 'sos' && <SOSModal onClose={closeModal} />}
