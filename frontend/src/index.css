@@ -362,11 +362,18 @@ code {
         background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
     }
     
-    /* Apple-style input fields */
+    /* Apple-style input fields - LIGHT MODE enhanced */
     .input-apple {
         @apply w-full px-4 py-3 rounded-xl text-sm transition-all duration-200;
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    :root:not(.dark) .input-apple {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid hsl(215, 35%, 78%);
+        box-shadow: inset 0 2px 4px rgba(0, 50, 100, 0.06), 0 1px 3px rgba(0, 50, 100, 0.05);
+        color: hsl(222, 47%, 15%);
     }
     
     .input-apple:focus {
@@ -376,8 +383,18 @@ code {
         box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2), 0 0 20px rgba(6, 182, 212, 0.15);
     }
     
+    :root:not(.dark) .input-apple:focus {
+        background: rgba(255, 255, 255, 1);
+        border-color: hsl(195, 90%, 45%);
+        box-shadow: 0 0 0 4px rgba(0, 150, 190, 0.2), 0 0 20px rgba(0, 150, 190, 0.1), inset 0 1px 2px rgba(0, 50, 100, 0.05);
+    }
+    
     .input-apple::placeholder {
         @apply text-muted-foreground;
+    }
+    
+    :root:not(.dark) .input-apple::placeholder {
+        color: hsl(215, 20%, 55%);
     }
     
     /* Status indicators */
