@@ -79,35 +79,6 @@ export default function HelpGuidePanel({
 
   // Compact variant - just a help button that expands
   if (variant === 'compact') {
-    const buttonRef = useRef(null);
-    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
-    
-    // Update dropdown position when expanded
-    useEffect(() => {
-      if (isExpanded && buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + 8,
-          right: window.innerWidth - rect.right,
-        });
-      }
-    }, [isExpanded]);
-    
-    // Close on click outside
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
-            buttonRef.current && !buttonRef.current.contains(event.target)) {
-          setIsExpanded(false);
-        }
-      };
-
-      if (isExpanded) {
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-      }
-    }, [isExpanded]);
-    
     return (
       <div className={`relative ${className}`}>
         <button
