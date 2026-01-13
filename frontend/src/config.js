@@ -100,6 +100,25 @@ const getConfig = () => {
       accuracyThreshold: 10,
       updateInterval: 3000,
     },
+    
+    // ========== Ally API Configuration ==========
+    ally: {
+      apiBase: runtimeConfig.API_BASE || process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8093',
+    },
+    
+    // ========== API Configuration (General) ==========
+    api: {
+      apiKey: process.env.REACT_APP_API_KEY || null,
+      timeout: 5000,
+    },
+    
+    // ========== Retry Configuration ==========
+    retry: {
+      maxAttempts: 3,
+      baseDelay: 1000,
+      backoffFactor: 2,
+      maxDelay: 10000,
+    },
   };
 };
 
