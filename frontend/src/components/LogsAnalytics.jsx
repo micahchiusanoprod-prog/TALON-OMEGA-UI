@@ -77,6 +77,8 @@ import {
   BarChart,
   Bar
 } from 'recharts';
+import HelpGuidePanel, { COMMON_LEGEND_ITEMS, COMMON_TROUBLESHOOTING } from './HelpGuidePanel';
+import { DataSourceBadge } from './DataStateIndicators';
 
 // ============================================================
 // ACTIVE LOG CATEGORIES CONFIGURATION
