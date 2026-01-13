@@ -531,10 +531,14 @@ export default function QuickToolsBar() {
   const [activeModal, setActiveModal] = useState(null);
   
   const handleToolClick = (tool) => {
+    console.log('Tool clicked:', tool.id, 'Setting activeModal to:', tool.id);
     setActiveModal(tool.id);
   };
   
-  const closeModal = () => setActiveModal(null);
+  const closeModal = () => {
+    console.log('Closing modal');
+    setActiveModal(null);
+  };
   
   return (
     <>
