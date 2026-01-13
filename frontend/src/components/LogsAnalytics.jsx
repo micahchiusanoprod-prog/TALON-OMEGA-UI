@@ -3401,6 +3401,30 @@ export default function LogsAnalytics({ isOpen, onClose }) {
             </Button>
           </div>
           
+          {/* HelpGuidePanel */}
+          <div className="flex items-center gap-3 mt-2">
+            <HelpGuidePanel
+              pageTitle="LOGS Analytics"
+              quickHelp="Real-time system monitoring and fleet intelligence."
+              variant="compact"
+              legendItems={[
+                ...COMMON_LEGEND_ITEMS.statusDots,
+                ...COMMON_LEGEND_ITEMS.dataSourceBadges,
+                { icon: Activity, label: 'This Device', description: 'CPU, RAM, Disk, Temp charts for this node', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
+                { icon: AlertTriangle, label: 'Incidents', description: 'Anomaly detection and incident tracking', color: 'text-warning', bgColor: 'bg-warning/20' },
+                { icon: Users, label: 'All Nodes', description: 'Fleet-wide comparison and outlier detection', color: 'text-cyan-400', bgColor: 'bg-cyan-500/20' },
+              ]}
+              troubleshootingItems={[
+                { problem: 'No snapshots showing', solution: 'Check if capture is running (green "Live" indicator in header). Try toggling capture off/on.' },
+                { problem: 'Stale endpoint warning', solution: 'Backend endpoint not responding. Check network and service status.' },
+                { problem: 'Too many incidents', solution: 'Adjust detection sensitivity in Settings. Try "Low" preset to reduce false positives.' },
+                COMMON_TROUBLESHOOTING.offlineMode,
+              ]}
+              whatItDoes="LOGS Analytics provides real-time observability for your OMEGA device and fleet. Monitor CPU, RAM, Disk, and Temperature metrics. The Incidents tab tracks anomalies like temperature spikes or comms degradation. All Nodes view compares multiple devices and detects outliers."
+            />
+            <DataSourceBadge panelId="logs-analytics" />
+          </div>
+          
           {/* Tabs + Quick Stats */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3">
             <div className="flex gap-2 overflow-x-auto">
