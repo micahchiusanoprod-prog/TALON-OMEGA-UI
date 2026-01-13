@@ -2226,7 +2226,7 @@ const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
           <div className="flex items-center gap-1.5">
             <h3 className="font-semibold truncate">{profile.displayName}</h3>
             {profile.callsign && (
-              <span className="text-[10px] text-primary/70 font-mono">"{profile.callsign}"</span>
+              <span className="text-[10px] text-primary/70 font-mono">&ldquo;{profile.callsign}&rdquo;</span>
             )}
           </div>
           <p className="text-xs text-muted-foreground truncate">{profile.class || 'Member'}</p>
@@ -2405,7 +2405,7 @@ const ProfileDrawer = ({ profile, isOpen, onClose, memberScores, scoreConfig }) 
                 </span>
               </div>
               {profile.callsign && (
-                <p className="text-primary font-mono font-bold">"{profile.callsign}"</p>
+                <p className="text-primary font-mono font-bold">&ldquo;{profile.callsign}&rdquo;</p>
               )}
               <p className="text-xs text-muted-foreground">{profile.class || 'Community Member'}</p>
             </div>
