@@ -5,9 +5,54 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ## Target Users
 - Family members using OMEGA cyberdeck devices
-- Non-technical users who need clear visual indicators and intuitive controls
+- Non-technical users who need clear visual indicators and intuitive controls (designed for elderly family members!)
 - Users in offline or low-connectivity environments
 - Operators under stress who need larger tap targets and clear status indicators
+
+---
+
+## ✅ COMPLETED: Community Hub - Drill Mode & Explainer Text (January 13, 2026)
+
+### NEW: Drill Mode - Emergency Practice Simulator
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Drill Mode Button** | ✅ | Orange "Practice Drill" button in Overview welcome banner |
+| **Welcome Modal Integration** | ✅ | "Try a Practice Drill" option in first-time welcome modal |
+| **5 Emergency Scenarios** | ✅ | Medical Emergency, Power Outage, Water Contamination, Perimeter Alert, Comms Down |
+| **Urgency Levels** | ✅ | CRITICAL (red), HIGH (orange), MEDIUM (yellow) badges per scenario |
+| **Target Times** | ✅ | Each scenario has a target completion time (20s-90s) |
+| **Live Timer** | ✅ | Real-time countdown showing elapsed seconds |
+| **Required Skills Display** | ✅ | Shows needed skills with checkmarks when covered |
+| **Team Selection Grid** | ✅ | Online members with "Has needed skills!" highlight |
+| **Completion Grading** | ✅ | A+, A, B, C, D grades based on time vs target |
+| **Grade Feedback** | ✅ | Encouraging messages like "Outstanding!", "Good job!", "Needs practice" |
+| **Results Summary** | ✅ | Your Time, Team Size, Skills Coverage stats |
+| **Retry Options** | ✅ | "Try Another" or "Retry Same" buttons |
+| **Drill History** | ✅ | Shows recent drill attempts with times |
+| **Random Scenario** | ✅ | "Random Scenario" button for surprise practice |
+
+### NEW: Explainer Text System (Mom-Friendly)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Welcome Modal** | ✅ | First-time popup explaining Overview, Directory, Team Builder |
+| **Session Memory** | ✅ | Welcome modal only shows once per session |
+| **HelpTip Component** | ✅ | Reusable (?) icon that shows friendly explanations on click |
+| **Section Headers** | ✅ | Each major section has subtitle explaining what it shows |
+| **Welcome Banner** | ✅ | Permanent "Welcome to the Community Hub" explainer on Overview |
+| **Readiness Snapshot Help** | ✅ | "Green OK = enough people, Yellow WARN = low, Red P0 = critical gap" |
+| **Skill Coverage Help** | ✅ | "Taller bars = more people trained, want bars at least halfway full" |
+| **Plain Language** | ✅ | All text written for non-technical users |
+| **Actionable Tips** | ✅ | "Look for the (?) icons for helpful explanations" in welcome modal |
+
+### UI Improvements
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Welcome Banner Styling** | ✅ | Violet gradient border with icon |
+| **Practice Drill Button** | ✅ | Orange flame icon, placed prominently |
+| **Scenario Cards** | ✅ | Domain-colored icons with urgency badges |
+| **Timer Display** | ✅ | Large monospace font, easy to read |
+| **Grade Display** | ✅ | Extra-large colored letter grade |
+| **Skill Checkmarks** | ✅ | Green checkmarks when skills are covered |
 
 ---
 
