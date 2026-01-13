@@ -486,8 +486,9 @@ export default function OfficialTeamsBulletins({ profiles, isAdmin = false }) {
             <Building2 className="w-5 h-5 text-violet-400" />
           </div>
           <div>
-            <h3 className="font-bold text-lg flex items-center gap-2">
+            <h3 className="font-bold text-lg flex items-center gap-2 flex-wrap">
               Official Teams & Updates
+              <DataSourceBadge panelId="official-teams" />
               {newBulletinsCount > 0 && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-bold animate-pulse">
                   {newBulletinsCount} NEW
