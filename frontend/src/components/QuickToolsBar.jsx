@@ -539,8 +539,11 @@ export default function QuickToolsBar() {
   return (
     <>
       <div className="w-full relative" data-testid="quick-tools-bar">
-        {/* Single row with horizontal scroll on mobile */}
-        <div className="flex justify-center gap-2 overflow-x-auto pb-2 scrollbar-thin -mx-2 px-2">
+        {/* Single row with horizontal scroll on mobile - with proper padding to prevent cutoff */}
+        <div className="flex justify-start sm:justify-center gap-2 overflow-x-auto pb-2 scrollbar-thin px-4 -mx-4 sm:mx-0 sm:px-0">
+          {/* Left fade indicator for mobile */}
+          <div className="absolute left-0 top-0 bottom-2 w-4 bg-gradient-to-r from-background to-transparent pointer-events-none z-10 sm:hidden" />
+          
           {QUICK_TOOLS.map((tool) => {
             const Icon = tool.icon;
             return (
@@ -556,7 +559,13 @@ export default function QuickToolsBar() {
               </button>
             );
           })}
+          
+          {/* Right spacer to ensure last button isn't cut off */}
+          <div className="flex-shrink-0 w-4 sm:hidden" aria-hidden="true" />
         </div>
+        
+        {/* Right fade indicator for mobile */}
+        <div className="absolute right-0 top-0 bottom-2 w-4 bg-gradient-to-l from-background to-transparent pointer-events-none z-10 sm:hidden" />
       </div>
       
       {/* Modals */}
