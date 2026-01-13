@@ -768,12 +768,47 @@ const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScore
     <div className="space-y-6">
       <PrivacyBanner />
       
+      {/* Welcome Explainer for new users */}
+      <div className="glass rounded-xl p-4 border border-violet-500/30 bg-gradient-to-r from-violet-500/5 to-fuchsia-500/5 mb-6">
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-lg bg-violet-500/20 flex-shrink-0">
+            <Users className="w-5 h-5 text-violet-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-sm">Welcome to the Community Hub</h3>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              This is your family&apos;s coordination center. Here you can see who&apos;s online, 
+              check if we have enough people with important skills (like first aid or radio operation), 
+              and quickly find the right people when you need help.
+            </p>
+          </div>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={onOpenDrill}
+            className="gap-1 border-orange-500/30 hover:border-orange-500/50 flex-shrink-0"
+          >
+            <Flame className="w-4 h-4 text-orange-400" />
+            Practice Drill
+          </Button>
+        </div>
+      </div>
+      
       {/* Readiness Snapshot - 6 Domain Tiles */}
       <div className="glass rounded-xl p-4">
-        <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-primary" />
-          Readiness Snapshot
-        </h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            <Target className="w-5 h-5 text-primary" />
+            Readiness Snapshot
+          </h2>
+          <HelpTip title="What is this?">
+            This shows how prepared we are in 6 key areas. Green &quot;OK&quot; means we have enough people. 
+            Yellow &quot;WARN&quot; means we&apos;re low. Red &quot;P0&quot; means we have a critical gap that needs attention.
+          </HelpTip>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          At a glance: do we have enough trained people in each critical area?
+        </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {Object.entries(analytics.coverage.domains).map(([domain, data]) => (
             <button
@@ -803,10 +838,20 @@ const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScore
       
       {/* Skill Coverage Visualization */}
       <div className="glass rounded-xl p-4">
-        <h3 className="font-semibold mb-4 flex items-center gap-2">
-          <Layers className="w-4 h-4 text-violet-400" />
-          Skill Coverage Overview
-        </h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold flex items-center gap-2">
+            <Layers className="w-4 h-4 text-violet-400" />
+            Skill Coverage Overview
+          </h3>
+          <HelpTip>
+            The colored bars show how well-covered each area is. 
+            Taller bars = more people with those skills. 
+            We want all bars to be at least halfway full.
+          </HelpTip>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          Visual view of how many people we have trained in each area.
+        </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {Object.entries(analytics.coverage.domains).map(([domain, data]) => {
             const coveragePercent = Math.min(100, Math.round((data.qualifiedCount / Math.max(analytics.population.membersTotal * 0.3, 3)) * 100));
