@@ -275,10 +275,10 @@ function HelpGuideContent({
 
 export const COMMON_LEGEND_ITEMS = {
   statusDots: [
-    { icon: () => <div className="w-2 h-2 rounded-full bg-success" />, label: 'Online / OK', description: 'System or member is active and healthy', color: 'text-success', bgColor: 'bg-success/20' },
-    { icon: () => <div className="w-2 h-2 rounded-full bg-warning" />, label: 'Warning / Degraded', description: 'Needs attention or partially available', color: 'text-warning', bgColor: 'bg-warning/20' },
-    { icon: () => <div className="w-2 h-2 rounded-full bg-destructive" />, label: 'Critical / Offline', description: 'Requires immediate attention or unavailable', color: 'text-destructive', bgColor: 'bg-destructive/20' },
-    { icon: () => <div className="w-2 h-2 rounded-full bg-muted-foreground" />, label: 'Unknown', description: 'Status cannot be determined', color: 'text-muted-foreground', bgColor: 'bg-muted/20' },
+    { iconElement: <div className="w-2 h-2 rounded-full bg-success" />, label: 'Online / OK', description: 'System or member is active and healthy', color: 'text-success', bgColor: 'bg-success/20' },
+    { iconElement: <div className="w-2 h-2 rounded-full bg-warning" />, label: 'Warning / Degraded', description: 'Needs attention or partially available', color: 'text-warning', bgColor: 'bg-warning/20' },
+    { iconElement: <div className="w-2 h-2 rounded-full bg-destructive" />, label: 'Critical / Offline', description: 'Requires immediate attention or unavailable', color: 'text-destructive', bgColor: 'bg-destructive/20' },
+    { iconElement: <div className="w-2 h-2 rounded-full bg-muted-foreground" />, label: 'Unknown', description: 'Status cannot be determined', color: 'text-muted-foreground', bgColor: 'bg-muted/20' },
   ],
   
   severityBadges: [
@@ -289,8 +289,8 @@ export const COMMON_LEGEND_ITEMS = {
   ],
   
   dataSourceBadges: [
-    { icon: () => <span className="text-[8px] font-bold text-amber-400">MOCK</span>, label: 'MOCK DATA', description: 'Using simulated data - backend not connected', color: 'text-amber-400', bgColor: 'bg-amber-500/20' },
-    { icon: () => <span className="text-[8px] font-bold text-success">LIVE</span>, label: 'LIVE', description: 'Real-time data from OMEGA backend', color: 'text-success', bgColor: 'bg-success/20' },
+    { iconElement: <span className="text-[8px] font-bold text-amber-400">MOCK</span>, label: 'MOCK DATA', description: 'Using simulated data - backend not connected', color: 'text-amber-400', bgColor: 'bg-amber-500/20' },
+    { iconElement: <span className="text-[8px] font-bold text-success">LIVE</span>, label: 'LIVE', description: 'Real-time data from OMEGA backend', color: 'text-success', bgColor: 'bg-success/20' },
   ],
 };
 
