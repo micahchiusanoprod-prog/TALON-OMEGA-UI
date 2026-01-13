@@ -202,11 +202,6 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
       onClose={() => setShowAdminConsole(false)} 
     />
     
-    {/* FAQ Page */}
-    {showFAQ && (
-      <FAQPage onClose={() => setShowFAQ(false)} />
-    )}
-    
     {/* Help Center */}
     <HelpCenter
       isOpen={showHelpCenter}
