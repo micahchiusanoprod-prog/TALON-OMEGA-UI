@@ -26,6 +26,8 @@ import {
   generateMockIncidents, generateMockScoreConfig, calculateMemberScores
 } from '../mock/communityMockData';
 import OfficialTeamsBulletins from './OfficialTeamsBulletins';
+import HelpGuidePanel, { COMMON_LEGEND_ITEMS, COMMON_TROUBLESHOOTING } from './HelpGuidePanel';
+import { DataSourceBadge } from './DataStateIndicators';
 
 // ============================================================
 // RBAC CONTEXT & HOOKS
