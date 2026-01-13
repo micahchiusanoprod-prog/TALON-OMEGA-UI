@@ -109,15 +109,16 @@ export default function HelpGuidePanel({
             {/* Dropdown Panel */}
             <div 
               ref={dropdownRef}
-              className="fixed w-[calc(100vw-2rem)] sm:w-96 max-w-md glass rounded-xl border border-border shadow-2xl overflow-hidden"
+              className="fixed glass rounded-xl border border-border shadow-2xl overflow-hidden"
               style={{ 
                 zIndex: 9999,
                 top: dropdownPosition.top,
-                left: '1rem',
-                right: '1rem',
-                ...(window.innerWidth >= 640 && {
-                  left: 'auto',
-                  right: Math.max(16, dropdownPosition.right),
+                ...(dropdownPosition.isMobile ? {
+                  left: 16,
+                  right: 16,
+                  width: 'auto',
+                } : {
+                  right: dropdownPosition.right,
                   width: '24rem',
                 }),
               }}
