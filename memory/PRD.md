@@ -13,6 +13,68 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: Pi-Ready Deployment & Audit Panel (January 13, 2026)
+
+### Pi-Ready Deployment Package
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Hash Routing** | ✅ | Switched from BrowserRouter to HashRouter for static file compatibility |
+| **Runtime Config** | ✅ | `/config.js` with `window.OMEGA_CONFIG` for API_BASE, KIWIX_BASE, USE_MOCK_DATA |
+| **Build Scripts** | ✅ | `yarn build` and `yarn build:pi` for release packages |
+| **Package Release Script** | ✅ | Auto-generates timestamped release in `deploy/releases/<timestamp>/` |
+| **nginx Config** | ✅ | Pre-configured server block for Pi deployment |
+| **Install Script** | ✅ | `install.sh` for one-command deployment |
+| **Self-Test Guide** | ✅ | `SELFTEST.md` with verification checklist |
+| **Deployment Docs** | ✅ | `README_DEPLOY.md` with full deployment instructions |
+
+### System Status Panel
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Status Button in Header** | ✅ | Shows connection state (Connected/Degraded/Not Connected) |
+| **BUILD INFO Section** | ✅ | Version, Environment, Build Timestamp |
+| **CONNECTION STATUS Section** | ✅ | Connection state with last ping time and response latency |
+| **CONFIGURATION Section** | ✅ | API Base URL, Kiwix Base URL, Data Source (MOCK/LIVE) |
+| **ENDPOINT STATUS Section** | ✅ | Expandable list with health, metrics, sensors endpoint status |
+| **Run Self Test Button** | ✅ | Tests all endpoints and shows PASS/FAIL results |
+| **Copy Debug Info Button** | ✅ | Copies full debug info to clipboard |
+| **View Audit Report Link** | ✅ | Opens Audit Panel from System Status |
+
+### Capability Coverage / Audit Panel
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Admin Navigation** | ✅ | "Audit" tab in Admin Console + link in System Status |
+| **Summary Stats** | ✅ | Implemented/Mocked/Missing counts with Coverage % |
+| **UI Inventory** | ✅ | 15 components with paths, data modes, planned endpoints |
+| **Endpoint Coverage** | ✅ | 8 backend endpoints with REQUIRED tags and test capability |
+| **Feature Parity Checklist** | ✅ | 8 categories (Operations, Backups, Mesh, Keys, Community, Kiwix, Network, GPS) |
+| **Run Tests Button** | ✅ | Tests all endpoints with timeout handling |
+| **Copy Report Button** | ✅ | Generates JSON audit report for clipboard |
+| **Priority Badges** | ✅ | P0/P1/P2 priority indicators per feature |
+| **Lazy Loading** | ✅ | React.lazy() to avoid circular dependencies |
+
+### Quick Tools Bar Fix
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Scroll Padding** | ✅ | Added px-4 padding to prevent button cutoff |
+| **Mobile Scroll** | ✅ | Smooth horizontal scroll on 375px width |
+| **Fade Indicators** | ✅ | Gradient edges showing more content available |
+| **Right Spacer** | ✅ | Extra spacer ensures last button is fully visible |
+
+### Files Created/Modified
+- `/app/frontend/src/App.js` - HashRouter implementation
+- `/app/frontend/src/config.js` - Added ally, api, retry, features.enableMockData configs
+- `/app/frontend/src/components/SystemStatusPanel.jsx` - Complete System Status panel
+- `/app/frontend/src/components/AuditPanel.jsx` - NEW: Capability Coverage Audit panel
+- `/app/frontend/src/components/Header.jsx` - Added SystemStatusButton import
+- `/app/frontend/src/components/AdminConsole.jsx` - Added Audit tab with lazy loading
+- `/app/frontend/src/components/QuickToolsBar.jsx` - Fixed scroll cutoff
+- `/app/frontend/src/contexts/ConnectionContext.jsx` - Added defensive config access
+- `/app/frontend/package.json` - Added homepage, build:pi script
+- `/app/frontend/scripts/package-release.js` - NEW: Release packager
+- `/app/frontend/README_DEPLOY.md` - NEW: Deployment guide
+
+---
+
 ## ✅ COMPLETED: Team Builder Enhancements (January 13, 2026)
 
 ### Enhanced Team Builder
