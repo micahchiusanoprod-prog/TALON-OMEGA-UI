@@ -173,15 +173,6 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
           {/* Right: Quick Actions with improved depth */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button
-              onClick={() => setShowFAQ(true)}
-              className="glass px-2 sm:px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm flex items-center gap-1.5"
-              title="Help & FAQ"
-              data-testid="faq-btn"
-            >
-              <HelpCircle className="w-4 h-4" />
-              <span className="hidden sm:inline text-xs">FAQ</span>
-            </button>
-            <button
               onClick={() => setShowAdminConsole(true)}
               className="glass px-2 sm:px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm"
               title="Admin Console"
