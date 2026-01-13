@@ -11,6 +11,49 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: Community Hub - Team Builder & Polish (January 13, 2026)
+
+### NEW: Team Builder Feature
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Team Builder Button** | ✅ | Gradient button in Directory tab with sparkle icons |
+| **3-Step Wizard** | ✅ | Visual progress steps: Select Type → Customize → Results |
+| **6 Team Presets** | ✅ | Emergency Response, Supply Run, Infrastructure Repair, Medical Team, Comms Setup, Custom |
+| **Preset Configuration** | ✅ | Each preset has icon, color, description, required/optional skills, min/max size |
+| **Team Size Slider** | ✅ | Adjustable within preset's min/max range |
+| **Prefer Online Toggle** | ✅ | Prioritizes currently online members |
+| **Required Skills Selection** | ✅ | Multi-select with red highlighting for must-have skills |
+| **Optional Skills Selection** | ✅ | Multi-select with blue highlighting for nice-to-have skills |
+| **AI Team Generation** | ✅ | Algorithm scores profiles by skill match, online status, community score |
+| **Skill Coverage Priority** | ✅ | Ensures required skills are covered before filling slots |
+| **Team Stats Display** | ✅ | Team Size, Online Now, Required Coverage %, Unique Skills count |
+| **Missing Skills Warning** | ✅ | Yellow alert for uncovered required skills |
+| **Generated Team List** | ✅ | Members with crown for leader, match percentage, online status |
+| **Copy List Action** | ✅ | Copies team names to clipboard |
+| **Save Team Action** | ✅ | Saves team with timestamp for future reference |
+| **Notify Team Action** | ✅ | Mock notification to assigned members |
+| **Saved Teams History** | ✅ | Shows last 3 saved teams in preset selector |
+
+### NEW: Skill Coverage Visualization
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Coverage Overview Panel** | ✅ | New panel below Readiness Snapshot |
+| **6 Domain Cards** | ✅ | Medical, Comms, Security, FoodWater, Engineering, Logistics |
+| **Visual Fill Bars** | ✅ | Animated progress bars showing domain coverage |
+| **Domain-Specific Colors** | ✅ | Rose/Cyan/Amber/Emerald/Orange/Violet per domain |
+| **Coverage Count Display** | ✅ | Large number showing qualified members per domain |
+
+### UI Polish & Optimizations
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Animated Transitions** | ✅ | Progress bars have 0.5s ease-out transitions |
+| **Gradient Backgrounds** | ✅ | Team Builder button has violet→fuchsia gradient |
+| **Consistent Icons** | ✅ | Added Wand2, Sparkles, Crown, Bookmark, Layers icons |
+| **Hover States** | ✅ | All clickable elements have hover feedback |
+| **Status Dots** | ✅ | Consistent online/offline indicators throughout |
+
+---
+
 ## ✅ COMPLETED: Community Hub - Full Operations Hub Upgrade (January 9, 2026)
 
 ### Overview Tab - Operations Hub Features
@@ -19,6 +62,7 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 | **Readiness Snapshot** | ✅ | 6 domain tiles (Medical, Comms, Security, Food & Water, Engineering, Logistics) |
 | **Domain Tile Data** | ✅ | Qualified count, online count, redundancy level, status badge (OK/WARN/P0) |
 | **Domain Deep Links** | ✅ | Clicking domain tile navigates to Analytics with filter |
+| **Skill Coverage Overview** | ✅ | NEW: Visual coverage bars for each domain |
 | **Community Pulse** | ✅ | Online/Offline/New Members (7d)/Comms Activity (24h) |
 | **Open Incidents Row** | ✅ | Admin sees count + click to incidents; non-admin sees lock + "—" |
 | **Single Points of Failure** | ✅ | Panel showing skills with 0-1 holders, P0/P1 badges, Task/Candidates buttons |
@@ -41,6 +85,7 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 | **Online Only Toggle** | ✅ | Filter to show only online members |
 | **Filters Panel** | ✅ | Skills multi-select, Languages multi-select, Education select, Class select |
 | **Sort Options** | ✅ | Online First (default), Name A-Z, Most Skilled |
+| **Team Builder** | ✅ | NEW: AI-powered team composition tool |
 | **Profile Card Grid** | ✅ | Photo, name, status dot, top 3 skills, languages, conditional fields |
 | **Privacy Redaction** | ✅ | Fields show "Hidden" with eye-off icon for non-opted-in, non-admin viewers |
 | **Admin Score Badge** | ✅ | Admin sees community score with color-coded threshold status |
