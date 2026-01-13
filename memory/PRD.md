@@ -11,6 +11,61 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: Community Hub - Rich Node Card Integration (January 13, 2026)
+
+### NEW: Enhanced Profile Data (Node Card Integration)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Callsigns** | ✅ | Display callsigns like "PHOENIX", "GUARDIAN" on profile cards and drawer |
+| **User Status Badges** | ✅ | GOOD (green), OKAY (yellow), NEED_HELP (red), OFFLINE (gray) status indicators |
+| **Connection Type & Strength** | ✅ | Wi-Fi, Mesh, LoRa, Cellular, Offline with signal strength percentage |
+| **Battery Status** | ✅ | Battery percentage with color coding (green >50%, yellow 20-50%, red <20%) |
+| **Blood Type Display** | ✅ | Admin-only blood type indicator (🩸 O+, A+, B+, etc.) |
+| **Equipment Count** | ✅ | Shows number of equipment items (e.g., "2 equipment items") |
+| **Physical Description** | ✅ | Hair color, eye color, distinguishing features |
+| **Medical Information** | ✅ | Blood type, allergies, conditions, medications (privacy-protected) |
+| **Equipment Loadout** | ✅ | Detailed equipment list with category icons |
+| **Device Stats** | ✅ | Model, CPU %, RAM %, Battery %, Temperature (°C/°F) |
+| **Location Data** | ✅ | Lat, Lon, Grid, Accuracy with Copy and Open Maps buttons |
+| **Emergency Contact** | ✅ | Name, relation, contact method |
+| **Notes** | ✅ | Member notes and remarks |
+
+### NEW: Profile Drawer Tabs
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Profile Tab** | ✅ | Physical description, skills, languages, certifications, emergency contact, notes |
+| **Medical Tab** | ✅ | Blood type, allergies, conditions, medications (or "Hidden" if privacy off) |
+| **Equipment Tab** | ✅ | Equipment loadout with category icons |
+| **Device Tab** | ✅ | CPU/RAM/Battery/Temp stats, location with Copy and Open Maps |
+
+### NEW: Enhanced Privacy Redaction
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Medical Privacy** | ✅ | Medical info hidden for non-admins when showMedical is false |
+| **Location Privacy** | ✅ | Location data hidden for non-admins when showLocation is false |
+| **Blood Type Admin-Only** | ✅ | Blood type only visible to admins on profile cards |
+
+---
+
+## ✅ COMPLETED: FAQ Migration to Help Center (January 13, 2026)
+
+### FAQ Button Removal
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **FAQ Button Removed** | ✅ | FAQ button removed from header right side |
+| **Header Cleanup** | ✅ | Only Settings (gear) and Theme toggle remain on right side |
+
+### NEW: Help Center FAQ Section
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **FAQ Category Added** | ✅ | New "Frequently Asked Questions" category in Help Center |
+| **11 FAQ Categories** | ✅ | Connect, Navigate, Comms Hub, Map & GPS, Power, Library, Media, Files, Profiles, Admin, Fix It |
+| **Collapsible Categories** | ✅ | Each category expands to show questions |
+| **Expandable Questions** | ✅ | Each question expands to show the answer |
+| **FAQCategory Component** | ✅ | Reusable component with icon, color, description, question count |
+
+---
+
 ## ✅ COMPLETED: Community Hub - Drill Mode & Explainer Text (January 13, 2026)
 
 ### NEW: Drill Mode - Emergency Practice Simulator
