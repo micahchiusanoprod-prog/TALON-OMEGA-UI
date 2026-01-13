@@ -1008,14 +1008,27 @@ const DirectoryTab = ({ profiles, memberScores, scoreConfig, initialFilters, onO
         )}
       </div>
       
-      {/* Results Count */}
+      {/* Results Count + Team Builder */}
       <div className="flex items-center justify-between text-sm">
         <span className="text-muted-foreground">
           Showing <span className="font-medium text-foreground">{filteredProfiles.length}</span> of {profiles.length} members
         </span>
-        {hasActiveFilters && (
-          <span className="text-xs text-primary">Filtered results</span>
-        )}
+        <div className="flex items-center gap-2">
+          {hasActiveFilters && (
+            <span className="text-xs text-primary">Filtered results</span>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowTeamBuilder(true)}
+            className="gap-1.5 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border-violet-500/30 hover:border-violet-500/50"
+            data-testid="team-builder-btn"
+          >
+            <Wand2 className="w-4 h-4 text-violet-400" />
+            Team Builder
+            <Sparkles className="w-3 h-3 text-fuchsia-400" />
+          </Button>
+        </div>
       </div>
       
       {/* Profile Cards Grid */}
@@ -1039,6 +1052,14 @@ const DirectoryTab = ({ profiles, memberScores, scoreConfig, initialFilters, onO
           <Button variant="link" onClick={clearFilters} className="mt-2">Clear filters</Button>
         </div>
       )}
+      
+      {/* Team Builder Drawer */}
+      <TeamBuilderDrawer
+        isOpen={showTeamBuilder}
+        onClose={() => setShowTeamBuilder(false)}
+        profiles={profiles}
+        memberScores={memberScores}
+      />
     </div>
   );
 };
