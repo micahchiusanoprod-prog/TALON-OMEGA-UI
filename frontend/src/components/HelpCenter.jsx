@@ -40,6 +40,8 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
+import HelpGuidePanel, { COMMON_LEGEND_ITEMS, COMMON_TROUBLESHOOTING } from './HelpGuidePanel';
+import { DataSourceBadge } from './DataStateIndicators';
 
 // ============================================================
 // HELP CENTER CONTENT - FROM OMEGA FIELD MANUAL
