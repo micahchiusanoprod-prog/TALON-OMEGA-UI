@@ -802,15 +802,33 @@ const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScore
               and quickly find the right people when you need help.
             </p>
           </div>
-          <Button 
-            size="sm" 
-            variant="outline" 
-            onClick={onOpenDrill}
-            className="gap-1 border-orange-500/30 hover:border-orange-500/50 flex-shrink-0"
-          >
-            <Flame className="w-4 h-4 text-orange-400" />
-            Practice Drill
-          </Button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <HelpGuidePanel
+              pageTitle="Community Hub"
+              quickHelp="Your family's coordination center for skills, teams, and readiness."
+              variant="compact"
+              legendItems={[
+                ...COMMON_LEGEND_ITEMS.statusDots,
+                { icon: Target, label: 'Readiness Snapshot', description: 'Shows coverage for 6 critical skill domains', color: 'text-primary', bgColor: 'bg-primary/20' },
+                { icon: Users, label: 'Skill Coverage', description: 'Visual bars showing qualified members per domain', color: 'text-violet-400', bgColor: 'bg-violet-500/20' },
+              ]}
+              troubleshootingItems={[
+                COMMON_TROUBLESHOOTING.noData,
+                { problem: 'Domain shows P0 (red)', solution: 'Critical skill gap - no one is qualified. Consider training or recruiting.' },
+                { problem: 'Low redundancy warning', solution: 'Only 1-2 people cover this skill. Cross-train others for backup.' },
+              ]}
+              whatItDoes="The Community Hub helps you manage your group's preparedness. The Overview shows real-time readiness across Medical, Comms, Security, Food & Water, Engineering, and Logistics. Use the Directory to find specific skills, and Team Builder to assemble response teams quickly."
+            />
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={onOpenDrill}
+              className="gap-1 border-orange-500/30 hover:border-orange-500/50"
+            >
+              <Flame className="w-4 h-4 text-orange-400" />
+              Practice Drill
+            </Button>
+          </div>
         </div>
       </div>
       
@@ -820,6 +838,7 @@ const OverviewTab = ({ profiles, analytics, incidents, commsPreview, memberScore
           <h2 className="text-lg font-bold flex items-center gap-2">
             <Target className="w-5 h-5 text-primary" />
             Readiness Snapshot
+            <DataSourceBadge panelId="readiness-snapshot" />
           </h2>
           <HelpTip title="What is this?">
             This shows how prepared we are in 6 key areas. Green &quot;OK&quot; means we have enough people. 
