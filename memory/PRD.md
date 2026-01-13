@@ -13,6 +13,51 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## ✅ COMPLETED: Team Builder Enhancements (January 13, 2026)
+
+### Enhanced Team Builder
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Custom Team Name** | ✅ | Input field to enter custom team names |
+| **Team Icon Selector** | ✅ | 8 icons: Team, Security, Medical, Comms, Engineering, Logistics, Food/Water, Mission |
+| **Team Color Selector** | ✅ | 6 colors: violet, cyan, rose, amber, emerald, blue |
+| **Team Size Cap** | ✅ | Shows "Max: N (connected devices)" based on actual device count |
+| **Prefer Online Members** | ✅ | Checkbox to prioritize online team members |
+| **Placeholder Slots** | ✅ | "Include Placeholder Slots" with SIMULATION badge for planning |
+| **Placeholder Count Slider** | ✅ | Adjust number of TBD slots |
+
+### Team Builder Results (Step 3)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Team Header** | ✅ | Custom name with icon and color |
+| **Coverage Grade Badge** | ✅ | COMPLETE (green), GOOD (blue), PARTIAL (yellow), INSUFFICIENT (red) |
+| **Role Coverage Section** | ✅ | Shows skill names with multiplier counts (3x, 1x) and colored dots |
+| **Member Avatars** | ✅ | Initials-based avatars (LW, MJ, AP) with team color |
+| **Match Percentages** | ✅ | Per-member match score (100%, 50%, 25%) |
+| **Placeholder Display** | ✅ | Dashed border TBD slots with "+" icon |
+| **Missing Skills Warning** | ✅ | Yellow warning box listing uncovered required skills |
+
+---
+
+## ✅ COMPLETED: HelpGuidePanel & DataSourceBadge Integration (January 13, 2026)
+
+### HelpGuidePanel Integrated
+| Page | Status | Notes |
+|------|--------|-------|
+| **Community Hub** | ✅ | Quick Help button in welcome banner with Legend, Troubleshooting, Page Overview tabs |
+| **LOGS Analytics** | ✅ | Quick Help button in header area below title |
+| **Help Center** | ✅ | Quick Help button in header right area next to Print button |
+
+### DataSourceBadge Expanded
+| Panel | Status | Notes |
+|-------|--------|-------|
+| **Readiness Snapshot** | ✅ | MOCK DATA badge on header (data-testid: data-source-badge-readiness-snapshot) |
+| **Skill Coverage Overview** | ✅ | MOCK DATA badge on header (data-testid: data-source-badge-skill-coverage) |
+| **Official Teams & Updates** | ✅ | MOCK DATA badge on header (data-testid: data-source-badge-official-teams) |
+| **LOGS Analytics** | ✅ | MOCK DATA badge in header area (data-testid: data-source-badge-logs-analytics) |
+
+---
+
 ## ✅ COMPLETED: i18n, Connection Indicators & UI Polish (January 13, 2026)
 
 ### NEW: Global Language Switcher (i18n-ready)
