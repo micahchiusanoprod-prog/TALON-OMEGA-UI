@@ -8,6 +8,7 @@ import LogsAnalytics from './LogsAnalytics';
 import CommunityHub from './CommunityHub';
 import LanguageSelector from './LanguageSelector';
 import { ConnectionStatusChip } from './DataStateIndicators';
+import SystemStatusPanel, { SystemStatusButton } from './SystemStatusPanel';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Header({ metrics, health, theme, onToggleTheme }) {
@@ -15,6 +16,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
   const [showHelpCenter, setShowHelpCenter] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
   const [showCommunity, setShowCommunity] = useState(false);
+  const [showSystemStatus, setShowSystemStatus] = useState(false);
   const { t } = useLanguage();
   
   // Derive device status from health
