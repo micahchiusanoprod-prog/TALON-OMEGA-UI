@@ -13,6 +13,63 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
+## 🚀 NEXT PHASE: Entertainment Expansion + Live Wiring (v2.0)
+
+### Decision Summary (January 13, 2026)
+- **Tech Stack:** React build artifact with HashRouter
+- **Deployment:** Symlink swap to `/var/www/html/` with versioned rollback
+- **Theme:** Dark-first with Light parity
+- **Animation:** Subtle only (micro-interactions, hover/focus, drawer transitions)
+- **Priority Order:** Live wiring (1) → Visual polish (2) → Performance (3) → New features (4)
+
+### Backend URLs
+- **API_BASE:** `http://127.0.0.1:8093`
+- **KIWIX_BASE:** `http://127.0.0.1:8090`
+- **JELLYFIN_BASE:** `http://127.0.0.1:8096`
+
+### P0 - Live Wiring (Critical Path)
+| Feature | Status | Endpoint |
+|---------|--------|----------|
+| Health endpoint wiring | 🔴 TODO | `/cgi-bin/health.py` |
+| Metrics endpoint wiring | 🔴 TODO | `/cgi-bin/metrics.py` |
+| Sensors endpoint wiring | 🔴 TODO | `/cgi-bin/sensors.py` |
+| Security endpoints wiring | 🔴 TODO | `/cgi-bin/keys.py`, `/cgi-bin/keysync.py` |
+| Admin endpoints wiring | 🔴 TODO | `/cgi-bin/backup.py`, `/cgi-bin/dm.py` |
+| Connection state management | 🔴 TODO | 3s timeout, retry buttons, auto-retry |
+
+### P1 - FULL Implementation
+| Feature | Status |
+|---------|--------|
+| Entertainment page (top-level) | 🔴 TODO |
+| Movies/TV carousels | 🔴 TODO |
+| Movie Night Mode | 🔴 TODO |
+| Music tab (full player) | 🔴 TODO |
+| Global Search federation | 🔴 TODO |
+| OMEGA wrapper - Kiwix | 🔴 TODO |
+| OMEGA wrapper - Jellyfin | 🔴 TODO |
+| Services launcher page | 🔴 TODO |
+| Team indicators on profiles | 🔴 TODO |
+| Activity tracker | 🔴 TODO |
+
+### P2 - SCAFFOLD Implementation
+| Feature | Status |
+|---------|--------|
+| Games tab | 🔴 TODO |
+| Multiplayer hub | 🔴 TODO |
+| Creator tools | 🔴 TODO |
+| Debate Arena | 🔴 TODO |
+| Photos hub | 🔴 TODO |
+| Personal Vault | 🔴 TODO |
+| New User Setup wizard | 🔴 TODO |
+| In-UI Release Notes | 🔴 TODO |
+
+### Related Documents
+- `/app/memory/IMPLEMENTATION_PROMPT.md` - Full implementation spec
+- `/app/memory/BACKLOG.md` - P0/P1/P2 with acceptance tests
+- `/app/memory/DEPLOYMENT_CHECKLIST.md` - Pi deployment guide
+
+---
+
 ## ✅ COMPLETED: Pi-Ready Deployment & Audit Panel (January 13, 2026)
 
 ### Pi-Ready Deployment Package
