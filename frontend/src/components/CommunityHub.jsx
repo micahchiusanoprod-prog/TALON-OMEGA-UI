@@ -2443,7 +2443,8 @@ const TeamBuilderDrawer = ({ isOpen, onClose, profiles, memberScores }) => {
                           <p className={`text-sm font-bold ${
                             member.requiredCoverage >= 0.5 ? 'text-success' : 'text-warning'
                           }`}>{Math.round(member.requiredCoverage * 100)}%</p>
-                      </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
