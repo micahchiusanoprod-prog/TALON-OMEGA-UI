@@ -41,6 +41,34 @@ export default function HelpGuidePanel({
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('legend');
   const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  
+  // Update dropdown position when expanded
+  useEffect(() => {
+    if (isExpanded && buttonRef.current && variant === 'compact') {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+  }, [isExpanded, variant]);
+  
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (variant === 'compact' && dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+          buttonRef.current && !buttonRef.current.contains(event.target)) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded && variant === 'compact') {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isExpanded, variant]);
 
   const tabs = [
     { id: 'legend', label: 'Legend', icon: List, show: legendItems.length > 0 },
