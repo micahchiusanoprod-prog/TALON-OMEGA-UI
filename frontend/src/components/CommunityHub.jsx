@@ -2896,6 +2896,21 @@ export default function CommunityHub({ isOpen, onClose }) {
           memberScores={memberScores}
           scoreConfig={scoreConfig}
         />
+        
+        {/* Welcome Modal */}
+        <WelcomeModal
+          isOpen={showWelcome}
+          onClose={dismissWelcome}
+          onStartTour={startDrillFromWelcome}
+        />
+        
+        {/* Drill Mode */}
+        <DrillMode
+          isOpen={showDrill}
+          onClose={() => setShowDrill(false)}
+          profiles={profiles}
+          memberScores={memberScores}
+        />
       </div>
     </RBACProvider>
   );
