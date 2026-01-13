@@ -119,7 +119,7 @@ export default function SearchBar() {
                       {category.label}
                     </div>
                     <div className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                      Search for &ldquo;{query}&rdquo;
+                      {category.hint} • Search for &ldquo;{query}&rdquo;
                     </div>
                   </div>
                 </button>
