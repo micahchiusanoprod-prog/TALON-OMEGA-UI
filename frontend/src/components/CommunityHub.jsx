@@ -2375,102 +2375,399 @@ const ProfileCard = ({ profile, score, scoreConfig, onOpen, isAdmin }) => {
   );
 };
 
-// Profile Drawer
+// Profile Drawer - Enhanced with full Node Card data
 const ProfileDrawer = ({ profile, isOpen, onClose, memberScores, scoreConfig }) => {
   const { isAdmin } = useRBAC();
   const score = memberScores?.[profile?.userId];
+  const [activeTab, setActiveTab] = useState('profile');
   
   if (!profile) return null;
   
+  const userStatusConfig = USER_STATUS[profile.userStatus] || USER_STATUS.OFFLINE;
+  const connectionConfig = CONNECTION_TYPES[profile.connection?.type] || CONNECTION_TYPES.OFFLINE;
+  
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-        <SheetHeader>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center font-bold text-lg">
+      <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
+        {/* Hero Header */}
+        <div className="relative -mx-6 -mt-6 mb-6">
+          <div className="h-24 bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30" />
+          <div className="absolute inset-x-0 bottom-0 translate-y-1/2 flex items-end px-6">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500/50 to-fuchsia-500/50 flex items-center justify-center font-bold text-2xl border-4 border-background shadow-xl">
               {profile.displayName?.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </div>
-            <div>
-              <SheetTitle className="flex items-center gap-2">
-                {profile.displayName}
-                <StatusDot online={profile.stats.online} />
-              </SheetTitle>
-              <SheetDescription>{profile.class || 'Community Member'}</SheetDescription>
+            <div className="flex-1 ml-4 pb-2">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold">{profile.displayName}</h2>
+                <span className={`px-2 py-0.5 rounded text-xs font-bold ${userStatusConfig.color}`}>
+                  {userStatusConfig.label}
+                </span>
+              </div>
+              {profile.callsign && (
+                <p className="text-primary font-mono font-bold">"{profile.callsign}"</p>
+              )}
+              <p className="text-xs text-muted-foreground">{profile.class || 'Community Member'}</p>
             </div>
           </div>
-        </SheetHeader>
+        </div>
         
-        <div className="mt-6 space-y-6">
-          {/* Admin Score */}
-          {isAdmin && score && (
-            <div className={`p-3 rounded-lg ${
-              score.flag === 'intervention' ? 'bg-destructive/10 border border-destructive/30' :
-              score.flag === 'restricted' ? 'bg-orange-500/10 border border-orange-500/30' :
-              score.flag === 'monitor' ? 'bg-warning/10 border border-warning/30' :
-              'bg-success/10 border border-success/30'
-            }`}>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Community Score</span>
-                <span className={`text-2xl font-bold ${
-                  score.flag === 'intervention' ? 'text-destructive' :
-                  score.flag === 'restricted' ? 'text-orange-400' :
-                  score.flag === 'monitor' ? 'text-warning' :
-                  'text-success'
-                }`}>{score.score}</span>
+        <div className="mt-14 space-y-6">
+          {/* Connection & Device Status Bar */}
+          <div className="flex items-center justify-between p-3 rounded-lg glass">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${profile.stats.online ? 'bg-success animate-pulse' : 'bg-muted-foreground'}`} />
+              <span className={connectionConfig.color}>{connectionConfig.label}</span>
+              {profile.connection?.strength > 0 && (
+                <span className="text-sm">{profile.connection.strength}% signal</span>
+              )}
+            </div>
+            {profile.device?.battery > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className={profile.device.battery > 50 ? 'text-success' : profile.device.battery > 20 ? 'text-warning' : 'text-destructive'}>
+                  ⚡ {profile.device.battery}%
+                </span>
               </div>
-              {score.flag && (
-                <p className="text-xs text-muted-foreground mt-1">Status: {score.flag}</p>
+            )}
+          </div>
+          
+          {/* Tab Navigation */}
+          <div className="flex border-b border-border/50">
+            {[
+              { id: 'profile', label: 'Profile', icon: User },
+              { id: 'medical', label: 'Medical', icon: Heart },
+              { id: 'equipment', label: 'Equipment', icon: Briefcase },
+              { id: 'device', label: 'Device', icon: Activity },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 py-2 text-xs font-medium transition-colors relative flex items-center justify-center gap-1 ${
+                  activeTab === tab.id ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <tab.icon className="w-3 h-3" />
+                {tab.label}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+          
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className="space-y-4">
+              {/* Admin Score */}
+              {isAdmin && score && (
+                <div className={`p-3 rounded-lg ${
+                  score.flag === 'intervention' ? 'bg-destructive/10 border border-destructive/30' :
+                  score.flag === 'restricted' ? 'bg-orange-500/10 border border-orange-500/30' :
+                  score.flag === 'monitor' ? 'bg-warning/10 border border-warning/30' :
+                  'bg-success/10 border border-success/30'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Community Score</span>
+                    <span className={`text-2xl font-bold ${
+                      score.flag === 'intervention' ? 'text-destructive' :
+                      score.flag === 'restricted' ? 'text-orange-400' :
+                      score.flag === 'monitor' ? 'text-warning' :
+                      'text-success'
+                    }`}>{score.score}</span>
+                  </div>
+                  {score.flag && (
+                    <p className="text-xs text-muted-foreground mt-1">Status: {score.flag}</p>
+                  )}
+                </div>
+              )}
+              
+              {/* Physical Description */}
+              <div className="glass rounded-lg p-4">
+                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" />
+                  Physical Description
+                </h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <InfoRow label="Age" value={profile.age !== null ? `${profile.age} years` : null} />
+                  <InfoRow label="Height" value={formatHeight(profile.anthro?.heightIn)} />
+                  <InfoRow label="Weight" value={formatWeight(profile.anthro?.weightLb)} />
+                  <InfoRow label="Education" value={profile.educationLevel !== null ? EDUCATION_LEVELS[profile.educationLevel]?.label : null} />
+                </div>
+                {profile.physical && (
+                  <div className="mt-3 pt-3 border-t border-border/50 grid grid-cols-2 gap-3 text-sm">
+                    <InfoRow label="Hair" value={profile.physical.hairColor} />
+                    <InfoRow label="Eyes" value={profile.physical.eyeColor} />
+                    {profile.physical.distinguishingFeatures && profile.physical.distinguishingFeatures !== 'None' && (
+                      <div className="col-span-2">
+                        <InfoRow label="Features" value={profile.physical.distinguishingFeatures} />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              {/* Skills */}
+              <div className="glass rounded-lg p-4">
+                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Award className="w-4 h-4 text-amber-400" />
+                  Skills ({profile.skills.length})
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {profile.skills.map(skill => (
+                    <SkillBadge key={skill} tagKey={skill} size="md" />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Languages */}
+              <div className="glass rounded-lg p-4">
+                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-cyan-400" />
+                  Languages
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {profile.languages.map(lang => (
+                    <LanguageBadge key={lang} code={lang} />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Certifications */}
+              {profile.certifications?.length > 0 && (
+                <div className="glass rounded-lg p-4">
+                  <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-violet-400" />
+                    Certifications
+                  </h4>
+                  <div className="flex flex-wrap gap-1">
+                    {profile.certifications.map(cert => (
+                      <span key={cert} className="px-2 py-1 rounded bg-primary/20 text-primary text-xs">
+                        {cert}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Emergency Contact */}
+              {profile.emergencyContact && (
+                <div className="glass rounded-lg p-4 border border-destructive/30">
+                  <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-destructive">
+                    <AlertCircle className="w-4 h-4" />
+                    Emergency Contact
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div><span className="text-muted-foreground">Name: </span>{profile.emergencyContact.name}</div>
+                    <div><span className="text-muted-foreground">Relation: </span>{profile.emergencyContact.relation}</div>
+                    <div className="col-span-2"><span className="text-muted-foreground">Contact: </span>{profile.emergencyContact.method}</div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Notes */}
+              {profile.notes && (
+                <div className="glass rounded-lg p-4">
+                  <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-muted-foreground" />
+                    Notes
+                  </h4>
+                  <p className="text-sm text-muted-foreground">{profile.notes}</p>
+                </div>
               )}
             </div>
           )}
           
-          {/* Personal Info */}
-          <div>
-            <h4 className="text-sm font-semibold mb-2">Personal Information</h4>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <InfoRow label="Age" value={profile.age !== null ? `${profile.age} years` : null} />
-              <InfoRow label="Height" value={formatHeight(profile.anthro?.heightIn)} />
-              <InfoRow label="Weight" value={formatWeight(profile.anthro?.weightLb)} />
-              <InfoRow label="Education" value={profile.educationLevel !== null ? EDUCATION_LEVELS[profile.educationLevel]?.label : null} />
+          {/* Medical Tab */}
+          {activeTab === 'medical' && (
+            <div className="space-y-4">
+              {profile.medical ? (
+                <>
+                  <div className="glass rounded-lg p-4 border border-rose-500/30">
+                    <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-rose-400">
+                      <Heart className="w-4 h-4" />
+                      Medical Information
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="p-2 rounded bg-rose-500/10">
+                        <p className="text-xs text-muted-foreground">Blood Type</p>
+                        <p className="font-bold text-rose-400 text-lg">{profile.medical.bloodType || 'Unknown'}</p>
+                      </div>
+                      <div className="p-2 rounded bg-secondary/50">
+                        <p className="text-xs text-muted-foreground">Allergies</p>
+                        <p className="font-medium">{profile.medical.allergies?.length > 0 ? profile.medical.allergies.join(', ') : 'None'}</p>
+                      </div>
+                    </div>
+                    {profile.medical.conditions?.length > 0 && profile.medical.conditions[0] !== 'None' && (
+                      <div className="mt-3">
+                        <p className="text-xs text-muted-foreground mb-1">Conditions</p>
+                        <div className="flex flex-wrap gap-1">
+                          {profile.medical.conditions.map((condition, i) => (
+                            <span key={i} className="px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-xs">
+                              {condition}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {profile.medical.medications?.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-xs text-muted-foreground mb-1">Medications</p>
+                        <div className="flex flex-wrap gap-1">
+                          {profile.medical.medications.map((med, i) => (
+                            <span key={i} className="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs">
+                              {med}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="glass rounded-lg p-8 text-center">
+                  <EyeOff className="w-12 h-12 mx-auto mb-3 text-amber-400/50" />
+                  <p className="text-amber-400 font-medium">Medical Information Hidden</p>
+                  <p className="text-xs text-muted-foreground mt-1">This member has chosen not to share medical details</p>
+                </div>
+              )}
             </div>
-          </div>
+          )}
           
-          {/* Skills */}
-          <div>
-            <h4 className="text-sm font-semibold mb-2">Skills ({profile.skills.length})</h4>
-            <div className="flex flex-wrap gap-1">
-              {profile.skills.map(skill => (
-                <SkillBadge key={skill} tagKey={skill} size="md" />
-              ))}
+          {/* Equipment Tab */}
+          {activeTab === 'equipment' && (
+            <div className="space-y-4">
+              {profile.equipment?.length > 0 ? (
+                <div className="glass rounded-lg p-4">
+                  <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-orange-400" />
+                    Equipment Loadout ({profile.equipment.length} items)
+                  </h4>
+                  <div className="space-y-2">
+                    {profile.equipment.map((item, i) => (
+                      <div key={i} className="flex items-center gap-3 p-2 rounded bg-secondary/50">
+                        <div className={`w-8 h-8 rounded flex items-center justify-center ${
+                          item.category === 'Medical' ? 'bg-rose-500/20' :
+                          item.category === 'Security' ? 'bg-amber-500/20' :
+                          item.category === 'Comms' ? 'bg-cyan-500/20' :
+                          item.category === 'Power' ? 'bg-emerald-500/20' :
+                          'bg-primary/20'
+                        }`}>
+                          {item.category === 'Medical' ? '🩺' :
+                           item.category === 'Security' ? '🛡️' :
+                           item.category === 'Comms' ? '📻' :
+                           item.category === 'Power' ? '⚡' :
+                           item.category === 'Navigation' ? '🧭' :
+                           item.category === 'FoodWater' ? '🌾' :
+                           '📦'}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">{item.category}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="glass rounded-lg p-8 text-center">
+                  <Briefcase className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
+                  <p className="text-muted-foreground">No equipment registered</p>
+                </div>
+              )}
             </div>
-          </div>
+          )}
           
-          {/* Languages */}
-          <div>
-            <h4 className="text-sm font-semibold mb-2">Languages</h4>
-            <div className="flex flex-wrap gap-1">
-              {profile.languages.map(lang => (
-                <LanguageBadge key={lang} code={lang} />
-              ))}
-            </div>
-          </div>
-          
-          {/* Certifications */}
-          {profile.certifications?.length > 0 && (
-            <div>
-              <h4 className="text-sm font-semibold mb-2">Certifications</h4>
-              <div className="flex flex-wrap gap-1">
-                {profile.certifications.map(cert => (
-                  <span key={cert} className="px-2 py-1 rounded bg-primary/20 text-primary text-xs">
-                    {cert}
-                  </span>
-                ))}
-              </div>
+          {/* Device Tab */}
+          {activeTab === 'device' && (
+            <div className="space-y-4">
+              {profile.device ? (
+                <>
+                  <div className="glass rounded-lg p-4">
+                    <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-cyan-400" />
+                      Device Status
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 rounded bg-secondary/50">
+                        <p className="text-xs text-muted-foreground">Model</p>
+                        <p className="font-medium">{profile.device.model || 'Unknown'}</p>
+                      </div>
+                      <div className="p-3 rounded bg-secondary/50">
+                        <p className="text-xs text-muted-foreground">Battery</p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-2 bg-background rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full ${profile.device.battery > 50 ? 'bg-success' : profile.device.battery > 20 ? 'bg-warning' : 'bg-destructive'}`}
+                              style={{ width: `${profile.device.battery}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium">{profile.device.battery}%</span>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded bg-secondary/50">
+                        <p className="text-xs text-muted-foreground">CPU</p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-2 bg-background rounded-full overflow-hidden">
+                            <div className="h-full bg-primary" style={{ width: `${profile.device.cpu}%` }} />
+                          </div>
+                          <span className="text-sm font-medium">{profile.device.cpu}%</span>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded bg-secondary/50">
+                        <p className="text-xs text-muted-foreground">RAM</p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-2 bg-background rounded-full overflow-hidden">
+                            <div className="h-full bg-violet-500" style={{ width: `${profile.device.ram}%` }} />
+                          </div>
+                          <span className="text-sm font-medium">{profile.device.ram}%</span>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded bg-secondary/50 col-span-2">
+                        <p className="text-xs text-muted-foreground">Temperature</p>
+                        <p className="font-medium">{profile.device.temp}°C / {Math.round(profile.device.temp * 9/5 + 32)}°F</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Location */}
+                  {profile.location?.lat && (
+                    <div className="glass rounded-lg p-4">
+                      <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-emerald-400" />
+                        Last Known Location
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div><span className="text-muted-foreground">Lat: </span>{profile.location.lat.toFixed(6)}</div>
+                        <div><span className="text-muted-foreground">Lon: </span>{profile.location.lon.toFixed(6)}</div>
+                        <div><span className="text-muted-foreground">Grid: </span>{profile.location.grid}</div>
+                        <div><span className="text-muted-foreground">Accuracy: </span>±{profile.location.accuracy}m</div>
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <Button size="sm" variant="outline" className="flex-1 text-xs" onClick={() => {
+                          navigator.clipboard.writeText(`${profile.location.lat}, ${profile.location.lon}`);
+                          toast.success('Coordinates copied!');
+                        }}>
+                          <Copy className="w-3 h-3 mr-1" />Copy
+                        </Button>
+                        <Button size="sm" variant="outline" className="flex-1 text-xs" onClick={() => {
+                          window.open(`https://www.google.com/maps?q=${profile.location.lat},${profile.location.lon}`, '_blank');
+                        }}>
+                          <ExternalLink className="w-3 h-3 mr-1" />Open Maps
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="glass rounded-lg p-8 text-center">
+                  <Activity className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
+                  <p className="text-muted-foreground">Device offline or not connected</p>
+                </div>
+              )}
             </div>
           )}
           
           {/* Actions */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 pt-4 border-t border-border">
             <Button className="flex-1" onClick={() => toast.info('DM feature coming soon')}>
               <Send className="w-4 h-4 mr-2" />Send Message
             </Button>
