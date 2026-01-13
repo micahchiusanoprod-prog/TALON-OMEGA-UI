@@ -10,7 +10,7 @@ import {
   Flashlight,
   X,
   HelpCircle,
-  Lightbulb,
+  Sparkles,
   Info
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -20,7 +20,7 @@ const QUICK_TOOLS = [
   { 
     id: 'quickguide', 
     name: 'Quick Guide', 
-    icon: Lightbulb, 
+    icon: Sparkles, 
     color: 'text-amber-400',
     description: 'Learn how to use OMEGA - tap for a quick overview',
     component: 'quickguide'
