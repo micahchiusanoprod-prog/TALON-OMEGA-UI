@@ -1190,7 +1190,7 @@ export default function SearchBar() {
               <div className="mt-4 pt-3 border-t border-border">
                 <span className="text-xs font-medium text-muted-foreground">Quick Access</span>
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                  {Object.values(SOURCE_META).slice(0, 4).map(src => (
+                  {Object.values(currentSourceMeta).slice(0, 4).map(src => (
                     <button
                       key={src.id}
                       onClick={() => handleScopeChange(src.id)}
@@ -1199,6 +1199,15 @@ export default function SearchBar() {
                     >
                       <src.icon className={`w-4 h-4 ${src.color}`} />
                       <span className="text-xs font-medium text-foreground">{src.label}</span>
+                      {src.status !== 'INDEXED' && (
+                        <span className={`text-[8px] px-1 py-0.5 rounded ${
+                          src.status === 'UNAVAILABLE' ? 'bg-red-500/20 text-red-500' 
+                            : src.status === 'NOT_INDEXED' ? 'bg-blue-500/20 text-blue-500'
+                            : 'bg-amber-500/20 text-amber-500'
+                        }`}>
+                          {src.status === 'NOT_INDEXED' ? 'N/A' : src.status === 'UNAVAILABLE' ? '!' : '⏳'}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
