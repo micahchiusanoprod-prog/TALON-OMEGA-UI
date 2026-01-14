@@ -1,0 +1,99 @@
+{
+  "generatedAt": "2026-01-14T01:30:00Z",
+  "routerType": "HashRouter",
+  "routes": [
+    {
+      "path": "/",
+      "component": "Dashboard",
+      "reachableVia": ["Direct URL", "Back button from /entertainment", "OMEGA logo click"],
+      "screenshotPrefixes": ["0001", "0002", "0003", "0004", "0005"]
+    },
+    {
+      "path": "/entertainment",
+      "component": "EntertainmentPage",
+      "reachableVia": ["Entertainment header button", "View All button on home Entertainment section"],
+      "screenshotPrefixes": ["0050", "0051", "0052", "0053", "0054", "0055", "0056", "0057"]
+    },
+    {
+      "path": "/*",
+      "component": "Dashboard",
+      "reachableVia": ["Fallback route - any unknown path"],
+      "note": "Catch-all route redirects to Dashboard"
+    }
+  ],
+  "modals": [
+    {
+      "id": "logs-analytics",
+      "triggerButton": "LOGS (header)",
+      "component": "LogsAnalytics",
+      "screenshotPrefixes": ["0010", "0011"]
+    },
+    {
+      "id": "community-hub",
+      "triggerButton": "Community (header)",
+      "component": "CommunityHub",
+      "screenshotPrefixes": ["0012", "0013", "0014", "0015"]
+    },
+    {
+      "id": "help-center",
+      "triggerButton": "Help Center (header)",
+      "component": "HelpCenter",
+      "screenshotPrefixes": ["0016", "0017"]
+    },
+    {
+      "id": "admin-console",
+      "triggerButton": "Admin Console (header)",
+      "component": "AdminConsole",
+      "screenshotPrefixes": ["0018", "0019", "0020", "0021", "0022"]
+    },
+    {
+      "id": "system-status",
+      "triggerButton": "Status button (header)",
+      "component": "SystemStatusPanel",
+      "screenshotPrefixes": ["0023", "0024", "0025"]
+    },
+    {
+      "id": "movie-night",
+      "triggerButton": "Movie Night Mode banner (Entertainment page)",
+      "component": "MovieNightModal",
+      "screenshotPrefixes": ["0060"]
+    }
+  ],
+  "quickToolModals": [
+    {
+      "id": "quick-guide",
+      "triggerButton": "Quick Guide (quick tools bar)",
+      "screenshotPrefixes": ["0030"]
+    },
+    {
+      "id": "calculator",
+      "triggerButton": "Calculator (quick tools bar)",
+      "screenshotPrefixes": ["0031"]
+    },
+    {
+      "id": "translator",
+      "triggerButton": "Translator (quick tools bar)",
+      "screenshotPrefixes": ["0032"]
+    },
+    {
+      "id": "sos",
+      "triggerButton": "SOS Beacon (quick tools bar)",
+      "screenshotPrefixes": ["0033"]
+    },
+    {
+      "id": "currency",
+      "triggerButton": "Currency (quick tools bar)",
+      "screenshotPrefixes": ["0034"]
+    },
+    {
+      "id": "dictionary",
+      "triggerButton": "Dictionary (quick tools bar)",
+      "screenshotPrefixes": ["0035"]
+    },
+    {
+      "id": "notes",
+      "triggerButton": "Field Notes (quick tools bar)",
+      "screenshotPrefixes": ["0036"]
+    }
+  ]
+}

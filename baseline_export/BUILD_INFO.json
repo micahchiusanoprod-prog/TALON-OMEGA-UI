@@ -1,0 +1,24 @@
+{
+  "build": {
+    "commitHash": "7790a6d55acb1d7e6c2d2ee269b595a0a5a1a16f",
+    "commitTimestamp": "2026-01-14T01:29:37+00:00",
+    "buildTimestamp": "2026-01-14T01:30:00Z",
+    "appName": "OMEGA Dashboard",
+    "appVersion": "0.1.0",
+    "environment": "preview",
+    "nodeEnv": "development"
+  },
+  "featureFlags": {
+    "enableDiagnostics": true,
+    "enableMockData": true,
+    "enableHealthPolling": true,
+    "enableOfflineMode": true,
+    "enableKiwixSearch": true,
+    "enableJellyfinIntegration": true
+  },
+  "routing": {
+    "type": "HashRouter",
+    "basePath": "/"
+  },
+  "generatedAt": "2026-01-14T01:30:00Z"
+}

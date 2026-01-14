@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-01-14T01:30:00Z",
+  "environment": "preview",
+  "config": {
+    "API_BASE": "",
+    "KIWIX_BASE": "http://talon.local:8090",
+    "JELLYFIN_BASE": "http://talon.local:8096",
+    "JELLYFIN_WEB_PATH": "/web/",
+    "USE_MOCK_DATA": true
+  },
+  "endpoints": {
+    "health": "/api/cgi-bin/health.py",
+    "metrics": "/api/cgi-bin/metrics.py",
+    "sensors": "/api/cgi-bin/sensors.py",
+    "backup": "/api/cgi-bin/backup.py",
+    "keys": "/api/cgi-bin/keys.py",
+    "keysync": "/api/cgi-bin/keysync.py",
+    "dm": "/api/cgi-bin/dm.py",
+    "gps": null,
+    "hotspotStatus": "/api/hotspot/status",
+    "hotspotToggle": "/api/hotspot/toggle",
+    "hotspotClients": "/api/hotspot/clients",
+    "allyNodes": "/api/ally/nodes",
+    "allyChat": "/api/ally/chat"
+  },
+  "polling": {
+    "healthCheck": 12000,
+    "metrics": 3000,
+    "sensors": 5000,
+    "community": 30000
+  },
+  "request": {
+    "timeout": 5000,
+    "retryAttempts": 2,
+    "retryDelay": 1000
+  },
+  "externalServices": {
+    "kiwix": {
+      "baseUrl": "http://talon.local:8090",
+      "purpose": "Offline wiki server",
+      "proxyMode": "direct (no nginx proxy)"
+    },
+    "jellyfin": {
+      "baseUrl": "http://talon.local:8096",
+      "webPath": "/web/",
+      "purpose": "Media server for movies/TV",
+      "proxyMode": "direct"
+    }
+  }
+}
