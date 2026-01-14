@@ -603,6 +603,62 @@ export default function DeviceInfoTile() {
               </div>
             </div>
           </div>
+          
+          {/* Progressive Details Section */}
+          <ProgressiveDetails 
+            title="System Diagnostics"
+            helpText="Raw metrics and service status"
+          >
+            <div className="space-y-3">
+              {/* Detailed Metrics */}
+              <div className="glass rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-muted-foreground mb-2">System Metrics</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  <MetricRow label="CPU Usage" value={displayMetrics.cpu} unit="%" trustType="VERIFIED" helpTerm="CPU" />
+                  <MetricRow label="RAM Usage" value={displayMetrics.ram} unit="%" trustType="VERIFIED" helpTerm="RAM" />
+                  <MetricRow label="Disk Usage" value={displayMetrics.disk} unit="%" trustType="VERIFIED" helpTerm="DISK" />
+                  <MetricRow label="CPU Temp" value={displayMetrics.temp} unit="°C" trustType="VERIFIED" helpTerm="TEMP" />
+                  <MetricRow label="Uptime (s)" value={displayMetrics.uptime} trustType="VERIFIED" helpTerm="UPTIME" />
+                </div>
+              </div>
+              
+              {/* Service Status */}
+              <div className="glass rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-muted-foreground mb-2">Service Status</h5>
+                <div className="space-y-1">
+                  {displayHealth.services && Object.entries(displayHealth.services).map(([name, status]) => (
+                    <MetricRow 
+                      key={name}
+                      label={name.charAt(0).toUpperCase() + name.slice(1)} 
+                      value={status.toUpperCase()} 
+                      trustType={status === 'up' || status === 'running' ? 'VERIFIED' : 'ESTIMATED'} 
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Calculation Notes */}
+              <CalculationNotes notes={[
+                'CPU usage averaged over 1-minute load',
+                'RAM includes buffers and cached memory',
+                'Temperature from thermal zone 0 (CPU)',
+                'Service status polled every 10 seconds'
+              ]} />
+              
+              {/* Raw JSON */}
+              <RawDataDisplay data={{ metrics: displayMetrics, health: displayHealth }} title="System JSON" />
+            </div>
+          </ProgressiveDetails>
+          
+          {/* Provenance Footer */}
+          <DataProvenanceFooter
+            source="OMEGA System Monitor"
+            endpoint="/api/cgi-bin/metrics"
+            lastUpdated={Date.now()}
+            trustType="VERIFIED"
+            status={metrics?.available ? 'INDEXED' : 'SIMULATED'}
+            refreshInterval="10 seconds"
+          />
         </CardContent>
       </Card>
       
