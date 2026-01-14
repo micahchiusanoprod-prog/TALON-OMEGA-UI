@@ -627,8 +627,9 @@ const getDidYouMean = (query) => {
 // SEARCH LOGIC
 // ============================================================
 
-const performSearch = (query, scope = 'global') => {
-  if (!query || query.length < 2) return { results: [], meta: {} };
+// Async search function that combines API and mock results
+const performSearchAsync = async (query, scope = 'global') => {
+  if (!query || query.length < 2) return { results: [], meta: {}, kiwixStatus: kiwixApiAvailable };
   
   let allResults = [];
   const sourceCounts = {};
@@ -638,11 +639,12 @@ const performSearch = (query, scope = 'global') => {
     ? ['kiwix', 'jellyfin', 'community', 'commands', 'files']
     : [scope];
   
-  sources.forEach(src => {
+  for (const src of sources) {
     let results = [];
     switch (src) {
       case 'kiwix':
-        results = generateMockKiwixResults(query);
+        // Use async Kiwix search (articles + library)
+        results = await getKiwixResults(query);
         break;
       case 'jellyfin':
         results = generateMockJellyfinResults(query);
@@ -659,12 +661,16 @@ const performSearch = (query, scope = 'global') => {
     }
     sourceCounts[src] = results.length;
     allResults = allResults.concat(results);
-  });
+  }
   
   // Sort by priority and match type
   const matchPriority = { exact: 0, prefix: 1, fts: 2, fuzzy: 3, stub: 4 };
   
   allResults.sort((a, b) => {
+    // Articles (from API) appear above library tiles
+    if (a.isArticle && !b.isArticle && a.source === b.source) return -1;
+    if (!a.isArticle && b.isArticle && a.source === b.source) return 1;
+    
     // First by source priority
     const srcDiff = SOURCE_PRIORITY[a.source] - SOURCE_PRIORITY[b.source];
     if (srcDiff !== 0) return srcDiff;
@@ -680,16 +686,17 @@ const performSearch = (query, scope = 'global') => {
     return 0;
   });
   
-  // Apply dynamic caps for global scope
+  // Apply dynamic caps for global scope (per user spec: Global top 15 caps)
   if (scope === 'global') {
     const hasHighValueResults = sourceCounts.kiwix > 0 || sourceCounts.jellyfin > 0 || sourceCounts.community > 0;
     
+    // Per spec: Kiwix:6, Jellyfin:6, Community:4, Tools/Commands:4, Files:3 (dynamic 0-2 when high-signal)
     const caps = hasHighValueResults ? {
-      kiwix: 6,
-      jellyfin: 6,
-      community: 4,
-      commands: 3,
-      files: 2
+      kiwix: GLOBAL_CAPS.kiwix,           // 6
+      jellyfin: GLOBAL_CAPS.jellyfin,     // 6
+      community: GLOBAL_CAPS.community,   // 4
+      commands: GLOBAL_CAPS.commands,     // 4 (Tools/Commands as one bucket)
+      files: hasHighValueResults ? 2 : GLOBAL_CAPS.files  // Dynamic: 2 when high-signal, else 3
     } : {
       files: 15 // No cap when files is only source
     };
@@ -720,7 +727,8 @@ const performSearch = (query, scope = 'global') => {
         didYouMean: getDidYouMean(query),
         caps,
         hasHighValueResults
-      }
+      },
+      kiwixStatus: kiwixApiAvailable
     };
   }
   
@@ -732,7 +740,112 @@ const performSearch = (query, scope = 'global') => {
       shownResults: allResults.length,
       sourceCounts,
       didYouMean: getDidYouMean(query)
+    },
+    kiwixStatus: kiwixApiAvailable
+  };
+};
+
+// Synchronous fallback for immediate rendering (uses cached results)
+const performSearch = (query, scope = 'global') => {
+  if (!query || query.length < 2) return { results: [], meta: {}, kiwixStatus: kiwixApiAvailable };
+  
+  let allResults = [];
+  const sourceCounts = {};
+  
+  const sources = scope === 'global' 
+    ? ['kiwix', 'jellyfin', 'community', 'commands', 'files']
+    : [scope];
+  
+  sources.forEach(src => {
+    let results = [];
+    switch (src) {
+      case 'kiwix':
+        // Sync version uses library results only
+        results = generateMockKiwixLibraryResults(query);
+        break;
+      case 'jellyfin':
+        results = generateMockJellyfinResults(query);
+        break;
+      case 'community':
+        results = generateMockCommunityResults(query);
+        break;
+      case 'commands':
+        results = generateMockCommandResults(query);
+        break;
+      case 'files':
+        results = generateMockFileResults(query, scope === 'files');
+        break;
     }
+    sourceCounts[src] = results.length;
+    allResults = allResults.concat(results);
+  });
+  
+  const matchPriority = { exact: 0, prefix: 1, fts: 2, fuzzy: 3, stub: 4 };
+  
+  allResults.sort((a, b) => {
+    const srcDiff = SOURCE_PRIORITY[a.source] - SOURCE_PRIORITY[b.source];
+    if (srcDiff !== 0) return srcDiff;
+    const matchDiff = matchPriority[a.matchType] - matchPriority[b.matchType];
+    if (matchDiff !== 0) return matchDiff;
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return 0;
+  });
+  
+  if (scope === 'global') {
+    const hasHighValueResults = sourceCounts.kiwix > 0 || sourceCounts.jellyfin > 0 || sourceCounts.community > 0;
+    
+    const caps = hasHighValueResults ? {
+      kiwix: GLOBAL_CAPS.kiwix,
+      jellyfin: GLOBAL_CAPS.jellyfin,
+      community: GLOBAL_CAPS.community,
+      commands: GLOBAL_CAPS.commands,
+      files: hasHighValueResults ? 2 : GLOBAL_CAPS.files
+    } : {
+      files: 15
+    };
+    
+    const cappedResults = [];
+    const sourceUsed = {};
+    const hiddenFiles = [];
+    
+    allResults.forEach(result => {
+      const src = result.source;
+      sourceUsed[src] = (sourceUsed[src] || 0);
+      
+      if (!caps[src] || sourceUsed[src] < caps[src]) {
+        cappedResults.push(result);
+        sourceUsed[src]++;
+      } else if (src === 'files') {
+        hiddenFiles.push(result);
+      }
+    });
+    
+    return {
+      results: cappedResults,
+      hiddenFiles,
+      meta: {
+        totalResults: allResults.length,
+        shownResults: cappedResults.length,
+        sourceCounts,
+        didYouMean: getDidYouMean(query),
+        caps,
+        hasHighValueResults
+      },
+      kiwixStatus: kiwixApiAvailable
+    };
+  }
+  
+  return {
+    results: allResults,
+    hiddenFiles: [],
+    meta: {
+      totalResults: allResults.length,
+      shownResults: allResults.length,
+      sourceCounts,
+      didYouMean: getDidYouMean(query)
+    },
+    kiwixStatus: kiwixApiAvailable
   };
 };
 
