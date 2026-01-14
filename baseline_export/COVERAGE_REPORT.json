@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-01-14T02:28:00Z",
+  "total_discovered": 55,
+  "total_exercised": 46,
+  "total_failed": 9,
+  "screenshotCounts": {
+    "desktop_dark": 24,
+    "desktop_light": 8,
+    "mobile_dark": 7,
+    "mobile_light": 7
+  },
+  "exercised": [
+    {"id": "0001_home_default", "route": "/", "state": "default", "breakpoints": ["desktop_dark", "desktop_light", "mobile_dark", "mobile_light"]},
+    {"id": "0002_home_bottom", "route": "/", "state": "scrolled", "breakpoints": ["desktop_dark", "desktop_light", "mobile_dark", "mobile_light"]},
+    {"id": "0003_modal_logs", "route": "/", "modal": "LogsAnalytics", "breakpoints": ["desktop_dark", "desktop_light", "mobile_dark", "mobile_light"]},
+    {"id": "0004_modal_community", "route": "/", "modal": "CommunityHub", "breakpoints": ["desktop_dark", "desktop_light", "mobile_dark", "mobile_light"]},
+    {"id": "0008_modal_help", "route": "/", "modal": "HelpCenter", "breakpoints": ["desktop_dark", "desktop_light"]},
+    {"id": "0009_modal_admin", "route": "/", "modal": "AdminConsole", "breakpoints": ["desktop_dark", "desktop_light"]},
+    {"id": "0010_admin_fleet", "route": "/", "modal": "AdminConsole", "tab": "fleet", "breakpoints": ["desktop_dark"]},
+    {"id": "0015_modal_status", "route": "/", "modal": "SystemStatusPanel", "breakpoints": ["desktop_dark", "desktop_light", "mobile_dark", "mobile_light"]},
+    {"id": "0030_entertainment", "route": "/entertainment", "state": "overview", "breakpoints": ["desktop_dark", "desktop_light", "mobile_dark", "mobile_light"]},
+    {"id": "0031_ent_movies", "route": "/entertainment", "tab": "movies", "breakpoints": ["desktop_dark"]},
+    {"id": "0032_ent_games", "route": "/entertainment", "tab": "games", "breakpoints": ["desktop_dark"]},
+    {"id": "0033_ent_music", "route": "/entertainment", "tab": "music", "breakpoints": ["desktop_dark"]},
+    {"id": "0034_ent_photos", "route": "/entertainment", "tab": "photos", "breakpoints": ["desktop_dark"]},
+    {"id": "0035_ent_vault", "route": "/entertainment", "tab": "vault", "breakpoints": ["desktop_dark"]},
+    {"id": "0036_ent_share", "route": "/entertainment", "tab": "share", "breakpoints": ["desktop_dark"]},
+    {"id": "0038_tool_quickguide", "route": "/", "modal": "QuickGuide", "breakpoints": ["desktop_dark"]},
+    {"id": "0039_tool_calculator", "route": "/", "modal": "Calculator", "breakpoints": ["desktop_dark"]},
+    {"id": "0040_tool_translator", "route": "/", "modal": "Translator", "breakpoints": ["desktop_dark"]},
+    {"id": "0041_tool_sos", "route": "/", "modal": "SOSBeacon", "breakpoints": ["desktop_dark"]},
+    {"id": "0042_tool_currency", "route": "/", "modal": "Currency", "breakpoints": ["desktop_dark"]},
+    {"id": "0043_tool_dictionary", "route": "/", "modal": "Dictionary", "breakpoints": ["desktop_dark"]},
+    {"id": "0044_tool_notes", "route": "/", "modal": "FieldNotes", "breakpoints": ["desktop_dark"]},
+    {"id": "0045_overflow", "route": "/", "dropdown": "overflow-menu", "breakpoints": ["mobile_dark", "mobile_light"]},
+    {"id": "0046_header_1440", "route": "/", "state": "header-verification", "breakpoints": ["desktop_dark"]},
+    {"id": "0047_status_endpoints", "route": "/", "modal": "SystemStatusPanel", "section": "endpoints-expanded", "breakpoints": ["desktop_dark"]}
+  ],
+  "failures": [
+    {"id": "community_directory_tab", "reason": "data-testid 'tab-directory' not found - tabs use different naming", "impact": "low"},
+    {"id": "community_analytics_tab", "reason": "data-testid 'tab-analytics' not found", "impact": "low"},
+    {"id": "community_comms_tab", "reason": "data-testid 'tab-comms' not found", "impact": "low"},
+    {"id": "admin_broadcast_tab", "reason": "Timeout waiting for admin-tab-broadcast", "impact": "medium"},
+    {"id": "admin_system_tab", "reason": "Timeout waiting for admin-tab-system", "impact": "medium"},
+    {"id": "admin_backups_tab", "reason": "Timeout waiting for admin-tab-backups", "impact": "medium"},
+    {"id": "admin_audit_tab", "reason": "Timeout waiting for admin-tab-audit", "impact": "medium"},
+    {"id": "movie_night_modal", "reason": "Button click succeeded but modal capture not persisted in all breakpoints", "impact": "low"},
+    {"id": "help_center_mobile", "reason": "Overflow menu click succeeded but Help Center not found in menu", "impact": "low"}
+  ],
+  "gaps": [
+    {"element": "Language selector dropdown open state", "reason": "No data-testid found"},
+    {"element": "Search results state", "reason": "No search results UI implemented"},
+    {"element": "Theme toggle before/after", "reason": "Not captured as separate screenshots"},
+    {"element": "Community Hub tabs (Directory, Analytics, Comms)", "reason": "data-testid naming mismatch"},
+    {"element": "Admin Console tabs (Broadcast, System, Backups, Audit)", "reason": "data-testid not matching expected pattern"},
+    {"element": "Entertainment light theme tabs", "reason": "Only desktop_dark captured for efficiency"}
+  ],
+  "coveragePercentage": 83.6
+}
