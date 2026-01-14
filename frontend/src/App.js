@@ -5,6 +5,8 @@ import Dashboard from './components/Dashboard';
 import EntertainmentPage from './components/EntertainmentPage';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ConnectionProvider } from './contexts/ConnectionContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { EvidenceProvider } from './contexts/EvidenceContext';
 import './App.css';
 
 export default function App() {
@@ -26,18 +28,22 @@ export default function App() {
 
   return (
     <HashRouter>
-      <LanguageProvider>
-        <ConnectionProvider>
-          <div className="min-h-screen bg-background">
-            <Routes>
-              <Route path="/" element={<Dashboard theme={theme} onToggleTheme={toggleTheme} />} />
-              <Route path="/entertainment" element={<EntertainmentPage theme={theme} onToggleTheme={toggleTheme} />} />
-              <Route path="/*" element={<Dashboard theme={theme} onToggleTheme={toggleTheme} />} />
-            </Routes>
-            <Toaster />
-          </div>
-        </ConnectionProvider>
-      </LanguageProvider>
+      <AuthProvider>
+        <EvidenceProvider>
+          <LanguageProvider>
+            <ConnectionProvider>
+              <div className="min-h-screen bg-background">
+                <Routes>
+                  <Route path="/" element={<Dashboard theme={theme} onToggleTheme={toggleTheme} />} />
+                  <Route path="/entertainment" element={<EntertainmentPage theme={theme} onToggleTheme={toggleTheme} />} />
+                  <Route path="/*" element={<Dashboard theme={theme} onToggleTheme={toggleTheme} />} />
+                </Routes>
+                <Toaster />
+              </div>
+            </ConnectionProvider>
+          </LanguageProvider>
+        </EvidenceProvider>
+      </AuthProvider>
     </HashRouter>
   );
 }
