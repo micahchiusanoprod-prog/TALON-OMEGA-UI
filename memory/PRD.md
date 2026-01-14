@@ -15,15 +15,13 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ## 🚀 CURRENT PHASE: P0 Live Wiring Implementation (v2.0)
 
-### ✅ ALL CONFIRMATIONS RECEIVED - January 14, 2026
+### ✅ P0 FOUNDATION COMPLETE - January 14, 2026
 
-### Confirmed Runtime Configuration
-```javascript
-API_BASE: 'http://talon.local:8093'
-KIWIX_BASE: 'http://talon.local:8090'
-JELLYFIN_BASE: 'http://talon.local:8096'
-JELLYFIN_WEB_PATH: '/web/'
-```
+**API Strategy Implemented:**
+- Frontend uses same-origin `/api/cgi-bin/*` paths
+- Requires Nginx reverse proxy: `/api/cgi-bin/` → `localhost:8093/cgi-bin/`
+- Kiwix direct: `http://talon.local:8090` (no proxy)
+- Jellyfin direct: `http://talon.local:8096/web/`
 
 ### Confirmed Endpoint Status
 | Endpoint | Status | Wire Now? |
