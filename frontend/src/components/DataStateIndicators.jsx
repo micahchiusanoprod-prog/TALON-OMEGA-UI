@@ -1,6 +1,6 @@
 import React from 'react';
-import { Wifi, WifiOff, AlertTriangle, RefreshCw, Database, Server, Inbox } from 'lucide-react';
-import { useConnection, CONNECTION_STATES } from '../contexts/ConnectionContext';
+import { Wifi, WifiOff, AlertTriangle, RefreshCw, Database, Server, Inbox, Lock, Settings, Info, AlertCircle, Wrench } from 'lucide-react';
+import { useConnection, CONNECTION_STATES, ENDPOINT_STATUS } from '../contexts/ConnectionContext';
 import { Button } from './ui/button';
 
 // ============================================================
@@ -34,6 +34,22 @@ export function ConnectionStatusChip({ className = '' }) {
       bgColor: 'bg-muted/20',
       borderColor: 'border-muted-foreground/30',
       tooltip: 'Using mock data. Backend not connected yet.',
+    },
+    [CONNECTION_STATES.FORBIDDEN]: {
+      icon: Lock,
+      label: 'Auth Required',
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/20',
+      borderColor: 'border-destructive/30',
+      tooltip: 'Authentication required for backend access.',
+    },
+    [CONNECTION_STATES.NOT_CONFIGURED]: {
+      icon: Settings,
+      label: 'Not Configured',
+      color: 'text-muted-foreground',
+      bgColor: 'bg-muted/20',
+      borderColor: 'border-muted-foreground/30',
+      tooltip: 'Endpoint not configured on this device.',
     },
   };
 
