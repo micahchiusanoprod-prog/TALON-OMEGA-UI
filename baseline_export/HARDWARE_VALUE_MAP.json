@@ -1,0 +1,144 @@
+{
+  "generatedAt": "2026-01-14T02:28:00Z",
+  "hardware": [
+    {
+      "hardware_id": "power-battery",
+      "name": "Power / Battery Management",
+      "confirmedStatus": "PLANNED",
+      "description": "Battery percentage, voltage, current, temperature, charge sources",
+      "uiModules": [
+        {"module": "PowerTile", "status": "STUB_UI", "dataRequired": ["battery_percent", "voltage", "current", "temp", "charge_state", "source"]}
+      ],
+      "endpoints": ["Not defined - needs hardware"],
+      "placeholderBadge": "MOCK DATA",
+      "notes": "UI exists with mock data. Requires battery monitor hardware (INA219/INA3221) + endpoint"
+    },
+    {
+      "hardware_id": "gps-navigation",
+      "name": "GPS Navigation / Logging",
+      "confirmedStatus": "UNKNOWN",
+      "description": "GPS fix status, accuracy, coordinates, track logging",
+      "uiModules": [
+        {"module": "LogsAnalytics GPS indicator", "status": "IMPLEMENTED_UI", "dataRequired": ["fix_status", "lat", "lng", "accuracy", "satellites"]},
+        {"module": "GPS Track Viewer", "status": "PLANNED_NOT_IMPLEMENTED", "dataRequired": ["track_history"]}
+      ],
+      "endpoints": ["GPS endpoint not configured (null in config)"],
+      "placeholderBadge": "NOT_CONFIGURED",
+      "notes": "LOGS shows GPS as 'none' with red indicator. Endpoint path unknown."
+    },
+    {
+      "hardware_id": "environmental-sensors",
+      "name": "Environmental Sensors (BME680)",
+      "confirmedStatus": "PLANNED",
+      "description": "Temperature, humidity, pressure, IAQ (Indoor Air Quality)",
+      "uiModules": [
+        {"module": "EnvironmentTile", "status": "STUB_UI", "dataRequired": ["temp_c", "humidity_pct", "pressure_hpa", "iaq", "gas_resistance"]}
+      ],
+      "endpoints": ["/api/cgi-bin/sensors.py"],
+      "placeholderBadge": "DEGRADED",
+      "notes": "Backend returns error due to I2C bus configuration (/dev/i2c-3 missing). UI shows DEGRADED state."
+    },
+    {
+      "hardware_id": "adc-expansion",
+      "name": "ADC Expansion (ADS1115)",
+      "confirmedStatus": "UNKNOWN",
+      "description": "Analog-to-digital conversion for additional sensors",
+      "uiModules": [],
+      "endpoints": ["Not defined"],
+      "placeholderBadge": null,
+      "notes": "No UI module exists. Would enable additional analog sensor inputs."
+    },
+    {
+      "hardware_id": "mesh-lora",
+      "name": "Mesh / LoRa Communications (Meshtastic)",
+      "confirmedStatus": "PLANNED",
+      "description": "LoRa mesh network for off-grid communication, presence, message delivery",
+      "uiModules": [
+        {"module": "AllyCommunicationsHub", "status": "STUB_UI", "dataRequired": ["nodes", "messages", "presence", "signal_strength"]},
+        {"module": "CommunityHub Comms tab", "status": "STUB_UI", "dataRequired": ["mesh_status", "connected_nodes"]}
+      ],
+      "endpoints": ["/api/ally/nodes", "/api/ally/chat"],
+      "placeholderBadge": "MOCK DATA",
+      "notes": "UI shows mock mesh network nodes. Real Meshtastic integration not wired."
+    },
+    {
+      "hardware_id": "camera-webcam",
+      "name": "Camera / Webcam",
+      "confirmedStatus": "UNKNOWN",
+      "description": "Video feed, motion detection, security events",
+      "uiModules": [
+        {"module": "CameraTile", "status": "STUB_UI", "dataRequired": ["stream_url", "motion_events", "recording_status"]}
+      ],
+      "endpoints": ["Not defined"],
+      "placeholderBadge": "MOCK DATA",
+      "notes": "Camera tile shows placeholder. No video stream endpoint defined."
+    },
+    {
+      "hardware_id": "storage-nvme",
+      "name": "Storage / NVMe Health",
+      "confirmedStatus": "CONFIRMED",
+      "description": "Disk usage, health metrics, SMART data",
+      "uiModules": [
+        {"module": "LogsAnalytics Disk indicator", "status": "MOCK_ONLY", "dataRequired": ["disk_usage_pct", "disk_total", "disk_free"]},
+        {"module": "AdminConsole Backups", "status": "MOCK_ONLY", "dataRequired": ["backup_list", "backup_status"]}
+      ],
+      "endpoints": ["/api/cgi-bin/metrics.py", "/api/cgi-bin/backup.py"],
+      "placeholderBadge": "MOCK DATA",
+      "notes": "metrics.py and backup.py are LIVE but UI shows mock data. Needs wiring."
+    },
+    {
+      "hardware_id": "hotspot-wifi",
+      "name": "WiFi Hotspot",
+      "confirmedStatus": "PLANNED",
+      "description": "AP mode, connected clients, SSID, bandwidth usage",
+      "uiModules": [
+        {"module": "HotspotTile", "status": "STUB_UI", "dataRequired": ["enabled", "ssid", "clients", "bandwidth"]},
+        {"module": "Movie Night Mode", "status": "STUB_UI", "dataRequired": ["hotspot_status", "qr_code"]}
+      ],
+      "endpoints": ["/api/hotspot/status", "/api/hotspot/toggle", "/api/hotspot/clients"],
+      "placeholderBadge": "MOCK DATA",
+      "notes": "Hotspot endpoints defined but not confirmed live."
+    },
+    {
+      "hardware_id": "radio-sdr",
+      "name": "Radio / SDR",
+      "confirmedStatus": "UNKNOWN",
+      "description": "Software-defined radio for emergency communications",
+      "uiModules": [
+        {"module": "AllyCommunicationsHub Radio option", "status": "STUB_UI", "dataRequired": ["frequency", "signal_strength", "mode"]}
+      ],
+      "endpoints": ["Not defined"],
+      "placeholderBadge": "PLANNED",
+      "notes": "UI shows Radio/SDR as communication option. No backend integration."
+    },
+    {
+      "hardware_id": "encryption-keys",
+      "name": "Encryption Keys Management",
+      "confirmedStatus": "CONFIRMED",
+      "description": "Key presence, sync status, export",
+      "uiModules": [
+        {"module": "SecurityTile", "status": "STUB_UI", "dataRequired": ["key_present", "key_sync_status", "last_export"]}
+      ],
+      "endpoints": ["/api/cgi-bin/keys.py", "/api/cgi-bin/keysync.py"],
+      "placeholderBadge": "MOCK DATA",
+      "notes": "keys.py and keysync.py are LIVE. UI needs wiring."
+    },
+    {
+      "hardware_id": "direct-messages",
+      "name": "Direct Messages (Encrypted)",
+      "confirmedStatus": "CONFIRMED",
+      "description": "End-to-end encrypted direct messaging",
+      "uiModules": [
+        {"module": "CommunityHub DM feature", "status": "STUB_UI", "dataRequired": ["dm_list", "unread_count"]}
+      ],
+      "endpoints": ["/api/cgi-bin/dm.py"],
+      "placeholderBadge": "FORBIDDEN",
+      "notes": "dm.py returns 403 Forbidden - requires authentication. UI shows ForbiddenState."
+    }
+  ],
+  "summary": {
+    "CONFIRMED": 3,
+    "PLANNED": 4,
+    "UNKNOWN": 4
+  }
+}
