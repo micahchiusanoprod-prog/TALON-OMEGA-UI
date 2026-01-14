@@ -359,26 +359,37 @@ Captured: ${debugInfo.timestamp}`;
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-border bg-secondary/20 flex gap-2">
-          <Button 
-            onClick={handleRunSelfTest}
-            disabled={isRunningTest}
-            className="flex-1 gap-2"
-          >
-            {isRunningTest ? (
-              <><RefreshCw className="w-4 h-4 animate-spin" /> Testing...</>
-            ) : (
-              <><Play className="w-4 h-4" /> Run Self Test</>
-            )}
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={handleCopyDebugInfo}
-            className="gap-2"
-          >
-            <Copy className="w-4 h-4" />
-            Copy Debug Info
-          </Button>
+        <div className="p-4 border-t border-border bg-secondary/20 space-y-3">
+          {/* Enhanced Self-Test Section */}
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleRunSelfTest}
+              disabled={isRunningTest}
+              className="flex-1 gap-2"
+              data-testid="self-test-btn"
+            >
+              {isRunningTest ? (
+                <><RefreshCw className="w-4 h-4 animate-spin" /> Testing...</>
+              ) : (
+                <><Play className="w-4 h-4" /> Run Self Test</>
+              )}
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={handleCopyDebugInfo}
+              className="gap-2"
+              data-testid="copy-debug-btn"
+            >
+              <Copy className="w-4 h-4" />
+              Copy Debug Info
+            </Button>
+          </div>
+          
+          {/* Debug Bundle Indicator */}
+          <div className="text-xs text-muted-foreground flex items-center gap-2">
+            <Download className="w-3 h-3" />
+            <span>Debug bundle includes: build info, config, test results, network logs</span>
+          </div>
         </div>
       </div>
     </div>
