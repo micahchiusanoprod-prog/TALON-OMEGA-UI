@@ -13,72 +13,82 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
-## 🚀 CURRENT PHASE: P0 Live Wiring Implementation (v2.0)
+## 🚀 CURRENT PHASE: UI Completeness + Polish (Pre-Deployment)
 
 ### ✅ P0 FOUNDATION COMPLETE - January 14, 2026
+- API strategy: same-origin `/api/cgi-bin/*` paths with Nginx reverse proxy
+- Connection states: FORBIDDEN, DEGRADED, NOT_CONFIGURED implemented
+- UI state components created for all endpoint statuses
 
-**API Strategy Implemented:**
-- Frontend uses same-origin `/api/cgi-bin/*` paths
-- Requires Nginx reverse proxy: `/api/cgi-bin/` → `localhost:8093/cgi-bin/`
-- Kiwix direct: `http://talon.local:8090` (no proxy)
-- Jellyfin direct: `http://talon.local:8096/web/`
+### ✅ P1 ENTERTAINMENT MODULE COMPLETE - January 14, 2026
 
-**Endpoint Configuration:**
-| Endpoint | Path | Expected State |
-|----------|------|----------------|
-| health.py | `/api/cgi-bin/health.py` | LIVE |
-| metrics.py | `/api/cgi-bin/metrics.py` | LIVE |
-| backup.py | `/api/cgi-bin/backup.py` | LIVE (empty list OK) |
-| keys.py | `/api/cgi-bin/keys.py` | LIVE |
-| keysync.py | `/api/cgi-bin/keysync.py` | LIVE |
-| dm.py | `/api/cgi-bin/dm.py` | FORBIDDEN (403) |
-| sensors.py | `/api/cgi-bin/sensors.py` | DEGRADED (I2C issue) |
-| GPS | null | NOT_CONFIGURED |
+**Header Navigation:**
+- Entertainment button added to main nav row (same level as LOGS, Community, Help Center)
+- Mobile overflow menu with Help Center, Admin Console, and system metrics
+- Desktop: All 4 primary nav buttons visible in same row
+- Mobile: LOGS, Community, Entertainment visible + overflow menu
 
-**UI State Components Created:**
-- `ForbiddenState` - Lock icon, "Admin Access Required" message
-- `DegradedState` - Warning icon with expandable troubleshooting steps
-- `NotConfiguredState` - Info icon with setup instructions
-- `EndpointStatusBadge` - Inline endpoint status indicator
+**Entertainment Page (`/entertainment`):**
+| Section | Status | Features |
+|---------|--------|----------|
+| Overview | ✅ Complete | Continue Watching, Movie Night Mode banner, Newly Added, Quick Stats |
+| Movies & TV | ✅ Complete | Movie cards, TV show cards with progress bars |
+| Games | ✅ Complete | Arcade/Tournaments/Party/Trivia modes, game cards with player counts |
+| Music | ✅ Complete | Player UI, Beat Maker placeholder, albums grid |
+| Photos | ✅ Placeholder | "Coming Soon" state |
+| Vault | ✅ Placeholder | PIN Protection, Admin Bypass descriptions |
+| File Drop | ✅ Placeholder | Drop zone UI |
 
-### Next Steps for P0 Completion:
-1. **Deploy to Pi** - Run `yarn build:pi` and deploy to `/var/www/html/`
-2. **Configure Nginx** - Add `/api/cgi-bin/` reverse proxy to `localhost:8093`
-3. **Test Live Endpoints** - Verify each endpoint returns expected response
-4. **Wire Components** - Connect DeviceInfoTile, SecurityTile, AdminConsole to live data
+**Placeholder Badges:**
+- `Mock Data` - Data is mocked, feature UI is functional
+- `Planned - Not Wired` - Feature is scaffolded, backend not connected
+- `Planned - Not Implemented` - Feature is placeholder only
 
----
-
-## P1 BACKLOG (After P0 Complete)
-
-### Entertainment Module
-- [ ] Add "Entertainment" nav item in header
-- [ ] Create Entertainment overview page with carousels
-- [ ] Wire Jellyfin API for Movies/TV content
-- [ ] Implement Movie Night Mode with QR code
-- [ ] Create Jellyfin wrapper (fullscreen with back overlay)
-- [ ] Create Kiwix wrapper (embedded with OMEGA header)
-
-### Global Search Federation
-- [ ] Enhance search to query People, Commands, Knowledge, Entertainment
-- [ ] Implement category-grouped results
-- [ ] Add keyboard shortcut (Cmd+/ or Ctrl+/)
-
-### Profile Enhancements
-- [ ] Add team indicators to profile drawer
-- [ ] Implement Activity Tracker section
+**Home Page:**
+- Entertainment summary module retained
+- "View All Entertainment" button links to `/entertainment`
 
 ---
 
-## P2 BACKLOG (Scaffolds Only)
+## Sign-Off Checklist (PASSED)
 
-- [ ] Games Tab scaffold
-- [ ] Multiplayer Hub scaffold
-- [ ] Creator Tools scaffold
-- [ ] Debate Arena scaffold
-- [ ] Photos Hub scaffold
-- [ ] Personal Vault scaffold
-- [ ] New User Setup wizard scaffold
+| Requirement | Status |
+|-------------|--------|
+| Header shows LOGS, Community, Help Center, Entertainment (same row) | ✅ |
+| Clicking Entertainment goes to /entertainment full page | ✅ |
+| Home shows Entertainment summary with "View All" | ✅ |
+| Desktop: no clipped header pills | ✅ |
+| Mobile: overflow menu works | ✅ |
+| Modals usable on mobile | ✅ |
+| UI polish consistent with design language | ✅ |
+
+---
+
+## BLOCKED: Pi Deployment
+
+**Do NOT proceed until user sign-off:**
+1. Build for Pi (`yarn build:pi`)
+2. Deploy to `/var/www/html`
+3. Add Nginx `/api/cgi-bin/` reverse proxy to `localhost:8093`
+4. Run live endpoint self-test on Talon
+
+---
+
+## Backlog
+
+### P1 (After Sign-Off)
+- [ ] Wire live endpoints (health, metrics, backup, keys, keysync)
+- [ ] Handle FORBIDDEN state for dm.py
+- [ ] Handle DEGRADED state for sensors.py
+- [ ] Global Search Federation
+
+### P2 (Future)
+- [ ] Games functionality implementation
+- [ ] Music player audio integration
+- [ ] Photos Hub implementation
+- [ ] Personal Vault with PIN lock
+- [ ] File Drop/Share functionality
+- [ ] New User Setup wizard
 
 ---
 
