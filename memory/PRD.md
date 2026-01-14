@@ -15,57 +15,40 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ## 🚀 NEXT PHASE: Entertainment Expansion + Live Wiring (v2.0)
 
-### Decision Summary (January 13, 2026)
-- **Tech Stack:** React build artifact with HashRouter
-- **Deployment:** Symlink swap to `/var/www/html/` with versioned rollback
-- **Theme:** Dark-first with Light parity
-- **Animation:** Subtle only (micro-interactions, hover/focus, drawer transitions)
-- **Priority Order:** Live wiring (1) → Visual polish (2) → Performance (3) → New features (4)
+### ✅ ALL CONFIRMATIONS RECEIVED - January 14, 2026
 
-### Backend URLs
-- **API_BASE:** `http://127.0.0.1:8093`
-- **KIWIX_BASE:** `http://127.0.0.1:8090`
-- **JELLYFIN_BASE:** `http://127.0.0.1:8096`
+### Confirmed Runtime Configuration
+```javascript
+API_BASE: 'http://talon.local:8093'
+KIWIX_BASE: 'http://talon.local:8090'
+JELLYFIN_BASE: 'http://talon.local:8096'
+JELLYFIN_WEB_PATH: '/web/'
+```
 
-### P0 - Live Wiring (Critical Path)
-| Feature | Status | Endpoint |
-|---------|--------|----------|
-| Health endpoint wiring | 🔴 TODO | `/cgi-bin/health.py` |
-| Metrics endpoint wiring | 🔴 TODO | `/cgi-bin/metrics.py` |
-| Sensors endpoint wiring | 🔴 TODO | `/cgi-bin/sensors.py` |
-| Security endpoints wiring | 🔴 TODO | `/cgi-bin/keys.py`, `/cgi-bin/keysync.py` |
-| Admin endpoints wiring | 🔴 TODO | `/cgi-bin/backup.py`, `/cgi-bin/dm.py` |
-| Connection state management | 🔴 TODO | 3s timeout, retry buttons, auto-retry |
+### Confirmed Endpoint Status
+| Endpoint | Status | Wire Now? |
+|----------|--------|-----------|
+| health.py | 200 OK | ✅ YES |
+| metrics.py | 200 OK | ✅ YES |
+| backup.py | 200 OK (empty) | ✅ YES |
+| keys.py | 200 OK | ✅ YES |
+| keysync.py | 200 OK | ✅ YES |
+| dm.py | 403 Forbidden | ⚠️ FORBIDDEN STATE |
+| sensors.py | Error (I2C) | ⚠️ DEGRADED STATE |
+| GPS | Unknown | ⚠️ NOT CONFIGURED |
 
-### P1 - FULL Implementation
-| Feature | Status |
-|---------|--------|
-| Entertainment page (top-level) | 🔴 TODO |
-| Movies/TV carousels | 🔴 TODO |
-| Movie Night Mode | 🔴 TODO |
-| Music tab (full player) | 🔴 TODO |
-| Global Search federation | 🔴 TODO |
-| OMEGA wrapper - Kiwix | 🔴 TODO |
-| OMEGA wrapper - Jellyfin | 🔴 TODO |
-| Services launcher page | 🔴 TODO |
-| Team indicators on profiles | 🔴 TODO |
-| Activity tracker | 🔴 TODO |
+### Confirmed Decisions
+- **API Strategy:** Direct port calls (http://talon.local:8093)
+- **QR Codes:** Always use talon.local variants
+- **Jellyfin Links:** Target /web/ directly
+- **DM Auth:** Locked for now, show "Admin Access Required"
+- **Sensors Fix:** TBD (symlink vs backend config), show degraded UI
+- **GPS:** Not configured state until endpoints provided
+- **Entertainment:** FULL integration with empty state handling
 
-### P2 - SCAFFOLD Implementation
-| Feature | Status |
-|---------|--------|
-| Games tab | 🔴 TODO |
-| Multiplayer hub | 🔴 TODO |
-| Creator tools | 🔴 TODO |
-| Debate Arena | 🔴 TODO |
-| Photos hub | 🔴 TODO |
-| Personal Vault | 🔴 TODO |
-| New User Setup wizard | 🔴 TODO |
-| In-UI Release Notes | 🔴 TODO |
-
-### Related Documents
-- `/app/memory/IMPLEMENTATION_PROMPT.md` - Full implementation spec
-- `/app/memory/BACKLOG.md` - P0/P1/P2 with acceptance tests
+### Implementation Documents
+- `/app/memory/IMPLEMENTATION_PROMPT_FINAL.md` - Full implementation spec
+- `/app/memory/BACKLOG_FINAL.md` - P0/P1/P2 with 26 items
 - `/app/memory/DEPLOYMENT_CHECKLIST.md` - Pi deployment guide
 
 ---
