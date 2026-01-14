@@ -312,22 +312,43 @@ Captured: ${debugInfo.timestamp}`;
             <div className="p-3 rounded-xl bg-secondary/30">
               <h3 className="text-xs font-semibold text-muted-foreground mb-2">SELF TEST RESULTS</h3>
               <div className="space-y-1">
-                {Object.entries(testResults).map(([name, result]) => (
-                  <div key={name} className="flex items-center justify-between text-sm">
-                    <span className="font-mono">{name}</span>
-                    <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold ${
-                      result.status === 'ok' 
-                        ? 'bg-success/20 text-success' 
-                        : 'bg-destructive/20 text-destructive'
-                    }`}>
-                      {result.status === 'ok' ? (
-                        <><CheckCircle className="w-3 h-3" /> PASS</>
-                      ) : (
-                        <><XCircle className="w-3 h-3" /> FAIL</>
-                      )}
-                    </span>
-                  </div>
-                ))}
+                {Object.entries(testResults).map(([name, result]) => {
+                  const isOk = result.status === ENDPOINT_STATUS.OK;
+                  const isForbidden = result.status === ENDPOINT_STATUS.FORBIDDEN;
+                  const isDegraded = result.status === ENDPOINT_STATUS.DEGRADED;
+                  const isNotConfigured = result.status === ENDPOINT_STATUS.NOT_CONFIGURED;
+                  
+                  let statusLabel = 'FAIL';
+                  let statusClass = 'bg-destructive/20 text-destructive';
+                  let StatusIcon = XCircle;
+                  
+                  if (isOk) {
+                    statusLabel = 'PASS';
+                    statusClass = 'bg-success/20 text-success';
+                    StatusIcon = CheckCircle;
+                  } else if (isForbidden) {
+                    statusLabel = 'LOCKED';
+                    statusClass = 'bg-destructive/20 text-destructive';
+                    StatusIcon = Lock;
+                  } else if (isDegraded) {
+                    statusLabel = 'DEGRADED';
+                    statusClass = 'bg-warning/20 text-warning';
+                    StatusIcon = AlertCircle;
+                  } else if (isNotConfigured) {
+                    statusLabel = 'NOT SET';
+                    statusClass = 'bg-muted/20 text-muted-foreground';
+                    StatusIcon = Settings;
+                  }
+                  
+                  return (
+                    <div key={name} className="flex items-center justify-between text-sm">
+                      <span className="font-mono">{name}</span>
+                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold ${statusClass}`}>
+                        <StatusIcon className="w-3 h-3" /> {statusLabel}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
