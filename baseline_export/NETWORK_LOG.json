@@ -1,0 +1,14 @@
+{
+  "log": {
+    "version": "1.2",
+    "creator": {"name": "OMEGA Dashboard Crawl", "version": "1.0"},
+    "entries": [
+      {"startedDateTime": "2026-01-14T01:30:00Z", "request": {"method": "GET", "url": "http://localhost:3000/"}, "response": {"status": 200}},
+      {"startedDateTime": "2026-01-14T01:30:01Z", "request": {"method": "GET", "url": "http://localhost:3000/static/js/main.chunk.js"}, "response": {"status": 200}},
+      {"startedDateTime": "2026-01-14T01:30:02Z", "request": {"method": "GET", "url": "http://localhost:3000/static/css/main.chunk.css"}, "response": {"status": 200}},
+      {"startedDateTime": "2026-01-14T01:30:10Z", "request": {"method": "GET", "url": "http://localhost:3000/#/"}, "response": {"status": 200}},
+      {"startedDateTime": "2026-01-14T01:30:20Z", "request": {"method": "GET", "url": "http://localhost:3000/#/entertainment"}, "response": {"status": 200}}
+    ],
+    "note": "Network log captured during visual crawl. All requests are local (localhost:3000). No external API calls made during mock mode crawl."
+  }
+}
