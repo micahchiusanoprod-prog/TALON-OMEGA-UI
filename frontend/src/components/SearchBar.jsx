@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { 
   Search, Book, FileText, Users, Terminal, Command, Film, Music, 
   Clock, X, ChevronRight, ChevronDown, AlertTriangle, Info, HelpCircle,
-  Sparkles, Filter, Trash2, ExternalLink, CheckCircle, XCircle
+  Sparkles, Filter, Trash2, ExternalLink, CheckCircle, XCircle, Wifi, WifiOff
 } from 'lucide-react';
 import config from '../config';
 import { TrustBadge, getFreshness, FRESHNESS } from './ui/ProgressiveDisclosure';
@@ -20,6 +20,21 @@ const SOURCE_PRIORITY = {
   files: 5
 };
 
+// Global top 15 caps per user spec
+const GLOBAL_CAPS = {
+  kiwix: 6,
+  jellyfin: 6,
+  community: 4,
+  commands: 4, // Tools/Commands treated as one bucket
+  files: 3     // Dynamic suppression to 0-2 when high-signal sources exist
+};
+
+// Kiwix API Configuration
+const KIWIX_ENDPOINTS = {
+  primary: 'http://talon.local:8090',
+  fallback: 'http://127.0.0.1:8090'
+};
+
 // Pinned Kiwix sources (boosted in ranking)
 const PINNED_KIWIX_SOURCES = [
   'wikipedia_en', 'wikipedia_simple', 'wikimed', 'wikimedical',
@@ -34,6 +49,10 @@ const FILE_NOISE_PATTERNS = [
   /node_modules/i, /\.git/i, /__pycache__/i,
   /\.log$/i, /\.cache/i, /\.DS_Store/i
 ];
+
+// Check if Jellyfin API key is configured (from env)
+const JELLYFIN_API_KEY = process.env.REACT_APP_JELLYFIN_API_KEY || null;
+const isJellyfinConfigured = () => !!JELLYFIN_API_KEY;
 
 // Search scopes
 const SEARCH_SCOPES = [
