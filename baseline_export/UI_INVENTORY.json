@@ -1,174 +1,104 @@
 {
-  "generatedAt": "2026-01-14T01:30:00Z",
-  "routes": {
-    "/": {
-      "path": "/",
-      "componentName": "Dashboard",
-      "pageName": "Home / Dashboard",
-      "tiles": [
-        {
-          "name": "QuickToolsBar",
-          "tools": ["Quick Guide", "Calculator", "Translator", "SOS Beacon", "Currency", "Dictionary", "Field Notes"]
-        },
-        {
-          "name": "SearchBar",
-          "features": ["Search input", "Category filter dropdown"]
-        },
-        {
-          "name": "AllyCommunicationsHub",
-          "states": ["default", "expanded methods"],
-          "subComponents": ["WiFi Direct", "Mesh Network", "Hotspot", "Satellite", "Radio", "Cellular"]
-        },
-        {
-          "name": "CommunityTile",
-          "features": ["Member grid", "Status indicators"]
-        },
-        {
-          "name": "EnvironmentTile",
-          "features": ["Temperature", "Humidity", "Pressure", "IAQ"]
-        },
-        {
-          "name": "DeviceInfoTile",
-          "features": ["Hostname", "IP", "Uptime", "Version"]
-        },
-        {
-          "name": "WeatherTile",
-          "features": ["Current weather", "Forecast"]
-        },
-        {
-          "name": "HotspotTile",
-          "features": ["SSID", "Connected clients", "Toggle"]
-        },
-        {
-          "name": "PowerTile",
-          "features": ["Battery percentage", "Voltage", "Charge state"]
-        },
-        {
-          "name": "CameraTile",
-          "features": ["Camera preview", "Motion alerts"]
-        },
-        {
-          "name": "SecurityTile",
-          "features": ["Security status", "Alerts count"]
-        },
-        {
-          "name": "EntertainmentTile",
-          "tabs": ["All", "Movies", "Shows", "Games", "Music"],
-          "features": ["Content carousel", "View All button"]
-        }
-      ],
-      "modalsAvailable": [
-        "LogsAnalytics",
-        "CommunityHub",
-        "HelpCenter",
-        "AdminConsole",
-        "SystemStatusPanel",
-        "QuickGuideModal",
-        "CalculatorModal",
-        "TranslatorModal",
-        "SOSModal",
-        "CurrencyModal",
-        "DictionaryModal",
-        "NotesModal"
-      ],
-      "dropdowns": [
-        "LanguageSelector",
-        "SearchBar category filter"
-      ]
-    },
-    "/entertainment": {
-      "path": "/entertainment",
-      "componentName": "EntertainmentPage",
-      "pageName": "Entertainment",
-      "tabs": [
-        {
-          "id": "overview",
-          "label": "Overview",
-          "features": ["Continue Watching", "Movie Night Mode banner", "Newly Added", "Quick Stats"]
-        },
-        {
-          "id": "movies",
-          "label": "Movies & TV",
-          "features": ["All Movies grid", "TV Shows grid"]
-        },
-        {
-          "id": "games",
-          "label": "Games",
-          "features": ["Games Hub header", "Game modes (Arcade/Tournaments/Party/Trivia)", "Available Games grid"]
-        },
-        {
-          "id": "music",
-          "label": "Music",
-          "features": ["Music Player", "Beat Maker placeholder", "Albums grid"]
-        },
-        {
-          "id": "photos",
-          "label": "Photos",
-          "features": ["Photos Hub placeholder", "Photo grid placeholder"]
-        },
-        {
-          "id": "vault",
-          "label": "Vault",
-          "features": ["Personal Documents Vault placeholder", "PIN Protection info", "Admin Bypass info"]
-        },
-        {
-          "id": "share",
-          "label": "File Drop",
-          "features": ["File Drop/Share placeholder", "Drop zone"]
-        }
-      ],
-      "modalsAvailable": [
-        "MovieNightModal"
-      ],
-      "dropdowns": [],
-      "floatingButtons": [
-        "New User Setup (bottom-right)"
-      ]
-    }
-  },
-  "headerComponents": {
-    "left": ["OMEGA logo + status dot", "Connection status chip (desktop)"],
-    "center": [
-      {"button": "LOGS", "action": "opens LogsAnalytics modal"},
-      {"button": "Community", "action": "opens CommunityHub modal"},
-      {"button": "Help Center", "action": "opens HelpCenter modal"},
-      {"button": "Entertainment", "action": "navigates to /entertainment"}
+  "generatedAt": "2025-01-14T03:40:00.000Z",
+  "version": "3.0.0",
+  "newComponents": {
+    "contexts": [
+      {
+        "name": "AuthContext",
+        "path": "/app/frontend/src/contexts/AuthContext.jsx",
+        "provides": ["profile", "roles", "pinUnlock", "isAdminUnlocked", "verifyPin"],
+        "status": "WIRED_LIVE"
+      },
+      {
+        "name": "EvidenceContext",
+        "path": "/app/frontend/src/contexts/EvidenceContext.jsx",
+        "provides": ["networkLog", "errorLog", "selfTestResults", "runSelfTest", "generateDebugBundle", "copyDebugBundle"],
+        "status": "WIRED_LIVE"
+      }
     ],
-    "right": [
-      {"button": "LanguageSelector", "type": "dropdown"},
-      {"button": "System Status", "action": "opens SystemStatusPanel modal"},
-      {"button": "Admin Console", "action": "opens AdminConsole modal"},
-      {"button": "Theme Toggle", "action": "toggles dark/light theme"}
-    ],
-    "mobileOverflowMenu": {
-      "triggerButton": "More (three dots)",
-      "items": ["Help Center", "Admin Console", "System metrics display"]
-    }
+    "uiComponents": [
+      {
+        "name": "ProgressivePanel",
+        "path": "/app/frontend/src/components/ui/ProgressiveDisclosure.jsx",
+        "purpose": "Wrapper for progressive disclosure (Summary + Details)",
+        "props": ["title", "summary", "lastUpdated", "recommendedAction", "helpProps", "provenanceProps"]
+      },
+      {
+        "name": "HelpTooltip",
+        "path": "/app/frontend/src/components/ui/ProgressiveDisclosure.jsx",
+        "purpose": "Inline tooltip for acronyms/terms from GLOSSARY"
+      },
+      {
+        "name": "TrustBadge",
+        "path": "/app/frontend/src/components/ui/ProgressiveDisclosure.jsx",
+        "purpose": "Badge showing data trust level",
+        "types": ["VERIFIED", "DERIVED", "ESTIMATED", "UNKNOWN"]
+      },
+      {
+        "name": "ProvenanceStrip",
+        "path": "/app/frontend/src/components/ui/ProgressiveDisclosure.jsx",
+        "purpose": "Data provenance indicator strip",
+        "fields": ["Source", "Last Updated", "Freshness", "Trust Badge"]
+      },
+      {
+        "name": "PanelHelpIcon",
+        "path": "/app/frontend/src/components/ui/ProgressiveDisclosure.jsx",
+        "purpose": "Help icon that opens explainer popup",
+        "props": ["title", "description", "states", "nextSteps"]
+      },
+      {
+        "name": "ViewEvidencePanel",
+        "path": "/app/frontend/src/components/ui/ProgressiveDisclosure.jsx",
+        "purpose": "Two-tab evidence viewer (Client + System)",
+        "tabs": ["Client Evidence (LIVE)", "System Evidence (PLANNED)"]
+      },
+      {
+        "name": "SelfTestRunner",
+        "path": "/app/frontend/src/components/ui/SelfTestDebug.jsx",
+        "purpose": "Self-test button and results display",
+        "modes": ["full", "compact"]
+      },
+      {
+        "name": "DebugBundlePanel",
+        "path": "/app/frontend/src/components/ui/SelfTestDebug.jsx",
+        "purpose": "Debug bundle generator and copy UI"
+      },
+      {
+        "name": "PinEntryModal",
+        "path": "/app/frontend/src/components/ui/SelfTestDebug.jsx",
+        "purpose": "PIN entry modal for admin unlock"
+      },
+      {
+        "name": "AdminGate",
+        "path": "/app/frontend/src/components/ui/SelfTestDebug.jsx",
+        "purpose": "Wrapper component requiring admin access"
+      }
+    ]
   },
-  "modalInventory": {
-    "LogsAnalytics": {
-      "tabs": ["Timeline", "Charts", "Export"],
-      "features": ["Event log list", "CPU/RAM/Temp charts", "Export buttons"]
+  "modifiedComponents": [
+    {
+      "name": "App.js",
+      "changes": ["Added AuthProvider", "Added EvidenceProvider"]
     },
-    "CommunityHub": {
-      "tabs": ["Members", "Teams", "Bulletins", "Team Builder"],
-      "features": ["Member cards", "Team creation", "Bulletin posts", "Custom team icons"]
+    {
+      "name": "SystemStatusPanel.jsx",
+      "changes": ["Enhanced debug bundle description", "Added data-testid for self-test"]
     },
-    "HelpCenter": {
-      "tabs": ["Getting Started", "Features", "FAQ", "Contact"],
-      "features": ["Topic list", "Expandable sections", "Search"]
-    },
-    "AdminConsole": {
-      "tabs": ["Fleet", "Broadcast", "System", "Backups", "Audit"],
-      "features": ["Node management", "Alert broadcasting", "System controls", "Backup list", "Capability audit"]
-    },
-    "SystemStatusPanel": {
-      "sections": ["Connection Info", "Configuration", "Endpoint Status", "Self Test", "Debug Info"],
-      "features": ["Status badges", "Copy debug info", "Run self test", "Endpoint list"]
-    },
-    "MovieNightModal": {
-      "steps": ["Connect to Hotspot", "Scan QR Code", "Vote on What to Watch"],
-      "features": ["WiFi credentials", "QR code display", "Start button"]
+    {
+      "name": "HelpCenter.jsx",
+      "changes": ["Added SelfTestRunner", "Added DebugBundlePanel", "New Quick Diagnostics section"]
     }
-  }
+  ],
+  "glossaryTerms": [
+    "CPU", "RAM", "TEMP", "DISK", "RSSI", "LATENCY", "UPTIME", "GPS", "LAN", "API", "PIN", "SSID"
+  ],
+  "statusTypes": [
+    "OK", "DEGRADED", "NOT_CONFIGURED", "FORBIDDEN", "UNKNOWN"
+  ],
+  "trustBadgeTypes": [
+    "VERIFIED", "DERIVED", "ESTIMATED", "UNKNOWN"
+  ],
+  "freshnessTypes": [
+    "LIVE", "CACHED", "STALE", "UNKNOWN"
+  ]
 }
