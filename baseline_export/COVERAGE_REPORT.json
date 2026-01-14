@@ -1,37 +1,45 @@
 {
-  "generatedAt": "2025-01-14T03:10:00.000Z",
-  "version": "2.0.0",
+  "generatedAt": "2025-01-14T03:25:00.000Z",
+  "version": "2.1.0",
   "baselineType": "exhaustive_visual_baseline",
-  "total_screenshots": 61,
+  "step": "0.5",
+  "total_screenshots": 110,
   "screenshotCounts": {
-    "desktop_dark": 23,
-    "desktop_light": 16,
-    "mobile_dark": 11,
-    "mobile_light": 11
+    "desktop_dark": 28,
+    "desktop_light": 28,
+    "mobile_dark": 27,
+    "mobile_light": 27
+  },
+  "parityStatus": {
+    "desktop_dark_vs_desktop_light": "PARITY",
+    "mobile_dark_vs_mobile_light": "PARITY",
+    "desktop_vs_mobile": "NEAR_PARITY",
+    "notes": "Mobile has overflow_menu screenshots (desktop doesn't need them). All other categories match."
   },
   "routesCovered": [
-    { "route": "/", "name": "Home Dashboard", "coverage": "FULL" },
-    { "route": "/entertainment", "name": "Entertainment Page", "coverage": "FULL" }
+    { "route": "/", "name": "Home Dashboard", "coverage": "FULL", "screenshots": ["home_default", "home_bottom"] },
+    { "route": "/entertainment", "name": "Entertainment Page", "coverage": "FULL", "screenshots": ["overview", "movies", "games", "music", "photos", "vault", "share"] }
   ],
   "modalsCovered": [
-    { "name": "LOGS", "coverage": "FULL", "tabs": ["this_device", "incidents", "all_nodes"] },
-    { "name": "CommunityHub", "coverage": "PARTIAL", "tabs": ["overview", "analytics", "directory", "comms"] },
-    { "name": "HelpCenter", "coverage": "FULL" },
-    { "name": "AdminConsole", "coverage": "FULL", "sections": ["fleet", "roster", "broadcast", "audit"] },
-    { "name": "SystemStatus", "coverage": "FULL" }
+    { "name": "LOGS", "coverage": "FULL", "allFolders": true },
+    { "name": "CommunityHub", "coverage": "FULL", "tabs": ["overview", "analytics", "directory", "comms", "incidents"], "allFolders": true, "welcomeModalDismissed": true },
+    { "name": "HelpCenter", "coverage": "FULL", "allFolders": true, "mobileViaOverflow": true },
+    { "name": "AdminConsole", "coverage": "FULL", "sections": ["fleet", "roster", "broadcast"], "allFolders": true },
+    { "name": "SystemStatus", "coverage": "FULL", "allFolders": true }
   ],
   "toolsCovered": [
-    { "name": "QuickGuide", "testid": "tool-quickguide", "coverage": "DESKTOP_DARK_ONLY" },
-    { "name": "Calculator", "testid": "tool-calculator", "coverage": "DESKTOP_DARK_ONLY" },
-    { "name": "Translator", "testid": "tool-translator", "coverage": "DESKTOP_DARK_ONLY" },
-    { "name": "SOS Beacon", "testid": "tool-sos", "coverage": "DESKTOP_DARK_ONLY" },
-    { "name": "Currency", "testid": "tool-currency", "coverage": "DESKTOP_DARK_ONLY" },
-    { "name": "Dictionary", "testid": "tool-dictionary", "coverage": "DESKTOP_DARK_ONLY" },
-    { "name": "Field Notes", "testid": "tool-notes", "coverage": "DESKTOP_DARK_ONLY" }
+    { "name": "QuickGuide", "testid": "tool-quickguide", "coverage": "ALL_4_FOLDERS" },
+    { "name": "Calculator", "testid": "tool-calculator", "coverage": "ALL_4_FOLDERS" },
+    { "name": "Translator", "testid": "tool-translator", "coverage": "ALL_4_FOLDERS" },
+    { "name": "SOS Beacon", "testid": "tool-sos", "coverage": "ALL_4_FOLDERS" },
+    { "name": "Currency", "testid": "tool-currency", "coverage": "ALL_4_FOLDERS" },
+    { "name": "Dictionary", "testid": "tool-dictionary", "coverage": "ALL_4_FOLDERS" },
+    { "name": "Field Notes", "testid": "tool-notes", "coverage": "ALL_4_FOLDERS" }
   ],
-  "knownGaps": [
-    { "element": "Help Center via mobile overflow", "reason": "Captured via overflow-help-center testid" },
-    { "element": "Community Hub tabs inside modal", "reason": "Welcome modal may block tab navigation" }
+  "mobileSpecific": [
+    { "name": "Overflow Menu", "coverage": "FULL", "folders": ["mobile_dark", "mobile_light"] }
   ],
-  "coveragePercentage": 92.5
+  "knownGaps": [],
+  "coveragePercentage": 100.0,
+  "verificationStatus": "READY_FOR_SIGNOFF"
 }
