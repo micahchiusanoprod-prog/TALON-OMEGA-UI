@@ -18,7 +18,10 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
   const [showLogs, setShowLogs] = useState(false);
   const [showCommunity, setShowCommunity] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);
+  const [showOverflowMenu, setShowOverflowMenu] = useState(false);
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   // Derive device status from health
   const deviceStatus = useMemo(() => {
