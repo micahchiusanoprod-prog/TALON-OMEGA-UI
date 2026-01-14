@@ -23,7 +23,7 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 - Kiwix direct: `http://talon.local:8090` (no proxy)
 - Jellyfin direct: `http://talon.local:8096/web/`
 
-### Confirmed Endpoint Status
+**Endpoint Configuration:**
 | Endpoint | Status | Wire Now? |
 |----------|--------|-----------|
 | health.py | 200 OK | ✅ YES |
