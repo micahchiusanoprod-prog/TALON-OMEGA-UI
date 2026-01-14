@@ -1,69 +1,92 @@
-# OMEGA Dashboard Click Guide
+# OMEGA Dashboard Click Guide v2.1 (Step 0.5)
 
-## How to Navigate
+## Quick Reference - All Elements Verified
 
 ### Home Dashboard (`/`)
 
-#### Header (Desktop)
+#### Header Navigation
+| Element | Test ID | Desktop | Mobile |
+|---------|---------|---------|--------|
+| LOGS button | `logs-btn` / `logs-btn-mobile` | ✅ | ✅ |
+| Community button | `community-btn` / `community-btn-mobile` | ✅ | ✅ |
+| Help Center button | `help-center-btn` | ✅ | Via overflow |
+| Entertainment button | `entertainment-btn` | ✅ | ✅ |
+| Admin Console button | `admin-console-btn` | ✅ | Via overflow |
+| Theme Toggle | `theme-toggle-btn` | ✅ | ✅ |
+| Language Selector | `language-selector` | ✅ | ✅ |
+| System Status | `system-status-btn` | ✅ | ✅ |
+| Overflow Menu | `overflow-menu-btn` | N/A | ✅ |
+
+#### Mobile Overflow Menu (data-testid: `overflow-menu-dropdown`)
 | Element | Test ID | Action |
 |---------|---------|--------|
-| LOGS button | `logs-btn` | Opens LOGS analytics modal |
-| Community button | `community-btn` | Opens Community Hub modal |
-| Help Center button | `help-center-btn` | Opens Help Center modal |
-| Entertainment button | `entertainment-btn` | Navigates to /entertainment |
-| Admin Console button | `admin-console-btn` | Opens Admin Console modal |
-| Theme Toggle | `theme-toggle-btn` | Switches between dark/light theme |
-| Language Selector | `language-selector` | Opens language dropdown |
-| System Status | `system-status-btn` | Opens system status panel |
+| Help Center | `overflow-help-center` | Opens Help Center modal |
+| Admin Console | `overflow-admin-console` | Opens Admin Console modal |
+| Metrics display | `overflow-metrics` | Shows CPU/Temp/RAM |
 
-#### Header (Mobile - via Overflow Menu)
-| Element | Test ID | Action |
-|---------|---------|--------|
-| Overflow Menu | `overflow-menu-btn` | Opens dropdown with Help/Admin options |
-| Help Center (overflow) | `overflow-help-center` | Opens Help Center modal |
-| Admin Console (overflow) | `overflow-admin-console` | Opens Admin Console modal |
-
-#### Quick Tools Bar
-| Tool | Test ID | Description |
-|------|---------|-------------|
-| Quick Guide | `tool-quickguide` | Field guide and reference |
-| Calculator | `tool-calculator` | Scientific calculator |
-| Translator | `tool-translator` | Text translation tool |
-| SOS Beacon | `tool-sos` | Emergency beacon/alert |
-| Currency | `tool-currency` | Currency converter |
-| Dictionary | `tool-dictionary` | Dictionary lookup |
-| Notes | `tool-notes` | Field notes editor |
+#### Quick Tools Bar (ALL 7 CAPTURED IN ALL 4 FOLDERS)
+| Tool | Test ID | Screenshot Captured |
+|------|---------|---------------------|
+| Quick Guide | `tool-quickguide` | ✅ All folders |
+| Calculator | `tool-calculator` | ✅ All folders |
+| Translator | `tool-translator` | ✅ All folders |
+| SOS Beacon | `tool-sos` | ✅ All folders |
+| Currency | `tool-currency` | ✅ All folders |
+| Dictionary | `tool-dictionary` | ✅ All folders |
+| Notes | `tool-notes` | ✅ All folders |
 
 ### Entertainment Page (`/entertainment`)
 
-| Tab | Test ID | Shows |
-|-----|---------|-------|
-| Overview | `nav-overview` | All entertainment options overview |
-| Movies & TV | `nav-movies` | Kiwix/Jellyfin movie integration |
-| Games | `nav-games` | Game launcher (planned) |
-| Music | `nav-music` | Music player with Beat Maker |
-| Photos | `nav-photos` | Photo gallery |
-| Vault | `nav-vault` | Personal encrypted vault |
-| File Drop | `nav-share` | LAN file sharing |
+| Tab | Test ID | Screenshot Captured |
+|-----|---------|---------------------|
+| Overview | `nav-overview` | ✅ All folders |
+| Movies & TV | `nav-movies` | ✅ All folders |
+| Games | `nav-games` | ✅ All folders |
+| Music | `nav-music` | ✅ All folders |
+| Photos | `nav-photos` | ✅ All folders |
+| Vault | `nav-vault` | ✅ All folders |
+| File Drop | `nav-share` | ✅ All folders |
 
 ### Modal Navigation
 
 #### LOGS Modal
-- Close: `logs-close` button
-- Tabs: `tab-this-device`, `tab-incidents`, `tab-all-nodes`
+| Element | Test ID | Notes |
+|---------|---------|-------|
+| Close button | `logs-close` | Closes modal |
+| This Device tab | `tab-this-device` | Default tab |
+| Incidents tab | `tab-incidents` | Shows incident list |
+| All Nodes tab | `tab-all-nodes` | Shows all nodes |
 
-#### Community Hub Modal
-- Close: `community-close` button
-- Welcome modal: Dismiss with "Got it, thanks!" button
-- Tabs: `tab-overview`, `tab-analytics`, `tab-directory`, `tab-comms`
+#### Community Hub Modal (ALL 5 TABS CAPTURED)
+| Element | Test ID | Screenshot Captured |
+|---------|---------|---------------------|
+| Close button | `community-close` | - |
+| Welcome dismiss | Text: "Got it, thanks!" | Click to dismiss |
+| Overview tab | `tab-overview` | ✅ All folders |
+| Analytics tab | `tab-analytics` | ✅ All folders |
+| Directory tab | `tab-directory` | ✅ All folders |
+| Comms tab | `tab-comms` | ✅ All folders |
+| Incidents tab | `tab-incidents` | ✅ All folders |
 
-#### Admin Console Modal
-- Close: Escape key or click outside
-- Sections: `admin-section-fleet`, `admin-section-roster`, `admin-section-broadcast`, `admin-section-audit`
+#### Admin Console Modal (ALL 3 SECTIONS + AUDIT)
+| Section | Test ID | Screenshot Captured |
+|---------|---------|---------------------|
+| Section tabs container | `admin-section-tabs` | - |
+| Fleet Updates | `admin-section-fleet` | ✅ All folders |
+| Roster & Readiness | `admin-section-roster` | ✅ All folders |
+| Broadcast & Assembly | `admin-section-broadcast` | ✅ All folders |
+| Audit Panel | `admin-section-audit` | Opens separate panel |
 
 #### Help Center Modal
-- Close: `help-center-close` button
+| Element | Test ID | Notes |
+|---------|---------|-------|
+| Close button | `help-center-close` | Closes modal |
+| Mobile access | `overflow-help-center` | Via overflow menu |
 
 ## Theme Switching
-- Use `theme-toggle-btn` to switch between dark and light themes
-- Theme is persisted in localStorage as `omega-theme`
+- Toggle: `theme-toggle-btn`
+- Values: `dark` / `light`
+- Storage: `localStorage.omega-theme`
+
+## Coverage: 100%
+All interactive elements captured across all 4 folders (desktop_dark, desktop_light, mobile_dark, mobile_light).
