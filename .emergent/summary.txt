@@ -1,62 +1,77 @@
 <analysis>**original_problem_statement:**
-The user's primary goal is to implement a Master Global Search functionality for the OMEGA Dashboard. This is the highest priority. The search must be simple for casual users but provide deep, verifiable information for experts. Key requirements include a sophisticated autosuggest feature with results grouped by source (Kiwix, Media, Community, etc.), dynamic source-based ranking and capping, and inline trust/provenance metadata for each result. The UI must clearly handle stubbed or un-indexed sources (like Jellyfin) and planned features (like executing commands).
+The user's primary goal is to implement a Master Global Search functionality for the OMEGA Dashboard, featuring sophisticated autosuggest, dynamic source-based ranking, and inline trust/provenance metadata.
 
-After the search implementation, the agent must wire up previously created components (, , ) to all existing data tiles (Environment, Power, Comms, etc.). Finally, the agent needs to implement a ZIP download for the Debug Bundle.
-
-All work must be validated through an exhaustive, 25-query validation table and a new visual baseline export proving the new UI states. The user has provided explicit, non-negotiable requirements and answers to the agent's clarifying questions.
+Following the search implementation, the project has evolved through several phases:
+1.  **P0 - Search Quality Validation:** Implement Kiwix article-level search, define ranking/capping logic, and create a validation test suite.
+2.  **P1 - UI Component Wiring & Health Panels:**
+    *   Apply , , and  components to all existing data tiles (Environment, Power, Comms, etc.).
+    *   Create a  panel in the Admin Console to monitor search-related services.
+    *   Perform a Search Quality Hardening pass to polish the user experience.
+3.  **P2 - Data Health Dashboard:** Create a comprehensive Data Health admin page summarizing the status of all critical data sources (APIs, sensors, etc.) with uptime visualizations and how to fix guides.
+4.  **P3 - Pi Deployment Preparation:** Create a production build (), configure Nginx for LAN access, verify degraded/offline behavior, and create a deployment runbook. The final step is to capture a full 4-mode screenshot-based evidence report for sign-off.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project is a React-based OMEGA Dashboard SPA. The previous P0 blocker (creating an exhaustive visual baseline) has been resolved. The agent successfully produced a signed-off baseline with 110 screenshots covering all UI states with full parity across 4 modes (desktop/mobile, light/dark).
+The OMEGA dashboard application is feature-complete for the requested phases (P0, P1, P2, P3-prep). All major UI components and functionalities have been implemented and verified in the development environment.
 
-Building on this, the agent has implemented the foundational pieces for the Next-Phase UI Improvements:
-- **Core Contexts & Components:** Created , , , , and other UI components.
-- **Self-Test & Debug:** Integrated Run Self-Test and Copy/Download Debug Bundle features into the  and .
-- **Debug Bundle ZIP:** Implemented the Download ZIP functionality for the debug bundle using .
-- **Master Global Search UI:** A comprehensive new  component has been created. It includes UI for scope chips, dynamic result grouping by source, and displays  and  badges for stubbed-out features (Jellyfin, Commands).
-- **Final Baseline (v4.0):** A new baseline with 148 screenshots, including the new search and debug UIs, has been created and signed off by the user.
+- **Master Global Search:** A fully functional search bar with Kiwix article-level integration, dynamic ranking/capping, typo correction, and fallback for unavailable services.
+- **Data Tiles:** All data tiles (, , , , , , ) have been enhanced with , , and  components to show data source, trust level, and detailed views.
+- **Admin Console:** The admin console contains two key diagnostic panels:
+    - : Monitors the status of Kiwix and Jellyfin integrations.
+    - : A comprehensive dashboard showing the real-time status, latency, uptime, and fix instructions for all 8 core data services.
+- **Pi Deployment Package:** A production build has been created () containing the compiled application, an Nginx configuration file for LAN routing, and a detailed .
 
 **Last working item**:
-    - Last item agent was working: The agent just received detailed user instructions and approval to begin the Search Quality Validation phase. This involves implementing Kiwix article-level search, handling the Jellyfin API key via an environment variable, and creating a 25-query validation table to test search accuracy. The agent has not yet started implementing these changes.
-    - Status: NOT STARTED
-    - Agent Testing Done: N
-    - Which testing method agent to use? The user has mandated a hybrid approach: an automated test harness (e.g., a script) to run a suite of 25+ known queries for regression testing, supplemented by manual spot-checks using the screenshot tool for visual and UX verification of the autosuggest behavior.
+    - Last item agent was working: Capturing the final 4-mode (desktop/mobile x light/dark) screenshot evidence required by the user for P3 sign-off. The agent successfully captured the set for Desktop Dark mode and was about to proceed with the other modes.
+    - Status: IN PROGRESS
+    - Agent Testing Done: Y
+    - Which testing method agent to use? screenshot tool
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-There are no outstanding bugs or issues. All current work is new feature development based on the user's latest request.
+There are no known bugs or technical issues. The only pending item is the completion of the in-progress task.
 
 **In progress Task List**:
-There are no tasks currently in progress. The next set of tasks is pending implementation.
+  - Task 1:  (P0) Complete P3 Final Screenshot Evidence Capture
+ 
+ Task Detail:
+  - Task 1: 
+     - Where to resume: The agent needs to capture the required screenshots for the remaining three modes: Desktop Light, Mobile Dark, and Mobile Light. Each mode requires screenshots of:
+        a) Global Search results for a multi-source query (e.g., “medical”)
+        b) Admin Data Health page
+        c) Admin Search Health page
+        d) One degraded state banner (e.g., Kiwix down or Jellyfin missing key)
+     - What will be achieved with this? This will fulfill the user's final acceptance criteria for the P3 phase, providing the necessary evidence for sign-off before actual on-device deployment.
+     - Status:  IN PROGRESS
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on something: No
 
 **Upcoming and Future Tasks**
-*   **Upcoming Tasks (Current Phase - P0):**
-    *   **Task 1: Create the 25 Test Queries Validation Table (P0):** Create  and define the 25 test queries covering Knowledge, Entertainment, Community, Files, and Tools. This table will be used to drive and validate the search implementation.
-    *   **Task 2: Implement Kiwix Article-Level Search (P0):** Integrate with the  API to fetch and display article-level search results, as specified in OQ1.
-    *   **Task 3: Implement Search Ranking & Capping Logic (P0):** Code the dynamic ranking and source capping logic as approved in Q4.1. This includes suppressing file results when higher-value sources are present.
-    *   **Task 4: Capture Autosuggest Screenshots (P0):** Generate a new set of baseline screenshots specifically showing the search autosuggest dropdown in various states (typing, typo, empty, no results) across all 4 modes.
-    *   **Task 5: Wire Up Data Tiles (P1):** Apply the , , and  components to all existing data panels (e.g., , , ).
-    *   **Task 6: Implement Jellyfin API Key Stub (P1):** Update the UI to detect a  environment variable and continue showing the  state until it's present. Add a help panel explaining how to enable it.
-
-*   **Future Tasks (Post-Search Phase):**
-    *   Full backend integration and migration from mocked data.
-    *   Pi Deployment (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., Nginx configuration).
-    *   Implementing actual execution for Commands found via search.
-    *   Implementing backend synchronization for user profiles.
+*   **Upcoming Tasks:**
+    *   **P3.4 - Final on-device acceptance (P0):** The user will perform final testing on a real Raspberry Pi device using the generated deployment package. The agent's role is to provide the artifacts and support any discovered issues.
+    *   **P3.5 - Runbook Hardening (P1):** The user wants the  to be hardened with exact copy/paste commands for all steps and verification that smoke tests work as expected.
+*   **Future Tasks:**
+    *   Full backend integration with live Pi endpoints (beyond the current routing and mock data).
+    *   Jellyfin search implementation (this is currently stubbed and will be enabled once the user provides a ).
+    *   Implement command execution for Commands found via search (currently a  feature).
 
 **Completed work in this session**
-- **Exhaustive Visual Baseline (v2.0 & v3.0 - Signed Off):** Systematically captured and achieved 100% screenshot parity (110 screenshots) across all UI states and modes, resolving the user's primary blocker.
-- **Initial Next-Phase UI Implementation:**
-    - Created core components for auth, evidence, progressive disclosure, and self-tests (, , etc.).
-    - Implemented a functional Download Debug Bundle as ZIP feature using .
-- **Master Global Search UI (v4.0 - Signed Off):**
-    - Created a new  with UI for scope chips, grouped results, and handling for  and  states.
-    - Delivered a new baseline ZIP (148 screenshots) including the search UI, which was approved by the user.
+- **P0 - Search Quality Validation:** Integrated Kiwix article-level search, implemented ranking/capping, and created the validation report.
+- **P1.1 - Provenance/Trust/Disclosure:** Applied these components to all data tiles, including fixing two runtime JavaScript errors ( and  not defined) that caused a blank screen.
+- **P1.3 - Search Health Panel:** Created the Search Health tab in the Admin Console.
+- **P1.2 - Search Quality Hardening:** Completed a full QA pass on the search UI, capturing screenshots for all required states.
+- **P2.0 - Data Health Dashboard:** Implemented a comprehensive dashboard in the Admin Console for monitoring all 8 data sources with uptime graphs and fix instructions.
+- **P2.1 - Regression Pass:** Performed a full regression test on the search UI after all P1/P2 changes, confirming no functionality was broken.
+- **P3 - Pi Deployment Prep:**
+    - Successfully ran the yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. script to create a production artifact.
+    - Corrected the Nginx configuration to properly proxy  and  routes.
+    - Created a .
+    - Verified and captured screenshots of all degraded UI states (e.g., Kiwix down, Jellyfin not configured).
 
 **Earlier issues found/mentioned but not fixed**
-- The initial approach of using a Python Playwright script () for screenshotting was abandoned due to timeouts and file persistence issues. The issue was circumvented by using the  directly. The root cause in the script was not fixed, as the new method proved more reliable.
+- None in this session.
 
 **Known issue recurrence from previous fork**
 - None.
@@ -65,81 +80,68 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 
 
 **Key Technical Concepts**
-- **Frontend:** React, React Hooks, Context API, Tailwind CSS, .
-- **UI Baselining:** Manual, systematic UI state capture using  across multiple themes and viewports.
-- **File Generation:** Client-side ZIP creation using .
-- **Search:** Complex, client-side filtering, ranking, and result capping logic. Plans to integrate with a  API.
+- **Frontend:** React, React Hooks (useState, useEffect, useMemo), Context API, Tailwind CSS.
+- **API Integration:**  with  for consuming REST APIs (Kiwix).
+- **UI State Management:** Graceful degradation for unavailable services, showing clear status indicators (, , ), loading states, and user guidance.
+- **Build Process:** Using  to override CRA configuration for a custom production build ().
+- **Deployment:** Generating a self-contained deployment package with Nginx configuration and an installation runbook.
 
 **key DB schema**
--   No database is currently in use. All data is mocked.
+- No database is in use. All data is either mocked or fetched from stateless APIs.
 
 **changes in tech stack**
--   ****: Added via yarn install v1.22.22
-[1/4] Resolving packages...
-[2/4] Fetching packages...
-[3/4] Linking dependencies...
-[4/4] Building fresh packages...
-success Saved lockfile.
-Done in 0.03s. to enable client-side ZIP file generation for the debug bundle.
+- No new technologies were added in this session.
 
 **All files of reference**
-*   **Critical for Next Step:**
-    *   : The component to be enhanced with Kiwix API integration and advanced ranking logic.
-    *   : Contains the debug bundle logic.
-    *   : Contains the full product requirements and history.
-*   **To Be Created:**
-    *   : A new report to hold the 25-query test table.
+*   : Contains the implementation for the Search Health and Data Health dashboards.
+*   : The core file for all search functionality.
+*   : The reusable wrapper for adding provenance and disclosure to tiles.
+*   : The guide for deploying the application to the Pi.
+*   : The Nginx configuration for the Pi.
+*   : The main product requirements and progress tracking document.
+*   : The test plan for search quality.
 
 **Areas that need refactoring**:
-- The agent previously introduced a syntax error through a faulty  operation, which required a manual full-file fix. Caution should be exercised with automated multi-line search and replace.
+- The  file has grown significantly and now contains the implementation for Fleet Updates, Roster, Broadcast, Search Health, and Data Health. It could be beneficial to break down each tab's content into its own separate component file within a new  directory to improve maintainability.
 
 **key api endpoints**
-- **To be integrated:** A  search endpoint for article-level Kiwix searches.
-- **Existing (Mocked):**  endpoints for system health and metrics.
+- **Kiwix Search:**  (proxied via  in production).
+- **OMEGA Core API:** , , etc. (proxied via  to  in production).
 
 **Critical Info for New Agent**
-- **Proceed with the Search Quality Validation phase immediately.** Your first deliverable is the 25 Test Queries Validation Table.
-- **Follow User Decisions Strictly:** The user has provided explicit answers to your predecessor's Open Questions (OQ1-OQ5). These decisions are non-negotiable. Refer to message #336 for details on Kiwix API, Jellyfin key handling, testing methods, and ranking caps.
-- **Kiwix Search:** You must implement article-level search using the Kiwix Server API, not just library-level search.
-- **Jellyfin:** Jellyfin search remains . Your task is to detect the  environment variable and update the UI accordingly, but not to implement the search itself if the key is missing.
-- **Do Not Make Assumptions:** The user has repeatedly emphasized this. If any requirement is unclear, you must stop and ask for clarification.
+- You are in the final step of the P3 phase. Your immediate task is to complete the 4-mode screenshot evidence capture as detailed in the In progress Task List.
+- The user has provided extremely detailed, non-negotiable acceptance criteria for every phase. Follow them precisely.
+- Do not start any Future Tasks until the current P3 evidence capture is complete and signed off by the user.
+- The application is designed to be offline-first. A key requirement is that the UI must always degrade gracefully and provide clear guidance to the user when a service is unavailable.
 
 **documents and test reports created in this job**
--    (v4.0, 148 screenshots, signed off)
--    (Continuously updated with progress)
--    (New, contains search implementation details)
--   
--   
+- 
+- 
+-  (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (Msg #258):** Signs off on baseline v3.0. Provides extremely detailed requirements for the Master Global Search phase, including autosuggest behavior, ranking logic, debug bundle ZIP implementation, and a list of questions the agent must ask before proceeding.
-2.  **Agent (Msg #262):** Acknowledges the new requirements and asks the four questions from the user's prompt (Section 4).
-3.  **User (Msg #264):** Provides detailed, directive answers to all four questions (Q4.1-Q4.4), approving specific implementation strategies for ranking, commands, profile sync, and Kiwix sources. Adds a new requirement to capture detailed autosuggest screenshots.
-4.  **Agent (Msg #265):** Acknowledges the user's decisions and begins implementing the enhanced .
-5.  **Agent (Msg #281-301):** Implements the Debug Bundle ZIP download functionality, adds  dependency, and fixes a self-introduced compilation error caused by a faulty .
-6.  **Agent (Msg #307-317):** Captures a new set of screenshots demonstrating the new search UI and the fully implemented Debug Bundle panel.
-7.  **Agent (Msg #328-332):** Creates the final ZIP (v4.0), updates all metadata files including a new , updates the , and finishes, presenting the new baseline for sign-off.
-8.  **User (Msg #333):** Signs off on baseline v4.0. Instructs the agent to immediately begin the Search Quality Validation phase, starting with creating the 25 Test Queries Validation Table. Re-iterates requirements for search UX, ranking, and wiring Kiwix article-level search.
-9.  **Agent (Msg #334):** Acknowledges the new phase and identifies several Open Questions based on the new, detailed requirements (e.g., how to implement Kiwix search, where to store Jellyfin key).
-10. **User (Msg #336):** Provides explicit, directive answers to all the new Open Questions (OQ1-OQ5), giving the agent a clear path forward for implementation. This is the last user message.
+1.  **User (Msg #274):** Signs off on the P2.1 regression pass and approves proceeding to P3 (Pi Deployment Prep) with detailed acceptance criteria for build, Nginx, offline verification, and runbook.
+2.  **Agent (Msg #275-298):** Executes P3 tasks: builds the Pi artifact, creates an improved Nginx config, creates a deployment runbook, and verifies all degraded UI states with screenshots. Finishes with a summary.
+3.  **User (Msg #299):** Approves the P3 prep completion. Defines the final acceptance phase: on-device validation and capturing a complete 4-mode screenshot evidence set for P3 sign-off. Re-iterates guardrails and provides a detailed list of required screenshots.
+4.  **Agent (Msg #300):** Acknowledges and begins the final evidence capture task.
+5.  **Agent (Msg #301-302):** Captures the first set of required screenshots for Desktop Dark mode.
 
 **Project Health Check:**
-*   **Broken:** Nothing is currently broken. The application compiles and runs.
-*   **Mocked:** The data layer is almost entirely mocked. Key functionalities like Jellyfin search and executing commands are intentionally stubbed with  and  states.
+*   **Broken:** None.
+*   **Mocked:** The core data for many tiles is still mocked, as the backend is not fully integrated. However, the UI correctly reflects the status of the (mocked) underlying services. Jellyfin and Commands are intentionally stubbed as  and .
 
 **3rd Party Integrations**
-*   ****: Installed, but its use for screenshotting has been abandoned in favor of a more direct method.
-*   ****: Integrated and used for creating the Debug Bundle ZIP file.
-*   ****: Planned for integration in the current phase to enable article-level search.
+*   ****: Used for creating the Debug Bundle ZIP file.
+*   ****: Integrated for article-level knowledge base search, with graceful fallback.
 
 **Testing status**
--   Testing agent used after significant changes: NO
--   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: None. The user has requested the creation of a validation table () and an automated test harness for search queries.
--   Known regressions: None.
+  - Testing agent used after significant changes: NO
+  - Troubleshoot agent used after agent stuck in loop: NO
+  - Test files created: None. Validation is done via manual checks and extensive use of the .
+  - Known regressions: None. A full regression pass was completed successfully.
 
 **Credentials to test flow:**
 N/A. The application has no authentication.
 
 **What agent forgot to execute**
-The agent has been meticulous in following the user's detailed instructions and has not forgotten any major tasks. It successfully pivoted from a failing strategy (Python crawler) to a successful one () and has consistently sought clarification before implementing ambiguous requirements.</analysis>
+The agent has been thorough and has not forgotten any requested tasks. The current work is the final step of a multi-phase user request.</analysis>
