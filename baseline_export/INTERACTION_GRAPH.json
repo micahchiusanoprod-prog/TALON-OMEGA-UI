@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-01-14T02:28:00Z",
+  "interactionGraph": {
+    "/": {
+      "route": "/",
+      "component": "Dashboard",
+      "elements": [
+        {"id": "logs-btn", "type": "button", "label": "LOGS", "selector": "[data-testid='logs-btn']", "interaction": "click", "opensModal": "LogsAnalytics"},
+        {"id": "logs-btn-mobile", "type": "button", "label": "LOGS", "selector": "[data-testid='logs-btn-mobile']", "interaction": "click", "opensModal": "LogsAnalytics", "context": "mobile"},
+        {"id": "community-btn", "type": "button", "label": "Community", "selector": "[data-testid='community-btn']", "interaction": "click", "opensModal": "CommunityHub"},
+        {"id": "community-btn-mobile", "type": "button", "label": "Community", "selector": "[data-testid='community-btn-mobile']", "interaction": "click", "opensModal": "CommunityHub", "context": "mobile"},
+        {"id": "help-center-btn", "type": "button", "label": "Help Center", "selector": "[data-testid='help-center-btn']", "interaction": "click", "opensModal": "HelpCenter"},
+        {"id": "entertainment-btn", "type": "button", "label": "Entertainment", "selector": "[data-testid='entertainment-btn']", "interaction": "click", "navigatesTo": "/entertainment"},
+        {"id": "entertainment-btn-mobile", "type": "button", "label": "Entertainment", "selector": "[data-testid='entertainment-btn-mobile']", "interaction": "click", "navigatesTo": "/entertainment", "context": "mobile"},
+        {"id": "admin-console-btn", "type": "button", "label": "Admin Console", "selector": "[data-testid='admin-console-btn']", "interaction": "click", "opensModal": "AdminConsole"},
+        {"id": "system-status-btn", "type": "button", "label": "Status", "selector": "[data-testid='system-status-btn']", "interaction": "click", "opensModal": "SystemStatusPanel"},
+        {"id": "theme-toggle-btn", "type": "button", "label": "Theme Toggle", "selector": "[data-testid='theme-toggle-btn']", "interaction": "click", "togglesState": "theme"},
+        {"id": "overflow-menu-btn", "type": "button", "label": "More", "selector": "[data-testid='overflow-menu-btn']", "interaction": "click", "opensDropdown": "overflow-menu", "context": "mobile"},
+        {"id": "language-selector", "type": "dropdown", "label": "Language", "selector": "[data-testid='language-selector']", "interaction": "click", "opensDropdown": "language-options"},
+        {"id": "connection-status-chip", "type": "indicator", "label": "Connection Status", "selector": "[data-testid='connection-status-chip']", "interaction": "display"},
+        {"id": "tool-quickguide", "type": "button", "label": "Quick Guide", "selector": "[data-testid='tool-quickguide']", "interaction": "click", "opensModal": "QuickGuideModal"},
+        {"id": "tool-calculator", "type": "button", "label": "Calculator", "selector": "[data-testid='tool-calculator']", "interaction": "click", "opensModal": "CalculatorModal"},
+        {"id": "tool-translator", "type": "button", "label": "Translator", "selector": "[data-testid='tool-translator']", "interaction": "click", "opensModal": "TranslatorModal"},
+        {"id": "tool-sos", "type": "button", "label": "SOS Beacon", "selector": "[data-testid='tool-sos']", "interaction": "click", "opensModal": "SOSModal"},
+        {"id": "tool-currency", "type": "button", "label": "Currency", "selector": "[data-testid='tool-currency']", "interaction": "click", "opensModal": "CurrencyModal"},
+        {"id": "tool-dictionary", "type": "button", "label": "Dictionary", "selector": "[data-testid='tool-dictionary']", "interaction": "click", "opensModal": "DictionaryModal"},
+        {"id": "tool-notes", "type": "button", "label": "Field Notes", "selector": "[data-testid='tool-notes']", "interaction": "click", "opensModal": "NotesModal"},
+        {"id": "entertainment-view-all", "type": "button", "label": "View All Entertainment", "selector": "[data-testid='entertainment-view-all']", "interaction": "click", "navigatesTo": "/entertainment"}
+      ]
+    },
+    "/entertainment": {
+      "route": "/entertainment",
+      "component": "EntertainmentPage",
+      "elements": [
+        {"id": "back-to-dashboard", "type": "button", "label": "Back", "selector": "[data-testid='back-to-dashboard']", "interaction": "click", "navigatesTo": "/"},
+        {"id": "nav-overview", "type": "tab", "label": "Overview", "selector": "[data-testid='nav-overview']", "interaction": "click", "showsPanel": "overview"},
+        {"id": "nav-movies", "type": "tab", "label": "Movies & TV", "selector": "[data-testid='nav-movies']", "interaction": "click", "showsPanel": "movies"},
+        {"id": "nav-games", "type": "tab", "label": "Games", "selector": "[data-testid='nav-games']", "interaction": "click", "showsPanel": "games"},
+        {"id": "nav-music", "type": "tab", "label": "Music", "selector": "[data-testid='nav-music']", "interaction": "click", "showsPanel": "music"},
+        {"id": "nav-photos", "type": "tab", "label": "Photos", "selector": "[data-testid='nav-photos']", "interaction": "click", "showsPanel": "photos"},
+        {"id": "nav-vault", "type": "tab", "label": "Vault", "selector": "[data-testid='nav-vault']", "interaction": "click", "showsPanel": "vault"},
+        {"id": "nav-share", "type": "tab", "label": "File Drop", "selector": "[data-testid='nav-share']", "interaction": "click", "showsPanel": "share"},
+        {"id": "new-user-setup", "type": "button", "label": "New User Setup", "selector": "[data-testid='new-user-setup']", "interaction": "click", "status": "PLANNED"},
+        {"id": "start-movie-night", "type": "button", "label": "Start Movie Night", "selector": "text='Start Movie Night'", "interaction": "click", "opensModal": "MovieNightModal"}
+      ]
+    }
+  },
+  "modals": {
+    "LogsAnalytics": {
+      "tabs": [
+        {"id": "tab-this-device", "label": "This Device"},
+        {"id": "tab-incidents", "label": "Incidents"},
+        {"id": "tab-all-nodes", "label": "All Nodes"}
+      ],
+      "closeMethods": ["Escape", "clickOutside", "closeButton"]
+    },
+    "CommunityHub": {
+      "tabs": [
+        {"id": "tab-profile", "label": "Profile", "selector": "[data-testid='tab-profile']"},
+        {"id": "tab-directory", "label": "Directory", "selector": "[data-testid='tab-directory']"},
+        {"id": "tab-analytics", "label": "Analytics", "selector": "[data-testid='tab-analytics']"},
+        {"id": "tab-comms", "label": "Comms", "selector": "[data-testid='tab-comms']"}
+      ]
+    },
+    "HelpCenter": {
+      "tabs": ["Getting Started", "Features", "FAQ", "Contact"]
+    },
+    "AdminConsole": {
+      "tabs": [
+        {"id": "admin-tab-fleet", "label": "Fleet", "selector": "[data-testid='admin-tab-fleet']"},
+        {"id": "admin-tab-broadcast", "label": "Broadcast", "selector": "[data-testid='admin-tab-broadcast']"},
+        {"id": "admin-tab-system", "label": "System", "selector": "[data-testid='admin-tab-system']"},
+        {"id": "admin-tab-backups", "label": "Backups", "selector": "[data-testid='admin-tab-backups']"},
+        {"id": "admin-tab-audit", "label": "Audit", "selector": "[data-testid='admin-tab-audit']"}
+      ]
+    },
+    "SystemStatusPanel": {
+      "expandableSections": [
+        {"id": "section-endpoints", "label": "ENDPOINT STATUS", "selector": "text='ENDPOINT STATUS'"}
+      ],
+      "actions": ["Run Self Test", "Copy Debug Info"]
+    },
+    "MovieNightModal": {
+      "steps": ["Connect to Hotspot", "Scan QR", "Vote"],
+      "actions": ["Start Movie Night"]
+    }
+  }
+}
