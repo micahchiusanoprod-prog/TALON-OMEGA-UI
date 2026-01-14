@@ -120,95 +120,305 @@ const getSourceMeta = (kiwixStatus = 'INDEXED') => ({
 let SOURCE_META = getSourceMeta('INDEXED');
 
 // ============================================================
-// MOCK DATA GENERATORS (to be replaced with real API)
+// KIWIX API INTEGRATION
 // ============================================================
 
-const generateMockKiwixResults = (query) => {
+// Kiwix API state
+let kiwixApiAvailable = null; // null = unknown, true = available, false = unavailable
+let kiwixApiEndpoint = null;
+
+// Check Kiwix API availability
+const checkKiwixAvailability = async () => {
+  const endpoints = [KIWIX_ENDPOINTS.primary, KIWIX_ENDPOINTS.fallback];
+  
+  for (const endpoint of endpoints) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
+      // Try to fetch the catalog to verify server is responsive
+      const response = await fetch(`${endpoint}/catalog/v2/entries`, {
+        signal: controller.signal,
+        mode: 'cors'
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        kiwixApiAvailable = true;
+        kiwixApiEndpoint = endpoint;
+        SOURCE_META = getSourceMeta('INDEXED');
+        console.log(`[Kiwix] API available at ${endpoint}`);
+        return { available: true, endpoint };
+      }
+    } catch (err) {
+      console.log(`[Kiwix] ${endpoint} not available:`, err.message);
+    }
+  }
+  
+  kiwixApiAvailable = false;
+  kiwixApiEndpoint = null;
+  SOURCE_META = getSourceMeta('UNAVAILABLE');
+  console.log('[Kiwix] API unavailable - using library-level only');
+  return { available: false, endpoint: null };
+};
+
+// Fetch article-level search results from Kiwix
+const fetchKiwixArticleResults = async (query) => {
+  if (!kiwixApiAvailable || !kiwixApiEndpoint) {
+    return { results: [], error: 'Kiwix API unavailable' };
+  }
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    // kiwix-serve search endpoint - typically /search?pattern=query
+    // Also supports /suggest for autosuggest
+    const searchUrl = `${kiwixApiEndpoint}/search?pattern=${encodeURIComponent(query)}&limit=20`;
+    
+    const response = await fetch(searchUrl, {
+      signal: controller.signal,
+      mode: 'cors',
+      headers: { 'Accept': 'application/json' }
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      // Try alternate endpoint format
+      const altSearchUrl = `${kiwixApiEndpoint}/suggest?term=${encodeURIComponent(query)}`;
+      const altResponse = await fetch(altSearchUrl, { mode: 'cors' });
+      if (altResponse.ok) {
+        const data = await altResponse.json();
+        return { results: data, endpoint: 'suggest' };
+      }
+      throw new Error(`Kiwix search returned ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return { results: data, endpoint: 'search' };
+  } catch (err) {
+    console.log('[Kiwix] Article search failed:', err.message);
+    return { results: [], error: err.message };
+  }
+};
+
+// Transform Kiwix API results to our format
+const transformKiwixApiResults = (apiResults, query) => {
+  if (!Array.isArray(apiResults)) return [];
+  
+  return apiResults.slice(0, 10).map((item, idx) => {
+    // Kiwix results typically have: title, path, snippet, book/zim name
+    const title = item.title || item.label || item.name || 'Untitled';
+    const snippet = item.snippet || item.description || '';
+    const book = item.book || item.zimFile || 'Unknown';
+    const path = item.path || item.url || '';
+    
+    // Check if this is from a pinned source
+    const isPinned = PINNED_KIWIX_SOURCES.some(src => 
+      book.toLowerCase().includes(src) || path.toLowerCase().includes(src)
+    );
+    
+    // Determine match type
+    let matchType = 'fts';
+    if (title.toLowerCase() === query.toLowerCase()) matchType = 'exact';
+    else if (title.toLowerCase().startsWith(query.toLowerCase())) matchType = 'prefix';
+    
+    return {
+      id: `kiwix-article-${idx}`,
+      title,
+      subtitle: snippet || `From ${book}`,
+      source: 'kiwix',
+      sourceLabel: book,
+      matchType,
+      matchReason: `Article match in ${book}`,
+      trustBadge: 'VERIFIED',
+      freshness: Date.now() - 86400000, // Assume 1 day for offline content
+      isPinned,
+      isArticle: true,
+      url: kiwixApiEndpoint ? `${kiwixApiEndpoint}${path}` : null
+    };
+  });
+};
+
+// ============================================================
+// MOCK DATA GENERATORS (fallback when API unavailable)
+// ============================================================
+
+const generateMockKiwixLibraryResults = (query) => {
   const q = query.toLowerCase();
   const results = [];
   
   // Wikipedia matches
   if (q.includes('wiki')) {
     results.push({
-      id: 'kiwix-1',
+      id: 'kiwix-lib-1',
       title: 'Wikipedia (English)',
       subtitle: 'The Free Encyclopedia - 6.7M articles',
       source: 'kiwix',
       sourceLabel: 'Wikipedia EN',
       matchType: 'exact',
-      matchReason: 'Exact match for "wiki"',
+      matchReason: 'Library match for "wiki"',
       trustBadge: 'VERIFIED',
-      freshness: Date.now() - 86400000, // 1 day ago
+      freshness: Date.now() - 86400000,
       isPinned: true,
-      url: `${config.endpoints.kiwix}/wikipedia_en`
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/wikipedia_en`
     });
     results.push({
-      id: 'kiwix-2',
+      id: 'kiwix-lib-2',
       title: 'Wikipedia Simple English',
       subtitle: 'Easy-to-read encyclopedia - 240K articles',
       source: 'kiwix',
       sourceLabel: 'Wikipedia Simple',
       matchType: 'prefix',
-      matchReason: 'Prefix match for "wiki"',
+      matchReason: 'Library match for "wiki"',
       trustBadge: 'VERIFIED',
       freshness: Date.now() - 86400000,
       isPinned: true,
-      url: `${config.endpoints.kiwix}/wikipedia_simple`
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/wikipedia_simple`
     });
   }
   
   if (q.includes('wikipedia')) {
     results.unshift({
-      id: 'kiwix-exact',
+      id: 'kiwix-lib-exact',
       title: 'Wikipedia (English)',
       subtitle: 'The Free Encyclopedia - Full offline copy',
       source: 'kiwix',
       sourceLabel: 'Wikipedia EN',
       matchType: 'exact',
-      matchReason: 'Exact match for "wikipedia"',
+      matchReason: 'Exact library match for "wikipedia"',
       trustBadge: 'VERIFIED',
       freshness: Date.now() - 3600000,
       isPinned: true,
-      url: `${config.endpoints.kiwix}/wikipedia_en`
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/wikipedia_en`
     });
   }
   
   if (q.includes('medical') || q.includes('health') || q.includes('emergency')) {
     results.push({
-      id: 'kiwix-wikem',
+      id: 'kiwix-lib-wikem',
       title: 'WikEM - Emergency Medicine',
       subtitle: 'Emergency medicine reference',
       source: 'kiwix',
       sourceLabel: 'WikEM',
       matchType: 'fts',
-      matchReason: 'Full-text match in medical content',
+      matchReason: 'Library match in medical content',
       trustBadge: 'VERIFIED',
       freshness: Date.now() - 172800000,
       isPinned: true,
-      url: `${config.endpoints.kiwix}/wikem`
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/wikem`
+    });
+    results.push({
+      id: 'kiwix-lib-wikimed',
+      title: 'WikiMed Medical Encyclopedia',
+      subtitle: 'Medical knowledge base',
+      source: 'kiwix',
+      sourceLabel: 'WikiMed',
+      matchType: 'fts',
+      matchReason: 'Library match for medical',
+      trustBadge: 'VERIFIED',
+      freshness: Date.now() - 172800000,
+      isPinned: true,
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/wikimed`
     });
   }
   
   if (q.includes('fix') || q.includes('repair') || q.includes('how')) {
     results.push({
-      id: 'kiwix-ifixit',
+      id: 'kiwix-lib-ifixit',
       title: 'iFixit Repair Guides',
       subtitle: 'Device repair manuals and guides',
       source: 'kiwix',
       sourceLabel: 'iFixit',
       matchType: 'fts',
-      matchReason: 'Full-text match for repair content',
+      matchReason: 'Library match for repair content',
       trustBadge: 'VERIFIED',
       freshness: Date.now() - 259200000,
       isPinned: true,
-      url: `${config.endpoints.kiwix}/ifixit`
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/ifixit`
     });
   }
   
-  // Generic Kiwix results
+  if (q.includes('arch') || q.includes('linux')) {
+    results.push({
+      id: 'kiwix-lib-arch',
+      title: 'ArchWiki',
+      subtitle: 'Arch Linux documentation',
+      source: 'kiwix',
+      sourceLabel: 'ArchWiki',
+      matchType: 'fts',
+      matchReason: 'Library match for Linux',
+      trustBadge: 'VERIFIED',
+      freshness: Date.now() - 259200000,
+      isPinned: true,
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/archlinux`
+    });
+  }
+  
+  if (q.includes('python') || q.includes('documentation') || q.includes('dev')) {
+    results.push({
+      id: 'kiwix-lib-devdocs',
+      title: 'DevDocs',
+      subtitle: 'Developer documentation',
+      source: 'kiwix',
+      sourceLabel: 'DevDocs',
+      matchType: 'fts',
+      matchReason: 'Library match for docs',
+      trustBadge: 'VERIFIED',
+      freshness: Date.now() - 259200000,
+      isPinned: true,
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/devdocs`
+    });
+  }
+  
+  if (q.includes('travel') || q.includes('france') || q.includes('guide')) {
+    results.push({
+      id: 'kiwix-lib-wikivoyage',
+      title: 'Wikivoyage',
+      subtitle: 'Free travel guide',
+      source: 'kiwix',
+      sourceLabel: 'Wikivoyage',
+      matchType: 'fts',
+      matchReason: 'Library match for travel',
+      trustBadge: 'VERIFIED',
+      freshness: Date.now() - 259200000,
+      isPinned: true,
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/wikivoyage`
+    });
+  }
+  
+  if (q.includes('first aid') || q.includes('burns') || q.includes('aid')) {
+    results.push({
+      id: 'kiwix-lib-firstaid',
+      title: 'First Aid Quick Reference',
+      subtitle: 'Emergency first aid procedures',
+      source: 'kiwix',
+      sourceLabel: 'WikEM',
+      matchType: 'fts',
+      matchReason: 'Library match for first aid',
+      trustBadge: 'VERIFIED',
+      freshness: Date.now() - 172800000,
+      isPinned: true,
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/wikem`
+    });
+  }
+  
+  // Generic search suggestion
   if (results.length === 0 && q.length > 2) {
     results.push({
-      id: 'kiwix-search',
+      id: 'kiwix-lib-search',
       title: `Search "${query}" in Knowledge Base`,
       subtitle: 'Search across all offline libraries',
       source: 'kiwix',
@@ -217,19 +427,52 @@ const generateMockKiwixResults = (query) => {
       matchReason: 'Full-text search available',
       trustBadge: 'DERIVED',
       freshness: Date.now(),
-      url: `${config.endpoints.kiwix}/search?q=${encodeURIComponent(query)}`
+      isLibrary: true,
+      url: `${config.KIWIX_BASE || KIWIX_ENDPOINTS.primary}/search?q=${encodeURIComponent(query)}`
     });
   }
   
   return results;
 };
 
+// Combined Kiwix results (articles above libraries)
+const getKiwixResults = async (query) => {
+  const libraryResults = generateMockKiwixLibraryResults(query);
+  
+  // If Kiwix API not checked yet, check it
+  if (kiwixApiAvailable === null) {
+    await checkKiwixAvailability();
+  }
+  
+  // If API available, fetch article results
+  if (kiwixApiAvailable) {
+    const { results: articleResults, error } = await fetchKiwixArticleResults(query);
+    if (!error && articleResults.length > 0) {
+      const transformedArticles = transformKiwixApiResults(articleResults, query);
+      // Articles appear ABOVE library tiles
+      return [...transformedArticles, ...libraryResults];
+    }
+  }
+  
+  // Fallback to library-only
+  return libraryResults;
+};
+
 const generateMockJellyfinResults = (query) => {
+  // Check if Jellyfin is configured
+  if (isJellyfinConfigured()) {
+    // TODO: Implement actual Jellyfin search when API key is present
+    return [];
+  }
+  
   // Jellyfin is NOT_INDEXED - show stub results
   const q = query.toLowerCase();
   const results = [];
   
-  if (q.includes('movie') || q.includes('film') || q.includes('watch')) {
+  const mediaKeywords = ['movie', 'film', 'watch', 'video', 'tv', 'series', 'music', 'playlist', 'stream', 'podcast', 'jellyfin', 'download'];
+  const hasMediaKeyword = mediaKeywords.some(kw => q.includes(kw));
+  
+  if (hasMediaKeyword) {
     results.push({
       id: 'jellyfin-stub-1',
       title: 'Media Library Search',
@@ -241,7 +484,7 @@ const generateMockJellyfinResults = (query) => {
       trustBadge: 'UNKNOWN',
       freshness: null,
       isStub: true,
-      stubMessage: 'Configure Jellyfin API key in Admin Console to enable media search'
+      stubMessage: 'Configure JELLYFIN_API_KEY environment variable to enable media search'
     });
   }
   
