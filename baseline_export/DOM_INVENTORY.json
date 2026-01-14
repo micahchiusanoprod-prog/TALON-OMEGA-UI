@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-01-14T01:52:00Z",
+  "routes": {
+    "/": {
+      "controls": [
+        {"tagName": "button", "type": "button", "text": "LOGS", "dataTestId": "logs-btn", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Community", "dataTestId": "community-btn", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Help Center", "dataTestId": "help-center-btn", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Entertainment", "dataTestId": "entertainment-btn", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Status", "dataTestId": "system-status-btn", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Admin Console", "dataTestId": "admin-console-btn", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Theme toggle", "dataTestId": "theme-toggle-btn", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Quick Guide", "dataTestId": "tool-quickguide", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Calculator", "dataTestId": "tool-calculator", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Translator", "dataTestId": "tool-translator", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "SOS Beacon", "dataTestId": "tool-sos", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Currency", "dataTestId": "tool-currency", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Dictionary", "dataTestId": "tool-dictionary", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Field Notes", "dataTestId": "tool-notes", "visible": true, "enabled": true},
+        {"tagName": "input", "type": "text", "text": "", "dataTestId": "search-input", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "View All Entertainment", "dataTestId": "entertainment-view-all", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Connection status", "dataTestId": "connection-status-chip", "visible": true, "enabled": true}
+      ],
+      "mobileControls": [
+        {"tagName": "button", "type": "button", "text": "LOGS", "dataTestId": "logs-btn-mobile", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Community", "dataTestId": "community-btn-mobile", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Entertainment", "dataTestId": "entertainment-btn-mobile", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "More", "dataTestId": "overflow-menu-btn", "visible": true, "enabled": true}
+      ]
+    },
+    "/entertainment": {
+      "controls": [
+        {"tagName": "button", "type": "button", "text": "Dashboard", "dataTestId": "back-to-dashboard", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "tab", "text": "Overview", "dataTestId": "nav-overview", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "tab", "text": "Movies & TV", "dataTestId": "nav-movies", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "tab", "text": "Games", "dataTestId": "nav-games", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "tab", "text": "Music", "dataTestId": "nav-music", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "tab", "text": "Photos", "dataTestId": "nav-photos", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "tab", "text": "Vault", "dataTestId": "nav-vault", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "tab", "text": "File Drop", "dataTestId": "nav-share", "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "Start Movie Night", "dataTestId": null, "visible": true, "enabled": true},
+        {"tagName": "button", "type": "button", "text": "New User Setup", "dataTestId": "new-user-setup", "visible": true, "enabled": true},
+        {"tagName": "input", "type": "text", "text": "", "dataTestId": null, "visible": true, "enabled": true}
+      ]
+    }
+  },
+  "modals": {
+    "LogsAnalytics": {
+      "tabs": ["This Device", "Incidents", "All Nodes"],
+      "controls": [
+        {"tagName": "button", "type": "button", "text": "Back to Dashboard"},
+        {"tagName": "button", "type": "button", "text": "Settings"},
+        {"tagName": "button", "type": "button", "text": "Active Logs"},
+        {"tagName": "button", "type": "button", "text": "Statistics"},
+        {"tagName": "button", "type": "button", "text": "Raw Data"},
+        {"tagName": "button", "type": "button", "text": "Export"}
+      ]
+    },
+    "CommunityHub": {
+      "tabs": ["Members", "Teams", "Bulletins", "Team Builder"],
+      "controls": []
+    },
+    "HelpCenter": {
+      "tabs": ["Getting Started", "Features", "FAQ", "Contact"],
+      "controls": []
+    },
+    "AdminConsole": {
+      "tabs": ["Fleet", "Broadcast", "System", "Backups", "Audit"],
+      "controls": []
+    },
+    "SystemStatusPanel": {
+      "sections": ["CONNECTION INFO", "CONFIGURATION", "ENDPOINT STATUS", "DEBUG INFO"],
+      "controls": [
+        {"tagName": "button", "type": "button", "text": "Run Self Test"},
+        {"tagName": "button", "type": "button", "text": "Copy Debug Info"}
+      ]
+    },
+    "MovieNightModal": {
+      "sections": ["Connect to OMEGA Hotspot", "Scan QR Code", "Vote on What to Watch"],
+      "controls": [
+        {"tagName": "button", "type": "button", "text": "Start Movie Night"}
+      ]
+    }
+  }
+}
