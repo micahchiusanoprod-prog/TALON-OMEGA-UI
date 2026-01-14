@@ -1228,7 +1228,7 @@ export default function SearchBar() {
                 const sourceResults = results.filter(r => r.source === sourceId);
                 if (sourceResults.length === 0) return null;
                 
-                const sourceMeta = SOURCE_META[sourceId];
+                const sourceMeta = currentSourceMeta[sourceId];
                 
                 return (
                   <div key={sourceId} className="mb-3" data-testid={`results-group-${sourceId}`}>
@@ -1239,9 +1239,17 @@ export default function SearchBar() {
                       </span>
                       {sourceMeta.status !== 'INDEXED' && (
                         <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                          sourceMeta.status === 'PLANNED' ? 'bg-amber-500/20 text-amber-500' : 'bg-blue-500/20 text-blue-500'
+                          sourceMeta.status === 'PLANNED' ? 'bg-amber-500/20 text-amber-500' 
+                            : sourceMeta.status === 'UNAVAILABLE' ? 'bg-red-500/20 text-red-500'
+                            : 'bg-blue-500/20 text-blue-500'
                         }`}>
                           {sourceMeta.status}
+                        </span>
+                      )}
+                      {/* Show article indicator for Kiwix with API results */}
+                      {sourceId === 'kiwix' && sourceResults.some(r => r.isArticle) && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-500">
+                          ARTICLES
                         </span>
                       )}
                     </div>
@@ -1268,6 +1276,16 @@ export default function SearchBar() {
                                 <span className="text-sm font-medium text-foreground truncate">
                                   {result.title}
                                 </span>
+                                {result.isArticle && (
+                                  <span className="text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
+                                    Article
+                                  </span>
+                                )}
+                                {result.isLibrary && (
+                                  <span className="text-[9px] px-1 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/30">
+                                    Library
+                                  </span>
+                                )}
                                 <TrustBadge type={result.trustBadge} showLabel={false} />
                               </div>
                               <div className="text-xs text-muted-foreground truncate">
