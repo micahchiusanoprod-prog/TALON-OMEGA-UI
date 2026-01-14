@@ -20,6 +20,13 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import config from '../config';
+import { 
+  DataProvenanceFooter, 
+  ProgressiveDetails, 
+  RawDataDisplay, 
+  CalculationNotes,
+  MetricRow 
+} from './ui/DataTileWrapper';
 
 // Help content
 const DEVICE_HELP = {
