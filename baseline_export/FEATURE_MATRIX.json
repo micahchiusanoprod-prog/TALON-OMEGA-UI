@@ -1,99 +1,122 @@
 {
-  "generatedAt": "2025-01-14T03:10:00.000Z",
-  "version": "2.0.0",
+  "generatedAt": "2025-01-14T03:40:00.000Z",
+  "version": "3.0.0",
+  "phase": "Next-Phase UI Improvements",
   "features": {
+    "progressive_disclosure": {
+      "status": "WIRED_LIVE",
+      "components": ["ProgressivePanel", "PanelHelpIcon", "ProvenanceStrip"],
+      "notes": "Summary + Show Details pattern implemented"
+    },
+    "help_guides": {
+      "status": "WIRED_LIVE",
+      "components": ["HelpTooltip", "PanelHelpIcon", "GLOSSARY"],
+      "location": "HelpCenter, EnvironmentTile, all major tiles",
+      "notes": "Help icons, tooltips, and glossary implemented"
+    },
+    "trust_badges": {
+      "status": "WIRED_LIVE",
+      "types": ["VERIFIED", "DERIVED", "ESTIMATED", "UNKNOWN"],
+      "component": "TrustBadge",
+      "notes": "Trust badges show data source reliability"
+    },
+    "provenance_strip": {
+      "status": "WIRED_LIVE",
+      "fields": ["Source", "Last Updated", "Freshness", "Window"],
+      "freshnessTypes": ["LIVE", "CACHED", "STALE", "UNKNOWN"],
+      "notes": "Data provenance on panels showing source and freshness"
+    },
+    "self_test_runner": {
+      "status": "WIRED_LIVE",
+      "entryPoints": ["System Status Panel", "Help Center"],
+      "subsystems": ["Frontend", "LocalStorage", "API_Health", "API_Metrics", "API_DM", "API_Sensors", "GPS"],
+      "statusTypes": ["OK", "DEGRADED", "NOT_CONFIGURED", "FORBIDDEN", "UNKNOWN"],
+      "persistence": "localStorage",
+      "notes": "Self-test checks all subsystems, saves results"
+    },
+    "debug_bundle": {
+      "status": "WIRED_LIVE",
+      "copyJson": "WIRED_LIVE",
+      "zipDownload": "PLANNED",
+      "contents": ["BUILD_INFO", "CONFIG_SNAPSHOT", "Self-test results", "Last 100 network requests", "Last 100 UI errors", "Connection state summary"],
+      "notes": "Copy JSON bundle works; ZIP download planned"
+    },
+    "evidence_system": {
+      "clientEvidence": "WIRED_LIVE",
+      "systemEvidence": "PLANNED",
+      "notes": "Client evidence (network log) works; System evidence (backend logs) planned"
+    },
+    "auth_gating": {
+      "status": "WIRED_LIVE",
+      "roles": ["guest", "member", "admin"],
+      "pinUnlock": "WIRED_LIVE",
+      "pinTimeout": "15 minutes",
+      "backendAuth": "PLANNED",
+      "notes": "Role + PIN gating implemented with localStorage; backend auth planned"
+    },
+    "profile_system": {
+      "status": "WIRED_LIVE",
+      "persistence": "localStorage",
+      "fields": ["displayName", "role"],
+      "backendSync": "PLANNED",
+      "notes": "Local profile with displayName + role; backend sync planned"
+    },
     "core_dashboard": {
       "status": "WIRED_MOCK",
       "components": ["Dashboard", "Header", "QuickToolsBar"],
-      "dataSource": "mocked",
-      "notes": "Dashboard shows mocked data, ready for backend wiring"
+      "dataSource": "mocked"
     },
     "logs_analytics": {
       "status": "WIRED_MOCK",
       "component": "LogsAnalytics",
-      "tabs": ["this_device", "incidents", "all_nodes"],
-      "dataSource": "mocked",
-      "notes": "Full UI with mock event logs"
+      "tabs": ["this_device", "incidents", "all_nodes"]
     },
     "community_hub": {
       "status": "WIRED_MOCK",
       "component": "CommunityHub",
-      "tabs": ["overview", "analytics", "directory", "comms", "incidents"],
-      "dataSource": "mocked",
-      "notes": "Community features with mock network data"
+      "tabs": ["overview", "analytics", "directory", "comms", "incidents"]
     },
     "help_center": {
-      "status": "STATIC",
+      "status": "WIRED_LIVE",
       "component": "HelpCenter",
-      "notes": "Static help content, searchable"
+      "features": ["Search", "Categories", "Glossary", "Self-Test", "Debug Bundle"],
+      "notes": "Comprehensive help with self-test integration"
     },
     "admin_console": {
       "status": "WIRED_MOCK",
       "component": "AdminConsole",
       "sections": ["fleet", "roster", "broadcast", "audit"],
-      "auth": "PLANNED - NOT IMPLEMENTED",
-      "notes": "Admin UI present, auth gating planned but not implemented"
-    },
-    "system_status": {
-      "status": "WIRED_MOCK",
-      "component": "SystemStatusPanel",
-      "dataSource": "mocked",
-      "notes": "Shows system metrics from mock data"
+      "auth": "WIRED_LIVE (PIN + Role)"
     },
     "entertainment": {
       "status": "PLANNED",
       "component": "EntertainmentPage",
-      "sections": {
-        "movies": { "status": "PLANNED", "integration": "Kiwix/Jellyfin" },
-        "games": { "status": "PLANNED", "integration": "none" },
-        "music": { "status": "WIRED_MOCK", "integration": "local player" },
-        "photos": { "status": "PLANNED", "integration": "local gallery" },
-        "vault": { "status": "PLANNED", "integration": "encrypted storage" },
-        "file_drop": { "status": "PLANNED", "integration": "LAN sharing" }
-      },
-      "notes": "UI scaffolded, integrations planned"
-    },
-    "quick_tools": {
-      "quickguide": { "status": "STATIC", "notes": "Field guide reference" },
-      "calculator": { "status": "WIRED_LIVE", "notes": "Functional calculator" },
-      "translator": { "status": "PLANNED", "notes": "UI present, API not wired" },
-      "sos": { "status": "WIRED_MOCK", "notes": "SOS beacon mock" },
-      "currency": { "status": "PLANNED", "notes": "UI present, rates not wired" },
-      "dictionary": { "status": "PLANNED", "notes": "UI present, API not wired" },
-      "notes": { "status": "WIRED_MOCK", "notes": "Notes stored in localStorage" }
+      "sections": ["movies", "games", "music", "photos", "vault", "share"]
     },
     "theme_system": {
       "status": "WIRED_LIVE",
       "modes": ["dark", "light"],
-      "persistence": "localStorage",
-      "notes": "Fully functional theme switching"
+      "persistence": "localStorage"
     },
     "internationalization": {
       "status": "WIRED_LIVE",
-      "languages": ["en", "es", "fr", "de", "zh", "ja", "ar", "ru"],
-      "notes": "Language selector and translations functional"
-    },
-    "authentication": {
-      "status": "PLANNED - NOT IMPLEMENTED",
-      "notes": "No auth currently. Admin gating will require PIN + role"
-    },
-    "backend_integration": {
-      "status": "PLANNED",
-      "strategy": "same-origin /api proxy via Nginx",
-      "endpoints": [
-        "/api/cgi-bin/health.py",
-        "/api/cgi-bin/metrics.py", 
-        "/api/cgi-bin/dm.py",
-        "/api/cgi-bin/sensors.py"
-      ],
-      "notes": "Proxy configured, endpoints not yet live"
+      "languages": ["en", "es", "fr", "de", "zh", "ja", "ar", "ru"]
     }
   },
   "statusLegend": {
-    "WIRED_LIVE": "Fully functional with real data/logic",
+    "WIRED_LIVE": "Fully functional with real logic",
     "WIRED_MOCK": "UI complete, using mocked data",
-    "STATIC": "Static content, no dynamic data",
-    "PLANNED": "UI scaffolded, functionality not implemented",
-    "PLANNED - NOT IMPLEMENTED": "Explicitly planned but no code yet"
-  }
+    "PLANNED": "UI scaffolded or feature planned"
+  },
+  "newInThisVersion": [
+    "Progressive disclosure pattern (Summary + Show Details)",
+    "Help tooltips with GLOSSARY integration",
+    "Trust badges (VERIFIED/DERIVED/ESTIMATED/UNKNOWN)",
+    "Provenance strips (Source, Freshness, Window)",
+    "Self-Test runner with subsystem checks",
+    "Debug Bundle (Copy JSON, ZIP planned)",
+    "Evidence system (Client now, System planned)",
+    "Auth gating (Role + PIN with timeout)",
+    "Profile system (localStorage-backed)"
+  ]
 }
