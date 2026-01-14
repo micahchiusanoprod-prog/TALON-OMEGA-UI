@@ -162,9 +162,10 @@ async def run_crawler():
         # LOGS Analytics Modal
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
+            await set_theme(page, theme)
+            await page.wait_for_timeout(500)
             
             selector = '[data-testid="logs-btn"]' if width > 768 else '[data-testid="logs-btn-mobile"]'
             if await wait_and_click(page, selector):
@@ -175,9 +176,10 @@ async def run_crawler():
         # Community Hub Modal
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
+            await set_theme(page, theme)
+            await page.wait_for_timeout(500)
             
             selector = '[data-testid="community-btn"]' if width > 768 else '[data-testid="community-btn-mobile"]'
             if await wait_and_click(page, selector):
@@ -187,9 +189,10 @@ async def run_crawler():
         
         # Community Hub - Tabs (desktop dark only for tabs, shows representative)
         await page.set_viewport_size({"width": 1440, "height": 900})
-        await set_theme(page, "dark")
         await page.goto(f"{BASE_URL}/#/")
         await page.wait_for_timeout(1000)
+        await set_theme(page, "dark")
+        await page.wait_for_timeout(500)
         
         if await wait_and_click(page, '[data-testid="community-btn"]'):
             # Directory tab
