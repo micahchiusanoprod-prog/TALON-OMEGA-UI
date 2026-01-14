@@ -892,16 +892,65 @@ export default function SearchBar() {
   const [showMoreFiles, setShowMoreFiles] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState(getRecentSearches);
+  const [isSearching, setIsSearching] = useState(false);
+  const [asyncResults, setAsyncResults] = useState(null);
+  const [kiwixStatus, setKiwixStatus] = useState(null);
   
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
-  // Search results
+  // Check Kiwix availability on mount
+  useEffect(() => {
+    checkKiwixAvailability().then(({ available }) => {
+      setKiwixStatus(available);
+    });
+  }, []);
+
+  // Sync search for immediate feedback
   const searchData = useMemo(() => {
     return performSearch(query, scope);
   }, [query, scope]);
 
-  const { results, hiddenFiles, meta } = searchData;
+  // Async search for article-level results
+  useEffect(() => {
+    if (!query || query.length < 2) {
+      setAsyncResults(null);
+      return;
+    }
+
+    // Debounce async search
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const asyncData = await performSearchAsync(query, scope);
+        setAsyncResults(asyncData);
+        setKiwixStatus(asyncData.kiwixStatus);
+      } catch (err) {
+        console.error('Async search failed:', err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300); // Debounce 300ms
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [query, scope]);
+
+  // Use async results when available, fallback to sync
+  const { results, hiddenFiles, meta } = asyncResults || searchData;
+  
+  // Get current SOURCE_META based on Kiwix status
+  const currentSourceMeta = useMemo(() => {
+    return getSourceMeta(kiwixStatus === false ? 'UNAVAILABLE' : 'INDEXED');
+  }, [kiwixStatus]);
 
   // Keyboard navigation
   useEffect(() => {
