@@ -820,6 +820,38 @@ export default function AllyCommunicationsHub() {
             <AlertsLog alerts={alerts} />
             <HelpSection isExpanded={showHelp} onToggle={() => setShowHelp(!showHelp)} />
           </div>
+          
+          {/* Progressive Details */}
+          <ProgressiveDetails 
+            title="Communications Statistics"
+            helpText="Network topology and connection data"
+          >
+            <div className="space-y-3">
+              <div className="glass rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-muted-foreground mb-2">Network Metrics</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  <MetricRow label="Total Nodes" value={nodes.length} trustType="VERIFIED" />
+                  <MetricRow label="Online Nodes" value={nodes.filter(n => n.status === 'online').length} trustType="VERIFIED" />
+                  <MetricRow label="Total Messages" value={globalMessages.length} trustType="VERIFIED" />
+                  <MetricRow label="Active Alerts" value={alerts.length} trustType="VERIFIED" />
+                  <MetricRow label="Critical Alerts" value={criticalAlerts} trustType="DERIVED" />
+                  <MetricRow label="Comm Methods" value={COMM_METHODS.filter(m => m.status === 'available').length} trustType="VERIFIED" />
+                </div>
+              </div>
+              
+              <RawDataDisplay data={{ nodes: nodes.length, messages: globalMessages.length, alerts }} title="Communications JSON" />
+            </div>
+          </ProgressiveDetails>
+          
+          {/* Provenance Footer */}
+          <DataProvenanceFooter
+            source="OMEGA Mesh Network"
+            endpoint="/api/cgi-bin/mesh"
+            lastUpdated={Date.now()}
+            trustType="DERIVED"
+            status="SIMULATED"
+            refreshInterval="5 seconds"
+          />
         </CardContent>
       </Card>
       
