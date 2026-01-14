@@ -15,86 +15,87 @@ OMEGA Dashboard is a sophisticated Raspberry Pi dashboard application providing 
 | P1.3 | ✅ | Search Health Panel |
 | P2.0 | ✅ | Data Health Dashboard |
 | P2.1 | ✅ | Regression Pass (no issues found) |
+| P3 | ✅ | Pi Deployment Prep |
 
-## P2.1 Regression Report
+## P3 - Pi Deployment Prep Summary
 
-### Tests Executed
-| Test | Status | Notes |
-|------|--------|-------|
-| Empty/Focus state | ✅ | Quick Access with status badges |
-| First character typed | ✅ | Immediate results |
-| Mid-word 'wiki' | ✅ | Library results with badges |
-| Typo 'wikpedia' | ✅ | "Did you mean: wikipedia?" visible |
-| Backspace correction | ✅ | Results update correctly |
-| No results query | ✅ | Fallback search suggestion |
-| Multi-source 'medical' | ✅ | Kiwix + Community + Files |
-| Scoped chips | ✅ | All 6 scopes visible and clickable |
-| File suppression | ✅ | 1 file when high-signal sources exist |
-| Desktop Dark | ✅ | Full functionality |
-| Desktop Light | ✅ | Full functionality |
-| Mobile Dark | ✅ | 2-row scope chips, full functionality |
+### Build Output
+- **Release**: `2026-01-14_060220`
+- **Location**: `/app/frontend/deploy/releases/2026-01-14_060220/`
+- **Bundle Size**: ~418KB (gzipped main.js) + 23KB CSS
+- **Build Command**: `yarn build:pi`
 
-### Regression Notes
-**No regressions found.** All search UI functionality intact after Admin Console changes.
+### Release Package Contents
+| File | Purpose |
+|------|---------|
+| `www/` | Static dashboard files |
+| `config.js` | Runtime configuration (API/Kiwix URLs) |
+| `nginx.conf` | Production Nginx config |
+| `install.sh` | One-command installer |
+| `DEPLOYMENT_RUNBOOK.md` | Full deployment guide |
+| `SELFTEST.md` | Verification checklist |
+| `README.md` | Quick start |
 
-## Data Health Dashboard Summary
+### Nginx Routes
+| Route | Target | Description |
+|-------|--------|-------------|
+| `/` | Static files | Dashboard SPA |
+| `/api/*` | `127.0.0.1:8093` | OMEGA API proxy |
+| `/cgi-bin/*` | `127.0.0.1:8093/cgi-bin/` | Legacy CGI |
+| `/kiwix/*` | `127.0.0.1:8090` | Kiwix proxy |
+| `/health` | Direct | Health endpoint |
 
-### Sources Monitored (8 total)
-| Source | Endpoint | Category |
-|--------|----------|----------|
-| OMEGA Core API | /api/cgi-bin/health | Core |
-| Kiwix Knowledge | talon.local:8090 | Search |
-| Jellyfin Media | localhost:8096 | Search |
-| BME688 Sensors | /api/cgi-bin/sensors | Hardware |
-| GPS Location | /api/cgi-bin/gps | Hardware |
-| Mesh Network | /api/cgi-bin/mesh | Network |
-| WiFi Hotspot | /api/cgi-bin/hotspot | Network |
-| Backup Service | /api/cgi-bin/backup | System |
+### LAN Access
+- Dashboard: `http://talon.local/`
+- API: `http://talon.local/api/*`
+- Kiwix: `http://talon.local/kiwix/*`
 
-### Features
-- Status badges (LIVE/UNAVAILABLE/NOT_CONFIGURED)
-- Trust badges (VERIFIED/UNKNOWN)
-- Provenance strips (endpoint, last check, latency)
-- 24-hour uptime visualization
-- "How to fix" guidance
-- "Check All" and "Export JSON" actions
+### Degraded Behavior Verification ✅
+
+| Flow | All Up | Kiwix Down | Jellyfin Missing | API Down |
+|------|--------|------------|------------------|----------|
+| Home loads | ✅ | ✅ | ✅ | ✅ |
+| Search works | ✅ | ✅ (library only + badge) | ✅ (NOT_INDEXED + guide) | ⚠️ (cached) |
+| Admin→Data Health | ✅ | ✅ (UNAVAILABLE + how to fix) | ✅ (NOT_CONFIGURED + guide) | ⚠️ |
+| Admin→Search Health | ✅ | ✅ (UNAVAILABLE + retry) | ✅ (NOT_CONFIGURED + guide) | ⚠️ |
+
+### Deployment Commands
+
+```bash
+# Build
+cd /app/frontend && yarn build:pi
+
+# Transfer to Pi
+scp -r deploy/releases/2026-01-14_060220 pi@talon.local:~/omega-release/
+
+# Install on Pi
+ssh pi@talon.local
+cd ~/omega-release && ./install.sh
+
+# Verify
+curl http://talon.local/health
+```
+
+### Rollback Command
+```bash
+sudo rm -rf /var/www/omega-dashboard
+sudo cp -r /var/www/omega-dashboard.backup.TIMESTAMP /var/www/omega-dashboard
+sudo systemctl reload nginx
+```
 
 ## Technical Stack
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
-- **Backend**: FastAPI (MOCKED in preview)
-- **Database**: MongoDB (MOCKED)
-
-## Next Phase: P3 - Pi Deployment Prep
-
-### Build Commands
-```bash
-# Production build
-cd /app/frontend
-yarn build:pi
-
-# The build output goes to /app/frontend/build
-```
-
-### Nginx Routes (Planned)
-| Route | Target | Description |
-|-------|--------|-------------|
-| / | localhost:3000 | Dashboard SPA |
-| /api/* | localhost:8093 | OMEGA API |
-| :8090 | kiwix-serve | Kiwix Knowledge |
-
-### Degraded Behavior Verified
-- ✅ Kiwix unavailable: "Kiwix Search Unavailable" badge + Retry
-- ✅ Jellyfin not configured: "NOT_CONFIGURED" badge + setup guide
-- ✅ Commands stubbed: "PLANNED" badge + explanation
-- ✅ All tiles show "SIMULATED" when offline
-
-## Known Limitations
-1. Kiwix API unavailable in preview - ready for Pi
-2. Jellyfin requires JELLYFIN_API_KEY env var
-3. Commands are stubs
-4. Mock uptime data (not persisted)
+- **Backend**: FastAPI (ready for integration)
+- **Build**: CRA + CRACO
+- **Deployment**: Nginx + static files
 
 ## File Artifacts
-- `/app/baseline_export/SEARCH_QUALITY_VALIDATION.md`
-- `/app/baseline_export/SEARCH_QUALITY_REPORT.md`
-- `/app/memory/PRD.md` (this file)
+- `/app/frontend/deploy/releases/2026-01-14_060220/` - Release package
+- `/app/baseline_export/SEARCH_QUALITY_VALIDATION.md` - Test queries
+- `/app/baseline_export/SEARCH_QUALITY_REPORT.md` - Search implementation
+- `/app/memory/PRD.md` - This document
+
+## Next Steps (Future)
+- P4: Backend integration with live Pi endpoints
+- P5: Jellyfin search (when API key provided)
+- P6: Production deployment to Pi hardware
