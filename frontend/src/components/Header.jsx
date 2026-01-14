@@ -76,13 +76,13 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             )}
           </div>
 
-          {/* Center: LOGS Button + Community Button + Help Center Button + Metrics Pills (desktop) */}
+          {/* Center: Primary Nav Buttons (desktop) */}
           {!useCompactHeader && (
-            <div className="hidden md:flex items-center gap-3 flex-wrap">
-              {/* LOGS Button - Premium */}
+            <div className="hidden md:flex items-center gap-2 flex-wrap">
+              {/* LOGS Button */}
               <button
                 onClick={() => setShowLogs(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 hover:from-emerald-500/30 hover:to-cyan-500/30 hover:border-emerald-500/50 transition-all shadow-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 hover:from-emerald-500/30 hover:to-cyan-500/30 hover:border-emerald-500/50 transition-all shadow-sm"
                 title="Open LOGS Analytics"
                 data-testid="logs-btn"
               >
@@ -90,10 +90,10 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 <span className="text-sm font-semibold">{t('nav.logs')}</span>
               </button>
               
-              {/* Community Button - Premium */}
+              {/* Community Button */}
               <button
                 onClick={() => setShowCommunity(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 hover:from-violet-500/30 hover:to-fuchsia-500/30 hover:border-violet-500/50 transition-all shadow-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 hover:from-violet-500/30 hover:to-fuchsia-500/30 hover:border-violet-500/50 transition-all shadow-sm"
                 title="Open Community Hub"
                 data-testid="community-btn"
               >
@@ -101,10 +101,10 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 <span className="text-sm font-semibold">{t('nav.community')}</span>
               </button>
               
-              {/* Help Center Button - Centered & Premium */}
+              {/* Help Center Button */}
               <button
                 onClick={() => setShowHelpCenter(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 hover:from-primary/30 hover:to-accent/30 hover:border-primary/50 transition-all shadow-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 hover:from-primary/30 hover:to-accent/30 hover:border-primary/50 transition-all shadow-sm"
                 title="Open Help Center"
                 data-testid="help-center-btn"
               >
@@ -112,37 +112,35 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 <span className="text-sm font-semibold">{t('nav.helpCenter')}</span>
               </button>
               
-              {/* CPU % - Priority 1 */}
-              {metrics && metrics.cpu !== null && (
-                <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">{t('metrics.cpu')}</span>
-                  <span className="font-semibold">{metrics.cpu}%</span>
-                </div>
-              )}
+              {/* Entertainment Button - NEW */}
+              <button
+                onClick={() => navigate('/entertainment')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-pink-500/20 to-orange-500/20 border border-pink-500/30 hover:from-pink-500/30 hover:to-orange-500/30 hover:border-pink-500/50 transition-all shadow-sm ${
+                  location.pathname === '/entertainment' ? 'ring-2 ring-pink-500/50' : ''
+                }`}
+                title="Entertainment Hub"
+                data-testid="entertainment-btn"
+              >
+                <Sparkles className="w-4 h-4 text-pink-400" />
+                <span className="text-sm font-semibold">Entertainment</span>
+              </button>
               
-              {/* CPU Temp - Priority 3 */}
-              {metrics && metrics.temp !== null && (
-                <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">{t('metrics.temp')}</span>
-                  <span className="font-semibold">{metrics.temp}°C</span>
-                </div>
-              )}
-              
-              {/* RAM % - Priority 4 */}
-              {metrics && metrics.ram !== null && (
-                <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">{t('metrics.ram')}</span>
-                  <span className="font-semibold">{metrics.ram}%</span>
-                </div>
-              )}
-              
-              {/* Disk % - Priority 5 */}
-              {metrics && metrics.disk !== null && (
-                <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground">{t('metrics.disk')}</span>
-                  <span className="font-semibold">{metrics.disk}%</span>
-                </div>
-              )}
+              {/* Metrics Pills - Lower priority, hide on medium screens */}
+              <div className="hidden lg:flex items-center gap-2">
+                {metrics && metrics.cpu !== null && (
+                  <div className="metric-pill hover:bg-secondary">
+                    <span className="text-muted-foreground">{t('metrics.cpu')}</span>
+                    <span className="font-semibold">{metrics.cpu}%</span>
+                  </div>
+                )}
+                
+                {metrics && metrics.temp !== null && (
+                  <div className="metric-pill hover:bg-secondary">
+                    <span className="text-muted-foreground">{t('metrics.temp')}</span>
+                    <span className="font-semibold">{metrics.temp}°C</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
