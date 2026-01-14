@@ -1,0 +1,91 @@
+[2026-01-14T01:30:00Z] === STARTING EXHAUSTIVE VISUAL CRAWL ===
+[2026-01-14T01:30:01Z] NAVIGATE: http://localhost:3000/#/
+[2026-01-14T01:30:02Z] SET_VIEWPORT: desktop_dark (1440x900)
+[2026-01-14T01:30:03Z] SCREENSHOT: desktop_dark/0001_home_default.jpg - Home default view
+[2026-01-14T01:30:04Z] SCROLL: bottom of page
+[2026-01-14T01:30:05Z] SCREENSHOT: desktop_dark/0002_home_scrolled.jpg - Home scrolled (Entertainment section)
+[2026-01-14T01:30:06Z] SET_VIEWPORT: desktop_light (1440x900)
+[2026-01-14T01:30:07Z] SCREENSHOT: desktop_light/0001_home_default.jpg - Home default view (light)
+[2026-01-14T01:30:08Z] SCROLL: bottom of page
+[2026-01-14T01:30:09Z] SCREENSHOT: desktop_light/0002_home_scrolled.jpg - Home scrolled (light)
+[2026-01-14T01:30:10Z] SET_VIEWPORT: mobile_dark (390x844)
+[2026-01-14T01:30:11Z] SCREENSHOT: mobile_dark/0001_home_default.jpg - Mobile home (dark)
+[2026-01-14T01:30:12Z] SCROLL: bottom of page
+[2026-01-14T01:30:13Z] SCREENSHOT: mobile_dark/0002_home_scrolled.jpg - Mobile home scrolled (dark)
+[2026-01-14T01:30:14Z] SET_VIEWPORT: mobile_light (390x844)
+[2026-01-14T01:30:15Z] SCREENSHOT: mobile_light/0001_home_default.jpg - Mobile home (light)
+[2026-01-14T01:30:16Z] SCROLL: bottom of page
+[2026-01-14T01:30:17Z] SCREENSHOT: mobile_light/0002_home_scrolled.jpg - Mobile home scrolled (light)
+[2026-01-14T01:30:20Z] --- HEADER MODALS ---
+[2026-01-14T01:30:21Z] CLICK: [data-testid="logs-btn"]
+[2026-01-14T01:30:22Z] SCREENSHOT: desktop_dark/0010_modal_logs.jpg - LOGS Analytics modal
+[2026-01-14T01:30:23Z] PRESS: Escape
+[2026-01-14T01:30:24Z] CLICK: [data-testid="community-btn"]
+[2026-01-14T01:30:25Z] SCREENSHOT: desktop_dark/0011_modal_community.jpg - Community Hub modal
+[2026-01-14T01:30:26Z] PRESS: Escape
+[2026-01-14T01:30:27Z] CLICK: [data-testid="help-center-btn"]
+[2026-01-14T01:30:28Z] SCREENSHOT: desktop_dark/0012_modal_helpcenter.jpg - Help Center modal
+[2026-01-14T01:30:29Z] PRESS: Escape
+[2026-01-14T01:30:30Z] CLICK: [data-testid="admin-console-btn"]
+[2026-01-14T01:30:31Z] SCREENSHOT: desktop_dark/0013_modal_admin.jpg - Admin Console modal
+[2026-01-14T01:30:32Z] PRESS: Escape
+[2026-01-14T01:30:33Z] CLICK: [data-testid="system-status-btn"]
+[2026-01-14T01:30:34Z] SCREENSHOT: desktop_dark/0014_modal_systemstatus.jpg - System Status Panel
+[2026-01-14T01:30:35Z] CLICK: "ENDPOINT STATUS"
+[2026-01-14T01:30:36Z] SCREENSHOT: desktop_dark/0015_modal_systemstatus_endpoints.jpg - System Status with endpoints expanded
+[2026-01-14T01:30:37Z] PRESS: Escape
+[2026-01-14T01:30:40Z] --- ENTERTAINMENT PAGE ---
+[2026-01-14T01:30:41Z] NAVIGATE: http://localhost:3000/#/entertainment
+[2026-01-14T01:30:42Z] SCREENSHOT: desktop_dark/0020_entertainment_overview.jpg - Entertainment Overview
+[2026-01-14T01:30:43Z] CLICK: [data-testid="nav-movies"]
+[2026-01-14T01:30:44Z] SCREENSHOT: desktop_dark/0021_entertainment_movies.jpg - Movies & TV tab
+[2026-01-14T01:30:45Z] CLICK: [data-testid="nav-games"]
+[2026-01-14T01:30:46Z] SCREENSHOT: desktop_dark/0022_entertainment_games.jpg - Games Hub tab
+[2026-01-14T01:30:47Z] CLICK: [data-testid="nav-music"]
+[2026-01-14T01:30:48Z] SCREENSHOT: desktop_dark/0023_entertainment_music.jpg - Music tab
+[2026-01-14T01:30:49Z] CLICK: [data-testid="nav-photos"]
+[2026-01-14T01:30:50Z] SCREENSHOT: desktop_dark/0024_entertainment_photos.jpg - Photos tab
+[2026-01-14T01:30:51Z] CLICK: [data-testid="nav-vault"]
+[2026-01-14T01:30:52Z] SCREENSHOT: desktop_dark/0025_entertainment_vault.jpg - Vault tab
+[2026-01-14T01:30:53Z] CLICK: [data-testid="nav-share"]
+[2026-01-14T01:30:54Z] SCREENSHOT: desktop_dark/0026_entertainment_filedrop.jpg - File Drop tab
+[2026-01-14T01:30:55Z] CLICK: "Start Movie Night"
+[2026-01-14T01:30:56Z] SCREENSHOT: desktop_dark/0027_modal_movienight.jpg - Movie Night Modal
+[2026-01-14T01:30:57Z] PRESS: Escape
+[2026-01-14T01:31:00Z] --- MOBILE MODALS ---
+[2026-01-14T01:31:01Z] SET_VIEWPORT: mobile_dark (390x844)
+[2026-01-14T01:31:02Z] CLICK: [data-testid="overflow-menu-btn"]
+[2026-01-14T01:31:03Z] SCREENSHOT: mobile_dark/0010_overflow_menu.jpg - Mobile overflow menu
+[2026-01-14T01:31:04Z] PRESS: Escape
+[2026-01-14T01:31:05Z] CLICK: [data-testid="logs-btn-mobile"]
+[2026-01-14T01:31:06Z] SCREENSHOT: mobile_dark/0011_modal_logs.jpg - Mobile LOGS modal
+[2026-01-14T01:31:07Z] PRESS: Escape
+[2026-01-14T01:31:08Z] CLICK: [data-testid="community-btn-mobile"]
+[2026-01-14T01:31:09Z] SCREENSHOT: mobile_dark/0012_modal_community.jpg - Mobile Community modal
+[2026-01-14T01:31:10Z] PRESS: Escape
+[2026-01-14T01:31:11Z] CLICK: [data-testid="system-status-btn"]
+[2026-01-14T01:31:12Z] SCREENSHOT: mobile_dark/0013_modal_systemstatus.jpg - Mobile System Status
+[2026-01-14T01:31:13Z] PRESS: Escape
+[2026-01-14T01:31:20Z] --- MOBILE ENTERTAINMENT ---
+[2026-01-14T01:31:21Z] NAVIGATE: http://localhost:3000/#/entertainment
+[2026-01-14T01:31:22Z] SCREENSHOT: mobile_dark/0020_entertainment_overview.jpg - Mobile Entertainment
+[2026-01-14T01:31:23Z] CLICK: [data-testid="nav-games"]
+[2026-01-14T01:31:24Z] SCREENSHOT: mobile_dark/0021_entertainment_games.jpg - Mobile Games
+[2026-01-14T01:31:25Z] CLICK: [data-testid="nav-vault"]
+[2026-01-14T01:31:26Z] SCREENSHOT: mobile_dark/0022_entertainment_vault.jpg - Mobile Vault
+[2026-01-14T01:31:30Z] SET_VIEWPORT: mobile_light (390x844)
+[2026-01-14T01:31:31Z] SCREENSHOT: mobile_light/0020_entertainment_overview.jpg - Mobile Entertainment (light)
+[2026-01-14T01:31:40Z] --- DESKTOP LIGHT MODALS ---
+[2026-01-14T01:31:41Z] SET_VIEWPORT: desktop_light (1440x900)
+[2026-01-14T01:31:42Z] CLICK: [data-testid="logs-btn"]
+[2026-01-14T01:31:43Z] SCREENSHOT: desktop_light/0010_modal_logs.jpg - LOGS modal (light)
+[2026-01-14T01:31:44Z] PRESS: Escape
+[2026-01-14T01:31:45Z] CLICK: [data-testid="admin-console-btn"]
+[2026-01-14T01:31:46Z] SCREENSHOT: desktop_light/0013_modal_admin.jpg - Admin Console (light)
+[2026-01-14T01:31:47Z] PRESS: Escape
+[2026-01-14T01:31:48Z] CLICK: [data-testid="system-status-btn"]
+[2026-01-14T01:31:49Z] SCREENSHOT: desktop_light/0014_modal_systemstatus.jpg - System Status (light)
+[2026-01-14T01:31:50Z] PRESS: Escape
+[2026-01-14T01:31:51Z] NAVIGATE: http://localhost:3000/#/entertainment
+[2026-01-14T01:31:52Z] SCREENSHOT: desktop_light/0020_entertainment_overview.jpg - Entertainment (light)
+[2026-01-14T01:31:59Z] === CRAWL COMPLETE ===
