@@ -488,16 +488,15 @@ export default function SecurityTile() {
             <div className="glass rounded-lg p-3">
               <h5 className="text-xs font-semibold text-muted-foreground mb-2">Access Stats</h5>
               <div className="grid grid-cols-2 gap-2">
-                <MetricRow label="Total Users" value={allUsers.length} trustType="VERIFIED" />
-                <MetricRow label="Admins" value={allUsers.filter(u => u.role === 'admin').length} trustType="VERIFIED" />
-                <MetricRow label="Residents" value={allUsers.filter(u => u.role === 'resident').length} trustType="DERIVED" />
-                <MetricRow label="Dependents" value={allUsers.filter(u => u.isDependent).length} trustType="DERIVED" />
-                <MetricRow label="PIN Required" value={allUsers.filter(u => u.requirePin).length} trustType="VERIFIED" />
-                <MetricRow label="Auth Mode" value={showPinEntry ? 'PIN' : 'Open'} trustType="VERIFIED" />
+                <MetricRow label="Total Users" value={people.length} trustType="VERIFIED" />
+                <MetricRow label="Admins" value={people.filter(u => u.permission === 'admin').length} trustType="VERIFIED" />
+                <MetricRow label="Members" value={people.filter(u => u.permission === 'member').length} trustType="DERIVED" />
+                <MetricRow label="Guests" value={people.filter(u => u.permission === 'guest').length} trustType="DERIVED" />
+                <MetricRow label="Dependents" value={people.filter(u => u.isDependent).length} trustType="DERIVED" />
               </div>
             </div>
             
-            <RawDataDisplay data={allUsers} title="User Profiles JSON" />
+            <RawDataDisplay data={people} title="User Profiles JSON" />
           </div>
         </ProgressiveDetails>
         
