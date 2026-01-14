@@ -907,6 +907,30 @@ export default function HelpCenter({ isOpen, onClose }) {
                 </div>
               </div>
               
+              {/* Quick Diagnostics Panel */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="glass rounded-xl p-4 border border-emerald-500/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Play className="w-5 h-5 text-emerald-400" />
+                    <h3 className="font-bold">Run Self-Test</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Check all subsystems and get a health report.
+                  </p>
+                  <SelfTestRunner compact />
+                </div>
+                <div className="glass rounded-xl p-4 border border-cyan-500/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Download className="w-5 h-5 text-cyan-400" />
+                    <h3 className="font-bold">Debug Bundle</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Copy diagnostic info for troubleshooting.
+                  </p>
+                  <DebugBundlePanel />
+                </div>
+              </div>
+              
               {/* Category Cards */}
               <div>
                 <h2 className="text-lg font-bold mb-4">Browse by Category</h2>
