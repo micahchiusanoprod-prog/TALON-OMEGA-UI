@@ -742,9 +742,10 @@ export default function AdminConsole({ isOpen, onClose }) {
         </div>
 
         {/* Section Tabs */}
-        <div className="flex gap-2 p-4 border-b border-border/50 overflow-x-auto">
+        <div className="flex gap-2 p-4 border-b border-border/50 overflow-x-auto" data-testid="admin-section-tabs">
           <button
             onClick={() => setActiveSection('fleet')}
+            data-testid="admin-section-fleet"
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
               activeSection === 'fleet' 
                 ? 'bg-primary text-primary-foreground' 
@@ -756,6 +757,7 @@ export default function AdminConsole({ isOpen, onClose }) {
           </button>
           <button
             onClick={() => setActiveSection('roster')}
+            data-testid="admin-section-roster"
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
               activeSection === 'roster' 
                 ? 'bg-primary text-primary-foreground' 
@@ -767,6 +769,7 @@ export default function AdminConsole({ isOpen, onClose }) {
           </button>
           <button
             onClick={() => setActiveSection('broadcast')}
+            data-testid="admin-section-broadcast"
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
               activeSection === 'broadcast' 
                 ? 'bg-primary text-primary-foreground' 
@@ -778,8 +781,8 @@ export default function AdminConsole({ isOpen, onClose }) {
           </button>
           <button
             onClick={() => setShowAuditPanel(true)}
+            data-testid="admin-section-audit"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap btn-apple bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20"
-            data-testid="audit-tab-btn"
           >
             <ClipboardCheck className="w-4 h-4 text-amber-500" />
             <span className="text-amber-500">Audit</span>
