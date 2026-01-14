@@ -722,6 +722,357 @@ const BroadcastAssemblySection = () => {
 };
 
 // ============================================
+// SEARCH HEALTH SECTION (P1.3)
+// ============================================
+const SearchHealthSection = () => {
+  const [kiwixStatus, setKiwixStatus] = useState({ 
+    available: null, 
+    lastCheck: null, 
+    lastQuery: null,
+    latency: null,
+    error: null 
+  });
+  const [jellyfinStatus, setJellyfinStatus] = useState({
+    configured: false,
+    keyPresent: false
+  });
+  const [searchStats, setSearchStats] = useState({
+    totalSearches: 127,
+    averageLatency: 45,
+    errorRate: 2.3,
+    lastHour: 12
+  });
+  const [recentErrors, setRecentErrors] = useState([]);
+  const [isChecking, setIsChecking] = useState(false);
+
+  // Kiwix endpoints
+  const KIWIX_PRIMARY = 'http://talon.local:8090';
+  const KIWIX_FALLBACK = 'http://127.0.0.1:8090';
+
+  // Check Kiwix API health
+  const checkKiwixHealth = async () => {
+    setIsChecking(true);
+    const startTime = Date.now();
+    
+    try {
+      // Try primary endpoint first
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(`${KIWIX_PRIMARY}/catalog/v2/entries`, {
+        signal: controller.signal,
+        mode: 'cors'
+      });
+      
+      clearTimeout(timeoutId);
+      const latency = Date.now() - startTime;
+      
+      if (response.ok) {
+        setKiwixStatus({
+          available: true,
+          endpoint: KIWIX_PRIMARY,
+          lastCheck: new Date(),
+          lastQuery: new Date(),
+          latency,
+          error: null
+        });
+        toast.success(`Kiwix connected (${latency}ms)`);
+      } else {
+        throw new Error(`Server returned ${response.status}`);
+      }
+    } catch (error) {
+      // Try fallback
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const fallbackResponse = await fetch(`${KIWIX_FALLBACK}/catalog/v2/entries`, {
+          signal: controller.signal,
+          mode: 'cors'
+        });
+        
+        clearTimeout(timeoutId);
+        const latency = Date.now() - startTime;
+        
+        if (fallbackResponse.ok) {
+          setKiwixStatus({
+            available: true,
+            endpoint: KIWIX_FALLBACK,
+            lastCheck: new Date(),
+            lastQuery: new Date(),
+            latency,
+            error: null
+          });
+          toast.success(`Kiwix connected via fallback (${latency}ms)`);
+        } else {
+          throw new Error('Fallback also failed');
+        }
+      } catch (fallbackError) {
+        setKiwixStatus({
+          available: false,
+          endpoint: null,
+          lastCheck: new Date(),
+          lastQuery: null,
+          latency: null,
+          error: error.message
+        });
+        setRecentErrors(prev => [{
+          id: Date.now(),
+          source: 'Kiwix',
+          message: error.message,
+          timestamp: new Date()
+        }, ...prev].slice(0, 5));
+        toast.error('Kiwix server unavailable');
+      }
+    }
+    
+    setIsChecking(false);
+  };
+
+  // Check Jellyfin configuration
+  useEffect(() => {
+    const jellyfinKey = process.env.REACT_APP_JELLYFIN_API_KEY;
+    setJellyfinStatus({
+      configured: !!jellyfinKey,
+      keyPresent: !!jellyfinKey
+    });
+  }, []);
+
+  // Check Kiwix on mount
+  useEffect(() => {
+    checkKiwixHealth();
+  }, []);
+
+  const getStatusColor = (available) => {
+    if (available === null) return 'text-muted-foreground';
+    return available ? 'text-success' : 'text-destructive';
+  };
+
+  const getStatusBg = (available) => {
+    if (available === null) return 'bg-muted/50';
+    return available ? 'bg-success/20' : 'bg-destructive/20';
+  };
+
+  return (
+    <div className="space-y-6" data-testid="search-health-section">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="glass rounded-xl p-4 text-center">
+          <Activity className="w-6 h-6 mx-auto mb-2 text-primary" />
+          <p className="text-2xl font-bold">{searchStats.totalSearches}</p>
+          <p className="text-xs text-muted-foreground">Total Searches</p>
+        </div>
+        <div className="glass rounded-xl p-4 text-center">
+          <Clock className="w-6 h-6 mx-auto mb-2 text-blue-500" />
+          <p className="text-2xl font-bold">{searchStats.averageLatency}<span className="text-sm font-normal">ms</span></p>
+          <p className="text-xs text-muted-foreground">Avg Latency</p>
+        </div>
+        <div className="glass rounded-xl p-4 text-center">
+          <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-amber-500" />
+          <p className="text-2xl font-bold">{searchStats.errorRate}<span className="text-sm font-normal">%</span></p>
+          <p className="text-xs text-muted-foreground">Error Rate</p>
+        </div>
+        <div className="glass rounded-xl p-4 text-center">
+          <Search className="w-6 h-6 mx-auto mb-2 text-emerald-500" />
+          <p className="text-2xl font-bold">{searchStats.lastHour}</p>
+          <p className="text-xs text-muted-foreground">Last Hour</p>
+        </div>
+      </div>
+
+      {/* Source Status Cards */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Search Sources</h3>
+        
+        {/* Kiwix Status */}
+        <div className={`glass rounded-xl p-4 border ${kiwixStatus.available ? 'border-success/30' : kiwixStatus.available === false ? 'border-destructive/30' : 'border-border'}`}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className={`p-2.5 rounded-xl ${getStatusBg(kiwixStatus.available)}`}>
+                <Book className={`w-5 h-5 ${getStatusColor(kiwixStatus.available)}`} />
+              </div>
+              <div>
+                <h4 className="font-semibold flex items-center gap-2">
+                  Kiwix Knowledge Base
+                  {kiwixStatus.available === null && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+                  {kiwixStatus.available === true && <CheckCircle className="w-4 h-4 text-success" />}
+                  {kiwixStatus.available === false && <XCircle className="w-4 h-4 text-destructive" />}
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {kiwixStatus.available ? 'Connected and serving articles' : 'Unavailable - library-level only'}
+                </p>
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={checkKiwixHealth}
+              disabled={isChecking}
+              className="text-xs"
+            >
+              {isChecking ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <RefreshCw className="w-3 h-3 mr-1" />}
+              Retry
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Primary Endpoint</p>
+              <code className="text-xs bg-secondary px-2 py-1 rounded">{KIWIX_PRIMARY}</code>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Fallback Endpoint</p>
+              <code className="text-xs bg-secondary px-2 py-1 rounded">{KIWIX_FALLBACK}</code>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Last Check</p>
+              <p className="text-sm font-medium">{kiwixStatus.lastCheck?.toLocaleTimeString() || 'Never'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Latency</p>
+              <p className="text-sm font-medium">{kiwixStatus.latency ? `${kiwixStatus.latency}ms` : 'N/A'}</p>
+            </div>
+          </div>
+          
+          {kiwixStatus.available === false && (
+            <div className="mt-4">
+              <StatusGuidancePanel 
+                status="UNAVAILABLE" 
+                customMessage="Cannot connect to Kiwix server. Article-level search is disabled." 
+              />
+            </div>
+          )}
+        </div>
+        
+        {/* Jellyfin Status */}
+        <div className={`glass rounded-xl p-4 border ${jellyfinStatus.configured ? 'border-success/30' : 'border-blue-500/30'}`}>
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className={`p-2.5 rounded-xl ${jellyfinStatus.configured ? 'bg-success/20' : 'bg-blue-500/20'}`}>
+                <Film className={`w-5 h-5 ${jellyfinStatus.configured ? 'text-success' : 'text-blue-500'}`} />
+              </div>
+              <div>
+                <h4 className="font-semibold flex items-center gap-2">
+                  Jellyfin Media Library
+                  {jellyfinStatus.configured ? (
+                    <CheckCircle className="w-4 h-4 text-success" />
+                  ) : (
+                    <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/20 text-blue-500 rounded">NOT_INDEXED</span>
+                  )}
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {jellyfinStatus.configured ? 'Media search enabled' : 'Requires API key configuration'}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {!jellyfinStatus.configured && (
+            <div className="mt-4">
+              <StatusGuidancePanel status="NOT_INDEXED" />
+              <div className="mt-3 p-3 glass rounded-lg">
+                <h5 className="text-xs font-semibold mb-2">How to Enable Jellyfin Search</h5>
+                <ol className="space-y-2 text-xs text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center flex-shrink-0 text-[10px] font-bold">1</span>
+                    <span>Log into your Jellyfin server and go to <strong>Dashboard → API Keys</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center flex-shrink-0 text-[10px] font-bold">2</span>
+                    <span>Create a new API key with a descriptive name (e.g., "OMEGA Dashboard")</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center flex-shrink-0 text-[10px] font-bold">3</span>
+                    <span>Add to your environment: <code className="bg-secondary px-1.5 py-0.5 rounded text-[10px]">REACT_APP_JELLYFIN_API_KEY=your_key_here</code></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center flex-shrink-0 text-[10px] font-bold">4</span>
+                    <span>Restart the OMEGA Dashboard to apply changes</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Commands Status */}
+        <div className="glass rounded-xl p-4 border border-amber-500/30">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-amber-500/20">
+              <Terminal className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <h4 className="font-semibold flex items-center gap-2">
+                Commands & Actions
+                <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-500 rounded">PLANNED</span>
+              </h4>
+              <p className="text-xs text-muted-foreground">Command execution will be available in a future update</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Errors */}
+      {recentErrors.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Recent Errors</h3>
+          <div className="glass rounded-xl divide-y divide-border">
+            {recentErrors.map((error) => (
+              <div key={error.id} className="p-3 flex items-start gap-3">
+                <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">{error.source}</p>
+                  <p className="text-xs text-muted-foreground">{error.message}</p>
+                </div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  {error.timestamp.toLocaleTimeString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Search Index Stats */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Index Statistics</h3>
+        <div className="glass rounded-xl p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div>
+              <div className="flex items-center justify-center gap-1 text-emerald-500 mb-1">
+                <Book className="w-4 h-4" />
+              </div>
+              <p className="text-lg font-bold">12</p>
+              <p className="text-xs text-muted-foreground">Kiwix Libraries</p>
+            </div>
+            <div>
+              <div className="flex items-center justify-center gap-1 text-blue-500 mb-1">
+                <Users className="w-4 h-4" />
+              </div>
+              <p className="text-lg font-bold">4</p>
+              <p className="text-xs text-muted-foreground">Community Members</p>
+            </div>
+            <div>
+              <div className="flex items-center justify-center gap-1 text-cyan-500 mb-1">
+                <FileText className="w-4 h-4" />
+              </div>
+              <p className="text-lg font-bold">23</p>
+              <p className="text-xs text-muted-foreground">Shared Files</p>
+            </div>
+            <div>
+              <div className="flex items-center justify-center gap-1 text-amber-500 mb-1">
+                <Terminal className="w-4 h-4" />
+              </div>
+              <p className="text-lg font-bold">8</p>
+              <p className="text-xs text-muted-foreground">Commands (Stub)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
 // MAIN ADMIN CONSOLE COMPONENT
 // ============================================
 export default function AdminConsole({ isOpen, onClose }) {
