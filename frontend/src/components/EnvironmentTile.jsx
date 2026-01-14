@@ -483,6 +483,46 @@ export default function EnvironmentTile() {
               </div>
             </div>
           </div>
+          
+          {/* Progressive Details Section */}
+          <ProgressiveDetails 
+            title="Raw Sensor Data"
+            helpText="Technical metrics and timestamps"
+          >
+            <div className="space-y-3">
+              {/* Raw Metrics */}
+              <div className="glass rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-muted-foreground mb-2">Raw Sensor Values</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  <MetricRow label="Temperature (raw)" value={data.temperature.toFixed(2)} unit="°C" trustType="VERIFIED" helpTerm="TEMP" />
+                  <MetricRow label="Humidity (raw)" value={data.humidity.toFixed(2)} unit="%" trustType="VERIFIED" />
+                  <MetricRow label="Pressure (raw)" value={data.pressure.toFixed(2)} unit="hPa" trustType="VERIFIED" />
+                  <MetricRow label="IAQ Index" value={data.iaq} trustType="DERIVED" />
+                </div>
+              </div>
+              
+              {/* Calculation Notes */}
+              <CalculationNotes notes={[
+                'Temperature converted to Fahrenheit: (°C × 9/5) + 32',
+                'IAQ Index derived from gas resistance + humidity compensation',
+                'Status thresholds based on health/comfort standards',
+                'Sensor readings taken every 5 seconds'
+              ]} />
+              
+              {/* Raw JSON */}
+              <RawDataDisplay data={data} title="Sensor JSON Response" />
+            </div>
+          </ProgressiveDetails>
+          
+          {/* Provenance Footer */}
+          <DataProvenanceFooter
+            source="OMEGA BME688 Sensor"
+            endpoint="/api/cgi-bin/sensors"
+            lastUpdated={Date.now()}
+            trustType="VERIFIED"
+            status={data.available ? 'INDEXED' : 'SIMULATED'}
+            refreshInterval="5 seconds"
+          />
         </CardContent>
       </Card>
       
