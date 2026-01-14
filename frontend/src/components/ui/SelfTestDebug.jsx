@@ -153,6 +153,8 @@ export const DebugBundlePanel = ({ onClose }) => {
   const { generateDebugBundle, copyDebugBundle, selfTestResults } = useEvidence();
   const [copied, setCopied] = useState(false);
   const [bundlePreview, setBundlePreview] = useState(null);
+  const [redactSensitive, setRedactSensitive] = useState(true);
+  const [isGeneratingZip, setIsGeneratingZip] = useState(false);
 
   const handleCopy = async () => {
     const result = await copyDebugBundle();
@@ -164,7 +166,103 @@ export const DebugBundlePanel = ({ onClose }) => {
 
   const handlePreview = () => {
     const bundle = generateDebugBundle();
-    setBundlePreview(JSON.stringify(bundle, null, 2));
+    if (redactSensitive) {
+      // Redact sensitive values
+      const redacted = JSON.parse(JSON.stringify(bundle));
+      if (redacted.configSnapshot) {
+        redacted.configSnapshot = {
+          ...redacted.configSnapshot,
+          backendUrl: redacted.configSnapshot.backendUrl ? '[REDACTED]' : 'not_set'
+        };
+      }
+      if (redacted.profile?.displayName) {
+        redacted.profile.displayName = '[REDACTED]';
+      }
+      setBundlePreview(JSON.stringify(redacted, null, 2));
+    } else {
+      setBundlePreview(JSON.stringify(bundle, null, 2));
+    }
+  };
+
+  const handleDownloadZip = async () => {
+    setIsGeneratingZip(true);
+    try {
+      const bundle = generateDebugBundle();
+      
+      // Apply redaction if enabled
+      let exportBundle = bundle;
+      if (redactSensitive) {
+        exportBundle = JSON.parse(JSON.stringify(bundle));
+        if (exportBundle.configSnapshot) {
+          exportBundle.configSnapshot.backendUrl = '[REDACTED]';
+        }
+        if (exportBundle.profile?.displayName) {
+          exportBundle.profile.displayName = '[REDACTED]';
+        }
+      }
+      
+      // Create files for the ZIP
+      const files = {
+        'debug_bundle.json': JSON.stringify(exportBundle, null, 2),
+        'BUILD_INFO.json': JSON.stringify(exportBundle.buildInfo, null, 2),
+        'CONFIG_SNAPSHOT.json': JSON.stringify(exportBundle.configSnapshot, null, 2),
+        'SELF_TEST_RESULTS.json': JSON.stringify(exportBundle.selfTestResults, null, 2),
+        'NETWORK_LOG.json': JSON.stringify(exportBundle.networkLog, null, 2),
+        'ERROR_LOG.json': JSON.stringify(exportBundle.errorLog, null, 2),
+        'CONNECTION_STATE.json': JSON.stringify(exportBundle.connectionState, null, 2),
+        'README.txt': `OMEGA Dashboard Debug Bundle
+Generated: ${exportBundle.generatedAt}
+Version: ${exportBundle.buildInfo?.version || 'unknown'}
+
+Contents:
+- debug_bundle.json: Complete bundle
+- BUILD_INFO.json: Build information
+- CONFIG_SNAPSHOT.json: Configuration snapshot
+- SELF_TEST_RESULTS.json: Last self-test results
+- NETWORK_LOG.json: Last 100 network requests
+- ERROR_LOG.json: Last 100 UI errors
+- CONNECTION_STATE.json: Current connection state
+
+${redactSensitive ? 'NOTE: Sensitive values have been redacted.' : 'WARNING: Contains unredacted sensitive values.'}
+`
+      };
+      
+      // Use JSZip if available, otherwise fall back to data URL
+      try {
+        // Dynamic import JSZip
+        const JSZip = (await import('jszip')).default;
+        const zip = new JSZip();
+        
+        Object.entries(files).forEach(([name, content]) => {
+          zip.file(name, content);
+        });
+        
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `omega_debug_bundle_${new Date().toISOString().split('T')[0]}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (zipError) {
+        // Fallback: Download JSON only
+        const blob = new Blob([JSON.stringify(exportBundle, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `omega_debug_bundle_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('Failed to generate debug bundle:', err);
+    } finally {
+      setIsGeneratingZip(false);
+    }
   };
 
   return (
@@ -198,6 +296,107 @@ export const DebugBundlePanel = ({ onClose }) => {
             CONFIG_SNAPSHOT (backend URL, theme, language)
           </li>
           <li className="flex items-center gap-2">
+            {selfTestResults ? (
+              <CheckCircle className="w-3 h-3 text-green-500" />
+            ) : (
+              <AlertTriangle className="w-3 h-3 text-amber-500" />
+            )}
+            Self-test results {!selfTestResults && '(not run yet)'}
+          </li>
+          <li className="flex items-center gap-2">
+            <CheckCircle className="w-3 h-3 text-green-500" />
+            Last 100 network requests
+          </li>
+          <li className="flex items-center gap-2">
+            <CheckCircle className="w-3 h-3 text-green-500" />
+            Last 100 UI errors
+          </li>
+          <li className="flex items-center gap-2">
+            <CheckCircle className="w-3 h-3 text-green-500" />
+            Connection state summary
+          </li>
+        </ul>
+      </div>
+
+      {/* Redaction Toggle */}
+      <div className="mb-4 flex items-center gap-2">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={redactSensitive}
+            onChange={(e) => setRedactSensitive(e.target.checked)}
+            className="rounded border-border"
+            data-testid="redact-toggle"
+          />
+          <span className="text-sm text-foreground">Redact sensitive values</span>
+        </label>
+        <span className="text-xs text-muted-foreground">(PINs, URLs, names)</span>
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2 flex-wrap">
+        <button
+          onClick={handleCopy}
+          className="flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          data-testid="debug-bundle-copy-btn"
+        >
+          {copied ? (
+            <>
+              <CheckCircle className="w-4 h-4" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4" />
+              Copy JSON
+            </>
+          )}
+        </button>
+        <button
+          onClick={handleDownloadZip}
+          disabled={isGeneratingZip}
+          className="flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50"
+          data-testid="debug-bundle-zip-btn"
+        >
+          {isGeneratingZip ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4" />
+              Download ZIP
+            </>
+          )}
+        </button>
+        <button
+          onClick={handlePreview}
+          className="px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-secondary transition-colors"
+          data-testid="debug-bundle-preview-btn"
+        >
+          Preview
+        </button>
+      </div>
+
+      {/* Preview Modal */}
+      {bundlePreview && (
+        <div className="mt-4 p-3 bg-secondary/50 rounded-lg max-h-64 overflow-auto">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-foreground">Bundle Preview</span>
+            <button 
+              onClick={() => setBundlePreview(null)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <XCircle className="w-4 h-4" />
+            </button>
+          </div>
+          <pre className="text-xs text-muted-foreground whitespace-pre-wrap">{bundlePreview}</pre>
+        </div>
+      )}
+    </div>
+  );
+};
             {selfTestResults ? (
               <CheckCircle className="w-3 h-3 text-green-500" />
             ) : (
