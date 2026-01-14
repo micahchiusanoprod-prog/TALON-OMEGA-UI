@@ -710,10 +710,44 @@ export default function WeatherTile() {
             )}
           </div>
           
-          {/* Footer */}
-          <div className="text-[10px] text-muted-foreground text-center pt-3 mt-3 border-t border-border/50">
-            Last updated: {weather.lastUpdated}
-          </div>
+          {/* Progressive Details */}
+          <ProgressiveDetails 
+            title="Sensor Data & Sources"
+            helpText="Technical details and forecast methodology"
+          >
+            <div className="space-y-3">
+              <div className="glass rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-muted-foreground mb-2">Weather Metrics</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  <MetricRow label="Temperature" value={weather.current.temp} unit="°F" trustType="VERIFIED" />
+                  <MetricRow label="Feels Like" value={weather.current.feelsLike} unit="°F" trustType="DERIVED" />
+                  <MetricRow label="Humidity" value={weather.current.humidity} unit="%" trustType="VERIFIED" />
+                  <MetricRow label="Wind Speed" value={weather.current.wind} unit="mph" trustType="VERIFIED" />
+                  <MetricRow label="Pressure" value={omegaPressure} unit="hPa" trustType="VERIFIED" />
+                  <MetricRow label="UV Index" value={weather.current.uv || 'N/A'} trustType="ESTIMATED" />
+                </div>
+              </div>
+              
+              <CalculationNotes notes={[
+                '"Feels like" temperature factors in humidity and wind chill',
+                'Pressure data from OMEGA BME688 sensor (high accuracy)',
+                'Pressure trend computed from 6-hour rolling average',
+                'Forecast data refreshes every 3 hours'
+              ]} />
+              
+              <RawDataDisplay data={weather} title="Weather JSON" />
+            </div>
+          </ProgressiveDetails>
+          
+          {/* Provenance Footer */}
+          <DataProvenanceFooter
+            source="OMEGA Weather Integration"
+            endpoint="/api/cgi-bin/weather"
+            lastUpdated={Date.now()}
+            trustType="DERIVED"
+            status="SIMULATED"
+            refreshInterval="3 hours"
+          />
         </CardContent>
       </Card>
       
