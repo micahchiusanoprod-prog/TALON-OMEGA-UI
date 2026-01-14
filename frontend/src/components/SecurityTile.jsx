@@ -25,6 +25,12 @@ import {
 } from 'lucide-react';
 import TileHelpTabs, { QuickHelpTips, InlineLegend } from './ui/TileHelpTabs';
 import UserProfileModal from './UserProfileModal';
+import { 
+  DataProvenanceFooter, 
+  ProgressiveDetails, 
+  RawDataDisplay, 
+  MetricRow 
+} from './ui/DataTileWrapper';
 
 // Help content for Security tile
 const securityHelpContent = {

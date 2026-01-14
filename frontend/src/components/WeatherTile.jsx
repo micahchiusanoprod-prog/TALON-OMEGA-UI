@@ -26,6 +26,13 @@ import {
   Zap,
   Radio
 } from 'lucide-react';
+import { 
+  DataProvenanceFooter, 
+  ProgressiveDetails, 
+  RawDataDisplay, 
+  CalculationNotes,
+  MetricRow 
+} from './ui/DataTileWrapper';
 
 // Help content for Weather tile
 const WEATHER_HELP = {

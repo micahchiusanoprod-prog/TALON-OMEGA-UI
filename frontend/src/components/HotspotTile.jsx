@@ -23,6 +23,13 @@ import { Switch } from './ui/switch';
 import { toast } from 'sonner';
 import api from '../services/api';
 import config from '../config';
+import { 
+  DataProvenanceFooter, 
+  ProgressiveDetails, 
+  RawDataDisplay, 
+  CalculationNotes,
+  MetricRow 
+} from './ui/DataTileWrapper';
 
 export default function HotspotTile() {
   const [status, setStatus] = useState(null);
