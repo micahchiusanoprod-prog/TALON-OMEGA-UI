@@ -37,6 +37,13 @@ import BroadcastModal from './ally/BroadcastModal';
 import AllyMapView from './ally/AllyMapView';
 import NodeAvatarStrip from './ally/NodeAvatarStrip';
 import { lockBodyScroll, unlockBodyScroll, captureScrollPosition } from '../utils/scrollLock';
+import { 
+  DataProvenanceFooter, 
+  ProgressiveDetails, 
+  RawDataDisplay, 
+  MetricRow,
+  StatusGuidancePanel 
+} from './ui/DataTileWrapper';
 
 // ============================================
 // MOCK DATA FOR ALERTS LOG
