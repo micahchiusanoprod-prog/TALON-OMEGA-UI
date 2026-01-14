@@ -404,6 +404,7 @@ const BroadcastAssemblySection = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
+              data-testid={`admin-tab-${tab.id}`}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id 
                   ? 'bg-primary text-primary-foreground' 
@@ -436,6 +437,7 @@ const BroadcastAssemblySection = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => setBroadcastSeverity('info')}
+                  data-testid="broadcast-severity-info"
                   className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all ${
                     broadcastSeverity === 'info' 
                       ? 'bg-primary text-primary-foreground' 
@@ -446,6 +448,7 @@ const BroadcastAssemblySection = () => {
                 </button>
                 <button
                   onClick={() => setBroadcastSeverity('urgent')}
+                  data-testid="broadcast-severity-urgent"
                   className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all ${
                     broadcastSeverity === 'urgent' 
                       ? 'bg-destructive text-white' 
