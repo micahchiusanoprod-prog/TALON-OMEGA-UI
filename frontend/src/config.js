@@ -4,6 +4,9 @@
 // ============================================================
 // This config supports both MOCK mode (offline development) and
 // LIVE mode (connected to Pi backend)
+//
+// API Strategy: Use Nginx reverse proxy at /api/cgi-bin/*
+// This keeps frontend same-origin and works for mobile clients on LAN
 
 // Build-time injected version (set during build)
 export const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION || 'dev';
@@ -19,11 +22,16 @@ const getConfig = () => {
   
   return {
     // ========== Core URLs ==========
-    // API base for Pi backend (CGI scripts)
-    API_BASE: runtimeConfig.API_BASE || process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8093',
+    // API base - empty string means same-origin (uses Nginx /api proxy)
+    // For direct Pi access, set to 'http://talon.local:8093' in runtime config
+    API_BASE: runtimeConfig.API_BASE || process.env.REACT_APP_API_BASE || '',
     
-    // Kiwix offline wiki server
-    KIWIX_BASE: runtimeConfig.KIWIX_BASE || process.env.REACT_APP_KIWIX_BASE || 'http://127.0.0.1:8090',
+    // Kiwix offline wiki server (direct port - no proxy)
+    KIWIX_BASE: runtimeConfig.KIWIX_BASE || process.env.REACT_APP_KIWIX_BASE || 'http://talon.local:8090',
+    
+    // Jellyfin media server
+    JELLYFIN_BASE: runtimeConfig.JELLYFIN_BASE || process.env.REACT_APP_JELLYFIN_BASE || 'http://talon.local:8096',
+    JELLYFIN_WEB_PATH: '/web/',
     
     // ========== Data Mode ==========
     // true = use mock data (offline/development)
@@ -33,15 +41,16 @@ const getConfig = () => {
       : (process.env.REACT_APP_USE_MOCK_DATA !== 'false'),
     
     // ========== Backend Endpoints ==========
+    // All CGI endpoints go through /api/cgi-bin/ proxy
     endpoints: {
-      health: '/cgi-bin/health.py',
-      metrics: '/cgi-bin/metrics.py',
-      sensors: '/cgi-bin/sensors.py',
-      backup: '/cgi-bin/backup.py',
-      keys: '/cgi-bin/keys.py',
-      keysync: '/cgi-bin/keysync.py',
-      dm: '/cgi-bin/dm.py',
-      gps: '/cgi-bin/gps.py',
+      health: '/api/cgi-bin/health.py',
+      metrics: '/api/cgi-bin/metrics.py',
+      sensors: '/api/cgi-bin/sensors.py',
+      backup: '/api/cgi-bin/backup.py',
+      keys: '/api/cgi-bin/keys.py',
+      keysync: '/api/cgi-bin/keysync.py',
+      dm: '/api/cgi-bin/dm.py',
+      gps: null, // Not configured - endpoint path unknown
       // Hotspot
       hotspotStatus: '/api/hotspot/status',
       hotspotToggle: '/api/hotspot/toggle',
@@ -106,7 +115,7 @@ const getConfig = () => {
     
     // ========== Ally API Configuration ==========
     ally: {
-      apiBase: runtimeConfig.API_BASE || process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8093',
+      apiBase: runtimeConfig.API_BASE || process.env.REACT_APP_API_BASE || '',
     },
     
     // ========== API Configuration (General) ==========
