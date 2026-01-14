@@ -35,13 +35,16 @@ import {
   RefreshCw,
   HelpCircle,
   ExternalLink,
-  Copy
+  Copy,
+  Play,
+  Download
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
 import HelpGuidePanel, { COMMON_LEGEND_ITEMS, COMMON_TROUBLESHOOTING } from './HelpGuidePanel';
 import { DataSourceBadge } from './DataStateIndicators';
+import { SelfTestRunner, DebugBundlePanel } from './ui/SelfTestDebug';
 
 // ============================================================
 // HELP CENTER CONTENT - FROM OMEGA FIELD MANUAL
