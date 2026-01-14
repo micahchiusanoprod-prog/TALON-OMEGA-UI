@@ -92,11 +92,29 @@ sudo systemctl reload nginx
 
 ## File Artifacts
 - `/app/frontend/deploy/releases/2026-01-14_060220/` - Release package
+- `/app/frontend/deploy/releases/2026-01-14_060220/P3_evidence/` - 4-mode screenshot evidence (16 files)
 - `/app/baseline_export/SEARCH_QUALITY_VALIDATION.md` - Test queries
 - `/app/baseline_export/SEARCH_QUALITY_REPORT.md` - Search implementation
 - `/app/memory/PRD.md` - This document
 
+## P3 Screenshot Evidence Summary
+
+**Total:** 16 screenshots (4 modes × 4 views)
+**Location:** `/app/frontend/deploy/releases/2026-01-14_060220/P3_evidence/`
+
+| Mode | Global Search | Data Health | Search Health | Degraded State |
+|------|---------------|-------------|---------------|----------------|
+| Desktop Dark | ✅ | ✅ | ✅ | ✅ |
+| Desktop Light | ✅ | ✅ | ✅ | ✅ |
+| Mobile Dark | ✅ | ✅ | ✅ | ✅ |
+| Mobile Light | ✅ | ✅ | ✅ | ✅ |
+
+**Degraded State:** Consistently using Option A (Kiwix down → "Kiwix Search Unavailable" banner)
+**Search UX:** No changes during P3 - autosuggest typing-state screenshots NOT required
+
 ## Next Steps (Future)
+- P3.4: On-device Pi acceptance testing
+- P3.5: Runbook hardening (copy/paste commands)
 - P4: Backend integration with live Pi endpoints
 - P5: Jellyfin search (when API key provided)
 - P6: Production deployment to Pi hardware
