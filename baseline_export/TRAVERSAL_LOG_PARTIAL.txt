@@ -1,0 +1,7 @@
+[2026-01-14T01:36:30.675237] === STARTING EXHAUSTIVE VISUAL CRAWL ===
+[2026-01-14T01:36:30.675247] --- DESKTOP DARK: Home ---
+[2026-01-14T01:36:34.046568] SCREENSHOT: 0001_home_default.jpg - Home default view
+[2026-01-14T01:36:34.744323] SCREENSHOT: 0002_home_scrolled.jpg - Home scrolled to Entertainment
+[2026-01-14T01:36:34.744335] --- DESKTOP LIGHT: Home ---
+[2026-01-14T01:36:37.167020] SCREENSHOT: 0001_home_default.jpg - Home default view (light)
+[2026-01-14T01:36:37.853944] SCREENSHOT: 0002_home_scrolled.jpg - Home scrolled (light)
