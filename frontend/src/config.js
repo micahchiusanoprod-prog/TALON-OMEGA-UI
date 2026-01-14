@@ -138,16 +138,17 @@ const getConfig = () => {
 const config = getConfig();
 
 // Ensure config is valid before exporting
-if (!config || !config.API_BASE) {
+if (!config) {
   console.error('OMEGA Config Error: Config not properly initialized');
 }
 
 // Helper to get full endpoint URL
+// API_BASE can be empty (same-origin) or a full URL like http://talon.local:8093
 export const getEndpointUrl = (endpoint) => {
-  const baseUrl = config.API_BASE;
+  const baseUrl = config.API_BASE || '';
   const path = config.endpoints[endpoint];
-  if (!path) {
-    console.warn(`Unknown endpoint: ${endpoint}`);
+  if (path === null || path === undefined) {
+    // Endpoint not configured (like GPS)
     return null;
   }
   return `${baseUrl}${path}`;
