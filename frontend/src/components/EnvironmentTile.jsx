@@ -19,6 +19,13 @@ import {
 import { Button } from './ui/button';
 import api from '../services/api';
 import config from '../config';
+import { 
+  DataProvenanceFooter, 
+  ProgressiveDetails, 
+  RawDataDisplay, 
+  CalculationNotes,
+  MetricRow 
+} from './ui/DataTileWrapper';
 
 // Comprehensive help content
 const ENVIRONMENT_HELP = {
