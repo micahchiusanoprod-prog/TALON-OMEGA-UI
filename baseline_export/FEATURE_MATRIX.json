@@ -1,122 +1,75 @@
 {
-  "generatedAt": "2025-01-14T03:40:00.000Z",
-  "version": "3.0.0",
-  "phase": "Next-Phase UI Improvements",
+  "generatedAt": "2025-01-14T04:40:00.000Z",
+  "version": "4.0.0",
+  "phase": "Master Global Search",
   "features": {
-    "progressive_disclosure": {
+    "master_global_search": {
       "status": "WIRED_LIVE",
-      "components": ["ProgressivePanel", "PanelHelpIcon", "ProvenanceStrip"],
-      "notes": "Summary + Show Details pattern implemented"
+      "components": ["SearchBar"],
+      "features": {
+        "autosuggest": "WIRED_LIVE",
+        "scopeChips": "WIRED_LIVE",
+        "recentSearches": "WIRED_LIVE",
+        "didYouMean": "WIRED_LIVE",
+        "explainResults": "WIRED_LIVE",
+        "sourceGrouping": "WIRED_LIVE",
+        "dynamicCaps": "WIRED_LIVE",
+        "fileSuppression": "WIRED_LIVE",
+        "showMoreFiles": "WIRED_LIVE",
+        "trustBadges": "WIRED_LIVE",
+        "freshnessIndicators": "WIRED_LIVE",
+        "keyboardNavigation": "WIRED_LIVE"
+      },
+      "sources": {
+        "kiwix": { "status": "INDEXED", "priority": 1, "cap": 6 },
+        "jellyfin": { "status": "NOT_INDEXED", "priority": 2, "cap": 6, "note": "Missing API key" },
+        "community": { "status": "INDEXED", "priority": 3, "cap": 4 },
+        "commands": { "status": "PLANNED_STUB", "priority": 4, "cap": 3 },
+        "files": { "status": "INDEXED", "priority": 5, "cap": 2 }
+      },
+      "pinnedKiwixSources": [
+        "wikipedia_en", "wikipedia_simple", "wikimed", "wiktionary_en",
+        "ifixit", "wikem", "archwiki", "openstreetmap", "devdocs", "wikivoyage"
+      ]
     },
-    "help_guides": {
-      "status": "WIRED_LIVE",
-      "components": ["HelpTooltip", "PanelHelpIcon", "GLOSSARY"],
-      "location": "HelpCenter, EnvironmentTile, all major tiles",
-      "notes": "Help icons, tooltips, and glossary implemented"
-    },
-    "trust_badges": {
-      "status": "WIRED_LIVE",
-      "types": ["VERIFIED", "DERIVED", "ESTIMATED", "UNKNOWN"],
-      "component": "TrustBadge",
-      "notes": "Trust badges show data source reliability"
-    },
-    "provenance_strip": {
-      "status": "WIRED_LIVE",
-      "fields": ["Source", "Last Updated", "Freshness", "Window"],
-      "freshnessTypes": ["LIVE", "CACHED", "STALE", "UNKNOWN"],
-      "notes": "Data provenance on panels showing source and freshness"
-    },
-    "self_test_runner": {
-      "status": "WIRED_LIVE",
-      "entryPoints": ["System Status Panel", "Help Center"],
-      "subsystems": ["Frontend", "LocalStorage", "API_Health", "API_Metrics", "API_DM", "API_Sensors", "GPS"],
-      "statusTypes": ["OK", "DEGRADED", "NOT_CONFIGURED", "FORBIDDEN", "UNKNOWN"],
-      "persistence": "localStorage",
-      "notes": "Self-test checks all subsystems, saves results"
-    },
-    "debug_bundle": {
+    "debug_bundle_zip": {
       "status": "WIRED_LIVE",
       "copyJson": "WIRED_LIVE",
-      "zipDownload": "PLANNED",
-      "contents": ["BUILD_INFO", "CONFIG_SNAPSHOT", "Self-test results", "Last 100 network requests", "Last 100 UI errors", "Connection state summary"],
-      "notes": "Copy JSON bundle works; ZIP download planned"
+      "downloadZip": "WIRED_LIVE",
+      "redactionToggle": "WIRED_LIVE",
+      "contents": [
+        "BUILD_INFO.json",
+        "CONFIG_SNAPSHOT.json",
+        "SELF_TEST_RESULTS.json",
+        "NETWORK_LOG.json (last 100)",
+        "ERROR_LOG.json (last 100)",
+        "CONNECTION_STATE.json",
+        "README.txt"
+      ]
     },
-    "evidence_system": {
-      "clientEvidence": "WIRED_LIVE",
-      "systemEvidence": "PLANNED",
-      "notes": "Client evidence (network log) works; System evidence (backend logs) planned"
-    },
-    "auth_gating": {
-      "status": "WIRED_LIVE",
-      "roles": ["guest", "member", "admin"],
-      "pinUnlock": "WIRED_LIVE",
-      "pinTimeout": "15 minutes",
-      "backendAuth": "PLANNED",
-      "notes": "Role + PIN gating implemented with localStorage; backend auth planned"
-    },
-    "profile_system": {
+    "progressive_disclosure": { "status": "WIRED_LIVE" },
+    "help_guides": { "status": "WIRED_LIVE" },
+    "trust_badges": { "status": "WIRED_LIVE" },
+    "provenance_strip": { "status": "WIRED_LIVE" },
+    "self_test_runner": { "status": "WIRED_LIVE" },
+    "auth_gating": { "status": "WIRED_LIVE" },
+    "profile_system": { 
       "status": "WIRED_LIVE",
       "persistence": "localStorage",
-      "fields": ["displayName", "role"],
-      "backendSync": "PLANNED",
-      "notes": "Local profile with displayName + role; backend sync planned"
-    },
-    "core_dashboard": {
-      "status": "WIRED_MOCK",
-      "components": ["Dashboard", "Header", "QuickToolsBar"],
-      "dataSource": "mocked"
-    },
-    "logs_analytics": {
-      "status": "WIRED_MOCK",
-      "component": "LogsAnalytics",
-      "tabs": ["this_device", "incidents", "all_nodes"]
-    },
-    "community_hub": {
-      "status": "WIRED_MOCK",
-      "component": "CommunityHub",
-      "tabs": ["overview", "analytics", "directory", "comms", "incidents"]
-    },
-    "help_center": {
-      "status": "WIRED_LIVE",
-      "component": "HelpCenter",
-      "features": ["Search", "Categories", "Glossary", "Self-Test", "Debug Bundle"],
-      "notes": "Comprehensive help with self-test integration"
-    },
-    "admin_console": {
-      "status": "WIRED_MOCK",
-      "component": "AdminConsole",
-      "sections": ["fleet", "roster", "broadcast", "audit"],
-      "auth": "WIRED_LIVE (PIN + Role)"
-    },
-    "entertainment": {
-      "status": "PLANNED",
-      "component": "EntertainmentPage",
-      "sections": ["movies", "games", "music", "photos", "vault", "share"]
-    },
-    "theme_system": {
-      "status": "WIRED_LIVE",
-      "modes": ["dark", "light"],
-      "persistence": "localStorage"
-    },
-    "internationalization": {
-      "status": "WIRED_LIVE",
-      "languages": ["en", "es", "fr", "de", "zh", "ja", "ar", "ru"]
+      "backendSync": "PLANNED_SCAFFOLD"
     }
   },
-  "statusLegend": {
-    "WIRED_LIVE": "Fully functional with real logic",
-    "WIRED_MOCK": "UI complete, using mocked data",
-    "PLANNED": "UI scaffolded or feature planned"
-  },
   "newInThisVersion": [
-    "Progressive disclosure pattern (Summary + Show Details)",
-    "Help tooltips with GLOSSARY integration",
-    "Trust badges (VERIFIED/DERIVED/ESTIMATED/UNKNOWN)",
-    "Provenance strips (Source, Freshness, Window)",
-    "Self-Test runner with subsystem checks",
-    "Debug Bundle (Copy JSON, ZIP planned)",
-    "Evidence system (Client now, System planned)",
-    "Auth gating (Role + PIN with timeout)",
-    "Profile system (localStorage-backed)"
+    "Master Global Search with autosuggest",
+    "Search scope chips (Global, Knowledge, Media, Community, Files, Tools)",
+    "Source grouping with trust badges and freshness",
+    "Dynamic caps (files capped when high-value sources exist)",
+    "File noise suppression (bak/tmp/swp/old filtered)",
+    "Show more files link",
+    "Did you mean typo correction",
+    "Explain results panel",
+    "Recent searches with clear actions",
+    "Debug Bundle ZIP download (was PLANNED)",
+    "Redact sensitive values toggle"
   ]
 }
