@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Settings, 
@@ -22,12 +22,21 @@ import {
   ChevronUp,
   Loader2,
   ClipboardList,
-  ClipboardCheck
+  ClipboardCheck,
+  Search,
+  Database,
+  Wifi,
+  WifiOff,
+  Activity,
+  Book,
+  Film,
+  Terminal
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
 import RosterSection from './RosterSection';
+import { StatusGuidancePanel } from './ui/DataTileWrapper';
 
 // Lazy load AuditPanel to avoid circular dependency
 const AuditPanel = React.lazy(() => import('./AuditPanel'));
