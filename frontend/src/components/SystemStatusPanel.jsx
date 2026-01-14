@@ -2,11 +2,15 @@ import React, { useState, useCallback } from 'react';
 import {
   Settings, Wifi, WifiOff, AlertTriangle, CheckCircle, XCircle,
   Server, Database, Clock, Copy, Play, RefreshCw, X, ExternalLink,
-  Info, ChevronDown, ChevronUp, Zap, ClipboardCheck, Lock, AlertCircle
+  Info, ChevronDown, ChevronUp, Zap, ClipboardCheck, Lock, AlertCircle,
+  Download, HelpCircle, Shield
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { useConnection, CONNECTION_STATES, ENDPOINT_STATUS } from '../contexts/ConnectionContext';
+import { useEvidence } from '../contexts/EvidenceContext';
+import { SelfTestRunner, DebugBundlePanel } from './ui/SelfTestDebug';
+import { PanelHelpIcon, ProvenanceStrip } from './ui/ProgressiveDisclosure';
 import config from '../config';
 
 // Lazy load AuditPanel to avoid circular dependency
