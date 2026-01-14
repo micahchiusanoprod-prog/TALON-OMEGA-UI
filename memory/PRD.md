@@ -5,121 +5,120 @@ OMEGA Dashboard is a sophisticated Raspberry Pi dashboard application providing 
 
 ## Current State (2025-01-14)
 
-### Phase Complete: Next-Phase UI Improvements v3.0
-- **120 screenshots** captured with full parity
-- All new UI components implemented and verified
+### Phase Complete: Master Global Search v4.0
+- **148 screenshots** captured with full parity
+- All search features implemented and verified
 
 ## What's Been Implemented
 
-### Step 0.5 - Baseline Parity (Complete)
-- 110 screenshots with full parity across all 4 folders
-- All Quick Tools, Entertainment tabs, Help Center, Community Hub tabs captured
+### Master Global Search (Section 1) ✅
+- **Autosuggest dropdown** with real-time results
+- **Scope chips**: Global, Knowledge, Media, Community, Files, Tools
+- **Source grouping** with labels and status badges
+- **Trust badges** on all results (VERIFIED/DERIVED/ESTIMATED/UNKNOWN)
+- **Freshness indicators** (LIVE/CACHED/STALE)
+- **Dynamic caps** - files capped when high-value sources exist
+- **File noise suppression** - bak/tmp/swp/old filtered
+- **"Show more files"** link for hidden files
+- **"Did you mean"** typo correction
+- **"Explain results"** panel with ranking rules
+- **Recent searches** stored per profile (localStorage)
+- **Keyboard navigation** (up/down/enter/esc)
 
-### Next-Phase UI Improvements (Complete)
+### Source Configuration
+| Source | Status | Priority | Cap |
+|--------|--------|----------|-----|
+| Kiwix | INDEXED | 1 | 6 |
+| Jellyfin | NOT_INDEXED (missing API key) | 2 | 6 |
+| Community | INDEXED | 3 | 4 |
+| Commands | PLANNED (STUB) | 4 | 3 |
+| Files | INDEXED | 5 | 2 |
 
-#### 1. Progressive Disclosure
-- `ProgressivePanel` component with Summary + Details
-- "Show Details" expansion pattern
-- Help icons on every major tile
+### Pinned Kiwix Sources (Boosted)
+- Wikipedia (EN), Wikipedia Simple, WikiMed
+- Wiktionary, iFixit, WikEM
+- ArchWiki, OpenStreetMap Wiki, DevDocs, Wikivoyage
 
-#### 2. Help Guides Everywhere
-- `HelpTooltip` for acronyms/terms (12+ GLOSSARY entries)
-- `PanelHelpIcon` with What/States/Actions format
-- Help Center enhanced with diagnostics section
+### Debug Bundle ZIP (Section 3) ✅
+- **Download ZIP** - WIRED_LIVE (was PLANNED)
+- **Redact sensitive values** toggle
+- Bundle contents:
+  - BUILD_INFO.json
+  - CONFIG_SNAPSHOT.json  
+  - SELF_TEST_RESULTS.json
+  - NETWORK_LOG.json (last 100)
+  - ERROR_LOG.json (last 100)
+  - CONNECTION_STATE.json
+  - README.txt
 
-#### 3. Trust & Provenance
-- `TrustBadge` types: VERIFIED, DERIVED, ESTIMATED, UNKNOWN
-- `ProvenanceStrip` with Source, Last Updated, Freshness
-- Freshness indicators: LIVE, CACHED, STALE, UNKNOWN
+### Previous Phases (Still Active)
+- Progressive Disclosure - WIRED_LIVE
+- Help Guides - WIRED_LIVE
+- Trust Badges - WIRED_LIVE
+- Provenance Strip - WIRED_LIVE
+- Self-Test Runner - WIRED_LIVE
+- Auth Gating (Role + PIN) - WIRED_LIVE
+- Profile System (localStorage) - WIRED_LIVE
 
-#### 4. Self-Test Runner
-- Entry points: System Status Panel, Help Center
-- Tests: Frontend, LocalStorage, API endpoints, GPS
-- Results saved to localStorage
-- Toast notifications for completion
-
-#### 5. Debug Bundle
-- "Copy JSON Bundle" - WIRED_LIVE
-- ZIP Download - PLANNED
-- Contents: BUILD_INFO, CONFIG_SNAPSHOT, self-test, network logs, errors
-
-#### 6. Auth Gating (Role + PIN)
-- Roles: guest, member, admin
-- PIN unlock with 15-minute timeout
-- `PinEntryModal`, `AdminGate` components
-- Backend auth: PLANNED
-
-#### 7. Profile System
-- localStorage-backed persistence
-- Fields: displayName, role
-- Backend sync: PLANNED
-
-#### 8. Evidence System
-- Client Evidence (network log): WIRED_LIVE
-- System Evidence (backend logs): PLANNED
-- `ViewEvidencePanel` with two tabs
+## User Decisions Implemented
+- **Q4.1**: Source priority approved with dynamic caps
+- **Q4.2**: Commands as STUB (not executable)
+- **Q4.3**: Profile backend sync as PLANNED scaffold
+- **Q4.4**: Pinned sources approved (no WikiHow, no Gutenberg boost)
 
 ## New Files Created
 
-### Contexts
-- `/app/frontend/src/contexts/AuthContext.jsx` - Role + PIN auth system
-- `/app/frontend/src/contexts/EvidenceContext.jsx` - Evidence & self-test management
-
-### UI Components
-- `/app/frontend/src/components/ui/ProgressiveDisclosure.jsx`
-  - HelpTooltip, TrustBadge, ProvenanceStrip, PanelHelpIcon, ProgressivePanel, ViewEvidencePanel
-- `/app/frontend/src/components/ui/SelfTestDebug.jsx`
-  - SelfTestRunner, DebugBundlePanel, PinEntryModal, AdminGate
+### SearchBar.jsx (Complete Rewrite)
+- Autosuggest with source grouping
+- Scope chips
+- Trust badges and freshness
+- Recent searches
+- Did you mean
+- Explain results
+- Keyboard navigation
 
 ### Modified Files
-- `/app/frontend/src/App.js` - Added AuthProvider, EvidenceProvider
-- `/app/frontend/src/components/SystemStatusPanel.jsx` - Enhanced debug
-- `/app/frontend/src/components/HelpCenter.jsx` - Added diagnostics section
-- `/app/frontend/src/components/AdminConsole.jsx` - Added data-testid attributes
-- `/app/frontend/src/components/Header.jsx` - Added overflow menu testids
+- SelfTestDebug.jsx - ZIP download + redaction toggle
+- package.json - Added jszip dependency
 
-## Feature Status Matrix
-
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Progressive Disclosure | WIRED_LIVE | Summary + Details pattern |
-| Help Guides | WIRED_LIVE | Tooltips, icons, glossary |
-| Trust Badges | WIRED_LIVE | 4 badge types |
-| Provenance Strip | WIRED_LIVE | Source + freshness |
-| Self-Test Runner | WIRED_LIVE | 7 subsystem checks |
-| Debug Bundle (JSON) | WIRED_LIVE | Copy to clipboard |
-| Debug Bundle (ZIP) | PLANNED | Not yet implemented |
-| Auth Gating | WIRED_LIVE | Role + PIN |
-| Profile System | WIRED_LIVE | localStorage |
-| Backend Auth | PLANNED | Not implemented |
-| System Evidence | PLANNED | Requires backend |
-| Theme System | WIRED_LIVE | Dark/light |
-| i18n | WIRED_LIVE | 8 languages |
+## Baseline Artifacts
+- **Latest ZIP**: `/baseline_visual_export.zip` (2.6MB, 148 screenshots)
+- **Coverage**: 100%
+- **New Files**: SEARCH_QUALITY_REPORT.md
 
 ## Backlog / Future Tasks
 
-### P1 - Next Priorities
-1. Wire progressive disclosure to actual data tiles
-2. Add provenance strips to all data panels
-3. Implement "View Evidence" links where data is derived
+### P1 - Search Improvements
+1. Wire to real Kiwix search API
+2. Configure Jellyfin API key
+3. Implement article-level Kiwix search (PLANNED)
+4. Add Search Health panel to Admin
 
-### P2 - Backend Integration
-1. Connect to live Pi endpoints via /api proxy
+### P2 - Progressive Disclosure Wiring
+1. Apply provenance strips to data tiles
+2. Add "View Evidence" links
+
+### P3 - Backend Integration
+1. Connect to live Pi endpoints
 2. Wire real data sources
 3. Implement backend auth
 
-### P3 - Deployment
-1. Pi build (`yarn build:pi`)
-2. Nginx reverse proxy configuration
+### P4 - Deployment
+1. Pi build (yarn build:pi)
+2. Nginx reverse proxy
 3. Production deployment
 
-## User Decisions (Implemented)
-- Q1: Admin Gating = PIN + Role (both required)
-- Q2: Profile Persistence = localStorage only
-- Q3: Evidence Source = Hybrid (Client now, System PLANNED)
-- Q4: Help Text = Hybrid (static + metadata badges)
+## Section 6 - Search Validation (PENDING)
+Need to complete:
+- 25 test queries table
+- 8 Kiwix queries
+- 8 Jellyfin queries (stub behavior)
+- 5 file queries
+- 4 community queries
+- Screenshots of best/worst/zero/explain states
 
-## Baseline Artifacts
-- **Latest ZIP**: `/baseline_visual_export.zip` (120 screenshots, 1.9MB)
-- **Coverage**: 100%
-- **Parity**: Full across all 4 folders
+## Known Limitations
+1. Jellyfin not indexed - requires API key
+2. Commands are stubs - execution not implemented
+3. Article-level Kiwix search - planned for later
+4. Mock data - real backend not wired
