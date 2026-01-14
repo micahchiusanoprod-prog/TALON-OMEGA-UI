@@ -13,7 +13,7 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 
 ---
 
-## 🚀 NEXT PHASE: Entertainment Expansion + Live Wiring (v2.0)
+## 🚀 CURRENT PHASE: P0 Live Wiring Implementation (v2.0)
 
 ### ✅ ALL CONFIRMATIONS RECEIVED - January 14, 2026
 
