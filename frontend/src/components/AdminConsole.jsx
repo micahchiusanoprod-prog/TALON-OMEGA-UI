@@ -1749,6 +1749,18 @@ export default function AdminConsole({ isOpen, onClose }) {
             Search Health
           </button>
           <button
+            onClick={() => setActiveSection('datahealth')}
+            data-testid="admin-section-datahealth"
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+              activeSection === 'datahealth' 
+                ? 'bg-primary text-primary-foreground' 
+                : 'btn-apple'
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            Data Health
+          </button>
+          <button
             onClick={() => setShowAuditPanel(true)}
             data-testid="admin-section-audit"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap btn-apple bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20"
@@ -1764,6 +1776,7 @@ export default function AdminConsole({ isOpen, onClose }) {
           {activeSection === 'roster' && <RosterSection />}
           {activeSection === 'broadcast' && <BroadcastAssemblySection />}
           {activeSection === 'search' && <SearchHealthSection />}
+          {activeSection === 'datahealth' && <DataHealthSection />}
         </div>
       </div>
     </div>
