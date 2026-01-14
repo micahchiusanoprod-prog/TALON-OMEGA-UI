@@ -1140,6 +1140,18 @@ export default function AdminConsole({ isOpen, onClose }) {
             Broadcast & Assembly
           </button>
           <button
+            onClick={() => setActiveSection('search')}
+            data-testid="admin-section-search"
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+              activeSection === 'search' 
+                ? 'bg-primary text-primary-foreground' 
+                : 'btn-apple'
+            }`}
+          >
+            <Search className="w-4 h-4" />
+            Search Health
+          </button>
+          <button
             onClick={() => setShowAuditPanel(true)}
             data-testid="admin-section-audit"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap btn-apple bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20"
@@ -1154,6 +1166,7 @@ export default function AdminConsole({ isOpen, onClose }) {
           {activeSection === 'fleet' && <FleetUpdatesSection />}
           {activeSection === 'roster' && <RosterSection />}
           {activeSection === 'broadcast' && <BroadcastAssemblySection />}
+          {activeSection === 'search' && <SearchHealthSection />}
         </div>
       </div>
     </div>
