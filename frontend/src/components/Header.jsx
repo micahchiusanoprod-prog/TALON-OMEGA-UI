@@ -193,11 +193,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
               
               {/* Overflow Dropdown Menu */}
               {showOverflowMenu && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in">
+                <div className="absolute top-full right-0 mt-2 w-48 bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in" data-testid="overflow-menu-dropdown">
                   <div className="p-1">
                     <button
                       onClick={() => { setShowHelpCenter(true); setShowOverflowMenu(false); }}
                       className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors text-left"
+                      data-testid="overflow-help-center"
                     >
                       <BookOpen className="w-4 h-4 text-primary" />
                       <span className="text-sm font-medium">{t('nav.helpCenter')}</span>
@@ -205,13 +206,14 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                     <button
                       onClick={() => { setShowAdminConsole(true); setShowOverflowMenu(false); }}
                       className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors text-left"
+                      data-testid="overflow-admin-console"
                     >
                       <Shield className="w-4 h-4 text-amber-400" />
                       <span className="text-sm font-medium">{t('nav.adminConsole')}</span>
                     </button>
                     <div className="h-px bg-border my-1" />
                     {metrics && (
-                      <div className="px-3 py-2 text-xs text-muted-foreground">
+                      <div className="px-3 py-2 text-xs text-muted-foreground" data-testid="overflow-metrics">
                         <div className="flex justify-between mb-1">
                           <span>CPU</span>
                           <span className="font-medium text-foreground">{metrics.cpu}%</span>
