@@ -10,7 +10,12 @@ import {
 
 /**
  * API Service with graceful degradation and exponential backoff
- * Integrates with real OMEGA backend on port 8093
+ * Integrates with real OMEGA backend through Nginx /api proxy
+ * 
+ * API Strategy:
+ * - All endpoints use relative paths: /api/cgi-bin/*
+ * - Nginx reverse proxy routes to http://localhost:8093
+ * - This keeps frontend same-origin for mobile/LAN clients
  */
 
 class APIService {
@@ -20,10 +25,20 @@ class APIService {
   }
 
   /**
+   * Build full URL for an endpoint
+   * Uses API_BASE (empty for same-origin) + endpoint path
+   */
+  buildUrl(endpointPath) {
+    const base = config.API_BASE || '';
+    return `${base}${endpointPath}`;
+  }
+
+  /**
    * Generic fetch with error handling and retry logic
    */
-  async fetch(url, options = {}) {
+  async fetch(endpointPath, options = {}) {
     const { retry = true, timeout = 5000, useCache = false, cacheTime = 5000 } = options;
+    const url = this.buildUrl(endpointPath);
 
     // Check cache first
     if (useCache) {
@@ -45,7 +60,9 @@ class APIService {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+        error.httpStatus = response.status;
+        throw error;
       }
 
       // Reset retry delay on success
@@ -64,10 +81,56 @@ class APIService {
 
       if (retry && this.shouldRetry(url)) {
         await this.wait(this.getRetryDelay(url));
-        return this.fetch(url, { ...options, retry: false });
+        return this.fetch(endpointPath, { ...options, retry: false });
       }
 
       throw error;
+    }
+  }
+
+  /**
+   * Fetch with explicit handling for different response codes
+   * Returns { ok, status, data, error }
+   */
+  async fetchWithStatus(endpointPath, options = {}) {
+    const { timeout = 5000 } = options;
+    const url = this.buildUrl(endpointPath);
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+          ...options.headers,
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      let data = null;
+      try {
+        data = await response.json();
+      } catch {
+        // Response not JSON
+      }
+
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        error: response.ok ? null : `HTTP ${response.status}`,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: error.name === 'AbortError' ? 408 : 0,
+        data: null,
+        error: error.message,
+      };
     }
   }
 
@@ -94,11 +157,11 @@ class APIService {
   }
 
   /**
-   * Health Check - GET /cgi-bin/health.py
+   * Health Check - GET /api/cgi-bin/health.py
    */
   async getHealth() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.health}`);
+      const raw = await this.fetch(config.endpoints.health);
       return normalizeHealth(raw);
     } catch (error) {
       console.error('Health check failed:', error);
@@ -107,11 +170,11 @@ class APIService {
   }
 
   /**
-   * System Metrics - GET /cgi-bin/metrics.py
+   * System Metrics - GET /api/cgi-bin/metrics.py
    */
   async getMetrics() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.metrics}`, {
+      const raw = await this.fetch(config.endpoints.metrics, {
         useCache: true,
         cacheTime: 2000, // 2 second cache for metrics
       });
@@ -123,12 +186,23 @@ class APIService {
   }
 
   /**
-   * Sensor Data (BME680) - GET /cgi-bin/sensors.py
+   * Sensor Data (BME680) - GET /api/cgi-bin/sensors.py
+   * Note: May return degraded state if I2C bus not configured
    */
   async getSensors() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.sensors}`);
-      return normalizeSensors(raw);
+      const result = await this.fetchWithStatus(config.endpoints.sensors);
+      
+      // Handle degraded state (sensor hardware not available)
+      if (result.ok && result.data?.status === 'error') {
+        return {
+          ...normalizeSensors(null),
+          degraded: true,
+          degradedReason: result.data.error || 'Sensor hardware not available',
+        };
+      }
+      
+      return normalizeSensors(result.data);
     } catch (error) {
       console.error('Sensors fetch failed:', error);
       return normalizeSensors(null);
@@ -136,11 +210,11 @@ class APIService {
   }
 
   /**
-   * Backups - GET /cgi-bin/backup.py
+   * Backups - GET /api/cgi-bin/backup.py
    */
   async getBackups() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.backup}`);
+      const raw = await this.fetch(config.endpoints.backup);
       return normalizeBackups(raw);
     } catch (error) {
       console.error('Backups fetch failed:', error);
@@ -149,11 +223,11 @@ class APIService {
   }
 
   /**
-   * Trigger Backup - POST /cgi-bin/backup.py
+   * Trigger Backup - POST /api/cgi-bin/backup.py
    */
   async triggerBackup() {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.backup}`, {
+      return await this.fetch(config.endpoints.backup, {
         method: 'POST',
       });
     } catch (error) {
@@ -162,11 +236,11 @@ class APIService {
   }
 
   /**
-   * Keys Status - GET /cgi-bin/keys.py
+   * Keys Status - GET /api/cgi-bin/keys.py
    */
   async getKeys() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.keys}`);
+      const raw = await this.fetch(config.endpoints.keys);
       return normalizeKeys(raw);
     } catch (error) {
       console.error('Keys fetch failed:', error);
@@ -175,11 +249,11 @@ class APIService {
   }
 
   /**
-   * Key Sync Status - GET /cgi-bin/keysync.py
+   * Key Sync Status - GET /api/cgi-bin/keysync.py
    */
   async getKeySync() {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.keysync}`);
+      return await this.fetch(config.endpoints.keysync);
     } catch (error) {
       console.error('KeySync fetch failed:', error);
       return { status: 'unknown', available: false };
@@ -187,12 +261,23 @@ class APIService {
   }
 
   /**
-   * Direct Messages - GET /cgi-bin/dm.py
+   * Direct Messages - GET /api/cgi-bin/dm.py
+   * Note: Returns 403 Forbidden if not authorized
    */
   async getDMs() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.dm}`);
-      return normalizeDMs(raw);
+      const result = await this.fetchWithStatus(config.endpoints.dm);
+      
+      // Handle forbidden state
+      if (result.status === 403) {
+        return {
+          ...normalizeDMs(null),
+          forbidden: true,
+          forbiddenReason: result.data?.err || 'Authentication required',
+        };
+      }
+      
+      return normalizeDMs(result.data);
     } catch (error) {
       console.error('DMs fetch failed:', error);
       return normalizeDMs(null);
@@ -200,11 +285,11 @@ class APIService {
   }
 
   /**
-   * Send DM - POST /cgi-bin/dm.py
+   * Send DM - POST /api/cgi-bin/dm.py
    */
   async sendDM(to, content) {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.dm}`, {
+      return await this.fetch(config.endpoints.dm, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to, content, encrypted: true }),
@@ -219,7 +304,7 @@ class APIService {
    */
   async getHotspotStatus() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotStatus}`);
+      const raw = await this.fetch(config.endpoints.hotspotStatus);
       return {
         enabled: raw.enabled || false,
         ssid: raw.ssid || config.hotspot.ssid,
@@ -241,7 +326,7 @@ class APIService {
    */
   async toggleHotspot(enabled) {
     try {
-      return await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotToggle}`, {
+      return await this.fetch(config.endpoints.hotspotToggle, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled }),
@@ -257,7 +342,7 @@ class APIService {
    */
   async getHotspotClients() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotClients}`);
+      const raw = await this.fetch(config.endpoints.hotspotClients);
       return {
         clients: (raw || []).map(c => ({
           hostname: c.hostname || 'Unknown Device',
@@ -282,7 +367,7 @@ class APIService {
    */
   async getHotspotUsage() {
     try {
-      const raw = await this.fetch(`${config.endpoints.backend}${config.endpoints.hotspotUsage}`);
+      const raw = await this.fetch(config.endpoints.hotspotUsage);
       return {
         rxBytesTotal: raw.rx_bytes_total || 0,
         txBytesTotal: raw.tx_bytes_total || 0,
