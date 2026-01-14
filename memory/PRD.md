@@ -35,19 +35,50 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 | sensors.py | `/api/cgi-bin/sensors.py` | DEGRADED (I2C issue) |
 | GPS | null | NOT_CONFIGURED |
 
-### Confirmed Decisions
-- **API Strategy:** Direct port calls (http://talon.local:8093)
-- **QR Codes:** Always use talon.local variants
-- **Jellyfin Links:** Target /web/ directly
-- **DM Auth:** Locked for now, show "Admin Access Required"
-- **Sensors Fix:** TBD (symlink vs backend config), show degraded UI
-- **GPS:** Not configured state until endpoints provided
-- **Entertainment:** FULL integration with empty state handling
+**UI State Components Created:**
+- `ForbiddenState` - Lock icon, "Admin Access Required" message
+- `DegradedState` - Warning icon with expandable troubleshooting steps
+- `NotConfiguredState` - Info icon with setup instructions
+- `EndpointStatusBadge` - Inline endpoint status indicator
 
-### Implementation Documents
-- `/app/memory/IMPLEMENTATION_PROMPT_FINAL.md` - Full implementation spec
-- `/app/memory/BACKLOG_FINAL.md` - P0/P1/P2 with 26 items
-- `/app/memory/DEPLOYMENT_CHECKLIST.md` - Pi deployment guide
+### Next Steps for P0 Completion:
+1. **Deploy to Pi** - Run `yarn build:pi` and deploy to `/var/www/html/`
+2. **Configure Nginx** - Add `/api/cgi-bin/` reverse proxy to `localhost:8093`
+3. **Test Live Endpoints** - Verify each endpoint returns expected response
+4. **Wire Components** - Connect DeviceInfoTile, SecurityTile, AdminConsole to live data
+
+---
+
+## P1 BACKLOG (After P0 Complete)
+
+### Entertainment Module
+- [ ] Add "Entertainment" nav item in header
+- [ ] Create Entertainment overview page with carousels
+- [ ] Wire Jellyfin API for Movies/TV content
+- [ ] Implement Movie Night Mode with QR code
+- [ ] Create Jellyfin wrapper (fullscreen with back overlay)
+- [ ] Create Kiwix wrapper (embedded with OMEGA header)
+
+### Global Search Federation
+- [ ] Enhance search to query People, Commands, Knowledge, Entertainment
+- [ ] Implement category-grouped results
+- [ ] Add keyboard shortcut (Cmd+/ or Ctrl+/)
+
+### Profile Enhancements
+- [ ] Add team indicators to profile drawer
+- [ ] Implement Activity Tracker section
+
+---
+
+## P2 BACKLOG (Scaffolds Only)
+
+- [ ] Games Tab scaffold
+- [ ] Multiplayer Hub scaffold
+- [ ] Creator Tools scaffold
+- [ ] Debate Arena scaffold
+- [ ] Photos Hub scaffold
+- [ ] Personal Vault scaffold
+- [ ] New User Setup wizard scaffold
 
 ---
 
