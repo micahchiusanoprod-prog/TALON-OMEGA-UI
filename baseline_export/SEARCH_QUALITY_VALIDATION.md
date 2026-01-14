@@ -144,20 +144,41 @@ The following caps are applied when high-value sources exist:
 
 ## Screenshot Validation Matrix
 
-### Autosuggest States (Captured)
+### Autosuggest States (Completed)
 
-| State | Desktop Dark | Mobile Dark | Notes |
-|-------|--------------|-------------|-------|
-| Empty/Focus (Quick Access) | ✅ | ✅ | Shows source status indicators |
-| First character typed | ✅ | ✅ | Shows Kiwix unavailable badge |
-| Mid-word typed (wiki) | ✅ | ✅ | Library results showing |
-| Typo case (wikpedia) | ✅ | ✅ | "Did you mean" working |
-| No results (nonsense) | ✅ | ✅ | Generic KB search shown |
-| Multi-source (medical) | ✅ | ✅ | Knowledge + Community |
+| State | Desktop Dark | Desktop Light | Mobile Dark | Mobile Light |
+|-------|--------------|---------------|-------------|--------------|
+| Empty/Focus (Quick Access) | ✅ | ✅ | ✅ | ⚠️ |
+| First character typed | ✅ | ✅ | ✅ | ⚠️ |
+| Mid-word typed (wiki) | ✅ | ✅ | ✅ | ✅ |
+| Typo case (wikpedia) | ✅ | ✅ | ✅ | ✅ |
+| No results (nonsense) | ✅ | ✅ | ✅ | ⚠️ |
+| Multi-source (medical) | ✅ | ✅ | ✅ | ✅ |
+| Scoped chips toggled | ✅ | ✅ | ✅ | ✅ |
+
+### P1.2.2 - Show More Files Expansion
+| Behavior | Status | Notes |
+|----------|--------|-------|
+| File suppression (0-2) when high-signal | ✅ | Files capped at 1-2 when Kiwix results present |
+| "Show more files" button | ✅ | Appears when files are hidden |
+| Expansion shows hidden files | ✅ | Files appear below without reordering |
+| Collapse works | ✅ | Toggle state reverses |
+
+### P1.2.3 - Full Parity Check
+| Feature | Desktop | Mobile | Status |
+|---------|---------|--------|--------|
+| Search dropdown styling | ✅ | ✅ | Responsive |
+| Scope chips layout | 6 chips inline | 2 rows | ✅ Adapted |
+| Results grouping | ✅ | ✅ | Identical |
+| Status badges | ✅ | ✅ | Identical |
+| Trust badges | ✅ | ✅ | Identical |
+| "Did you mean" | ✅ | ✅ | Identical |
+| Explain results | ✅ | ✅ | Accessible |
+| Keyboard navigation | ✅ | N/A | Desktop only |
 
 ---
 
-## Validation Summary
+## Validation Summary (Updated)
 
 | Category | Total | Pass | Fail | Partial | Pending |
 |----------|-------|------|------|---------|---------|
