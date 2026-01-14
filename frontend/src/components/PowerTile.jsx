@@ -26,6 +26,13 @@ import {
   Lightbulb
 } from 'lucide-react';
 import TileHelpTabs, { QuickHelpTips, InlineLegend } from './ui/TileHelpTabs';
+import { 
+  DataProvenanceFooter, 
+  ProgressiveDetails, 
+  RawDataDisplay, 
+  CalculationNotes,
+  MetricRow 
+} from './ui/DataTileWrapper';
 
 // Help content for Power tile
 const powerHelpContent = {
