@@ -2,11 +2,11 @@ import React, { useState, useCallback } from 'react';
 import {
   Settings, Wifi, WifiOff, AlertTriangle, CheckCircle, XCircle,
   Server, Database, Clock, Copy, Play, RefreshCw, X, ExternalLink,
-  Info, ChevronDown, ChevronUp, Zap, ClipboardCheck
+  Info, ChevronDown, ChevronUp, Zap, ClipboardCheck, Lock, AlertCircle
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { useConnection, CONNECTION_STATES } from '../contexts/ConnectionContext';
+import { useConnection, CONNECTION_STATES, ENDPOINT_STATUS } from '../contexts/ConnectionContext';
 import config from '../config';
 
 // Lazy load AuditPanel to avoid circular dependency
