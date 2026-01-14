@@ -1,99 +1,34 @@
 {
-  "generatedAt": "2026-01-14T01:30:00Z",
-  "routerType": "HashRouter",
+  "generatedAt": "2026-01-14T02:30:00Z",
   "routes": [
     {
       "path": "/",
       "component": "Dashboard",
       "reachableVia": ["Direct URL", "Back button from /entertainment", "OMEGA logo click"],
-      "screenshotPrefixes": ["0001", "0002", "0003", "0004", "0005"]
+      "screenshotFiles": ["0001_home_default.jpg", "0002_home_bottom.jpg", "0046_header_1440.jpg"]
     },
     {
       "path": "/entertainment",
       "component": "EntertainmentPage",
       "reachableVia": ["Entertainment header button", "View All button on home Entertainment section"],
-      "screenshotPrefixes": ["0050", "0051", "0052", "0053", "0054", "0055", "0056", "0057"]
-    },
-    {
-      "path": "/*",
-      "component": "Dashboard",
-      "reachableVia": ["Fallback route - any unknown path"],
-      "note": "Catch-all route redirects to Dashboard"
+      "screenshotFiles": ["0030_entertainment.jpg", "0031-0036_ent_*.jpg"]
     }
   ],
   "modals": [
-    {
-      "id": "logs-analytics",
-      "triggerButton": "LOGS (header)",
-      "component": "LogsAnalytics",
-      "screenshotPrefixes": ["0010", "0011"]
-    },
-    {
-      "id": "community-hub",
-      "triggerButton": "Community (header)",
-      "component": "CommunityHub",
-      "screenshotPrefixes": ["0012", "0013", "0014", "0015"]
-    },
-    {
-      "id": "help-center",
-      "triggerButton": "Help Center (header)",
-      "component": "HelpCenter",
-      "screenshotPrefixes": ["0016", "0017"]
-    },
-    {
-      "id": "admin-console",
-      "triggerButton": "Admin Console (header)",
-      "component": "AdminConsole",
-      "screenshotPrefixes": ["0018", "0019", "0020", "0021", "0022"]
-    },
-    {
-      "id": "system-status",
-      "triggerButton": "Status button (header)",
-      "component": "SystemStatusPanel",
-      "screenshotPrefixes": ["0023", "0024", "0025"]
-    },
-    {
-      "id": "movie-night",
-      "triggerButton": "Movie Night Mode banner (Entertainment page)",
-      "component": "MovieNightModal",
-      "screenshotPrefixes": ["0060"]
-    }
+    {"id": "LogsAnalytics", "trigger": "[data-testid='logs-btn']", "screenshotFiles": ["0003_modal_logs.jpg"]},
+    {"id": "CommunityHub", "trigger": "[data-testid='community-btn']", "screenshotFiles": ["0004_modal_community.jpg"]},
+    {"id": "HelpCenter", "trigger": "[data-testid='help-center-btn']", "screenshotFiles": ["0008_modal_help.jpg"]},
+    {"id": "AdminConsole", "trigger": "[data-testid='admin-console-btn']", "screenshotFiles": ["0009_modal_admin.jpg", "0010_admin_fleet.jpg"]},
+    {"id": "SystemStatusPanel", "trigger": "[data-testid='system-status-btn']", "screenshotFiles": ["0015_modal_status.jpg", "0047_status_endpoints.jpg"]},
+    {"id": "QuickGuide", "trigger": "[data-testid='tool-quickguide']", "screenshotFiles": ["0038_tool_quickguide.jpg"]},
+    {"id": "Calculator", "trigger": "[data-testid='tool-calculator']", "screenshotFiles": ["0039_tool_calculator.jpg"]},
+    {"id": "Translator", "trigger": "[data-testid='tool-translator']", "screenshotFiles": ["0040_tool_translator.jpg"]},
+    {"id": "SOSBeacon", "trigger": "[data-testid='tool-sos']", "screenshotFiles": ["0041_tool_sos.jpg"]},
+    {"id": "Currency", "trigger": "[data-testid='tool-currency']", "screenshotFiles": ["0042_tool_currency.jpg"]},
+    {"id": "Dictionary", "trigger": "[data-testid='tool-dictionary']", "screenshotFiles": ["0043_tool_dictionary.jpg"]},
+    {"id": "FieldNotes", "trigger": "[data-testid='tool-notes']", "screenshotFiles": ["0044_tool_notes.jpg"]}
   ],
-  "quickToolModals": [
-    {
-      "id": "quick-guide",
-      "triggerButton": "Quick Guide (quick tools bar)",
-      "screenshotPrefixes": ["0030"]
-    },
-    {
-      "id": "calculator",
-      "triggerButton": "Calculator (quick tools bar)",
-      "screenshotPrefixes": ["0031"]
-    },
-    {
-      "id": "translator",
-      "triggerButton": "Translator (quick tools bar)",
-      "screenshotPrefixes": ["0032"]
-    },
-    {
-      "id": "sos",
-      "triggerButton": "SOS Beacon (quick tools bar)",
-      "screenshotPrefixes": ["0033"]
-    },
-    {
-      "id": "currency",
-      "triggerButton": "Currency (quick tools bar)",
-      "screenshotPrefixes": ["0034"]
-    },
-    {
-      "id": "dictionary",
-      "triggerButton": "Dictionary (quick tools bar)",
-      "screenshotPrefixes": ["0035"]
-    },
-    {
-      "id": "notes",
-      "triggerButton": "Field Notes (quick tools bar)",
-      "screenshotPrefixes": ["0036"]
-    }
+  "dropdowns": [
+    {"id": "overflow-menu", "trigger": "[data-testid='overflow-menu-btn']", "context": "mobile", "screenshotFiles": ["0045_overflow.jpg"]}
   ]
 }
