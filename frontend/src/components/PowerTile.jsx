@@ -573,10 +573,48 @@ export default function PowerTile() {
           </div>
         )}
         
-        {/* Last Update */}
-        <div className="text-xs text-muted-foreground text-center">
-          Last updated: {lastUpdate?.toLocaleTimeString()}
-        </div>
+        {/* Progressive Details Section */}
+        <ProgressiveDetails 
+          title="Power System Details"
+          helpText="Raw data and calculation info"
+        >
+          <div className="space-y-3">
+            {/* Battery Details */}
+            <div className="glass rounded-lg p-3">
+              <h5 className="text-xs font-semibold text-muted-foreground mb-2">Battery Metrics</h5>
+              <div className="grid grid-cols-2 gap-2">
+                <MetricRow label="Voltage" value={battery.voltage.toFixed(2)} unit="V" trustType="VERIFIED" />
+                <MetricRow label="Current" value={Math.abs(battery.current).toFixed(2)} unit="A" trustType="VERIFIED" />
+                <MetricRow label="Temperature" value={battery.temperature} unit="°C" trustType="VERIFIED" helpTerm="TEMP" />
+                <MetricRow label="Cycle Count" value={battery.cycleCount} trustType="DERIVED" />
+                <MetricRow label="Health Status" value={battery.health.toUpperCase()} trustType="ESTIMATED" />
+                <MetricRow label="Net Flow" value={estimates.netFlowWatts.toFixed(2)} unit="W" trustType="DERIVED" />
+              </div>
+            </div>
+            
+            {/* Calculation Notes */}
+            <CalculationNotes notes={[
+              'Net Flow = Total Input (Solar + AC + USB) - Total Consumption',
+              'Runtime estimate based on current draw rate and battery capacity',
+              'Battery health derived from voltage curve and cycle count',
+              'Power readings averaged over 10-second window'
+            ]} />
+            
+            {/* Raw JSON */}
+            <RawDataDisplay data={powerData} title="Power System JSON" />
+          </div>
+        </ProgressiveDetails>
+        
+        {/* Provenance Footer */}
+        <DataProvenanceFooter
+          source="OMEGA Power Management"
+          endpoint="/api/cgi-bin/power"
+          lastUpdated={lastUpdate?.getTime()}
+          trustType="VERIFIED"
+          status="SIMULATED"
+          refreshInterval="5 seconds"
+          onRefresh={handleRefresh}
+        />
       </CardContent>
     </Card>
   );
