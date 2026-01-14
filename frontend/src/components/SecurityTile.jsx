@@ -478,6 +478,38 @@ export default function SecurityTile() {
             </div>
           )
         )}
+        
+        {/* Progressive Details */}
+        <ProgressiveDetails 
+          title="Security Configuration"
+          helpText="Access control and user management"
+        >
+          <div className="space-y-3">
+            <div className="glass rounded-lg p-3">
+              <h5 className="text-xs font-semibold text-muted-foreground mb-2">Access Stats</h5>
+              <div className="grid grid-cols-2 gap-2">
+                <MetricRow label="Total Users" value={allUsers.length} trustType="VERIFIED" />
+                <MetricRow label="Admins" value={allUsers.filter(u => u.role === 'admin').length} trustType="VERIFIED" />
+                <MetricRow label="Residents" value={allUsers.filter(u => u.role === 'resident').length} trustType="DERIVED" />
+                <MetricRow label="Dependents" value={allUsers.filter(u => u.isDependent).length} trustType="DERIVED" />
+                <MetricRow label="PIN Required" value={allUsers.filter(u => u.requirePin).length} trustType="VERIFIED" />
+                <MetricRow label="Auth Mode" value={showPinEntry ? 'PIN' : 'Open'} trustType="VERIFIED" />
+              </div>
+            </div>
+            
+            <RawDataDisplay data={allUsers} title="User Profiles JSON" />
+          </div>
+        </ProgressiveDetails>
+        
+        {/* Provenance Footer */}
+        <DataProvenanceFooter
+          source="OMEGA User Management"
+          endpoint="localStorage:omega_profiles"
+          lastUpdated={Date.now()}
+          trustType="VERIFIED"
+          status="INDEXED"
+          refreshInterval="On change"
+        />
         </CardContent>
       </Card>
       
