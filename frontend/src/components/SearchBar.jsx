@@ -1114,6 +1114,29 @@ export default function SearchBar() {
                 </button>
               ))}
             </div>
+            {/* Kiwix Status Indicator */}
+            {kiwixStatus === false && (
+              <div className="mt-2 flex items-center gap-2 px-2 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-lg" data-testid="kiwix-unavailable-badge">
+                <WifiOff className="w-3 h-3 text-amber-500" />
+                <span className="text-xs text-amber-600 dark:text-amber-400">Kiwix Search Unavailable</span>
+                <button 
+                  className="ml-auto text-xs text-amber-500 hover:text-amber-600 underline"
+                  onClick={() => {
+                    checkKiwixAvailability().then(({ available }) => setKiwixStatus(available));
+                  }}
+                  title="Retry connecting to Kiwix"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+            {/* Loading Indicator */}
+            {isSearching && query && (
+              <div className="mt-2 flex items-center gap-2 px-2 py-1.5" data-testid="search-loading">
+                <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-muted-foreground">Searching articles...</span>
+              </div>
+            )}
           </div>
 
           {/* Empty State - Recent Searches */}
