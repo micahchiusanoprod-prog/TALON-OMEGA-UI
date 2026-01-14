@@ -258,8 +258,12 @@ Captured: ${debugInfo.timestamp}`;
             {showEndpoints && (
               <div className="mt-3 space-y-2">
                 {Object.entries(endpoints).map(([name, data]) => {
-                  const isOk = data.status === 'ok';
-                  const isError = data.status === 'error' || data.status === 'timeout';
+                  const isOk = data.status === ENDPOINT_STATUS.OK;
+                  const isForbidden = data.status === ENDPOINT_STATUS.FORBIDDEN;
+                  const isDegraded = data.status === ENDPOINT_STATUS.DEGRADED;
+                  const isNotConfigured = data.status === ENDPOINT_STATUS.NOT_CONFIGURED;
+                  const isError = data.status === ENDPOINT_STATUS.ERROR || data.status === ENDPOINT_STATUS.TIMEOUT;
+                  
                   return (
                     <div key={name} className="flex items-center justify-between text-sm">
                       <span className="font-mono">{name}</span>
@@ -268,9 +272,30 @@ Captured: ${debugInfo.timestamp}`;
                           <span className="text-xs text-muted-foreground">{data.responseTime}ms</span>
                         )}
                         {isOk ? (
-                          <CheckCircle className="w-4 h-4 text-success" />
+                          <span className="flex items-center gap-1 text-success">
+                            <CheckCircle className="w-4 h-4" />
+                            <span className="text-[10px] font-bold">LIVE</span>
+                          </span>
+                        ) : isForbidden ? (
+                          <span className="flex items-center gap-1 text-destructive">
+                            <Lock className="w-4 h-4" />
+                            <span className="text-[10px] font-bold">LOCKED</span>
+                          </span>
+                        ) : isDegraded ? (
+                          <span className="flex items-center gap-1 text-warning">
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-[10px] font-bold">DEGRADED</span>
+                          </span>
+                        ) : isNotConfigured ? (
+                          <span className="flex items-center gap-1 text-muted-foreground">
+                            <Settings className="w-4 h-4" />
+                            <span className="text-[10px] font-bold">NOT SET</span>
+                          </span>
                         ) : isError ? (
-                          <XCircle className="w-4 h-4 text-destructive" />
+                          <span className="flex items-center gap-1 text-destructive">
+                            <XCircle className="w-4 h-4" />
+                            <span className="text-[10px] font-bold">ERROR</span>
+                          </span>
                         ) : (
                           <Info className="w-4 h-4 text-muted-foreground" />
                         )}
