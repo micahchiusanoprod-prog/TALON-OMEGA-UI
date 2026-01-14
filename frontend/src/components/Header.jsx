@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Sun, Moon, Settings, BookOpen, BarChart3, Users, HelpCircle, Shield } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Sun, Moon, Settings, BookOpen, BarChart3, Users, HelpCircle, Shield, Sparkles, MoreHorizontal, X } from 'lucide-react';
 import config from '../config';
 import { toast } from 'sonner';
 import AdminConsole from './AdminConsole';
