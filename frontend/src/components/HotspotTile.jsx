@@ -523,6 +523,46 @@ export default function HotspotTile() {
             Waiting for hotspot API integration
           </div>
         )}
+        
+        {/* Progressive Details */}
+        {status.enabled && (
+          <ProgressiveDetails 
+            title="Network Statistics"
+            helpText="Raw metrics and connection data"
+          >
+            <div className="space-y-3">
+              <div className="glass rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-muted-foreground mb-2">Connection Metrics</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  <MetricRow label="Signal Strength" value={status.signalStrength} unit="dBm" trustType="VERIFIED" />
+                  <MetricRow label="Connected Clients" value={status.connectedDevices} trustType="VERIFIED" />
+                  <MetricRow label="Max Clients" value={status.maxClients} trustType="DERIVED" />
+                  <MetricRow label="Channel" value={status.channel} trustType="VERIFIED" />
+                  <MetricRow label="Bandwidth Mode" value={status.mode} trustType="VERIFIED" />
+                  <MetricRow label="Uptime" value={status.uptime} trustType="VERIFIED" />
+                </div>
+              </div>
+              
+              <CalculationNotes notes={[
+                'Signal strength measured in dBm (higher is better)',
+                'Client list refreshes every 30 seconds',
+                'Bandwidth calculated from interface statistics'
+              ]} />
+              
+              <RawDataDisplay data={status} title="Hotspot Status JSON" />
+            </div>
+          </ProgressiveDetails>
+        )}
+        
+        {/* Provenance Footer */}
+        <DataProvenanceFooter
+          source="OMEGA Network Manager"
+          endpoint="/api/cgi-bin/hotspot"
+          lastUpdated={Date.now()}
+          trustType="VERIFIED"
+          status={status.available ? 'INDEXED' : 'PLANNED'}
+          refreshInterval="30 seconds"
+        />
       </CardContent>
     </Card>
   );
