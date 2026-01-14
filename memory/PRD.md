@@ -7,105 +7,94 @@ OMEGA Dashboard is a sophisticated Raspberry Pi dashboard application providing 
 
 ### All Phases Complete ✅
 
-#### P0 - Search Quality Validation ✅
-- 25+ test queries validated with 97% pass rate
-- Kiwix API integration with graceful degradation
-- Source caps (6/6/4/4/3)
+| Phase | Status | Description |
+|-------|--------|-------------|
+| P0 | ✅ | Search Quality Validation (97% pass rate) |
+| P1.1 | ✅ | Provenance + Trust + Progressive Disclosure on Tiles |
+| P1.2 | ✅ | Search Quality Hardening |
+| P1.3 | ✅ | Search Health Panel |
+| P2.0 | ✅ | Data Health Dashboard |
+| P2.1 | ✅ | Regression Pass (no issues found) |
 
-#### P1.1 - Wire Provenance + Trust + Progressive Disclosure ✅
-- All 7 data tiles updated with ProvenanceStrip, TrustBadge, ProgressiveDetails
-- Status guidance panels for SIMULATED/UNAVAILABLE states
+## P2.1 Regression Report
 
-#### P1.2 - Search Quality Hardening ✅
-- Scoped chips screenshots captured (all 4 modes)
-- "Show more files" expansion verified
-- Full parity check completed
+### Tests Executed
+| Test | Status | Notes |
+|------|--------|-------|
+| Empty/Focus state | ✅ | Quick Access with status badges |
+| First character typed | ✅ | Immediate results |
+| Mid-word 'wiki' | ✅ | Library results with badges |
+| Typo 'wikpedia' | ✅ | "Did you mean: wikipedia?" visible |
+| Backspace correction | ✅ | Results update correctly |
+| No results query | ✅ | Fallback search suggestion |
+| Multi-source 'medical' | ✅ | Kiwix + Community + Files |
+| Scoped chips | ✅ | All 6 scopes visible and clickable |
+| File suppression | ✅ | 1 file when high-signal sources exist |
+| Desktop Dark | ✅ | Full functionality |
+| Desktop Light | ✅ | Full functionality |
+| Mobile Dark | ✅ | 2-row scope chips, full functionality |
 
-#### P1.3 - Search Health Panel ✅
-- Admin Console → "Search Health" tab with monitoring
+### Regression Notes
+**No regressions found.** All search UI functionality intact after Admin Console changes.
 
-#### P2.0 - Data Health Dashboard ✅ (NEW)
-- Admin Console → "Data Health" tab
-- 8 data sources monitored
-- 24-hour uptime visualization
-- Error guidance and retry functionality
+## Data Health Dashboard Summary
 
-## Data Health Dashboard (P2.0) - Detailed
-
-### Sources Monitored
-| Source | Category | Endpoint | Description |
-|--------|----------|----------|-------------|
-| OMEGA Core API | Core | /api/cgi-bin/health | Main system health |
-| Kiwix Knowledge | Search | talon.local:8090 | Offline knowledge base |
-| Jellyfin Media | Search | localhost:8096 | Media library |
-| BME688 Sensors | Hardware | /api/cgi-bin/sensors | Temp, humidity, pressure |
-| GPS Location | Hardware | /api/cgi-bin/gps | Coordinates and altitude |
-| Mesh Network | Network | /api/cgi-bin/mesh | Inter-OMEGA comms |
-| WiFi Hotspot | Network | /api/cgi-bin/hotspot | Local WiFi |
-| Backup Service | System | /api/cgi-bin/backup | Backup status |
+### Sources Monitored (8 total)
+| Source | Endpoint | Category |
+|--------|----------|----------|
+| OMEGA Core API | /api/cgi-bin/health | Core |
+| Kiwix Knowledge | talon.local:8090 | Search |
+| Jellyfin Media | localhost:8096 | Search |
+| BME688 Sensors | /api/cgi-bin/sensors | Hardware |
+| GPS Location | /api/cgi-bin/gps | Hardware |
+| Mesh Network | /api/cgi-bin/mesh | Network |
+| WiFi Hotspot | /api/cgi-bin/hotspot | Network |
+| Backup Service | /api/cgi-bin/backup | System |
 
 ### Features
-- **Overview cards**: Sources Live, Unavailable, Avg Latency, Last Check
-- **Per-source display**:
-  - Status badge (LIVE/CACHED/STALE/UNAVAILABLE/NOT_CONFIGURED)
-  - Trust badge (VERIFIED/DERIVED/ESTIMATED/UNKNOWN)
-  - Provenance strip (endpoint, last check, latency)
-  - 24-hour uptime bar (15-min buckets, color-coded)
-  - Error message + "How to fix" guidance
-  - Retry button
-- **Actions**: "Check All" button, "Export JSON" for debug bundle
-- **Legend**: Status color explanations
+- Status badges (LIVE/UNAVAILABLE/NOT_CONFIGURED)
+- Trust badges (VERIFIED/UNKNOWN)
+- Provenance strips (endpoint, last check, latency)
+- 24-hour uptime visualization
+- "How to fix" guidance
+- "Check All" and "Export JSON" actions
 
-### Screenshot Parity
-| Mode | Status | Notes |
-|------|--------|-------|
-| Desktop Dark | ✅ | Full dashboard visible |
-| Desktop Light | ✅ | Clean contrast |
-| Tablet Dark | ✅ | Responsive layout |
-| Tablet Light | ✅ | Works perfectly |
-| Mobile | N/A | Admin Console accessed via larger viewports |
+## Technical Stack
+- **Frontend**: React + Tailwind CSS + Shadcn/UI
+- **Backend**: FastAPI (MOCKED in preview)
+- **Database**: MongoDB (MOCKED)
 
-## Technical Details
+## Next Phase: P3 - Pi Deployment Prep
 
-### Environment Variables
-- `REACT_APP_JELLYFIN_API_KEY` - Enables Jellyfin media search
-- `REACT_APP_KIWIX_BASE` - Override Kiwix base URL (optional)
-- `REACT_APP_JELLYFIN_URL` - Override Jellyfin URL (optional)
+### Build Commands
+```bash
+# Production build
+cd /app/frontend
+yarn build:pi
 
-### Key Files
-- `/app/frontend/src/components/AdminConsole.jsx` - Data Health + Search Health panels
-- `/app/frontend/src/components/ui/DataTileWrapper.jsx` - Provenance components
-- `/app/frontend/src/components/SearchBar.jsx` - Search with Kiwix API
+# The build output goes to /app/frontend/build
+```
 
-## Backlog / Future Tasks
+### Nginx Routes (Planned)
+| Route | Target | Description |
+|-------|--------|-------------|
+| / | localhost:3000 | Dashboard SPA |
+| /api/* | localhost:8093 | OMEGA API |
+| :8090 | kiwix-serve | Kiwix Knowledge |
 
-### P2.1 - Minor QA Polish
-- Verify no regressions to search functionality
-- Check layout on edge case viewports
-
-### P3 - Backend Integration
-- Connect to live Pi endpoints
-- Wire real sensor data
-- Implement backend auth
-
-### P4 - Jellyfin Integration
-- Implement actual search when API key present
-- Test with live Jellyfin server
-
-### P5 - Deployment
-- Pi build (yarn build:pi)
-- Nginx reverse proxy
-- Production deployment
+### Degraded Behavior Verified
+- ✅ Kiwix unavailable: "Kiwix Search Unavailable" badge + Retry
+- ✅ Jellyfin not configured: "NOT_CONFIGURED" badge + setup guide
+- ✅ Commands stubbed: "PLANNED" badge + explanation
+- ✅ All tiles show "SIMULATED" when offline
 
 ## Known Limitations
-1. **Kiwix API unavailable in preview** - ready for Pi deployment
-2. **Jellyfin not indexed** - requires JELLYFIN_API_KEY env var
-3. **Commands are stubs** - execution not implemented
-4. **Mock uptime data** - real history not persisted yet
+1. Kiwix API unavailable in preview - ready for Pi
+2. Jellyfin requires JELLYFIN_API_KEY env var
+3. Commands are stubs
+4. Mock uptime data (not persisted)
 
-## Validation Summary
-- P0 Search Quality: 97% pass rate ✅
-- P1.1 Data Tiles: All 7 tiles updated ✅
-- P1.2 Search Hardening: Full parity ✅
-- P1.3 Search Health: Complete ✅
-- P2.0 Data Health Dashboard: Complete ✅ (8 sources, 4 modes)
+## File Artifacts
+- `/app/baseline_export/SEARCH_QUALITY_VALIDATION.md`
+- `/app/baseline_export/SEARCH_QUALITY_REPORT.md`
+- `/app/memory/PRD.md` (this file)
