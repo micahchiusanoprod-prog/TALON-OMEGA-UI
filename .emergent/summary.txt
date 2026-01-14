@@ -1,0 +1,329 @@
+<analysis>**original_problem_statement:**
+The user's goal is to build a sophisticated OMEGA Dashboard for a Raspberry Pi. The current priority has shifted away from immediate backend integration and Pi deployment. The user has blocked all further development until a **truly exhaustive visual and metadata baseline** of the entire UI is created and delivered in a single ZIP file. This baseline must prove 100% coverage of all interactive states across multiple themes and breakpoints, leaving no room for assumptions.
+
+Once the baseline is approved, the next phase focuses on a major UI finalization effort centered on **universal navigation simplicity** and **in-depth user assistance**. This involves implementing progressive disclosure patterns, adding help guides and tooltips to every UI element, ensuring data provenance, and creating a self-test runner and debug bundle.
+
+**User's preferred language**: English
+
+**what currently exists?**
+The OMEGA Dashboard is a functional React single-page application running on mocked data.
+
+Key developments in this session include:
+*   **Backend Wiring Foundation (P0):** The application's configuration (, ) was updated to use a same-origin  proxy strategy instead of direct port access. New connection states (, , ) and corresponding UI components (, , etc.) were created.
+*   **Entertainment Module (P1):** A new, comprehensive  page was created, accessible from a new Entertainment button in the main header. This page includes placeholders for Movies, Games, Music, and more. The header was made responsive with an overflow menu.
+*   **Incomplete Baseline Export:** Two attempts were made to create a baseline ZIP file. The second, more successful attempt produced 46 screenshots and several metadata files (, , etc.), but it was rejected by the user for having significant coverage gaps and lacking screenshot parity across different themes and breakpoints.
+
+**Last working item**:
+    - Last item agent was working: The agent was starting **Step 0** of the user's latest request (message #264): fixing the incomplete visual baseline. Specifically, the agent was investigating and adding missing  attributes to components like  and  to make automated UI crawling more reliable.
+    - Status: IN PROGRESS
+    - Agent Testing Done: N
+    - Which testing method agent to use? The agent must fix and re-run the  script (using Playwright) to capture all screenshots and metadata, ensuring they persist correctly. This is a form of automated testing/crawling.
+    - User Testing Done: N (User explicitly rejected the previous baseline ZIPs and is waiting for a complete one.)
+
+**All Pending/In progress Issue list**:
+  - Issue 1:  (P0) The Exhaustive Visual + Metadata Baseline is incomplete and does not meet user requirements.
+  
+  Issues Detail:
+  - Issue 1: 
+     - Attempted fixes: The agent created a Playwright script () to automate screenshot capture. However, the script timed out, had issues with screenshot file persistence between tool calls, and failed to capture all UI states, especially for the Admin Console and Community Hub tabs across all four theme/breakpoint combinations (desktop/mobile, light/dark). Two ZIP files were produced, but both were deemed insufficient by the user.
+     - Next debug checklist: 
+        1.  **Add  attributes**: Systematically go through all interactive components (, ,  overflow menu, etc.) and add stable  attributes to any missing elements, as requested by the user.
+        2.  **Fix **: Modify the script to be more robust. It must handle timeouts, wait for UI elements deterministically, and be rewritten to persist every single screenshot taken. The script must be able to change themes and viewport sizes reliably.
+        3.  **Ensure Full Coverage**: The script must traverse every interactive element identified in  (modals, dropdowns, tabs, accordions) and capture its state.
+        4.  **Ensure Parity**: The same set of core UI states (all major modals, tabs, etc.) must be captured and persisted for all four folders: , , , .
+        5.  **Generate All Metadata**: Re-generate all required metadata files (, , etc.) based on the successful crawl.
+        6.  **Package and Deliver**: Create a new, complete ZIP file for user sign-off.
+     - Why fix this issue and what will be achieved with the fix? This is a **hard blocker** from the user. No further feature development or deployment is permitted until a 100% complete and verified baseline is delivered.
+     - Status:  IN PROGRESS
+     - Is recurring issue? Y
+     - Should Test frontend/backend/both after fix? Both (The crawl script tests the frontend, and the generated metadata provides a spec for backend work).
+     - Blocked on other issue: None. This is the blocker.
+
+**In progress Task List**:
+No other tasks are in progress. All work is focused on resolving the P0 baseline issue.
+
+**Upcoming and Future Tasks**
+All of the following tasks are **BLOCKED** until the Exhaustive Visual + Metadata Baseline (Issue 1) is completed and approved by the user.
+
+*   **Upcoming Tasks (P1):**
+    *   **Universal Navigation & Help Guides:**
+        *   Implement a consistent Progressive Disclosure pattern (Summary view -> Show Details for advanced info) on all data panels.
+        *   Add a standard set of help affordances (? button, How to use, What can go wrong) to every tile and section.
+        *   Add inline tooltips for all technical labels and acronyms.
+        *   Create a Glossary page in the Help Center.
+    *   **Data Accuracy & Trust:**
+        *   Implement a Provenance banner (Source, Last updated, Freshness) on every data panel.
+        *   Add a Trust badge system (, , , ) to each panel.
+        *   Stub out View Evidence links for all derived metrics.
+    *   **Self-Test & Debugging:**
+        *   Create a Self-Test runner accessible from multiple locations that checks key service reachability.
+        *   Add a Copy/Download Debug Bundle feature.
+    *   **Quick Actions & UI Flows:**
+        *   Implement a Quick Actions modal for common tasks (Movie Night, File Drop, etc.).
+        *   Refine the UI flows for File Drop and the Personal Vault.
+
+*   **Future Tasks (P2 / Blocked):**
+    *   **Pi Deployment:** Running yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., copying files to the Pi, and configuring the Nginx reverse proxy.
+    *   **Live Backend Integration:** Wiring up components to use the live backend endpoints beyond the simple status checks.
+
+**Completed work in this session**
+- **Backend Wiring Foundation:** Configured the app to use a same-origin  proxy strategy and added new connection states (, , etc.) with corresponding UI components.
+- **Entertainment Module Scaffolding:** Created the  page with multiple placeholder sections (Movies, Games, Music, Vault) and added a Entertainment button to the main responsive header.
+- **Initial Baseline Creation Attempt:** Generated two incomplete baseline ZIP archives, which included several metadata files (, , etc.) and a partial set of screenshots.
+- **Test Automation Scaffolding:** Installed  and created an initial  script to automate screenshot capture, although it requires significant fixes.
+
+**Earlier issues found/mentioned but not fixed**
+- The screenshot capture mechanism is unreliable; screenshots captured by the tool do not consistently persist to the filesystem between separate tool calls. This is the root cause of the incomplete baseline and is being addressed as part of the .
+
+**Known issue recurrence from previous fork**
+- None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Frontend:** React, React Hooks, React Context API, Tailwind CSS.
+-   **Routing:**  ().
+-   **UI Testing/Crawling:**  is now being used for automated, exhaustive screenshot capture and UI traversal.
+-   **Progressive Disclosure:** A UI pattern requested by the user, where a simple summary is shown by default and detailed information is revealed on demand.
+
+**key DB schema**
+-   No database is currently in use. All data is mocked.
+
+**changes in tech stack**
+-   **** was installed via 
+Usage:   
+  pip <command> [options]
+
+Commands:
+  install                     Install packages.
+  lock                        Generate a lock file.
+  download                    Download packages.
+  uninstall                   Uninstall packages.
+  freeze                      Output installed packages in requirements format.
+  inspect                     Inspect the python environment.
+  list                        List installed packages.
+  show                        Show information about installed packages.
+  check                       Verify installed packages have compatible dependencies.
+  config                      Manage local and global configuration.
+  search                      Search PyPI for packages.
+  cache                       Inspect and manage pip's wheel cache.
+  index                       Inspect information available from package indexes.
+  wheel                       Build wheels from your requirements.
+  hash                        Compute hashes of package archives.
+  completion                  A helper command used for command completion.
+  debug                       Show information useful for debugging.
+  help                        Show help for commands.
+
+General Options:
+  -h, --help                  Show help.
+  --debug                     Let unhandled exceptions propagate outside the
+                              main subroutine, instead of logging them to
+                              stderr.
+  --isolated                  Run pip in an isolated mode, ignoring
+                              environment variables and user configuration.
+  --require-virtualenv        Allow pip to only run in a virtual environment;
+                              exit with an error otherwise.
+  --python <python>           Run pip with the specified Python interpreter.
+  -v, --verbose               Give more output. Option is additive, and can be
+                              used up to 3 times.
+  -V, --version               Show version and exit.
+  -q, --quiet                 Give less output. Option is additive, and can be
+                              used up to 3 times (corresponding to WARNING,
+                              ERROR, and CRITICAL logging levels).
+  --log <path>                Path to a verbose appending log.
+  --no-input                  Disable prompting for input.
+  --keyring-provider <keyring_provider>
+                              Enable the credential lookup via the keyring
+                              library if user input is allowed. Specify which
+                              mechanism to use [auto, disabled, import,
+                              subprocess]. (default: auto)
+  --proxy <proxy>             Specify a proxy in the form
+                              scheme://[user:passwd@]proxy.server:port.
+  --retries <retries>         Maximum attempts to establish a new HTTP
+                              connection. (default: 5)
+  --timeout <sec>             Set the socket timeout (default 15 seconds).
+  --exists-action <action>    Default action when a path already exists:
+                              (s)witch, (i)gnore, (w)ipe, (b)ackup, (a)bort.
+  --trusted-host <hostname>   Mark this host or host:port pair as trusted,
+                              even though it does not have valid or any HTTPS.
+  --cert <path>               Path to PEM-encoded CA certificate bundle. If
+                              provided, overrides the default. See 'SSL
+                              Certificate Verification' in pip documentation
+                              for more information.
+  --client-cert <path>        Path to SSL client certificate, a single file
+                              containing the private key and the certificate
+                              in PEM format.
+  --cache-dir <dir>           Store the cache data in <dir>.
+  --no-cache-dir              Disable the cache.
+  --disable-pip-version-check
+                              Don't periodically check PyPI to determine
+                              whether a new version of pip is available for
+                              download. Implied with --no-index.
+  --no-color                  Suppress colored output.
+  --use-feature <feature>     Enable new functionality, that may be backward
+                              incompatible.
+  --use-deprecated <feature>  Enable deprecated functionality, that will be
+                              removed in the future.
+  --resume-retries <resume_retries>
+                              Maximum attempts to resume or restart an
+                              incomplete download. (default: 5) to facilitate the creation of an exhaustive UI screenshot and metadata baseline.
+
+**All files of reference**
+*   **Critical for Next Step:**
+    *   : The script that must be fixed to create the required baseline.
+    *   , : These files need missing  attributes added.
+*   **Newly Created in this Session:**
+    *   
+    *   All files within  (crawler scripts, metadata JSONs, markdown guides).
+*   **Significantly Modified:**
+    *   
+    *   
+    *   
+    *   
+    *   
+    *   
+
+**Areas that need refactoring**:
+-   Multiple interactive components are missing  attributes, which is hindering automated testing. The agent has started identifying and adding them. This is a top priority.
+
+**key api endpoints**
+The access strategy has changed to use a same-origin proxy. The frontend now calls relative paths which are expected to be proxied by Nginx to .
+-   
+-   
+-    (Expected to be )
+-    (Expected to be )
+-    (Expected to be )
+
+**Critical Info for New Agent**
+-   **DO NOT PROCEED WITH ANY FEATURE WORK.** Your one and only priority is to complete **Step 0: Baseline re-export fixes** as defined in user message #264. All other tasks, especially Pi deployment, are explicitly blocked by the user.
+-   You must fix the screenshot persistence issue and the  script to generate a 100% complete visual and metadata baseline. This means adding missing s, ensuring the crawler is robust, and capturing all UI states across all four theme/breakpoint combinations.
+-   Review user message #264 carefully. It contains the strict acceptance criteria for the baseline ZIP.
+-   Once the baseline is delivered and approved, the next set of tasks involves implementing the Universal Navigation Simplicity and Help Guides features.
+-   **Open Questions from User (to be addressed after baseline):**
+    1.  **Authentication:** How should Admin Console and Debug Bundle be gated (PIN, role, both)?
+    2.  **Profiles:** Are profiles persisted? What are the minimum fields?
+    3.  **Evidence Source:** Where does the View Evidence data come from (frontend logs, backend logs, both)?
+    4.  **Help Content:** Should help text be static in the UI or generated from metadata?
+    Mark these as  if you cannot find the answer in the existing code. Do not invent answers.
+
+**documents and test reports created in this job**
+*    (Incomplete, to be replaced)
+*   All metadata files located in , including:
+    *   
+    *   
+    *   
+    *   
+    *   
+    *   
+    *   
+    *   
+    *    (In Progress)
+    *    (In Progress)
+    *    (In Progress)
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User:** Requests an exhaustive visual + metadata baseline ZIP as a sign-off gate before Pi deployment. Provides a detailed list of required contents (screenshots, route maps, inventories, etc.). (Completed, but with failed execution)
+2.  **Agent:** Attempts to create the baseline. The process is fraught with issues: Playwright is not installed, the crawler script fails, and screenshot files do not persist between tool calls. (Failed)
+3.  **Agent:** Delivers an incomplete ZIP with only 8 persisted screenshots and partial metadata, acknowledging the persistence issues. (Completed)
+4.  **User:** Rejects the incomplete baseline. Provides an extremely detailed, non-negotiable set of requirements for a new, truly exhaustive baseline (**PART A**). This includes creating an , adding missing s, and achieving 100% screenshot coverage with parity.
+5.  **User:** Also provides a detailed spec for future-proofing the UI with a  and  (**PART B**).
+6.  **User:** Finally, provides the full plan for UI finalization (Progressive Disclosure, Help Guides, etc.) to be completed only *after* the baseline is approved. Asks several open questions about auth, profiles, and help content. (New task list)
+7.  **Agent:** Acknowledges the new, strict requirements and begins **Step 0** by scanning the codebase for missing  attributes to improve crawler stability. (In Progress)
+
+**Project Health Check:**
+*   **Broken:** The automated screenshot crawler () is broken and requires significant fixes to handle timeouts and file persistence.
+*   **Mocked:** The entire application data layer is still mocked. No live backend data is being consumed yet.
+
+**3rd Party Integrations**
+*   ****: Installed via 
+Usage:   
+  pip <command> [options]
+
+Commands:
+  install                     Install packages.
+  lock                        Generate a lock file.
+  download                    Download packages.
+  uninstall                   Uninstall packages.
+  freeze                      Output installed packages in requirements format.
+  inspect                     Inspect the python environment.
+  list                        List installed packages.
+  show                        Show information about installed packages.
+  check                       Verify installed packages have compatible dependencies.
+  config                      Manage local and global configuration.
+  search                      Search PyPI for packages.
+  cache                       Inspect and manage pip's wheel cache.
+  index                       Inspect information available from package indexes.
+  wheel                       Build wheels from your requirements.
+  hash                        Compute hashes of package archives.
+  completion                  A helper command used for command completion.
+  debug                       Show information useful for debugging.
+  help                        Show help for commands.
+
+General Options:
+  -h, --help                  Show help.
+  --debug                     Let unhandled exceptions propagate outside the
+                              main subroutine, instead of logging them to
+                              stderr.
+  --isolated                  Run pip in an isolated mode, ignoring
+                              environment variables and user configuration.
+  --require-virtualenv        Allow pip to only run in a virtual environment;
+                              exit with an error otherwise.
+  --python <python>           Run pip with the specified Python interpreter.
+  -v, --verbose               Give more output. Option is additive, and can be
+                              used up to 3 times.
+  -V, --version               Show version and exit.
+  -q, --quiet                 Give less output. Option is additive, and can be
+                              used up to 3 times (corresponding to WARNING,
+                              ERROR, and CRITICAL logging levels).
+  --log <path>                Path to a verbose appending log.
+  --no-input                  Disable prompting for input.
+  --keyring-provider <keyring_provider>
+                              Enable the credential lookup via the keyring
+                              library if user input is allowed. Specify which
+                              mechanism to use [auto, disabled, import,
+                              subprocess]. (default: auto)
+  --proxy <proxy>             Specify a proxy in the form
+                              scheme://[user:passwd@]proxy.server:port.
+  --retries <retries>         Maximum attempts to establish a new HTTP
+                              connection. (default: 5)
+  --timeout <sec>             Set the socket timeout (default 15 seconds).
+  --exists-action <action>    Default action when a path already exists:
+                              (s)witch, (i)gnore, (w)ipe, (b)ackup, (a)bort.
+  --trusted-host <hostname>   Mark this host or host:port pair as trusted,
+                              even though it does not have valid or any HTTPS.
+  --cert <path>               Path to PEM-encoded CA certificate bundle. If
+                              provided, overrides the default. See 'SSL
+                              Certificate Verification' in pip documentation
+                              for more information.
+  --client-cert <path>        Path to SSL client certificate, a single file
+                              containing the private key and the certificate
+                              in PEM format.
+  --cache-dir <dir>           Store the cache data in <dir>.
+  --no-cache-dir              Disable the cache.
+  --disable-pip-version-check
+                              Don't periodically check PyPI to determine
+                              whether a new version of pip is available for
+                              download. Implied with --no-index.
+  --no-color                  Suppress colored output.
+  --use-feature <feature>     Enable new functionality, that may be backward
+                              incompatible.
+  --use-deprecated <feature>  Enable deprecated functionality, that will be
+                              removed in the future.
+  --resume-retries <resume_retries>
+                              Maximum attempts to resume or restart an
+                              incomplete download. (default: 5) for automated UI crawling and screenshot capture.
+*   **Kiwix / Jellyfin**: Planned for future integration, with configuration placeholders in .
+
+**Testing status**
+-   Testing agent used after significant changes: NO
+-   Troubleshoot agent used after agent stuck in loop: NO
+-   Test files created: [, ]
+-   Known regressions: None.
+
+**Credentials to test flow:**
+N/A. The application has no authentication.
+
+**What agent forgot to execute**
+The agent did not forget but failed to successfully execute the user's request for a complete baseline. The primary failure was not accounting for the ephemeral nature of the screenshot tool's output directory, leading to most screenshots being lost. The agent correctly identified the need to fix this and add s but was interrupted mid-process.</analysis>
