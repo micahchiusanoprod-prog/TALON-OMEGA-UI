@@ -1392,9 +1392,17 @@ export default function SearchBar() {
               <p className="text-sm text-muted-foreground mb-4">
                 {scope === 'global' 
                   ? 'No matches found in any source.'
-                  : `No matches found in ${SOURCE_META[scope]?.label || scope}.`
+                  : `No matches found in ${currentSourceMeta[scope]?.label || scope}.`
                 }
               </p>
+              {kiwixStatus === false && scope === 'kiwix' && (
+                <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                    <WifiOff className="w-4 h-4" />
+                    <span className="text-sm">Kiwix server not available - article search disabled</span>
+                  </div>
+                </div>
+              )}
               <div className="space-y-2 text-sm">
                 <p className="text-muted-foreground">Try:</p>
                 <ul className="text-muted-foreground space-y-1">
