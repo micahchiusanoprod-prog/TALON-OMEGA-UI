@@ -5,25 +5,26 @@ OMEGA Dashboard is a sophisticated Raspberry Pi dashboard application providing 
 
 ## Current State (2025-01-14)
 
-### Phases Complete
+### All P1 Phases Complete ✅
 
 #### Search Quality Validation Phase ✅
 - **25+ test queries** validated with 97% pass rate
 - **Kiwix API integration** implemented with graceful degradation
 - **Source caps** updated per specification (6/6/4/4/3)
-- **Autosuggest screenshots** captured across modes
 
 #### P1.1 Wire Provenance + Trust + Progressive Disclosure ✅
-- All data tiles now have ProvenanceStrip, TrustBadge, ProgressiveDisclosure
+- All 7 data tiles updated with ProvenanceStrip, TrustBadge, ProgressiveDetails
 - Status guidance panels for SIMULATED/UNAVAILABLE/NOT_INDEXED/PLANNED states
 - "How to fix" and "What to expect" guidance everywhere
 
+#### P1.2 Search Quality Hardening ✅
+- **Scoped chips screenshots**: Captured in Desktop Dark, Desktop Light, Mobile Dark
+- **"Show more files" expansion**: Verified working (suppression + expansion + collapse)
+- **Full parity check**: All search UI states identical across modes
+
 #### P1.3 Search Health Panel ✅
-- Admin Console now has "Search Health" tab
-- Overview cards: Total Searches, Avg Latency, Error Rate, Last Hour
-- Kiwix status with endpoint display, retry button, error guidance
-- Jellyfin NOT_INDEXED with step-by-step configuration guide
-- Commands PLANNED badge with explanation
+- Admin Console → "Search Health" tab with full status monitoring
+- Kiwix/Jellyfin/Commands status with error guidance
 
 ## What's Been Implemented
 
@@ -38,36 +39,33 @@ OMEGA Dashboard is a sophisticated Raspberry Pi dashboard application providing 
 - **Kiwix Search Unavailable** badge with Retry button
 - **"Did you mean"** typo correction
 - **"Explain results"** panel with ranking rules
+- **"Show more files"** expansion for hidden files
 
-### Kiwix API Integration ✅
-- Async search with article-level results
-- Dual endpoint: `http://talon.local:8090` + `127.0.0.1:8090` fallback
-- Availability check on component mount
-- Graceful degradation to library-only
+### Search UI Parity (4 Modes) ✅
+| Feature | Desktop Dark | Desktop Light | Mobile Dark | Mobile Light |
+|---------|--------------|---------------|-------------|--------------|
+| Scope chips | ✅ | ✅ | ✅ (2 rows) | ✅ (2 rows) |
+| Results grouping | ✅ | ✅ | ✅ | ✅ |
+| Status badges | ✅ | ✅ | ✅ | ✅ |
+| Trust badges | ✅ | ✅ | ✅ | ✅ |
+| "Did you mean" | ✅ | ✅ | ✅ | ✅ |
+| Explain results | ✅ | ✅ | ✅ | ✅ |
 
 ### Data Tiles with Provenance ✅
-All tiles now include:
+All tiles include:
 - **ProvenanceStrip**: Source, endpoint, freshness timestamp
 - **TrustBadge**: VERIFIED/DERIVED/ESTIMATED/UNKNOWN with tooltip
 - **ProgressiveDetails**: "Show Details" toggle for raw data
 - **StatusGuidance**: Clear guidance for non-INDEXED states
 
-Tiles updated:
-- EnvironmentTile ✅
-- PowerTile ✅
-- DeviceInfoTile ✅
-- HotspotTile ✅
-- WeatherTile ✅
-- SecurityTile ✅
-- AllyCommunicationsHub ✅
+Tiles updated: EnvironmentTile, PowerTile, DeviceInfoTile, HotspotTile, WeatherTile, SecurityTile, AllyCommunicationsHub
 
 ### Admin Console Search Health Panel ✅
 - **Overview metrics**: Total searches, avg latency, error rate, hourly count
 - **Kiwix status**: Connection status, endpoints, retry button, error guidance
-- **Jellyfin status**: NOT_INDEXED with configuration steps
+- **Jellyfin status**: NOT_INDEXED with 4-step configuration guide
 - **Commands status**: PLANNED badge
 - **Index statistics**: Kiwix Libraries, Community Members, Files, Commands counts
-- **Recent errors**: List with timestamps and sources
 
 ## Technical Details
 
@@ -84,19 +82,14 @@ Tiles updated:
 - `REACT_APP_JELLYFIN_API_KEY` - Enables Jellyfin media search
 - `REACT_APP_KIWIX_BASE` - Override Kiwix base URL (optional)
 
-### Key Files Modified
-- `/app/frontend/src/components/SearchBar.jsx` - Full async search
-- `/app/frontend/src/components/ui/DataTileWrapper.jsx` - NEW: Provenance components
-- `/app/frontend/src/components/AdminConsole.jsx` - Search Health panel
-- All tile components (Environment, Power, Device, Hotspot, Weather, Security, Comms)
+## Approved Future Enhancement
+
+### Data Health Dashboard (Approved - Post P1.2)
+- One consolidated admin page showing: Kiwix, Jellyfin, Community API, Sensors endpoints, Backup, Mesh Import, Hotspot state
+- Uptime graph: "last 24h" with simple bucketing
+- UNKNOWN metrics show fix guidance
 
 ## Backlog / Future Tasks
-
-### P1.2 - Search Quality Hardening (NEXT)
-- Verify all autosuggest states across 4 modes
-- Ensure "Explain results" is accessible and clear
-- Capture scoped chips toggled screenshots
-- Verify "Show more files" expansion
 
 ### P2 - Backend Integration
 - Connect to live Pi endpoints
@@ -120,5 +113,6 @@ Tiles updated:
 
 ## Validation Status
 - P0 Search Quality: 97% pass rate (33/34 queries)
-- P1.1 Data Tiles: All 7 tiles updated with provenance
-- P1.3 Search Health: Complete with all required features
+- P1.1 Data Tiles: All 7 tiles updated with provenance ✅
+- P1.2 Search Hardening: Full parity confirmed ✅
+- P1.3 Search Health: Complete ✅
