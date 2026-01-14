@@ -39,7 +39,7 @@
   "features_tested": {
     "hash_routing": {
       "status": "PASS",
-      "details": "URL correctly shows /#/ when using HashRouter - verified at https://smartdashpi.preview.emergentagent.com/#/"
+      "details": "URL correctly shows /#/ when using HashRouter - verified at https://searchmaster-5.preview.emergentagent.com/#/"
     },
     "system_status_button": {
       "status": "PASS",

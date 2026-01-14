@@ -1,80 +1,62 @@
 <analysis>**original_problem_statement:**
-The user's goal is to build a sophisticated OMEGA Dashboard for a Raspberry Pi. The current priority has shifted away from immediate backend integration and Pi deployment. The user has blocked all further development until a **truly exhaustive visual and metadata baseline** of the entire UI is created and delivered in a single ZIP file. This baseline must prove 100% coverage of all interactive states across multiple themes and breakpoints, leaving no room for assumptions.
+The user's primary goal is to implement a Master Global Search functionality for the OMEGA Dashboard. This is the highest priority. The search must be simple for casual users but provide deep, verifiable information for experts. Key requirements include a sophisticated autosuggest feature with results grouped by source (Kiwix, Media, Community, etc.), dynamic source-based ranking and capping, and inline trust/provenance metadata for each result. The UI must clearly handle stubbed or un-indexed sources (like Jellyfin) and planned features (like executing commands).
 
-Once the baseline is approved, the next phase focuses on a major UI finalization effort centered on **universal navigation simplicity** and **in-depth user assistance**. This involves implementing progressive disclosure patterns, adding help guides and tooltips to every UI element, ensuring data provenance, and creating a self-test runner and debug bundle.
+After the search implementation, the agent must wire up previously created components (, , ) to all existing data tiles (Environment, Power, Comms, etc.). Finally, the agent needs to implement a ZIP download for the Debug Bundle.
+
+All work must be validated through an exhaustive, 25-query validation table and a new visual baseline export proving the new UI states. The user has provided explicit, non-negotiable requirements and answers to the agent's clarifying questions.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The OMEGA Dashboard is a functional React single-page application running on mocked data.
+The project is a React-based OMEGA Dashboard SPA. The previous P0 blocker (creating an exhaustive visual baseline) has been resolved. The agent successfully produced a signed-off baseline with 110 screenshots covering all UI states with full parity across 4 modes (desktop/mobile, light/dark).
 
-Key developments in this session include:
-*   **Backend Wiring Foundation (P0):** The application's configuration (, ) was updated to use a same-origin  proxy strategy instead of direct port access. New connection states (, , ) and corresponding UI components (, , etc.) were created.
-*   **Entertainment Module (P1):** A new, comprehensive  page was created, accessible from a new Entertainment button in the main header. This page includes placeholders for Movies, Games, Music, and more. The header was made responsive with an overflow menu.
-*   **Incomplete Baseline Export:** Two attempts were made to create a baseline ZIP file. The second, more successful attempt produced 46 screenshots and several metadata files (, , etc.), but it was rejected by the user for having significant coverage gaps and lacking screenshot parity across different themes and breakpoints.
+Building on this, the agent has implemented the foundational pieces for the Next-Phase UI Improvements:
+- **Core Contexts & Components:** Created , , , , and other UI components.
+- **Self-Test & Debug:** Integrated Run Self-Test and Copy/Download Debug Bundle features into the  and .
+- **Debug Bundle ZIP:** Implemented the Download ZIP functionality for the debug bundle using .
+- **Master Global Search UI:** A comprehensive new  component has been created. It includes UI for scope chips, dynamic result grouping by source, and displays  and  badges for stubbed-out features (Jellyfin, Commands).
+- **Final Baseline (v4.0):** A new baseline with 148 screenshots, including the new search and debug UIs, has been created and signed off by the user.
 
 **Last working item**:
-    - Last item agent was working: The agent was starting **Step 0** of the user's latest request (message #264): fixing the incomplete visual baseline. Specifically, the agent was investigating and adding missing  attributes to components like  and  to make automated UI crawling more reliable.
-    - Status: IN PROGRESS
+    - Last item agent was working: The agent just received detailed user instructions and approval to begin the Search Quality Validation phase. This involves implementing Kiwix article-level search, handling the Jellyfin API key via an environment variable, and creating a 25-query validation table to test search accuracy. The agent has not yet started implementing these changes.
+    - Status: NOT STARTED
     - Agent Testing Done: N
-    - Which testing method agent to use? The agent must fix and re-run the  script (using Playwright) to capture all screenshots and metadata, ensuring they persist correctly. This is a form of automated testing/crawling.
-    - User Testing Done: N (User explicitly rejected the previous baseline ZIPs and is waiting for a complete one.)
+    - Which testing method agent to use? The user has mandated a hybrid approach: an automated test harness (e.g., a script) to run a suite of 25+ known queries for regression testing, supplemented by manual spot-checks using the screenshot tool for visual and UX verification of the autosuggest behavior.
+    - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - Issue 1:  (P0) The Exhaustive Visual + Metadata Baseline is incomplete and does not meet user requirements.
-  
-  Issues Detail:
-  - Issue 1: 
-     - Attempted fixes: The agent created a Playwright script () to automate screenshot capture. However, the script timed out, had issues with screenshot file persistence between tool calls, and failed to capture all UI states, especially for the Admin Console and Community Hub tabs across all four theme/breakpoint combinations (desktop/mobile, light/dark). Two ZIP files were produced, but both were deemed insufficient by the user.
-     - Next debug checklist: 
-        1.  **Add  attributes**: Systematically go through all interactive components (, ,  overflow menu, etc.) and add stable  attributes to any missing elements, as requested by the user.
-        2.  **Fix **: Modify the script to be more robust. It must handle timeouts, wait for UI elements deterministically, and be rewritten to persist every single screenshot taken. The script must be able to change themes and viewport sizes reliably.
-        3.  **Ensure Full Coverage**: The script must traverse every interactive element identified in  (modals, dropdowns, tabs, accordions) and capture its state.
-        4.  **Ensure Parity**: The same set of core UI states (all major modals, tabs, etc.) must be captured and persisted for all four folders: , , , .
-        5.  **Generate All Metadata**: Re-generate all required metadata files (, , etc.) based on the successful crawl.
-        6.  **Package and Deliver**: Create a new, complete ZIP file for user sign-off.
-     - Why fix this issue and what will be achieved with the fix? This is a **hard blocker** from the user. No further feature development or deployment is permitted until a 100% complete and verified baseline is delivered.
-     - Status:  IN PROGRESS
-     - Is recurring issue? Y
-     - Should Test frontend/backend/both after fix? Both (The crawl script tests the frontend, and the generated metadata provides a spec for backend work).
-     - Blocked on other issue: None. This is the blocker.
+There are no outstanding bugs or issues. All current work is new feature development based on the user's latest request.
 
 **In progress Task List**:
-No other tasks are in progress. All work is focused on resolving the P0 baseline issue.
+There are no tasks currently in progress. The next set of tasks is pending implementation.
 
 **Upcoming and Future Tasks**
-All of the following tasks are **BLOCKED** until the Exhaustive Visual + Metadata Baseline (Issue 1) is completed and approved by the user.
+*   **Upcoming Tasks (Current Phase - P0):**
+    *   **Task 1: Create the 25 Test Queries Validation Table (P0):** Create  and define the 25 test queries covering Knowledge, Entertainment, Community, Files, and Tools. This table will be used to drive and validate the search implementation.
+    *   **Task 2: Implement Kiwix Article-Level Search (P0):** Integrate with the  API to fetch and display article-level search results, as specified in OQ1.
+    *   **Task 3: Implement Search Ranking & Capping Logic (P0):** Code the dynamic ranking and source capping logic as approved in Q4.1. This includes suppressing file results when higher-value sources are present.
+    *   **Task 4: Capture Autosuggest Screenshots (P0):** Generate a new set of baseline screenshots specifically showing the search autosuggest dropdown in various states (typing, typo, empty, no results) across all 4 modes.
+    *   **Task 5: Wire Up Data Tiles (P1):** Apply the , , and  components to all existing data panels (e.g., , , ).
+    *   **Task 6: Implement Jellyfin API Key Stub (P1):** Update the UI to detect a  environment variable and continue showing the  state until it's present. Add a help panel explaining how to enable it.
 
-*   **Upcoming Tasks (P1):**
-    *   **Universal Navigation & Help Guides:**
-        *   Implement a consistent Progressive Disclosure pattern (Summary view -> Show Details for advanced info) on all data panels.
-        *   Add a standard set of help affordances (? button, How to use, What can go wrong) to every tile and section.
-        *   Add inline tooltips for all technical labels and acronyms.
-        *   Create a Glossary page in the Help Center.
-    *   **Data Accuracy & Trust:**
-        *   Implement a Provenance banner (Source, Last updated, Freshness) on every data panel.
-        *   Add a Trust badge system (, , , ) to each panel.
-        *   Stub out View Evidence links for all derived metrics.
-    *   **Self-Test & Debugging:**
-        *   Create a Self-Test runner accessible from multiple locations that checks key service reachability.
-        *   Add a Copy/Download Debug Bundle feature.
-    *   **Quick Actions & UI Flows:**
-        *   Implement a Quick Actions modal for common tasks (Movie Night, File Drop, etc.).
-        *   Refine the UI flows for File Drop and the Personal Vault.
-
-*   **Future Tasks (P2 / Blocked):**
-    *   **Pi Deployment:** Running yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., copying files to the Pi, and configuring the Nginx reverse proxy.
-    *   **Live Backend Integration:** Wiring up components to use the live backend endpoints beyond the simple status checks.
+*   **Future Tasks (Post-Search Phase):**
+    *   Full backend integration and migration from mocked data.
+    *   Pi Deployment (yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., Nginx configuration).
+    *   Implementing actual execution for Commands found via search.
+    *   Implementing backend synchronization for user profiles.
 
 **Completed work in this session**
-- **Backend Wiring Foundation:** Configured the app to use a same-origin  proxy strategy and added new connection states (, , etc.) with corresponding UI components.
-- **Entertainment Module Scaffolding:** Created the  page with multiple placeholder sections (Movies, Games, Music, Vault) and added a Entertainment button to the main responsive header.
-- **Initial Baseline Creation Attempt:** Generated two incomplete baseline ZIP archives, which included several metadata files (, , etc.) and a partial set of screenshots.
-- **Test Automation Scaffolding:** Installed  and created an initial  script to automate screenshot capture, although it requires significant fixes.
+- **Exhaustive Visual Baseline (v2.0 & v3.0 - Signed Off):** Systematically captured and achieved 100% screenshot parity (110 screenshots) across all UI states and modes, resolving the user's primary blocker.
+- **Initial Next-Phase UI Implementation:**
+    - Created core components for auth, evidence, progressive disclosure, and self-tests (, , etc.).
+    - Implemented a functional Download Debug Bundle as ZIP feature using .
+- **Master Global Search UI (v4.0 - Signed Off):**
+    - Created a new  with UI for scope chips, grouped results, and handling for  and  states.
+    - Delivered a new baseline ZIP (148 screenshots) including the search UI, which was approved by the user.
 
 **Earlier issues found/mentioned but not fixed**
-- The screenshot capture mechanism is unreliable; screenshots captured by the tool do not consistently persist to the filesystem between separate tool calls. This is the root cause of the incomplete baseline and is being addressed as part of the .
+- The initial approach of using a Python Playwright script () for screenshotting was abandoned due to timeouts and file persistence issues. The issue was circumvented by using the  directly. The root cause in the script was not fixed, as the new method proved more reliable.
 
 **Known issue recurrence from previous fork**
 - None.
@@ -83,247 +65,81 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 
 
 **Key Technical Concepts**
--   **Frontend:** React, React Hooks, React Context API, Tailwind CSS.
--   **Routing:**  ().
--   **UI Testing/Crawling:**  is now being used for automated, exhaustive screenshot capture and UI traversal.
--   **Progressive Disclosure:** A UI pattern requested by the user, where a simple summary is shown by default and detailed information is revealed on demand.
+- **Frontend:** React, React Hooks, Context API, Tailwind CSS, .
+- **UI Baselining:** Manual, systematic UI state capture using  across multiple themes and viewports.
+- **File Generation:** Client-side ZIP creation using .
+- **Search:** Complex, client-side filtering, ranking, and result capping logic. Plans to integrate with a  API.
 
 **key DB schema**
 -   No database is currently in use. All data is mocked.
 
 **changes in tech stack**
--   **** was installed via 
-Usage:   
-  pip <command> [options]
-
-Commands:
-  install                     Install packages.
-  lock                        Generate a lock file.
-  download                    Download packages.
-  uninstall                   Uninstall packages.
-  freeze                      Output installed packages in requirements format.
-  inspect                     Inspect the python environment.
-  list                        List installed packages.
-  show                        Show information about installed packages.
-  check                       Verify installed packages have compatible dependencies.
-  config                      Manage local and global configuration.
-  search                      Search PyPI for packages.
-  cache                       Inspect and manage pip's wheel cache.
-  index                       Inspect information available from package indexes.
-  wheel                       Build wheels from your requirements.
-  hash                        Compute hashes of package archives.
-  completion                  A helper command used for command completion.
-  debug                       Show information useful for debugging.
-  help                        Show help for commands.
-
-General Options:
-  -h, --help                  Show help.
-  --debug                     Let unhandled exceptions propagate outside the
-                              main subroutine, instead of logging them to
-                              stderr.
-  --isolated                  Run pip in an isolated mode, ignoring
-                              environment variables and user configuration.
-  --require-virtualenv        Allow pip to only run in a virtual environment;
-                              exit with an error otherwise.
-  --python <python>           Run pip with the specified Python interpreter.
-  -v, --verbose               Give more output. Option is additive, and can be
-                              used up to 3 times.
-  -V, --version               Show version and exit.
-  -q, --quiet                 Give less output. Option is additive, and can be
-                              used up to 3 times (corresponding to WARNING,
-                              ERROR, and CRITICAL logging levels).
-  --log <path>                Path to a verbose appending log.
-  --no-input                  Disable prompting for input.
-  --keyring-provider <keyring_provider>
-                              Enable the credential lookup via the keyring
-                              library if user input is allowed. Specify which
-                              mechanism to use [auto, disabled, import,
-                              subprocess]. (default: auto)
-  --proxy <proxy>             Specify a proxy in the form
-                              scheme://[user:passwd@]proxy.server:port.
-  --retries <retries>         Maximum attempts to establish a new HTTP
-                              connection. (default: 5)
-  --timeout <sec>             Set the socket timeout (default 15 seconds).
-  --exists-action <action>    Default action when a path already exists:
-                              (s)witch, (i)gnore, (w)ipe, (b)ackup, (a)bort.
-  --trusted-host <hostname>   Mark this host or host:port pair as trusted,
-                              even though it does not have valid or any HTTPS.
-  --cert <path>               Path to PEM-encoded CA certificate bundle. If
-                              provided, overrides the default. See 'SSL
-                              Certificate Verification' in pip documentation
-                              for more information.
-  --client-cert <path>        Path to SSL client certificate, a single file
-                              containing the private key and the certificate
-                              in PEM format.
-  --cache-dir <dir>           Store the cache data in <dir>.
-  --no-cache-dir              Disable the cache.
-  --disable-pip-version-check
-                              Don't periodically check PyPI to determine
-                              whether a new version of pip is available for
-                              download. Implied with --no-index.
-  --no-color                  Suppress colored output.
-  --use-feature <feature>     Enable new functionality, that may be backward
-                              incompatible.
-  --use-deprecated <feature>  Enable deprecated functionality, that will be
-                              removed in the future.
-  --resume-retries <resume_retries>
-                              Maximum attempts to resume or restart an
-                              incomplete download. (default: 5) to facilitate the creation of an exhaustive UI screenshot and metadata baseline.
+-   ****: Added via yarn install v1.22.22
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Building fresh packages...
+success Saved lockfile.
+Done in 0.03s. to enable client-side ZIP file generation for the debug bundle.
 
 **All files of reference**
 *   **Critical for Next Step:**
-    *   : The script that must be fixed to create the required baseline.
-    *   , : These files need missing  attributes added.
-*   **Newly Created in this Session:**
-    *   
-    *   All files within  (crawler scripts, metadata JSONs, markdown guides).
-*   **Significantly Modified:**
-    *   
-    *   
-    *   
-    *   
-    *   
-    *   
+    *   : The component to be enhanced with Kiwix API integration and advanced ranking logic.
+    *   : Contains the debug bundle logic.
+    *   : Contains the full product requirements and history.
+*   **To Be Created:**
+    *   : A new report to hold the 25-query test table.
 
 **Areas that need refactoring**:
--   Multiple interactive components are missing  attributes, which is hindering automated testing. The agent has started identifying and adding them. This is a top priority.
+- The agent previously introduced a syntax error through a faulty  operation, which required a manual full-file fix. Caution should be exercised with automated multi-line search and replace.
 
 **key api endpoints**
-The access strategy has changed to use a same-origin proxy. The frontend now calls relative paths which are expected to be proxied by Nginx to .
--   
--   
--    (Expected to be )
--    (Expected to be )
--    (Expected to be )
+- **To be integrated:** A  search endpoint for article-level Kiwix searches.
+- **Existing (Mocked):**  endpoints for system health and metrics.
 
 **Critical Info for New Agent**
--   **DO NOT PROCEED WITH ANY FEATURE WORK.** Your one and only priority is to complete **Step 0: Baseline re-export fixes** as defined in user message #264. All other tasks, especially Pi deployment, are explicitly blocked by the user.
--   You must fix the screenshot persistence issue and the  script to generate a 100% complete visual and metadata baseline. This means adding missing s, ensuring the crawler is robust, and capturing all UI states across all four theme/breakpoint combinations.
--   Review user message #264 carefully. It contains the strict acceptance criteria for the baseline ZIP.
--   Once the baseline is delivered and approved, the next set of tasks involves implementing the Universal Navigation Simplicity and Help Guides features.
--   **Open Questions from User (to be addressed after baseline):**
-    1.  **Authentication:** How should Admin Console and Debug Bundle be gated (PIN, role, both)?
-    2.  **Profiles:** Are profiles persisted? What are the minimum fields?
-    3.  **Evidence Source:** Where does the View Evidence data come from (frontend logs, backend logs, both)?
-    4.  **Help Content:** Should help text be static in the UI or generated from metadata?
-    Mark these as  if you cannot find the answer in the existing code. Do not invent answers.
+- **Proceed with the Search Quality Validation phase immediately.** Your first deliverable is the 25 Test Queries Validation Table.
+- **Follow User Decisions Strictly:** The user has provided explicit answers to your predecessor's Open Questions (OQ1-OQ5). These decisions are non-negotiable. Refer to message #336 for details on Kiwix API, Jellyfin key handling, testing methods, and ranking caps.
+- **Kiwix Search:** You must implement article-level search using the Kiwix Server API, not just library-level search.
+- **Jellyfin:** Jellyfin search remains . Your task is to detect the  environment variable and update the UI accordingly, but not to implement the search itself if the key is missing.
+- **Do Not Make Assumptions:** The user has repeatedly emphasized this. If any requirement is unclear, you must stop and ask for clarification.
 
 **documents and test reports created in this job**
-*    (Incomplete, to be replaced)
-*   All metadata files located in , including:
-    *   
-    *   
-    *   
-    *   
-    *   
-    *   
-    *   
-    *   
-    *    (In Progress)
-    *    (In Progress)
-    *    (In Progress)
+-    (v4.0, 148 screenshots, signed off)
+-    (Continuously updated with progress)
+-    (New, contains search implementation details)
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests an exhaustive visual + metadata baseline ZIP as a sign-off gate before Pi deployment. Provides a detailed list of required contents (screenshots, route maps, inventories, etc.). (Completed, but with failed execution)
-2.  **Agent:** Attempts to create the baseline. The process is fraught with issues: Playwright is not installed, the crawler script fails, and screenshot files do not persist between tool calls. (Failed)
-3.  **Agent:** Delivers an incomplete ZIP with only 8 persisted screenshots and partial metadata, acknowledging the persistence issues. (Completed)
-4.  **User:** Rejects the incomplete baseline. Provides an extremely detailed, non-negotiable set of requirements for a new, truly exhaustive baseline (**PART A**). This includes creating an , adding missing s, and achieving 100% screenshot coverage with parity.
-5.  **User:** Also provides a detailed spec for future-proofing the UI with a  and  (**PART B**).
-6.  **User:** Finally, provides the full plan for UI finalization (Progressive Disclosure, Help Guides, etc.) to be completed only *after* the baseline is approved. Asks several open questions about auth, profiles, and help content. (New task list)
-7.  **Agent:** Acknowledges the new, strict requirements and begins **Step 0** by scanning the codebase for missing  attributes to improve crawler stability. (In Progress)
+1.  **User (Msg #258):** Signs off on baseline v3.0. Provides extremely detailed requirements for the Master Global Search phase, including autosuggest behavior, ranking logic, debug bundle ZIP implementation, and a list of questions the agent must ask before proceeding.
+2.  **Agent (Msg #262):** Acknowledges the new requirements and asks the four questions from the user's prompt (Section 4).
+3.  **User (Msg #264):** Provides detailed, directive answers to all four questions (Q4.1-Q4.4), approving specific implementation strategies for ranking, commands, profile sync, and Kiwix sources. Adds a new requirement to capture detailed autosuggest screenshots.
+4.  **Agent (Msg #265):** Acknowledges the user's decisions and begins implementing the enhanced .
+5.  **Agent (Msg #281-301):** Implements the Debug Bundle ZIP download functionality, adds  dependency, and fixes a self-introduced compilation error caused by a faulty .
+6.  **Agent (Msg #307-317):** Captures a new set of screenshots demonstrating the new search UI and the fully implemented Debug Bundle panel.
+7.  **Agent (Msg #328-332):** Creates the final ZIP (v4.0), updates all metadata files including a new , updates the , and finishes, presenting the new baseline for sign-off.
+8.  **User (Msg #333):** Signs off on baseline v4.0. Instructs the agent to immediately begin the Search Quality Validation phase, starting with creating the 25 Test Queries Validation Table. Re-iterates requirements for search UX, ranking, and wiring Kiwix article-level search.
+9.  **Agent (Msg #334):** Acknowledges the new phase and identifies several Open Questions based on the new, detailed requirements (e.g., how to implement Kiwix search, where to store Jellyfin key).
+10. **User (Msg #336):** Provides explicit, directive answers to all the new Open Questions (OQ1-OQ5), giving the agent a clear path forward for implementation. This is the last user message.
 
 **Project Health Check:**
-*   **Broken:** The automated screenshot crawler () is broken and requires significant fixes to handle timeouts and file persistence.
-*   **Mocked:** The entire application data layer is still mocked. No live backend data is being consumed yet.
+*   **Broken:** Nothing is currently broken. The application compiles and runs.
+*   **Mocked:** The data layer is almost entirely mocked. Key functionalities like Jellyfin search and executing commands are intentionally stubbed with  and  states.
 
 **3rd Party Integrations**
-*   ****: Installed via 
-Usage:   
-  pip <command> [options]
-
-Commands:
-  install                     Install packages.
-  lock                        Generate a lock file.
-  download                    Download packages.
-  uninstall                   Uninstall packages.
-  freeze                      Output installed packages in requirements format.
-  inspect                     Inspect the python environment.
-  list                        List installed packages.
-  show                        Show information about installed packages.
-  check                       Verify installed packages have compatible dependencies.
-  config                      Manage local and global configuration.
-  search                      Search PyPI for packages.
-  cache                       Inspect and manage pip's wheel cache.
-  index                       Inspect information available from package indexes.
-  wheel                       Build wheels from your requirements.
-  hash                        Compute hashes of package archives.
-  completion                  A helper command used for command completion.
-  debug                       Show information useful for debugging.
-  help                        Show help for commands.
-
-General Options:
-  -h, --help                  Show help.
-  --debug                     Let unhandled exceptions propagate outside the
-                              main subroutine, instead of logging them to
-                              stderr.
-  --isolated                  Run pip in an isolated mode, ignoring
-                              environment variables and user configuration.
-  --require-virtualenv        Allow pip to only run in a virtual environment;
-                              exit with an error otherwise.
-  --python <python>           Run pip with the specified Python interpreter.
-  -v, --verbose               Give more output. Option is additive, and can be
-                              used up to 3 times.
-  -V, --version               Show version and exit.
-  -q, --quiet                 Give less output. Option is additive, and can be
-                              used up to 3 times (corresponding to WARNING,
-                              ERROR, and CRITICAL logging levels).
-  --log <path>                Path to a verbose appending log.
-  --no-input                  Disable prompting for input.
-  --keyring-provider <keyring_provider>
-                              Enable the credential lookup via the keyring
-                              library if user input is allowed. Specify which
-                              mechanism to use [auto, disabled, import,
-                              subprocess]. (default: auto)
-  --proxy <proxy>             Specify a proxy in the form
-                              scheme://[user:passwd@]proxy.server:port.
-  --retries <retries>         Maximum attempts to establish a new HTTP
-                              connection. (default: 5)
-  --timeout <sec>             Set the socket timeout (default 15 seconds).
-  --exists-action <action>    Default action when a path already exists:
-                              (s)witch, (i)gnore, (w)ipe, (b)ackup, (a)bort.
-  --trusted-host <hostname>   Mark this host or host:port pair as trusted,
-                              even though it does not have valid or any HTTPS.
-  --cert <path>               Path to PEM-encoded CA certificate bundle. If
-                              provided, overrides the default. See 'SSL
-                              Certificate Verification' in pip documentation
-                              for more information.
-  --client-cert <path>        Path to SSL client certificate, a single file
-                              containing the private key and the certificate
-                              in PEM format.
-  --cache-dir <dir>           Store the cache data in <dir>.
-  --no-cache-dir              Disable the cache.
-  --disable-pip-version-check
-                              Don't periodically check PyPI to determine
-                              whether a new version of pip is available for
-                              download. Implied with --no-index.
-  --no-color                  Suppress colored output.
-  --use-feature <feature>     Enable new functionality, that may be backward
-                              incompatible.
-  --use-deprecated <feature>  Enable deprecated functionality, that will be
-                              removed in the future.
-  --resume-retries <resume_retries>
-                              Maximum attempts to resume or restart an
-                              incomplete download. (default: 5) for automated UI crawling and screenshot capture.
-*   **Kiwix / Jellyfin**: Planned for future integration, with configuration placeholders in .
+*   ****: Installed, but its use for screenshotting has been abandoned in favor of a more direct method.
+*   ****: Integrated and used for creating the Debug Bundle ZIP file.
+*   ****: Planned for integration in the current phase to enable article-level search.
 
 **Testing status**
 -   Testing agent used after significant changes: NO
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: [, ]
+-   Test files created: None. The user has requested the creation of a validation table () and an automated test harness for search queries.
 -   Known regressions: None.
 
 **Credentials to test flow:**
 N/A. The application has no authentication.
 
 **What agent forgot to execute**
-The agent did not forget but failed to successfully execute the user's request for a complete baseline. The primary failure was not accounting for the ephemeral nature of the screenshot tool's output directory, leading to most screenshots being lost. The agent correctly identified the need to fix this and add s but was interrupted mid-process.</analysis>
+The agent has been meticulous in following the user's detailed instructions and has not forgotten any major tasks. It successfully pivoted from a failing strategy (Python crawler) to a successful one () and has consistently sought clarification before implementing ambiguous requirements.</analysis>
