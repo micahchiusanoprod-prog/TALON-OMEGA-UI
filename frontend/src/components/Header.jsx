@@ -144,46 +144,89 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           )}
 
-          {/* Mobile: LOGS + Community + Help Center Button + Temp */}
+          {/* Mobile: Primary Nav with Overflow Menu */}
           {useCompactHeader && (
-            <div className="flex md:hidden items-center gap-2">
-              {/* LOGS Button - Mobile */}
+            <div className="flex md:hidden items-center gap-1.5 relative">
+              {/* Primary buttons - always visible */}
               <button
                 onClick={() => setShowLogs(true)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition-all"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 transition-all"
                 title="Open LOGS Analytics"
                 data-testid="logs-btn-mobile"
               >
-                <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-semibold">{t('nav.logs')}</span>
+                <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-[11px] font-semibold">{t('nav.logs')}</span>
               </button>
               
-              {/* Community Button - Mobile */}
               <button
                 onClick={() => setShowCommunity(true)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 hover:border-violet-500/50 transition-all"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 transition-all"
                 title="Open Community Hub"
                 data-testid="community-btn-mobile"
               >
-                <Users className="w-4 h-4 text-violet-400" />
-                <span className="text-xs font-semibold">{t('nav.community')}</span>
+                <Users className="w-3.5 h-3.5 text-violet-400" />
+                <span className="text-[11px] font-semibold hidden xs:inline">{t('nav.community')}</span>
               </button>
               
-              {/* Help Center Button - Mobile */}
+              {/* Entertainment - visible on slightly larger mobile */}
               <button
-                onClick={() => setShowHelpCenter(true)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 hover:border-primary/50 transition-all"
-                title="Open Help Center"
-                data-testid="help-center-btn-mobile"
+                onClick={() => navigate('/entertainment')}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 to-orange-500/20 border border-pink-500/30 transition-all ${
+                  location.pathname === '/entertainment' ? 'ring-2 ring-pink-500/50' : ''
+                }`}
+                title="Entertainment"
+                data-testid="entertainment-btn-mobile"
               >
-                <BookOpen className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold">{t('nav.help')}</span>
+                <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                <span className="text-[11px] font-semibold hidden xs:inline">Fun</span>
               </button>
               
-              {metrics && metrics.temp !== null && (
-                <div className="metric-pill hover:bg-secondary">
-                  <span className="text-muted-foreground text-xs">{t('metrics.temp')}</span>
-                  <span className="font-semibold text-xs">{metrics.temp}°C</span>
+              {/* Overflow Menu Button */}
+              <button
+                onClick={() => setShowOverflowMenu(!showOverflowMenu)}
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary/50 border border-border hover:bg-secondary transition-all"
+                title="More options"
+                data-testid="overflow-menu-btn"
+              >
+                {showOverflowMenu ? <X className="w-4 h-4" /> : <MoreHorizontal className="w-4 h-4" />}
+              </button>
+              
+              {/* Overflow Dropdown Menu */}
+              {showOverflowMenu && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in">
+                  <div className="p-1">
+                    <button
+                      onClick={() => { setShowHelpCenter(true); setShowOverflowMenu(false); }}
+                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors text-left"
+                    >
+                      <BookOpen className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium">{t('nav.helpCenter')}</span>
+                    </button>
+                    <button
+                      onClick={() => { setShowAdminConsole(true); setShowOverflowMenu(false); }}
+                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors text-left"
+                    >
+                      <Shield className="w-4 h-4 text-amber-400" />
+                      <span className="text-sm font-medium">{t('nav.adminConsole')}</span>
+                    </button>
+                    <div className="h-px bg-border my-1" />
+                    {metrics && (
+                      <div className="px-3 py-2 text-xs text-muted-foreground">
+                        <div className="flex justify-between mb-1">
+                          <span>CPU</span>
+                          <span className="font-medium text-foreground">{metrics.cpu}%</span>
+                        </div>
+                        <div className="flex justify-between mb-1">
+                          <span>Temp</span>
+                          <span className="font-medium text-foreground">{metrics.temp}°C</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>RAM</span>
+                          <span className="font-medium text-foreground">{metrics.ram}%</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
