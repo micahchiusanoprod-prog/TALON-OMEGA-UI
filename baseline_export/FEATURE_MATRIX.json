@@ -1,200 +1,99 @@
 {
-  "generatedAt": "2026-01-14T02:28:00Z",
-  "features": [
-    {
-      "feature_id": "home-dashboard",
-      "name": "Home Dashboard",
-      "route": "/",
-      "status": "IMPLEMENTED_UI",
-      "dependencies": {"backend": ["health.py", "metrics.py"], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "VERIFIED",
-      "acceptanceCriteria": "Dashboard loads with all tiles visible, responsive at all breakpoints",
-      "tests": ["data-testid exists for all interactive elements"]
+  "generatedAt": "2025-01-14T03:10:00.000Z",
+  "version": "2.0.0",
+  "features": {
+    "core_dashboard": {
+      "status": "WIRED_MOCK",
+      "components": ["Dashboard", "Header", "QuickToolsBar"],
+      "dataSource": "mocked",
+      "notes": "Dashboard shows mocked data, ready for backend wiring"
     },
-    {
-      "feature_id": "logs-analytics",
-      "name": "LOGS Analytics",
-      "route": "modal",
-      "status": "MOCK_ONLY",
-      "dependencies": {"backend": ["health.py", "metrics.py", "backup.py"], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "DERIVED",
-      "provenance": {"source": "mock/dashboardMockData.js", "lastUpdated": "2026-01-14"},
-      "acceptanceCriteria": "Shows health index, CPU, RAM, disk, temp metrics with charts",
-      "tests": ["data-testid='logs-btn' opens modal"]
+    "logs_analytics": {
+      "status": "WIRED_MOCK",
+      "component": "LogsAnalytics",
+      "tabs": ["this_device", "incidents", "all_nodes"],
+      "dataSource": "mocked",
+      "notes": "Full UI with mock event logs"
     },
-    {
-      "feature_id": "community-hub",
-      "name": "Community Hub",
-      "route": "modal",
-      "status": "MOCK_ONLY",
-      "dependencies": {"backend": [], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "DERIVED",
-      "provenance": {"source": "mock/communityMockData.js", "lastUpdated": "2026-01-14"},
-      "acceptanceCriteria": "Shows member directory, teams, bulletins, team builder",
-      "tests": ["data-testid='community-btn' opens modal", "all tabs switchable"]
+    "community_hub": {
+      "status": "WIRED_MOCK",
+      "component": "CommunityHub",
+      "tabs": ["overview", "analytics", "directory", "comms", "incidents"],
+      "dataSource": "mocked",
+      "notes": "Community features with mock network data"
     },
-    {
-      "feature_id": "help-center",
-      "name": "Help Center",
-      "route": "modal",
-      "status": "IMPLEMENTED_UI",
-      "dependencies": {"backend": [], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "VERIFIED",
-      "acceptanceCriteria": "Shows FAQ, getting started, features documentation",
-      "tests": ["data-testid='help-center-btn' opens modal"]
+    "help_center": {
+      "status": "STATIC",
+      "component": "HelpCenter",
+      "notes": "Static help content, searchable"
     },
-    {
-      "feature_id": "admin-console",
-      "name": "Admin Console",
-      "route": "modal",
-      "status": "MOCK_ONLY",
-      "dependencies": {"backend": ["backup.py", "keys.py", "keysync.py"], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "DERIVED",
-      "provenance": {"source": "mock data", "lastUpdated": "2026-01-14"},
-      "acceptanceCriteria": "Fleet management, broadcast, system controls, backups, audit",
-      "tests": ["data-testid='admin-console-btn' opens modal", "all 5 tabs work"]
+    "admin_console": {
+      "status": "WIRED_MOCK",
+      "component": "AdminConsole",
+      "sections": ["fleet", "roster", "broadcast", "audit"],
+      "auth": "PLANNED - NOT IMPLEMENTED",
+      "notes": "Admin UI present, auth gating planned but not implemented"
     },
-    {
-      "feature_id": "system-status",
-      "name": "System Status Panel",
-      "route": "modal",
-      "status": "IMPLEMENTED_UI",
-      "dependencies": {"backend": ["health.py", "metrics.py", "sensors.py", "dm.py", "keys.py", "keysync.py", "backup.py"], "services": [], "device": []},
-      "offlineBehavior": "DEGRADED",
-      "trustLevel": "VERIFIED",
-      "acceptanceCriteria": "Shows connection status, API base, endpoint status, self-test",
-      "tests": ["data-testid='system-status-btn' opens modal", "ENDPOINT STATUS expandable"]
+    "system_status": {
+      "status": "WIRED_MOCK",
+      "component": "SystemStatusPanel",
+      "dataSource": "mocked",
+      "notes": "Shows system metrics from mock data"
     },
-    {
-      "feature_id": "entertainment-overview",
-      "name": "Entertainment - Overview",
-      "route": "/entertainment",
-      "status": "MOCK_ONLY",
-      "dependencies": {"backend": [], "services": ["Jellyfin"], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "DERIVED",
-      "badgeRequired": "MOCK DATA",
-      "provenance": {"source": "EntertainmentPage.jsx mock data", "lastUpdated": "2026-01-14"},
-      "acceptanceCriteria": "Continue Watching, Movie Night banner, Newly Added carousels",
-      "tests": ["nav-overview tab active by default"]
+    "entertainment": {
+      "status": "PLANNED",
+      "component": "EntertainmentPage",
+      "sections": {
+        "movies": { "status": "PLANNED", "integration": "Kiwix/Jellyfin" },
+        "games": { "status": "PLANNED", "integration": "none" },
+        "music": { "status": "WIRED_MOCK", "integration": "local player" },
+        "photos": { "status": "PLANNED", "integration": "local gallery" },
+        "vault": { "status": "PLANNED", "integration": "encrypted storage" },
+        "file_drop": { "status": "PLANNED", "integration": "LAN sharing" }
+      },
+      "notes": "UI scaffolded, integrations planned"
     },
-    {
-      "feature_id": "entertainment-movies",
-      "name": "Entertainment - Movies & TV",
-      "route": "/entertainment#movies",
-      "status": "MOCK_ONLY",
-      "dependencies": {"backend": [], "services": ["Jellyfin"], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "DERIVED",
-      "badgeRequired": "MOCK DATA",
-      "acceptanceCriteria": "Movie grid, TV show grid with ratings and progress",
-      "tests": ["data-testid='nav-movies' switches to movies tab"]
+    "quick_tools": {
+      "quickguide": { "status": "STATIC", "notes": "Field guide reference" },
+      "calculator": { "status": "WIRED_LIVE", "notes": "Functional calculator" },
+      "translator": { "status": "PLANNED", "notes": "UI present, API not wired" },
+      "sos": { "status": "WIRED_MOCK", "notes": "SOS beacon mock" },
+      "currency": { "status": "PLANNED", "notes": "UI present, rates not wired" },
+      "dictionary": { "status": "PLANNED", "notes": "UI present, API not wired" },
+      "notes": { "status": "WIRED_MOCK", "notes": "Notes stored in localStorage" }
     },
-    {
-      "feature_id": "entertainment-games",
-      "name": "Entertainment - Games Hub",
-      "route": "/entertainment#games",
-      "status": "STUB_UI",
-      "dependencies": {"backend": [], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "ESTIMATED",
-      "badgeRequired": "PLANNED - NOT WIRED",
-      "acceptanceCriteria": "Arcade, Tournaments, Party Mode, Trivia game modes visible",
-      "tests": ["data-testid='nav-games' shows PLANNED badge"]
+    "theme_system": {
+      "status": "WIRED_LIVE",
+      "modes": ["dark", "light"],
+      "persistence": "localStorage",
+      "notes": "Fully functional theme switching"
     },
-    {
-      "feature_id": "entertainment-music",
-      "name": "Entertainment - Music",
-      "route": "/entertainment#music",
-      "status": "STUB_UI",
-      "dependencies": {"backend": [], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "ESTIMATED",
-      "badgeRequired": "MOCK - AUDIO NOT WIRED",
-      "acceptanceCriteria": "Music player UI, Beat Maker placeholder, albums grid",
-      "tests": ["data-testid='nav-music' shows player UI"]
+    "internationalization": {
+      "status": "WIRED_LIVE",
+      "languages": ["en", "es", "fr", "de", "zh", "ja", "ar", "ru"],
+      "notes": "Language selector and translations functional"
     },
-    {
-      "feature_id": "entertainment-photos",
-      "name": "Entertainment - Photos",
-      "route": "/entertainment#photos",
-      "status": "STUB_UI",
-      "dependencies": {"backend": [], "services": [], "device": ["Camera"]},
-      "offlineBehavior": "NOT_CONFIGURED",
-      "trustLevel": "ESTIMATED",
-      "badgeRequired": "PLANNED - COMING SOON",
-      "acceptanceCriteria": "Photos hub placeholder with grid",
-      "tests": ["data-testid='nav-photos' shows placeholder"]
+    "authentication": {
+      "status": "PLANNED - NOT IMPLEMENTED",
+      "notes": "No auth currently. Admin gating will require PIN + role"
     },
-    {
-      "feature_id": "entertainment-vault",
-      "name": "Entertainment - Vault",
-      "route": "/entertainment#vault",
-      "status": "STUB_UI",
-      "dependencies": {"backend": [], "services": [], "device": []},
-      "offlineBehavior": "NOT_CONFIGURED",
-      "trustLevel": "ESTIMATED",
-      "badgeRequired": "PLANNED - NOT IMPLEMENTED",
-      "acceptanceCriteria": "Personal Documents Vault with PIN protection info",
-      "tests": ["data-testid='nav-vault' shows placeholder"]
-    },
-    {
-      "feature_id": "entertainment-filedrop",
-      "name": "Entertainment - File Drop",
-      "route": "/entertainment#share",
-      "status": "STUB_UI",
-      "dependencies": {"backend": [], "services": [], "device": []},
-      "offlineBehavior": "NOT_CONFIGURED",
-      "trustLevel": "ESTIMATED",
-      "badgeRequired": "PLANNED - NOT IMPLEMENTED",
-      "acceptanceCriteria": "File drop zone placeholder",
-      "tests": ["data-testid='nav-share' shows drop zone"]
-    },
-    {
-      "feature_id": "movie-night-mode",
-      "name": "Movie Night Mode",
-      "route": "modal",
-      "status": "MOCK_ONLY",
-      "dependencies": {"backend": [], "services": ["Jellyfin", "Hotspot"], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "DERIVED",
-      "badgeRequired": "MOCK DATA - NOT WIRED",
-      "acceptanceCriteria": "Hotspot credentials, QR code, voting steps",
-      "tests": ["Start Movie Night button opens modal"]
-    },
-    {
-      "feature_id": "quick-tools",
-      "name": "Quick Tools Bar",
-      "route": "/",
-      "status": "IMPLEMENTED_UI",
-      "dependencies": {"backend": [], "services": [], "device": []},
-      "offlineBehavior": "OFFLINE_OK",
-      "trustLevel": "VERIFIED",
-      "acceptanceCriteria": "All 7 tools accessible: Quick Guide, Calculator, Translator, SOS, Currency, Dictionary, Notes",
-      "tests": ["data-testid='tool-*' for all 7 tools"]
-    },
-    {
-      "feature_id": "connection-status",
-      "name": "Connection Status Indicator",
-      "route": "/",
-      "status": "IMPLEMENTED_UI",
-      "dependencies": {"backend": ["health.py"], "services": [], "device": []},
-      "offlineBehavior": "DEGRADED",
-      "trustLevel": "VERIFIED",
-      "acceptanceCriteria": "Shows CONNECTED, DEGRADED, NOT_CONNECTED, FORBIDDEN, NOT_CONFIGURED states",
-      "tests": ["data-testid='connection-status-chip' visible"]
+    "backend_integration": {
+      "status": "PLANNED",
+      "strategy": "same-origin /api proxy via Nginx",
+      "endpoints": [
+        "/api/cgi-bin/health.py",
+        "/api/cgi-bin/metrics.py", 
+        "/api/cgi-bin/dm.py",
+        "/api/cgi-bin/sensors.py"
+      ],
+      "notes": "Proxy configured, endpoints not yet live"
     }
-  ],
-  "summary": {
-    "IMPLEMENTED_UI": 5,
-    "STUB_UI": 5,
-    "MOCK_ONLY": 6,
-    "WIRED_LIVE": 0,
-    "PLANNED_NOT_IMPLEMENTED": 0
+  },
+  "statusLegend": {
+    "WIRED_LIVE": "Fully functional with real data/logic",
+    "WIRED_MOCK": "UI complete, using mocked data",
+    "STATIC": "Static content, no dynamic data",
+    "PLANNED": "UI scaffolded, functionality not implemented",
+    "PLANNED - NOT IMPLEMENTED": "Explicitly planned but no code yet"
   }
 }
