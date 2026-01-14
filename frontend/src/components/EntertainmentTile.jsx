@@ -447,6 +447,7 @@ const MusicPlayer = ({ currentTrack, isPlaying, onPlayPause, onNext, onPrev, onT
 };
 
 export default function EntertainmentTile() {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTrack, setCurrentTrack] = useState(musicTracks[0]);
