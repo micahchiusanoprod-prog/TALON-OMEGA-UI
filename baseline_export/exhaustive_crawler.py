@@ -37,12 +37,15 @@ def log(action):
     print(entry)
 
 async def set_theme(page, theme):
-    if theme == "dark":
-        await page.evaluate("localStorage.setItem('omega-theme', 'dark'); document.documentElement.classList.add('dark')")
-    else:
-        await page.evaluate("localStorage.setItem('omega-theme', 'light'); document.documentElement.classList.remove('dark')")
-    await page.reload()
-    await page.wait_for_timeout(1500)
+    """Set theme - must be called after page navigation"""
+    try:
+        if theme == "dark":
+            await page.evaluate("localStorage.setItem('omega-theme', 'dark'); document.documentElement.classList.add('dark')")
+        else:
+            await page.evaluate("localStorage.setItem('omega-theme', 'light'); document.documentElement.classList.remove('dark')")
+    except Exception as e:
+        log(f"Theme set warning: {e}")
+    await page.wait_for_timeout(500)
 
 async def safe_screenshot(page, folder, filename, description):
     """Take screenshot with verification"""
