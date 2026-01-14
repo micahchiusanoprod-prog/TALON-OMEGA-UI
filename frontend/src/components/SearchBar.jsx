@@ -64,15 +64,16 @@ const SEARCH_SCOPES = [
   { id: 'commands', label: 'Tools', icon: Terminal, description: 'Commands and actions' },
 ];
 
-// Source metadata
-const SOURCE_META = {
+// Source metadata (dynamic for Jellyfin based on env config)
+const getSourceMeta = (kiwixStatus = 'INDEXED') => ({
   kiwix: {
     id: 'kiwix',
     label: 'Offline Knowledge',
     icon: Book,
     color: 'text-emerald-500',
     bgColor: 'bg-emerald-500/10',
-    status: 'INDEXED',
+    status: kiwixStatus,
+    statusNote: kiwixStatus === 'UNAVAILABLE' ? 'Kiwix server not responding' : null,
     description: 'Wikipedia, medical guides, how-to articles'
   },
   jellyfin: {
@@ -81,8 +82,8 @@ const SOURCE_META = {
     icon: Film,
     color: 'text-violet-500',
     bgColor: 'bg-violet-500/10',
-    status: 'NOT_INDEXED',
-    statusNote: 'Jellyfin not indexed: missing API key',
+    status: isJellyfinConfigured() ? 'INDEXED' : 'NOT_INDEXED',
+    statusNote: isJellyfinConfigured() ? null : 'Jellyfin not indexed: missing API key',
     description: 'Movies, TV shows, music'
   },
   community: {
@@ -113,7 +114,10 @@ const SOURCE_META = {
     status: 'INDEXED',
     description: 'Shared files, maps, documents'
   }
-};
+});
+
+// Default source meta (will be updated based on Kiwix availability)
+let SOURCE_META = getSourceMeta('INDEXED');
 
 // ============================================================
 // MOCK DATA GENERATORS (to be replaced with real API)
