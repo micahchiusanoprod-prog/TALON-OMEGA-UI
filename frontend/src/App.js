@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from './components/ui/sonner';
 import Dashboard from './components/Dashboard';
+import EntertainmentPage from './components/EntertainmentPage';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ConnectionProvider } from './contexts/ConnectionContext';
 import './App.css';
@@ -29,6 +30,8 @@ export default function App() {
         <ConnectionProvider>
           <div className="min-h-screen bg-background">
             <Routes>
+              <Route path="/" element={<Dashboard theme={theme} onToggleTheme={toggleTheme} />} />
+              <Route path="/entertainment" element={<EntertainmentPage theme={theme} onToggleTheme={toggleTheme} />} />
               <Route path="/*" element={<Dashboard theme={theme} onToggleTheme={toggleTheme} />} />
             </Routes>
             <Toaster />
