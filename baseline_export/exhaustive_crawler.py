@@ -125,18 +125,19 @@ async def run_crawler():
         # Home - Default (all breakpoints)
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
             await page.goto(f"{BASE_URL}/#/")
-            await page.wait_for_timeout(2000)
+            await page.wait_for_timeout(1000)
+            await set_theme(page, theme)
+            await page.wait_for_timeout(1500)
             await safe_screenshot(page, folder, f"{n:04d}_home_default.jpg", "Home - default view")
         n += 1
         
         # Home - Scrolled middle
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
+            await set_theme(page, theme)
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
             await page.wait_for_timeout(500)
             await safe_screenshot(page, folder, f"{n:04d}_home_scroll_mid.jpg", "Home - scrolled middle")
@@ -145,9 +146,9 @@ async def run_crawler():
         # Home - Scrolled bottom
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
+            await set_theme(page, theme)
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
             await page.wait_for_timeout(500)
             await safe_screenshot(page, folder, f"{n:04d}_home_scroll_bottom.jpg", "Home - scrolled bottom (Entertainment)")
