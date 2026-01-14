@@ -94,7 +94,7 @@ async def capture_all_breakpoints(page, route, prefix, description):
     """Capture a state at all 4 breakpoints"""
     for folder, width, height, theme in BREAKPOINTS:
         await page.set_viewport_size({"width": width, "height": height})
-        await set_theme(page, theme)
+        # theme handled after navigation
         if route:
             await page.goto(f"{BASE_URL}/#{route}")
             await page.wait_for_timeout(1500)
@@ -127,7 +127,7 @@ async def run_crawler():
             await page.set_viewport_size({"width": width, "height": height})
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.wait_for_timeout(1500)
             await safe_screenshot(page, folder, f"{n:04d}_home_default.jpg", "Home - default view")
         n += 1
@@ -137,7 +137,7 @@ async def run_crawler():
             await page.set_viewport_size({"width": width, "height": height})
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
             await page.wait_for_timeout(500)
             await safe_screenshot(page, folder, f"{n:04d}_home_scroll_mid.jpg", "Home - scrolled middle")
@@ -148,7 +148,7 @@ async def run_crawler():
             await page.set_viewport_size({"width": width, "height": height})
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
             await page.wait_for_timeout(500)
             await safe_screenshot(page, folder, f"{n:04d}_home_scroll_bottom.jpg", "Home - scrolled bottom (Entertainment)")
@@ -164,7 +164,7 @@ async def run_crawler():
             await page.set_viewport_size({"width": width, "height": height})
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.wait_for_timeout(500)
             
             selector = '[data-testid="logs-btn"]' if width > 768 else '[data-testid="logs-btn-mobile"]'
@@ -178,7 +178,7 @@ async def run_crawler():
             await page.set_viewport_size({"width": width, "height": height})
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.wait_for_timeout(500)
             
             selector = '[data-testid="community-btn"]' if width > 768 else '[data-testid="community-btn-mobile"]'
@@ -191,7 +191,7 @@ async def run_crawler():
         await page.set_viewport_size({"width": 1440, "height": 900})
         await page.goto(f"{BASE_URL}/#/")
         await page.wait_for_timeout(1000)
-        await set_theme(page, "dark")
+        # theme handled after navigation
         await page.wait_for_timeout(500)
         
         if await wait_and_click(page, '[data-testid="community-btn"]'):
@@ -215,7 +215,7 @@ async def run_crawler():
         # Help Center Modal
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
             
@@ -239,7 +239,7 @@ async def run_crawler():
         # Admin Console Modal
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
             
@@ -261,7 +261,7 @@ async def run_crawler():
         
         # Admin Console - Tabs (desktop dark)
         await page.set_viewport_size({"width": 1440, "height": 900})
-        await set_theme(page, "dark")
+        # theme handled after navigation
         await page.goto(f"{BASE_URL}/#/")
         await page.wait_for_timeout(1000)
         
@@ -295,7 +295,7 @@ async def run_crawler():
         # System Status Panel
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
             
@@ -306,7 +306,7 @@ async def run_crawler():
         
         # System Status - Endpoints expanded (desktop dark)
         await page.set_viewport_size({"width": 1440, "height": 900})
-        await set_theme(page, "dark")
+        # theme handled after navigation
         await page.goto(f"{BASE_URL}/#/")
         await page.wait_for_timeout(1000)
         
@@ -327,7 +327,7 @@ async def run_crawler():
         
         for folder, width, height, theme in [("mobile_dark", 390, 844, "dark"), ("mobile_light", 390, 844, "light")]:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
             
@@ -353,7 +353,7 @@ async def run_crawler():
         
         for tool_id, tool_name in quick_tools:
             await page.set_viewport_size({"width": 1440, "height": 900})
-            await set_theme(page, "dark")
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/")
             await page.wait_for_timeout(1000)
             
@@ -368,7 +368,7 @@ async def run_crawler():
         log("--- LANGUAGE SELECTOR ---")
         
         await page.set_viewport_size({"width": 1440, "height": 900})
-        await set_theme(page, "dark")
+        # theme handled after navigation
         await page.goto(f"{BASE_URL}/#/")
         await page.wait_for_timeout(1000)
         
@@ -385,7 +385,7 @@ async def run_crawler():
         # Entertainment - Overview (all breakpoints)
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/entertainment")
             await page.wait_for_timeout(2000)
             await safe_screenshot(page, folder, f"{n:04d}_entertainment_overview.jpg", "Entertainment - Overview")
@@ -403,7 +403,7 @@ async def run_crawler():
         
         for tab_id, tab_name in entertainment_tabs:
             await page.set_viewport_size({"width": 1440, "height": 900})
-            await set_theme(page, "dark")
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/entertainment")
             await page.wait_for_timeout(1000)
             
@@ -414,7 +414,7 @@ async def run_crawler():
         # Movie Night Modal
         for folder, width, height, theme in BREAKPOINTS:
             await page.set_viewport_size({"width": width, "height": height})
-            await set_theme(page, theme)
+            # theme handled after navigation
             await page.goto(f"{BASE_URL}/#/entertainment")
             await page.wait_for_timeout(1000)
             
@@ -433,7 +433,7 @@ async def run_crawler():
         log("--- SEARCH BAR ---")
         
         await page.set_viewport_size({"width": 1440, "height": 900})
-        await set_theme(page, "dark")
+        # theme handled after navigation
         await page.goto(f"{BASE_URL}/#/")
         await page.wait_for_timeout(1000)
         
@@ -457,7 +457,7 @@ async def run_crawler():
         log("--- HEADER ROW VERIFICATION ---")
         
         await page.set_viewport_size({"width": 1440, "height": 900})
-        await set_theme(page, "dark")
+        # theme handled after navigation
         await page.goto(f"{BASE_URL}/#/")
         await page.wait_for_timeout(2000)
         
@@ -467,7 +467,7 @@ async def run_crawler():
         n += 1
         
         # Also light theme
-        await set_theme(page, "light")
+        # theme handled after navigation
         await page.wait_for_timeout(1000)
         await safe_screenshot(page, "desktop_light", f"{n:04d}_header_verification.jpg", "Header at 1440px light theme")
         n += 1
