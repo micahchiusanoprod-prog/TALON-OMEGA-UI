@@ -1,57 +1,47 @@
 {
-  "generatedAt": "2025-01-14T03:45:00.000Z",
-  "version": "3.0.0",
-  "phase": "Next-Phase UI Improvements",
-  "baselineType": "exhaustive_visual_baseline",
-  "total_screenshots": 120,
+  "generatedAt": "2025-01-14T04:40:00.000Z",
+  "version": "4.0.0",
+  "phase": "Master Global Search",
+  "total_screenshots": 148,
   "screenshotCounts": {
-    "desktop_dark": 32,
-    "desktop_light": 30,
-    "mobile_dark": 29,
-    "mobile_light": 29
+    "desktop_dark": 44,
+    "desktop_light": 36,
+    "mobile_dark": 34,
+    "mobile_light": 34
   },
   "parityStatus": "FULL",
-  "newFeaturesScreenshotted": [
-    {
-      "feature": "Self-Test Runner in Help Center",
-      "screenshots": ["0060_help_selftest_section", "0061_help_selftest_results"],
-      "folders": "ALL_4"
-    },
-    {
-      "feature": "Enhanced System Status with Debug Bundle",
-      "screenshots": ["0062_status_enhanced", "0063_status_selftest_results"],
-      "folders": "ALL_4"
-    }
+  "newSearchScreenshots": [
+    { "id": "0070_search_empty_focus", "description": "Empty focus state with recent searches", "folders": "ALL_4" },
+    { "id": "0071_search_wiki", "description": "Query 'wiki' showing Kiwix results", "folders": "ALL_4" },
+    { "id": "0072_search_wikipedia", "description": "Query 'wikipedia' exact match", "folders": "desktop_dark" },
+    { "id": "0073_search_movie_stub", "description": "Query 'movie' showing Jellyfin stub", "folders": "ALL_4" },
+    { "id": "0074_search_omega_files", "description": "Query 'omega' file-ish with caps", "folders": "desktop_dark" },
+    { "id": "0075_search_community", "description": "Query 'john' community result", "folders": "desktop_dark" },
+    { "id": "0076_search_typo", "description": "Query 'wikpedia' did you mean", "folders": "desktop_dark" },
+    { "id": "0077_search_zero_results", "description": "Zero results state", "folders": "desktop_dark, desktop_light" },
+    { "id": "0078_search_explain", "description": "Explain results panel", "folders": "desktop_dark" },
+    { "id": "0080_help_debug_bundle", "description": "Help Center with Debug Bundle ZIP", "folders": "ALL_4" }
   ],
-  "routesCovered": [
-    { "route": "/", "name": "Home Dashboard", "coverage": "FULL" },
-    { "route": "/entertainment", "name": "Entertainment Page", "coverage": "FULL" }
+  "searchFeaturesCovered": [
+    "Autosuggest dropdown",
+    "Scope chips (Global, Knowledge, Media, Community, Files, Tools)",
+    "Source grouping with labels",
+    "Trust badges (VERIFIED/DERIVED/ESTIMATED/UNKNOWN)",
+    "Freshness indicators (LIVE/CACHED/STALE)",
+    "NOT_INDEXED badge for Jellyfin",
+    "PLANNED badge for Commands",
+    "Did you mean typo correction",
+    "Zero results guidance",
+    "Explain results panel",
+    "Recent searches",
+    "Keyboard navigation"
   ],
-  "modalsCovered": [
-    { "name": "LOGS", "coverage": "FULL" },
-    { "name": "CommunityHub", "coverage": "FULL", "tabs": ["overview", "analytics", "directory", "comms", "incidents"] },
-    { "name": "HelpCenter", "coverage": "FULL", "newFeatures": ["Self-Test Runner", "Debug Bundle Panel"] },
-    { "name": "AdminConsole", "coverage": "FULL", "sections": ["fleet", "roster", "broadcast"] },
-    { "name": "SystemStatus", "coverage": "FULL", "newFeatures": ["Enhanced Debug Bundle", "Self-Test Button"] }
+  "debugBundleFeaturesCovered": [
+    "Copy JSON Bundle",
+    "Download ZIP (NEW)",
+    "Redact sensitive values toggle",
+    "Bundle contents preview"
   ],
-  "toolsCovered": [
-    { "name": "QuickGuide", "coverage": "ALL_4_FOLDERS" },
-    { "name": "Calculator", "coverage": "ALL_4_FOLDERS" },
-    { "name": "Translator", "coverage": "ALL_4_FOLDERS" },
-    { "name": "SOS Beacon", "coverage": "ALL_4_FOLDERS" },
-    { "name": "Currency", "coverage": "ALL_4_FOLDERS" },
-    { "name": "Dictionary", "coverage": "ALL_4_FOLDERS" },
-    { "name": "Field Notes", "coverage": "ALL_4_FOLDERS" }
-  ],
-  "newUIComponentsVerified": [
-    "SelfTestRunner (compact and full modes)",
-    "DebugBundlePanel",
-    "ProvenanceStrip",
-    "TrustBadge",
-    "HelpTooltip",
-    "PanelHelpIcon"
-  ],
-  "knownGaps": [],
   "coveragePercentage": 100.0,
   "verificationStatus": "READY_FOR_SIGNOFF"
 }
