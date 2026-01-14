@@ -723,7 +723,7 @@ export default function WeatherTile() {
                   <MetricRow label="Feels Like" value={weather.current.feelsLike} unit="°F" trustType="DERIVED" />
                   <MetricRow label="Humidity" value={weather.current.humidity} unit="%" trustType="VERIFIED" />
                   <MetricRow label="Wind Speed" value={weather.current.wind} unit="mph" trustType="VERIFIED" />
-                  <MetricRow label="Pressure" value={omegaPressure} unit="hPa" trustType="VERIFIED" />
+                  <MetricRow label="Pressure" value={weather.omegaSensors?.pressure || 'N/A'} unit="hPa" trustType="VERIFIED" />
                   <MetricRow label="UV Index" value={weather.current.uv || 'N/A'} trustType="ESTIMATED" />
                 </div>
               </div>
