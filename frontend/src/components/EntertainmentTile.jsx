@@ -590,8 +590,14 @@ export default function EntertainmentTile() {
             
             {/* See All Button */}
             <div className="flex justify-center">
-              <Button variant="outline" size="sm" className="rounded-full px-4 sm:px-6 gap-2 border-2 text-xs sm:text-sm">
-                View All {activeSection === 'all' ? 'Content' : sections.find(s => s.id === activeSection)?.label}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full px-4 sm:px-6 gap-2 border-2 text-xs sm:text-sm"
+                onClick={() => navigate('/entertainment')}
+                data-testid="entertainment-view-all"
+              >
+                View All {activeSection === 'all' ? 'Entertainment' : sections.find(s => s.id === activeSection)?.label}
                 <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Button>
             </div>
