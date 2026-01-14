@@ -24,16 +24,16 @@ OMEGA Dashboard is a single-page, offline-first web dashboard for a Raspberry Pi
 - Jellyfin direct: `http://talon.local:8096/web/`
 
 **Endpoint Configuration:**
-| Endpoint | Status | Wire Now? |
-|----------|--------|-----------|
-| health.py | 200 OK | ✅ YES |
-| metrics.py | 200 OK | ✅ YES |
-| backup.py | 200 OK (empty) | ✅ YES |
-| keys.py | 200 OK | ✅ YES |
-| keysync.py | 200 OK | ✅ YES |
-| dm.py | 403 Forbidden | ⚠️ FORBIDDEN STATE |
-| sensors.py | Error (I2C) | ⚠️ DEGRADED STATE |
-| GPS | Unknown | ⚠️ NOT CONFIGURED |
+| Endpoint | Path | Expected State |
+|----------|------|----------------|
+| health.py | `/api/cgi-bin/health.py` | LIVE |
+| metrics.py | `/api/cgi-bin/metrics.py` | LIVE |
+| backup.py | `/api/cgi-bin/backup.py` | LIVE (empty list OK) |
+| keys.py | `/api/cgi-bin/keys.py` | LIVE |
+| keysync.py | `/api/cgi-bin/keysync.py` | LIVE |
+| dm.py | `/api/cgi-bin/dm.py` | FORBIDDEN (403) |
+| sensors.py | `/api/cgi-bin/sensors.py` | DEGRADED (I2C issue) |
+| GPS | null | NOT_CONFIGURED |
 
 ### Confirmed Decisions
 - **API Strategy:** Direct port calls (http://talon.local:8093)
