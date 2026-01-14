@@ -309,3 +309,237 @@ export function DataWrapper({
 
   return children;
 }
+
+// ============================================================
+// FORBIDDEN STATE - For endpoints requiring authentication
+// ============================================================
+
+export function ForbiddenState({ 
+  title = 'Access Restricted',
+  message = 'Admin Access Required',
+  description = 'This feature requires administrator privileges.',
+  showRetry = false,
+  showContactAdmin = false,
+  onRetry,
+  className = '' 
+}) {
+  return (
+    <div className={`p-6 rounded-xl bg-destructive/10 border border-destructive/30 text-center ${className}`} data-testid="forbidden-state">
+      <div className="inline-flex p-3 rounded-full bg-destructive/20 mb-3">
+        <Lock className="w-6 h-6 text-destructive" />
+      </div>
+      <h4 className="font-semibold text-destructive mb-1">{title}</h4>
+      <p className="text-sm text-foreground mb-2">{message}</p>
+      <p className="text-xs text-muted-foreground mb-4">{description}</p>
+      <div className="flex items-center justify-center gap-2">
+        {showRetry && onRetry && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onRetry}
+            className="gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry
+          </Button>
+        )}
+        {showContactAdmin && (
+          <span className="text-xs text-muted-foreground">Contact an administrator for access.</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// DEGRADED STATE - For endpoints with partial failure
+// ============================================================
+
+export function DegradedState({ 
+  title = 'Service Degraded',
+  message = 'Partial functionality available',
+  description = 'Some features may not work correctly.',
+  showTroubleshooting = false,
+  troubleshootSteps = [],
+  onRetry,
+  className = '' 
+}) {
+  const [showSteps, setShowSteps] = React.useState(false);
+  
+  return (
+    <div className={`p-6 rounded-xl bg-warning/10 border border-warning/30 ${className}`} data-testid="degraded-state">
+      <div className="text-center mb-4">
+        <div className="inline-flex p-3 rounded-full bg-warning/20 mb-3">
+          <AlertCircle className="w-6 h-6 text-warning" />
+        </div>
+        <h4 className="font-semibold text-warning mb-1">{title}</h4>
+        <p className="text-sm text-foreground mb-1">{message}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </div>
+      
+      {showTroubleshooting && troubleshootSteps.length > 0 && (
+        <div className="mt-4">
+          <button 
+            onClick={() => setShowSteps(!showSteps)}
+            className="w-full flex items-center justify-between p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors text-sm"
+          >
+            <span className="flex items-center gap-2">
+              <Wrench className="w-4 h-4 text-warning" />
+              Troubleshooting Steps
+            </span>
+            <span className="text-xs text-muted-foreground">{showSteps ? '▲' : '▼'}</span>
+          </button>
+          
+          {showSteps && (
+            <div className="mt-2 p-3 rounded-lg bg-secondary/20 space-y-2 animate-fade-in">
+              {troubleshootSteps.map((step, i) => (
+                <div key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <span className="text-warning font-mono">{i + 1}.</span>
+                  <code className="flex-1 font-mono bg-secondary/50 px-2 py-1 rounded break-all">{step}</code>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {onRetry && (
+        <div className="mt-4 text-center">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onRetry}
+            className="gap-2 border-warning/30 text-warning hover:bg-warning/10"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Check Again
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// NOT CONFIGURED STATE - For features not yet set up
+// ============================================================
+
+export function NotConfiguredState({ 
+  title = 'Not Configured',
+  message = 'Feature Not Set Up',
+  description = 'This feature has not been configured on this device.',
+  setupInstructions = [],
+  setupLink = null,
+  className = '' 
+}) {
+  return (
+    <div className={`p-6 rounded-xl bg-secondary/30 border border-border/50 text-center ${className}`} data-testid="not-configured-state">
+      <div className="inline-flex p-3 rounded-full bg-muted/50 mb-3">
+        <Settings className="w-6 h-6 text-muted-foreground" />
+      </div>
+      <h4 className="font-semibold text-foreground mb-1">{title}</h4>
+      <p className="text-sm text-muted-foreground mb-2">{message}</p>
+      <p className="text-xs text-muted-foreground mb-4">{description}</p>
+      
+      {setupInstructions.length > 0 && (
+        <div className="mt-4 p-3 rounded-lg bg-secondary/20 text-left">
+          <p className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
+            <Info className="w-3 h-3" />
+            Setup Required:
+          </p>
+          <ul className="space-y-1">
+            {setupInstructions.map((instruction, i) => (
+              <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
+                <span className="text-primary">•</span>
+                {instruction}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {setupLink && (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          asChild
+          className="mt-4 gap-2"
+        >
+          <a href={setupLink} target="_blank" rel="noopener noreferrer">
+            <Settings className="w-4 h-4" />
+            Configure
+          </a>
+        </Button>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// ENDPOINT STATUS BADGE - Shows individual endpoint state
+// ============================================================
+
+export function EndpointStatusBadge({ 
+  endpointName,
+  className = '' 
+}) {
+  const { getEndpointStatus } = useConnection();
+  const endpointState = getEndpointStatus(endpointName);
+  
+  const statusConfig = {
+    [ENDPOINT_STATUS.OK]: {
+      label: 'LIVE',
+      color: 'text-success',
+      bgColor: 'bg-success/20',
+      borderColor: 'border-success/30',
+    },
+    [ENDPOINT_STATUS.FORBIDDEN]: {
+      label: 'LOCKED',
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/20',
+      borderColor: 'border-destructive/30',
+    },
+    [ENDPOINT_STATUS.DEGRADED]: {
+      label: 'DEGRADED',
+      color: 'text-warning',
+      bgColor: 'bg-warning/20',
+      borderColor: 'border-warning/30',
+    },
+    [ENDPOINT_STATUS.NOT_CONFIGURED]: {
+      label: 'NOT SET UP',
+      color: 'text-muted-foreground',
+      bgColor: 'bg-muted/20',
+      borderColor: 'border-muted-foreground/30',
+    },
+    [ENDPOINT_STATUS.ERROR]: {
+      label: 'ERROR',
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/20',
+      borderColor: 'border-destructive/30',
+    },
+    [ENDPOINT_STATUS.TIMEOUT]: {
+      label: 'TIMEOUT',
+      color: 'text-warning',
+      bgColor: 'bg-warning/20',
+      borderColor: 'border-warning/30',
+    },
+    [ENDPOINT_STATUS.UNKNOWN]: {
+      label: 'UNKNOWN',
+      color: 'text-muted-foreground',
+      bgColor: 'bg-muted/20',
+      borderColor: 'border-muted-foreground/30',
+    },
+  };
+  
+  const config = statusConfig[endpointState.status] || statusConfig[ENDPOINT_STATUS.UNKNOWN];
+  
+  return (
+    <span 
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${config.bgColor} ${config.color} border ${config.borderColor} ${className}`}
+      title={`Endpoint: ${endpointName} - ${config.label}`}
+      data-testid={`endpoint-badge-${endpointName}`}
+    >
+      {config.label}
+    </span>
+  );
+}
