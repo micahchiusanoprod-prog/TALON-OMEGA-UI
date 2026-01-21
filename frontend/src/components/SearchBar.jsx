@@ -29,10 +29,10 @@ const GLOBAL_CAPS = {
   files: 3     // Dynamic suppression to 0-2 when high-signal sources exist
 };
 
-// Kiwix API Configuration
+// Kiwix API Configuration - RELATIVE URLs for nginx proxy
 const KIWIX_ENDPOINTS = {
-  primary: 'http://talon.local:8090',
-  fallback: 'http://127.0.0.1:8090'
+  primary: '/kiwix',        // nginx proxies to 127.0.0.1:8090
+  fallback: '/kiwix'        // Same relative path
 };
 
 // Pinned Kiwix sources (boosted in ranking)
