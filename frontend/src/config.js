@@ -1,16 +1,24 @@
 // ============================================================
 // OMEGA Dashboard Runtime Configuration
-// Pi-Ready Deployment Configuration
+// Pi-Ready Deployment - ZERO EXTERNAL DEPENDENCIES
 // ============================================================
-// This config supports both MOCK mode (offline development) and
-// LIVE mode (connected to Pi backend)
-//
-// API Strategy: Use Nginx reverse proxy at /api/cgi-bin/*
-// This keeps frontend same-origin and works for mobile clients on LAN
+// All URLs are RELATIVE - works behind nginx reverse proxy
+// API: /api/* → Pi backend (127.0.0.1:8093)
+// Kiwix: /kiwix/* → Kiwix server (127.0.0.1:8090)
 
 // Build-time injected version (set during build)
-export const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION || 'dev';
+export const BUILD_VERSION = process.env.REACT_APP_BUILD_VERSION || 'pi-1.0.0';
 export const BUILD_TIMESTAMP = process.env.REACT_APP_BUILD_TIMESTAMP || new Date().toISOString();
+
+// ============================================================
+// System Health State (not just navigator.onLine)
+// ============================================================
+export const SYSTEM_STATE = {
+  LOCAL_OK: 'LOCAL_OK',           // All local services responding
+  LOCAL_DEGRADED: 'LOCAL_DEGRADED', // Some services down
+  LOCAL_DOWN: 'LOCAL_DOWN',       // All local services unreachable
+  UNKNOWN: 'UNKNOWN'              // Haven't checked yet
+};
 
 // ============================================================
 // Runtime Configuration - Can be overridden via window.OMEGA_CONFIG
@@ -20,17 +28,22 @@ const getConfig = () => {
   // Check for runtime override (allows config without rebuild)
   const runtimeConfig = (typeof window !== 'undefined' && window.OMEGA_CONFIG) ? window.OMEGA_CONFIG : {};
   
+  // Determine base URL from current origin
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  
   return {
-    // ========== Core URLs ==========
-    // API base - empty string means same-origin (uses Nginx /api proxy)
-    // For direct Pi access, set to 'http://talon.local:8093' in runtime config
+    // ========== Core URLs - ALL RELATIVE ==========
+    // API base - relative path, nginx proxies to Pi backend
     API_BASE: runtimeConfig.API_BASE || process.env.REACT_APP_API_BASE || '',
     
-    // Kiwix offline wiki server (direct port - no proxy)
-    KIWIX_BASE: runtimeConfig.KIWIX_BASE || process.env.REACT_APP_KIWIX_BASE || 'http://talon.local:8090',
+    // Kiwix - relative path, nginx proxies to Kiwix server
+    KIWIX_BASE: runtimeConfig.KIWIX_BASE || '/kiwix',
     
-    // Jellyfin media server
-    JELLYFIN_BASE: runtimeConfig.JELLYFIN_BASE || process.env.REACT_APP_JELLYFIN_BASE || 'http://talon.local:8096',
+    // Jellyfin media server - configurable
+    JELLYFIN_BASE: runtimeConfig.JELLYFIN_BASE || 
+      runtimeConfig.jellyfinBase || 
+      process.env.REACT_APP_JELLYFIN_BASE || 
+      (origin ? origin.replace(/:\d+$/, ':8096') : ':8096'),
     JELLYFIN_WEB_PATH: '/web/',
     
     // ========== Data Mode ==========
