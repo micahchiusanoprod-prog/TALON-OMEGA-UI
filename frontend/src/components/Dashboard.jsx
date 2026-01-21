@@ -12,17 +12,57 @@ import SecurityTile from './SecurityTile';
 import PowerTile from './PowerTile';
 import CommunityTile from './CommunityTile';
 import QuickToolsBar from './QuickToolsBar';
+import QuickAccessPanel from './QuickAccessPanel';
 import EntertainmentTile from './EntertainmentTile';
 import api from '../services/api';
 import config from '../config';
 export default function Dashboard({ theme, onToggleTheme }) {
   const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [showHelpCenter, setShowHelpCenter] = useState(false);
+  const [showSystemStatus, setShowSystemStatus] = useState(false);
+
+  // Quick Access handlers
+  const handleOpenKiwix = () => {
+    window.open('/kiwix/', '_blank');
+  };
+  
+  const handleOpenHotspot = () => {
+    // Scroll to hotspot tile or open help
+    const hotspotTile = document.getElementById('hotspot-tile');
+    if (hotspotTile) {
+      hotspotTile.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
+  const handleOpenStatus = () => {
+    setShowDiagnostics(true);
+  };
+  
+  const handleOpenComms = () => {
+    // Scroll to communications hub
+    const commsHub = document.getElementById('ally-communications-hub');
+    if (commsHub) {
+      commsHub.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen">
       <Header theme={theme} onToggleTheme={onToggleTheme} onDiagnosticsClick={() => setShowDiagnostics(true)} />
       
       <main className="container mx-auto px-4 pb-8 pt-20 max-w-[1600px] space-y-2">
+        
+        {/* ===== SHTF QUICK ACCESS PANEL (FIRST SCREEN) ===== */}
+        <section className="animate-fade-in relative z-30 mb-4">
+          <div className="max-w-4xl mx-auto">
+            <QuickAccessPanel 
+              onOpenKiwix={handleOpenKiwix}
+              onOpenHotspot={handleOpenHotspot}
+              onOpenStatus={handleOpenStatus}
+              onOpenComms={handleOpenComms}
+            />
+          </div>
+        </section>
         
         {/* ===== QUICK TOOLS & SEARCH (CENTERED TOGETHER) ===== */}
         <section className="animate-fade-in relative z-20">
