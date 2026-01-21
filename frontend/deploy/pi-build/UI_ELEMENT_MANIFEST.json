@@ -1,8 +1,21 @@
 {
-  "manifest_version": "1.0.0",
-  "generated": "2026-01-21T05:00:00Z",
-  "build": "pi-1.0.0",
-  "description": "Complete inventory of all UI elements and their dependencies",
+  "manifest_version": "1.1.0",
+  "build_version": "pi-1.1.0",
+  "generated": "2026-01-21",
+  "description": "Complete UI element inventory with dependencies and offline behavior",
+  
+  "system_health": {
+    "description": "LOCAL service health, independent of WAN",
+    "states": [
+      {"state": "LOCAL_OK", "condition": "API + Kiwix responding", "ui": "Green status badge"},
+      {"state": "LOCAL_DEGRADED", "condition": "Only one service up", "ui": "Yellow warning"},
+      {"state": "LOCAL_DOWN", "condition": "Neither responding", "ui": "Red alert banner"}
+    ],
+    "endpoints_checked": [
+      "/api/cgi-bin/health.py",
+      "/kiwix/"
+    ]
+  },
   
   "pages": [
     {
@@ -11,96 +24,22 @@
       "label": "OMEGA Dashboard",
       "type": "page",
       "dependencies": {
-        "api": ["/api/cgi-bin/health.py", "/api/cgi-bin/metrics.py"],
-        "kiwix": ["/kiwix/"],
-        "localStorage": ["omega-theme"]
+        "api": ["/api/cgi-bin/health.py"],
+        "kiwix": ["/kiwix/"]
       },
       "offline_status": "works",
-      "children": ["quick-access-panel", "search-bar", "quick-tools-bar", "ally-communications-hub", "community-tile"]
+      "components": ["quick-access-panel", "quick-tools-bar", "search-bar", "ally-communications-hub", "tiles"]
     },
     {
       "id": "entertainment",
       "route": "/#/entertainment",
-      "label": "Entertainment Hub",
+      "label": "Entertainment",
       "type": "page",
       "dependencies": {
-        "jellyfin": ["http://talon.local:8096/web/"]
+        "jellyfin": [":8096"]
       },
       "offline_status": "degrades",
-      "fallback": "NOT_CONFIGURED message with setup guide"
-    }
-  ],
-  
-  "header_elements": [
-    {
-      "id": "logs-btn",
-      "testId": "logs-btn",
-      "label": "LOGS",
-      "type": "button",
-      "action": "open_modal",
-      "target": "logs-analytics-modal",
-      "dependencies": {
-        "localStorage": []
-      },
-      "offline_status": "works"
-    },
-    {
-      "id": "community-btn",
-      "testId": "community-btn",
-      "label": "Community",
-      "type": "button",
-      "action": "open_modal",
-      "target": "community-hub-modal",
-      "dependencies": {
-        "api": ["/api/ally/nodes"]
-      },
-      "offline_status": "degrades"
-    },
-    {
-      "id": "help-center-btn",
-      "testId": "help-center-btn",
-      "label": "Help Center",
-      "type": "button",
-      "action": "open_modal",
-      "target": "help-center-modal",
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "entertainment-btn",
-      "testId": "entertainment-btn",
-      "label": "Entertainment",
-      "type": "button",
-      "action": "navigate",
-      "target": "/#/entertainment",
-      "dependencies": {
-        "jellyfin": ["http://talon.local:8096"]
-      },
-      "offline_status": "degrades"
-    },
-    {
-      "id": "admin-console-btn",
-      "testId": "admin-console-btn",
-      "label": "Admin Console",
-      "type": "button",
-      "action": "open_modal",
-      "target": "admin-console-modal",
-      "dependencies": {
-        "api": ["/api/cgi-bin/health.py"],
-        "kiwix": ["/kiwix/"]
-      },
-      "offline_status": "degrades"
-    },
-    {
-      "id": "theme-toggle-btn",
-      "testId": "theme-toggle-btn",
-      "label": "Light/Dark",
-      "type": "button",
-      "action": "toggle_theme",
-      "dependencies": {
-        "localStorage": ["omega-theme"]
-      },
-      "offline_status": "works"
+      "fallback": "Shows NOT_CONFIGURED with setup guide"
     }
   ],
   
@@ -109,133 +48,54 @@
     "testId": "quick-access-panel",
     "label": "Quick Access",
     "type": "panel",
-    "purpose": "SHTF first-screen access to critical functions",
-    "goal": "User finds Kiwix, hotspot, status in <10 seconds",
+    "location": "dashboard-top",
+    "purpose": "SHTF first-screen access (<10 seconds to Kiwix, hotspot, status)",
+    "offline_status": "works",
     "buttons": [
       {
         "id": "quick-access-kiwix",
         "testId": "quick-access-kiwix",
         "label": "Knowledge Base",
-        "sublabel": "Search offline wiki",
-        "action": "open_search_with_kiwix_focus",
-        "dependencies": {
-          "kiwix": ["/kiwix/search"]
-        },
+        "sublabel": "Offline Wiki",
+        "action": "window.open('/kiwix/', '_blank')",
+        "dependencies": ["/kiwix/"],
+        "offline_status": "degrades"
+      },
+      {
+        "id": "quick-access-status",
+        "testId": "quick-access-status",
+        "label": "System Status",
+        "sublabel": "Health & Diagnostics",
+        "action": "open_diagnostics_panel",
+        "dependencies": ["/api/cgi-bin/health.py", "/api/cgi-bin/metrics.py"],
         "offline_status": "degrades"
       },
       {
         "id": "quick-access-hotspot",
         "testId": "quick-access-hotspot",
         "label": "WiFi Hotspot",
-        "sublabel": "Connect devices",
-        "action": "open_help_center_hotspot_section",
-        "dependencies": {},
+        "sublabel": "Connect Devices",
+        "action": "scroll_to_hotspot_tile",
+        "dependencies": [],
         "offline_status": "works"
-      },
-      {
-        "id": "quick-access-status",
-        "testId": "quick-access-status",
-        "label": "System Status",
-        "sublabel": "Health & diagnostics",
-        "action": "open_system_status_panel",
-        "dependencies": {
-          "api": ["/api/cgi-bin/health.py", "/api/cgi-bin/metrics.py"]
-        },
-        "offline_status": "degrades"
       },
       {
         "id": "quick-access-comms",
         "testId": "quick-access-comms",
         "label": "Communications",
-        "sublabel": "Mesh & radio",
-        "action": "focus_comms_tile",
-        "dependencies": {
-          "api": ["/api/cgi-bin/mesh", "/api/ally/nodes"]
-        },
+        "sublabel": "Mesh & Messages",
+        "action": "scroll_to_comms_hub",
+        "dependencies": ["/api/cgi-bin/mesh.py"],
         "offline_status": "degrades"
       }
-    ]
-  },
-  
-  "quick_tools": [
-    {
-      "id": "tool-quickguide",
-      "testId": "tool-quickguide",
-      "label": "Quick Guide",
-      "type": "button",
-      "action": "open_modal",
-      "target": "quick-guide-modal",
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "tool-calculator",
-      "testId": "tool-calculator",
-      "label": "Calculator",
-      "type": "button",
-      "action": "open_modal",
-      "target": "calculator-modal",
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "tool-translator",
-      "testId": "tool-translator",
-      "label": "Translator",
-      "type": "button",
-      "action": "open_modal",
-      "target": "translator-modal",
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "tool-sos",
-      "testId": "tool-sos",
-      "label": "SOS Beacon",
-      "type": "button",
-      "action": "open_modal",
-      "target": "sos-beacon-modal",
-      "dependencies": {
-        "api": ["/api/ally/broadcast"]
-      },
-      "offline_status": "degrades",
-      "fallback": "Local alert option + radio frequencies"
-    },
-    {
-      "id": "tool-currency",
-      "testId": "tool-currency",
-      "label": "Currency",
-      "type": "button",
-      "action": "open_modal",
-      "target": "currency-modal",
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "tool-dictionary",
-      "testId": "tool-dictionary",
-      "label": "Dictionary",
-      "type": "button",
-      "action": "open_modal",
-      "target": "dictionary-modal",
-      "dependencies": {
-        "kiwix": ["/kiwix/search"]
-      },
-      "offline_status": "degrades"
-    },
-    {
-      "id": "tool-notes",
-      "testId": "tool-notes",
-      "label": "Field Notes",
-      "type": "button",
-      "action": "open_modal",
-      "target": "notes-modal",
-      "dependencies": {
-        "localStorage": ["omega-field-notes"]
-      },
-      "offline_status": "works"
+    ],
+    "direct_link": {
+      "testId": "quick-access-kiwix-direct",
+      "label": "Open Kiwix Library Directly",
+      "href": "/kiwix/",
+      "target": "_blank"
     }
-  ],
+  },
   
   "search": {
     "id": "search-bar",
@@ -243,271 +103,133 @@
     "label": "Search everything...",
     "type": "input",
     "dependencies": {
-      "kiwix": ["/kiwix/search", "/kiwix/suggest"],
-      "localStorage": ["omega-recent-searches"]
+      "kiwix": ["/kiwix/search?pattern=X&limit=20"]
     },
+    "note": "/kiwix/suggest returns 404 - NOT USED",
     "offline_status": "degrades",
-    "fallback": "Shows 'Kiwix Unavailable' banner + library fallback + retry option",
-    "scopes": [
-      {"id": "global", "label": "Global", "sources": ["kiwix", "community", "files", "commands"]},
-      {"id": "knowledge", "label": "Knowledge", "sources": ["kiwix"]},
-      {"id": "media", "label": "Media", "sources": ["jellyfin"]},
-      {"id": "community", "label": "Community", "sources": ["ally"]},
-      {"id": "files", "label": "Files", "sources": ["local"]},
-      {"id": "tools", "label": "Tools", "sources": ["commands"]}
+    "fallback": "Shows 'Kiwix Unavailable' banner with retry option",
+    "scopes": ["Global", "Knowledge", "Media", "Community", "Files", "Tools"]
+  },
+  
+  "api_error_handlers": {
+    "description": "Clean error display for Pi-specific responses",
+    "handlers": [
+      {
+        "id": "DM_FORBIDDEN",
+        "trigger": "403 response from /api/cgi-bin/dm.py",
+        "response_pattern": "{\"ok\":false,\"err\":\"forbidden\"}",
+        "ui_title": "Direct Messages - Setup Required",
+        "ui_description": "Direct messaging has not been configured on this OMEGA device.",
+        "next_actions": ["View Setup Guide", "Check System Status", "Return to Dashboard"],
+        "offline_tip": "Contact your network administrator to enable direct messaging."
+      },
+      {
+        "id": "SENSORS_ERROR",
+        "trigger": "{\"status\":\"error\"} from /api/cgi-bin/sensors.py",
+        "response_pattern": "{\"status\":\"error\",\"error\":\"...i2c...\"}",
+        "ui_title": "Environmental Sensors - Hardware Issue",
+        "ui_description": "Unable to read from the BME680 sensor.",
+        "next_actions": ["View Hardware Guide", "Retry Connection", "Return to Dashboard"],
+        "offline_tip": "Check that the BME680 sensor is properly connected to the I2C bus."
+      },
+      {
+        "id": "GPS_ERROR",
+        "trigger": "{\"status\":\"error\"} from /api/cgi-bin/gps.py",
+        "response_pattern": "{\"status\":\"error\",\"error\":\"gpspipe timeout...\"}",
+        "ui_title": "GPS - No Signal",
+        "ui_description": "Unable to get GPS coordinates.",
+        "next_actions": ["Enter Location Manually", "View Saved Waypoints", "Retry GPS", "Return to Dashboard"],
+        "offline_tip": "Move to an area with clear sky view, or manually enter your coordinates."
+      },
+      {
+        "id": "KIWIX_UNAVAILABLE",
+        "trigger": "Cannot reach /kiwix/",
+        "ui_title": "Knowledge Base - Unavailable",
+        "next_actions": ["Retry Connection", "Check System Status", "Return to Dashboard"],
+        "offline_tip": "Verify that kiwix-serve is running on the Pi."
+      }
     ]
   },
   
-  "modals": [
-    {
-      "id": "logs-analytics-modal",
-      "label": "LOGS Analytics",
-      "type": "modal",
-      "has_return_button": true,
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "community-hub-modal",
-      "label": "Community Hub",
-      "type": "modal",
-      "has_return_button": true,
-      "tabs": ["overview", "directory", "activity"],
-      "dependencies": {
-        "api": ["/api/ally/nodes", "/api/ally/chat"]
-      },
-      "offline_status": "degrades"
-    },
-    {
-      "id": "help-center-modal",
-      "label": "Help Center",
-      "type": "modal",
-      "has_return_button": true,
-      "sections": ["quick-start", "hotspot-setup", "kiwix-guide", "troubleshooting"],
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "admin-console-modal",
-      "label": "Admin Console",
-      "type": "modal",
-      "has_return_button": true,
-      "tabs": [
-        {
-          "id": "fleet",
-          "testId": "admin-section-fleet",
-          "label": "Fleet Updates",
-          "dependencies": {},
-          "offline_status": "works"
-        },
-        {
-          "id": "roster",
-          "testId": "admin-section-roster",
-          "label": "Roster & Readiness",
-          "dependencies": {},
-          "offline_status": "works"
-        },
-        {
-          "id": "broadcast",
-          "testId": "admin-section-broadcast",
-          "label": "Broadcast & Assembly",
-          "dependencies": {
-            "api": ["/api/ally/broadcast"]
-          },
-          "offline_status": "degrades"
-        },
-        {
-          "id": "search-health",
-          "testId": "admin-section-search",
-          "label": "Search Health",
-          "dependencies": {
-            "kiwix": ["/kiwix/"]
-          },
-          "offline_status": "degrades"
-        },
-        {
-          "id": "data-health",
-          "testId": "admin-section-datahealth",
-          "label": "Data Health",
-          "dependencies": {
-            "api": ["/api/cgi-bin/health.py"],
-            "kiwix": ["/kiwix/"]
-          },
-          "offline_status": "works",
-          "note": "Shows accurate status for each source"
-        },
-        {
-          "id": "audit",
-          "testId": "admin-section-audit",
-          "label": "Audit",
-          "dependencies": {},
-          "offline_status": "works"
-        }
-      ]
-    },
-    {
-      "id": "system-status-panel",
-      "label": "System Status",
-      "type": "panel",
-      "has_return_button": true,
-      "dependencies": {
-        "api": ["/api/cgi-bin/health.py", "/api/cgi-bin/metrics.py", "/api/cgi-bin/sensors.py"]
-      },
-      "offline_status": "degrades"
-    },
-    {
-      "id": "quick-guide-modal",
-      "label": "Quick Guide",
-      "type": "modal",
-      "has_return_button": true,
-      "pages": 7,
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "calculator-modal",
-      "label": "Calculator",
-      "type": "modal",
-      "has_return_button": true,
-      "dependencies": {},
-      "offline_status": "works"
-    },
-    {
-      "id": "sos-beacon-modal",
-      "label": "SOS Beacon",
-      "type": "modal",
-      "has_return_button": true,
-      "dependencies": {
-        "api": ["/api/ally/broadcast"]
-      },
-      "offline_status": "degrades",
-      "dead_end_fix": {
-        "type": "SOS_NETWORK_DOWN",
-        "fallback_actions": ["local-alert", "radio-info", "mesh-status"]
-      }
-    }
-  ],
-  
-  "dashboard_tiles": [
+  "tiles": [
     {
       "id": "ally-communications-hub",
-      "testId": "ally-communications-hub",
       "label": "Ally Communications Hub",
-      "type": "tile",
-      "dependencies": {
-        "api": ["/api/cgi-bin/mesh", "/api/ally/nodes"]
-      },
-      "offline_status": "degrades",
-      "tabs": ["comms", "map", "chat"]
-    },
-    {
-      "id": "community-tile",
-      "label": "Community Feed",
-      "type": "tile",
-      "dependencies": {
-        "api": ["/api/community/posts"]
-      },
-      "offline_status": "degrades"
-    },
-    {
-      "id": "device-info-tile",
-      "label": "Device Status",
-      "type": "tile",
-      "dependencies": {
-        "api": ["/api/cgi-bin/metrics.py"]
-      },
+      "dependencies": ["/api/cgi-bin/mesh.py"],
       "offline_status": "degrades"
     },
     {
       "id": "environment-tile",
       "label": "Environment",
-      "type": "tile",
-      "dependencies": {
-        "api": ["/api/cgi-bin/sensors.py"]
-      },
+      "dependencies": ["/api/cgi-bin/sensors.py"],
+      "offline_status": "degrades",
+      "error_handling": "Shows SENSORS_ERROR handler on {status:error}"
+    },
+    {
+      "id": "device-info-tile",
+      "label": "Device Status",
+      "dependencies": ["/api/cgi-bin/metrics.py"],
       "offline_status": "degrades"
     },
     {
       "id": "hotspot-tile",
       "label": "Hotspot",
-      "type": "tile",
-      "dependencies": {
-        "api": ["/api/hotspot/status", "/api/hotspot/clients"]
-      },
-      "offline_status": "degrades"
+      "dependencies": [],
+      "offline_status": "works",
+      "note": "Shows static instructions, no backend required"
     },
     {
       "id": "power-tile",
       "label": "Power",
-      "type": "tile",
-      "dependencies": {
-        "api": ["/api/cgi-bin/power"]
-      },
-      "offline_status": "degrades"
+      "dependencies": [],
+      "offline_status": "works"
     },
     {
       "id": "weather-tile",
       "label": "Weather",
-      "type": "tile",
-      "dependencies": {
-        "api": ["/api/cgi-bin/weather"]
-      },
-      "offline_status": "degrades"
+      "dependencies": [],
+      "offline_status": "works"
     },
     {
       "id": "security-tile",
       "label": "Security",
-      "type": "tile",
-      "dependencies": {
-        "localStorage": ["omega_profiles"]
-      },
+      "dependencies": ["localStorage:omega_profiles"],
       "offline_status": "works"
     }
   ],
   
-  "dead_end_handlers": {
-    "KIWIX_DOWN": {
-      "affected_elements": ["search-bar", "tool-dictionary", "admin-section-search"],
-      "ui_state": "Shows 'Kiwix Search Unavailable' banner",
-      "next_actions": ["retry", "status", "help", "home"],
-      "offline_tip": "Browse cached pages or use built-in guides"
+  "modals": [
+    {
+      "id": "admin-console-modal",
+      "has_return_button": true,
+      "tabs": ["Fleet Updates", "Roster & Readiness", "Broadcast", "Search Health", "Data Health", "Audit"]
     },
-    "JELLYFIN_NOT_CONFIGURED": {
-      "affected_elements": ["entertainment-page"],
-      "ui_state": "Shows 'NOT_CONFIGURED' message",
-      "next_actions": ["setup", "status", "home"],
-      "offline_tip": "Install Jellyfin on port 8096"
+    {
+      "id": "help-center-modal",
+      "has_return_button": true,
+      "offline_status": "works"
     },
-    "SOS_NETWORK_DOWN": {
-      "affected_elements": ["tool-sos"],
-      "ui_state": "Shows network failure warning",
-      "next_actions": ["local-alert", "radio-info", "mesh", "home"],
-      "offline_tip": "Use audio/visual beacon or radio",
-      "urgent": true
-    },
-    "GPS_UNAVAILABLE": {
-      "affected_elements": ["gps-map"],
-      "ui_state": "Shows 'GPS Not Available' message",
-      "next_actions": ["manual-location", "waypoints", "status", "home"],
-      "offline_tip": "Enter coordinates manually"
+    {
+      "id": "diagnostics-panel",
+      "has_return_button": true,
+      "dependencies": ["/api/cgi-bin/health.py", "/api/cgi-bin/metrics.py"]
     }
-  },
-  
-  "localStorage_keys": [
-    {"key": "omega-theme", "purpose": "Light/dark theme preference", "default": "dark"},
-    {"key": "omega-field-notes", "purpose": "User's field notes", "default": ""},
-    {"key": "omega-recent-searches", "purpose": "Search history", "default": "[]"},
-    {"key": "omega-pinned-hotkeys", "purpose": "Pinned quick actions", "default": "[]"},
-    {"key": "omega_profiles", "purpose": "Family member profiles", "default": "[]"}
   ],
   
   "escape_hatches": {
-    "description": "Every modal/panel has a way to return to dashboard",
+    "description": "Every modal/error state has 'Return to Dashboard'",
     "methods": [
-      "Close button (X) in header",
+      "Close button (X) in modal header",
       "Escape key",
       "'Return to Dashboard' button in error states",
       "Click outside modal backdrop"
     ]
-  }
+  },
+  
+  "localStorage_keys": [
+    {"key": "omega-theme", "purpose": "Light/dark theme", "default": "dark"},
+    {"key": "omega-field-notes", "purpose": "User notes", "default": ""},
+    {"key": "omega-recent-searches", "purpose": "Search history", "default": "[]"},
+    {"key": "omega_profiles", "purpose": "Family profiles", "default": "[]"}
+  ]
 }
