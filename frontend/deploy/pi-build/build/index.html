@@ -10,24 +10,28 @@
     <meta name="mobile-web-app-capable" content="yes"/>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2306b6d4'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3EΩ%3C/text%3E%3C/svg%3E"/>
     <title>OMEGA Dashboard</title>
-    <!-- 
+    <!--
     ============================================================
     OMEGA DASHBOARD - PI-READY PRODUCTION BUILD
-    Version: pi-1.0.0
-    Build: TIMESTAMP_PLACEHOLDER
+    Version: pi-1.1.0
     
     ZERO EXTERNAL DEPENDENCIES
     All CSS/JS bundled locally. Works 100% offline.
+    
+    URL Contract:
+    - API: /api/cgi-bin/* (nginx → 127.0.0.1:8093)
+    - Kiwix: /kiwix/* (nginx → 127.0.0.1:8090)
     ============================================================
     -->
     <script>
-        // Runtime configuration (can be overridden)
+        // Runtime configuration - can be customized per deployment
         window.OMEGA_CONFIG = window.OMEGA_CONFIG || {
             API_BASE: '',
             KIWIX_BASE: '/kiwix',
             jellyfinBase: null,
             USE_MOCK_DATA: false
         };
+        // System state tracking
         window.OMEGA_SYSTEM_STATE = {
             api: null,
             kiwix: null,
@@ -35,14 +39,13 @@
             state: 'UNKNOWN'
         };
     </script>
-    <script defer="defer" src="./static/js/main.8b68ba75.js"></script>
-    <link href="./static/css/main.23b8268a.css" rel="stylesheet"/>
+    <link href="./static/css/main.e19012de.css" rel="stylesheet"/>
 </head>
 <body>
     <noscript>
         <div style="padding:40px;text-align:center;font-family:sans-serif;background:#0a0a0a;color:#fff;min-height:100vh">
             <h1 style="color:#06b6d4">OMEGA Dashboard</h1>
-            <p>JavaScript is required to run this application.</p>
+            <p>JavaScript is required. Please enable JavaScript in your browser.</p>
         </div>
     </noscript>
     <div id="root"></div>
@@ -51,20 +54,13 @@
         #omega-loader.hidden{display:none}
         .omega-spinner{width:48px;height:48px;border:3px solid rgba(6,182,212,.2);border-top-color:#06b6d4;border-radius:50%;animation:spin 1s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .omega-logo{font-size:48px;margin-bottom:24px;color:#06b6d4}
     </style>
     <div id="omega-loader">
-        <div class="omega-logo">Ω</div>
+        <div style="font-size:48px;margin-bottom:24px;color:#06b6d4">Ω</div>
         <div class="omega-spinner"></div>
         <p style="margin-top:16px;color:#888">Loading OMEGA...</p>
     </div>
-    <script>
-        window.addEventListener('load',function(){
-            setTimeout(function(){
-                var l=document.getElementById('omega-loader');
-                if(l)l.classList.add('hidden');
-            },100);
-        });
-    </script>
+    <script>window.addEventListener('load',function(){setTimeout(function(){var l=document.getElementById('omega-loader');if(l)l.classList.add('hidden')},100)})</script>
+    <script defer src="./static/js/main.5885e6ee.js"></script>
 </body>
 </html>
