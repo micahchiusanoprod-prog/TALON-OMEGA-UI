@@ -1090,8 +1090,8 @@ const DATA_SOURCES = [
   {
     id: 'kiwix',
     name: 'Kiwix Knowledge',
-    endpoint: 'http://talon.local:8090',
-    fallback: 'http://127.0.0.1:8090',
+    endpoint: '/kiwix',
+    fallback: '/kiwix',
     icon: Book,
     description: 'Offline knowledge base and article search',
     category: 'search'
@@ -1099,7 +1099,9 @@ const DATA_SOURCES = [
   {
     id: 'jellyfin',
     name: 'Jellyfin Media',
-    endpoint: process.env.REACT_APP_JELLYFIN_URL || 'http://localhost:8096',
+    endpoint: (typeof window !== 'undefined' && window.OMEGA_CONFIG?.jellyfinBase) || 
+              process.env.REACT_APP_JELLYFIN_URL || 
+              (typeof window !== 'undefined' ? window.location.origin.replace(/:\d+$/, ':8096') : ':8096'),
     icon: Film,
     description: 'Media library for movies, TV, and music',
     category: 'search',
