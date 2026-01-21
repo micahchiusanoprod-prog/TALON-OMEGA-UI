@@ -113,6 +113,26 @@ sudo systemctl reload nginx
 **Degraded State:** Consistently using Option A (Kiwix down → "Kiwix Search Unavailable" banner)
 **Search UX:** No changes during P3 - autosuggest typing-state screenshots NOT required
 
+## Pi Deployment Package (NEW)
+
+**Created:** 2026-01-21
+**Location:** `/app/frontend/deploy/pi-build/OMEGA_PI_BUILD.zip`
+**Size:** 2.3 MB
+
+### Package Contents
+- `build/` - Production React build (zero external dependencies)
+- `nginx.conf` - nginx reverse proxy configuration
+- `README_PI_DEPLOY.md` - Deployment guide with copy/paste commands
+- `INTEGRATION_CONTRACT.md` - Complete API specification
+- `UI_ELEMENT_MANIFEST.json` - Full UI element inventory
+
+### Key Features
+- **Zero external CDN dependencies** - All CSS/JS bundled
+- **Relative URLs** - `/api/*` and `/kiwix/*` via nginx proxy
+- **WAN-independent health checks** - LOCAL_OK / LOCAL_DEGRADED / LOCAL_DOWN
+- **Dead end elimination** - All unavailable states have actionable next steps
+- **Quick Access Panel** - Knowledge, Hotspot, Status, Comms in <10 seconds
+
 ## Next Steps (Future)
 - P3.4: On-device Pi acceptance testing
 - P3.5: Runbook hardening (copy/paste commands)
