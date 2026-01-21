@@ -745,9 +745,9 @@ const SearchHealthSection = () => {
   const [recentErrors, setRecentErrors] = useState([]);
   const [isChecking, setIsChecking] = useState(false);
 
-  // Kiwix endpoints
-  const KIWIX_PRIMARY = 'http://talon.local:8090';
-  const KIWIX_FALLBACK = 'http://127.0.0.1:8090';
+  // Kiwix endpoints - RELATIVE URLs for nginx proxy
+  const KIWIX_PRIMARY = '/kiwix';
+  const KIWIX_FALLBACK = '/kiwix';
 
   // Check Kiwix API health
   const checkKiwixHealth = async () => {
