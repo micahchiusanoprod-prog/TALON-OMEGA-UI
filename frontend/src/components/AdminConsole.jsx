@@ -1379,8 +1379,8 @@ const DataHealthSection = () => {
       if (source.id === 'kiwix') {
         return [
           'Verify kiwix-serve is running on the Pi',
-          'Check if http://talon.local:8090 is accessible',
-          'Ensure network connectivity to the Kiwix server',
+          'Check if /kiwix/ is accessible (nginx proxy)',
+          'Ensure Kiwix server is running on port 8090',
           'Restart kiwix-serve if needed: sudo systemctl restart kiwix-serve'
         ];
       }
