@@ -95,6 +95,7 @@ sudo systemctl reload nginx
 - `/app/frontend/deploy/releases/2026-01-14_060220/P3_evidence/` - 4-mode screenshot evidence (16 files)
 - `/app/baseline_export/SEARCH_QUALITY_VALIDATION.md` - Test queries
 - `/app/baseline_export/SEARCH_QUALITY_REPORT.md` - Search implementation
+- `/app/baseline_export/OMEGA_UI_FORENSIC_AUDIT.md` - Complete UI audit (NEW)
 - `/app/memory/PRD.md` - This document
 
 ## P3 Screenshot Evidence Summary
