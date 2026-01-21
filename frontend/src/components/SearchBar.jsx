@@ -173,35 +173,89 @@ const fetchKiwixArticleResults = async (query) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    // kiwix-serve search endpoint - typically /search?pattern=query
-    // Also supports /suggest for autosuggest
+    // kiwix-serve search endpoint - /search?pattern=query returns HTML
+    // Note: /suggest returns 404 on production Pi - DO NOT USE
     const searchUrl = `${kiwixApiEndpoint}/search?pattern=${encodeURIComponent(query)}&limit=20`;
     
     const response = await fetch(searchUrl, {
       signal: controller.signal,
       mode: 'cors',
-      headers: { 'Accept': 'application/json' }
+      headers: { 'Accept': 'text/html, application/json' }
     });
     
     clearTimeout(timeoutId);
     
     if (!response.ok) {
-      // Try alternate endpoint format
-      const altSearchUrl = `${kiwixApiEndpoint}/suggest?term=${encodeURIComponent(query)}`;
-      const altResponse = await fetch(altSearchUrl, { mode: 'cors' });
-      if (altResponse.ok) {
-        const data = await altResponse.json();
-        return { results: data, endpoint: 'suggest' };
-      }
       throw new Error(`Kiwix search returned ${response.status}`);
     }
     
-    const data = await response.json();
-    return { results: data, endpoint: 'search' };
+    // Kiwix /search returns HTML - parse it for results
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await response.json();
+      return { results: data, endpoint: 'search', format: 'json' };
+    } else {
+      // HTML response - parse search results from HTML
+      const html = await response.text();
+      const results = parseKiwixSearchHTML(html, query);
+      return { results, endpoint: 'search', format: 'html' };
+    }
   } catch (err) {
     console.log('[Kiwix] Article search failed:', err.message);
     return { results: [], error: err.message };
   }
+};
+
+// Parse Kiwix search HTML results
+const parseKiwixSearchHTML = (html, query) => {
+  const results = [];
+  try {
+    // Create a temporary DOM parser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Kiwix search results are typically in list items or divs
+    const resultElements = doc.querySelectorAll('.result, .searchresult, li.result, .kiwix-result, [class*="result"]');
+    
+    resultElements.forEach((el, idx) => {
+      if (idx >= 20) return; // Limit results
+      
+      const linkEl = el.querySelector('a');
+      const titleEl = el.querySelector('.title, h3, h4, strong, a');
+      const snippetEl = el.querySelector('.snippet, .description, p, .text');
+      
+      if (linkEl || titleEl) {
+        results.push({
+          title: titleEl?.textContent?.trim() || linkEl?.textContent?.trim() || 'Result',
+          path: linkEl?.getAttribute('href') || '',
+          snippet: snippetEl?.textContent?.trim() || '',
+          book: 'Kiwix Library',
+          score: 1 - (idx * 0.05)
+        });
+      }
+    });
+    
+    // If no structured results found, try to extract any links
+    if (results.length === 0) {
+      const links = doc.querySelectorAll('a[href*="/content/"], a[href*="/"]');
+      links.forEach((link, idx) => {
+        if (idx >= 10) return;
+        const text = link.textContent?.trim();
+        if (text && text.length > 2 && !text.startsWith('http')) {
+          results.push({
+            title: text,
+            path: link.getAttribute('href') || '',
+            snippet: '',
+            book: 'Kiwix Library',
+            score: 0.5
+          });
+        }
+      });
+    }
+  } catch (e) {
+    console.log('[Kiwix] HTML parse error:', e.message);
+  }
+  return results;
 };
 
 // Transform Kiwix API results to our format
