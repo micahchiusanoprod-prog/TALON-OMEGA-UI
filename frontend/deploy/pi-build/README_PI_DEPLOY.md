@@ -2,22 +2,26 @@
 
 ## Overview
 
-This package contains a production-ready build of the OMEGA Dashboard optimized for Raspberry Pi deployment. The build has:
+Production-ready OMEGA Dashboard build for Raspberry Pi deployment.
 
-- **Zero external dependencies** - All CSS/JS bundled locally
-- **Relative URLs** - Works behind nginx reverse proxy
-- **Offline-first design** - Functions without WAN connectivity
-- **WAN-independent health checks** - Monitors local services only
+**Version:** pi-1.1.0  
+**Features:**
+- Zero external dependencies (all CSS/JS bundled)
+- Relative URLs for nginx proxy
+- LOCAL-based offline detection (not WAN-dependent)
+- SHTF-first Quick Access panel
+- Clean error handling for all Pi API responses
 
-## Quick Start (5 minutes)
+## Quick Deploy (5 minutes)
 
 ### Prerequisites
 
-- Raspberry Pi with Raspbian/Debian
-- nginx installed (`sudo apt install nginx`)
-- OMEGA backend running on port 8093
-- Kiwix server running on port 8090 (optional)
-- Jellyfin running on port 8096 (optional)
+```bash
+# Required services on Pi:
+# - nginx (reverse proxy)
+# - OMEGA API on port 8093
+# - Kiwix on port 8090 (optional but recommended)
+```
 
 ### Step 1: Copy Files
 
@@ -25,7 +29,7 @@ This package contains a production-ready build of the OMEGA Dashboard optimized 
 # Create web directory
 sudo mkdir -p /var/www/omega
 
-# Copy build files (from this package)
+# Extract and copy (from this package)
 sudo cp -r ./build/* /var/www/omega/
 
 # Set permissions
@@ -36,218 +40,207 @@ sudo chmod -R 755 /var/www/omega
 ### Step 2: Configure nginx
 
 ```bash
-# Backup existing config
-sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
-
-# Create OMEGA config
-sudo nano /etc/nginx/sites-available/omega
-```
-
-Paste this configuration:
-
-```nginx
+# Create nginx config
+sudo tee /etc/nginx/sites-available/omega << 'NGINX'
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
+    server_name _;
     
-    server_name talon.local _;
-    
-    # Serve static frontend
     root /var/www/omega;
     index index.html;
     
-    # Frontend routes (SPA)
+    # Frontend SPA
     location / {
         try_files $uri $uri/ /index.html;
     }
     
-    # API proxy to OMEGA backend
+    # API proxy → OMEGA backend
     location /api/ {
         proxy_pass http://127.0.0.1:8093/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_connect_timeout 5s;
         proxy_read_timeout 30s;
     }
     
-    # Kiwix proxy
+    # Kiwix proxy → Kiwix server
     location /kiwix/ {
         proxy_pass http://127.0.0.1:8090/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_buffering off;
         proxy_connect_timeout 5s;
         proxy_read_timeout 60s;
     }
     
-    # Direct Kiwix access (legacy support)
     location = /kiwix {
         return 301 /kiwix/;
     }
     
-    # Cache static assets
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+    # Static asset caching
+    location ~* \.(js|css|png|jpg|svg|woff|woff2)$ {
         expires 7d;
         add_header Cache-Control "public, immutable";
     }
     
-    # Security headers
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    
-    # Gzip compression
     gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml;
-    gzip_min_length 1000;
+    gzip_types text/plain text/css application/json application/javascript;
 }
+NGINX
 ```
 
 ### Step 3: Enable and Start
 
 ```bash
-# Enable the site
+# Enable site
 sudo ln -sf /etc/nginx/sites-available/omega /etc/nginx/sites-enabled/omega
 sudo rm -f /etc/nginx/sites-enabled/default
 
-# Test configuration
-sudo nginx -t
-
-# Reload nginx
-sudo systemctl reload nginx
-
-# Verify
-curl -I http://localhost/
+# Test and reload
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### Step 4: Verify Deployment
+### Step 4: Verify
 
 ```bash
-# Check frontend loads
-curl -s http://localhost/ | head -20
+# Test frontend
+curl -s http://localhost/ | head -5
 
-# Check API proxy
+# Test API proxy
 curl -s http://localhost/api/cgi-bin/health.py
 
-# Check Kiwix proxy (if running)
-curl -s http://localhost/kiwix/
-
-# Check from another device on LAN
-# On your phone/laptop: http://talon.local/
+# Test Kiwix proxy
+curl -s http://localhost/kiwix/ | head -5
 ```
 
 ## URL Contract
 
-The dashboard uses these relative URLs (all go through nginx):
+| Path | Proxied To | Purpose |
+|------|-----------|---------|
+| `/` | Static files | React SPA |
+| `/api/*` | `127.0.0.1:8093/*` | OMEGA API |
+| `/kiwix/*` | `127.0.0.1:8090/*` | Kiwix wiki |
 
-| Path | Target | Purpose |
-|------|--------|---------|
-| `/` | Static files | Frontend SPA |
-| `/api/*` | `127.0.0.1:8093/*` | OMEGA backend API |
-| `/kiwix/*` | `127.0.0.1:8090/*` | Kiwix wiki server |
+## API Endpoints Used
 
-Jellyfin is accessed directly on port 8096 (configurable via `OMEGA_CONFIG.jellyfinBase`).
+The dashboard calls these endpoints (all relative):
+
+```
+GET /api/cgi-bin/health.py    → System health
+GET /api/cgi-bin/metrics.py   → CPU/RAM/disk
+GET /api/cgi-bin/sensors.py   → BME680 sensor (may return error)
+GET /api/cgi-bin/gps.py       → GPS location (may return error)
+GET /api/cgi-bin/dm.py        → Direct messages (returns 403 if not setup)
+GET /api/cgi-bin/mesh.py      → Mesh network status
+GET /api/cgi-bin/keys.py      → Encryption keys
+GET /api/cgi-bin/keysync.py   → Key sync status
+GET /api/cgi-bin/backup.py    → Backup status
+GET /kiwix/                   → Kiwix homepage (HTML)
+GET /kiwix/catalog/v2/entries → ZIM catalog (Atom XML)
+GET /kiwix/search?pattern=X   → Search (HTML results)
+```
+
+## Error Response Handling
+
+The UI cleanly handles these Pi-specific responses:
+
+| Endpoint | Response | UI Display |
+|----------|----------|------------|
+| `/api/cgi-bin/dm.py` | `403 {"ok":false,"err":"forbidden"}` | "Setup Required" + guide |
+| `/api/cgi-bin/sensors.py` | `{"status":"error","error":"i2c..."}` | "Hardware Issue" + tip |
+| `/api/cgi-bin/gps.py` | `{"status":"error","error":"gpspipe..."}` | "No Signal" + manual entry |
+
+## System Health States
+
+The dashboard determines local service health (independent of WAN):
+
+| State | Condition | UI |
+|-------|-----------|-----|
+| `LOCAL_OK` | API + Kiwix responding | Green status |
+| `LOCAL_DEGRADED` | Only one service up | Yellow warning |
+| `LOCAL_DOWN` | Neither responding | Red alert |
+
+## Quick Access Panel
+
+First-screen buttons for SHTF access (<10 seconds):
+
+1. **Knowledge Base** → Opens `/kiwix/` directly
+2. **System Status** → Opens diagnostics panel
+3. **WiFi Hotspot** → Scrolls to hotspot instructions
+4. **Communications** → Scrolls to mesh/radio section
 
 ## Runtime Configuration
 
-You can override settings without rebuilding by editing `/var/www/omega/index.html`:
+Edit `index.html` to customize without rebuild:
 
 ```html
 <script>
 window.OMEGA_CONFIG = {
-    API_BASE: '',           // Keep empty for relative URLs
-    KIWIX_BASE: '/kiwix',   // Proxied through nginx
-    jellyfinBase: 'http://talon.local:8096',  // Direct access
-    USE_MOCK_DATA: false,   // Use live backend
+    API_BASE: '',           // Keep empty for relative
+    KIWIX_BASE: '/kiwix',   // Nginx proxy path
+    jellyfinBase: null,     // Or 'http://pi.local:8096'
+    USE_MOCK_DATA: false    // true for demo mode
 };
 </script>
 ```
 
 ## Troubleshooting
 
-### Dashboard shows "LOCAL_DOWN"
+### "LOCAL_DOWN" status
 
-1. Check if OMEGA backend is running:
-   ```bash
-   curl http://127.0.0.1:8093/cgi-bin/health.py
-   ```
+```bash
+# Check API
+curl http://127.0.0.1:8093/cgi-bin/health.py
 
-2. Check nginx error logs:
-   ```bash
-   sudo tail -f /var/log/nginx/error.log
-   ```
+# Check Kiwix
+curl http://127.0.0.1:8090/
 
-### Kiwix search unavailable
+# Check nginx logs
+sudo tail -f /var/log/nginx/error.log
+```
 
-1. Check if Kiwix is running:
-   ```bash
-   curl http://127.0.0.1:8090/
-   ```
+### Search returns no results
 
-2. Verify nginx proxy:
-   ```bash
-   curl http://localhost/kiwix/
-   ```
+Kiwix `/kiwix/search` returns HTML. The dashboard parses this HTML for results.
+If no results appear:
+1. Verify ZIM files are loaded in Kiwix
+2. Check `/kiwix/catalog/v2/entries` returns entries
+3. Try searching directly at `/kiwix/`
 
-### Cannot access from other devices
+### Sensors show "Hardware Issue"
 
-1. Check Pi hostname:
-   ```bash
-   hostname
-   ```
-
-2. Verify avahi/mDNS is running:
-   ```bash
-   sudo systemctl status avahi-daemon
-   ```
-
-3. Try IP address instead:
-   ```bash
-   hostname -I
-   # Then access: http://<IP_ADDRESS>/
-   ```
+Expected if BME680 sensor not connected:
+```bash
+# Check I2C
+i2cdetect -y 1
+# BME680 should appear at address 0x76 or 0x77
+```
 
 ## Rollback
 
-To restore previous version:
-
 ```bash
-# Stop nginx
-sudo systemctl stop nginx
+# Keep backup before deploy
+sudo cp -r /var/www/omega /var/www/omega.bak
 
-# Restore backup
+# Rollback if needed
 sudo rm -rf /var/www/omega
-sudo cp -r /var/www/omega.bak /var/www/omega
-
-# Restart
-sudo systemctl start nginx
+sudo mv /var/www/omega.bak /var/www/omega
+sudo systemctl reload nginx
 ```
 
-## File Structure
+## Package Contents
 
 ```
-/var/www/omega/
-├── index.html          # Main entry point
-├── static/
-│   ├── css/           # Bundled styles
-│   └── js/            # Bundled scripts
-├── manifest.json      # PWA manifest (optional)
-└── robots.txt         # Search engine config
+OMEGA_PI_BUILD/
+├── build/
+│   ├── index.html          # Main entry (no external deps)
+│   ├── static/
+│   │   ├── css/           # Bundled styles
+│   │   └── js/            # Bundled scripts
+│   └── 50x.html           # Error page
+├── nginx.conf              # nginx configuration
+├── README_PI_DEPLOY.md     # This file
+├── INTEGRATION_CONTRACT.md # API specification
+└── UI_ELEMENT_MANIFEST.json # UI inventory
 ```
-
-## Service Ports Reference
-
-| Service | Port | Protocol | Notes |
-|---------|------|----------|-------|
-| nginx | 80 | HTTP | Public frontend |
-| OMEGA API | 8093 | HTTP | Backend (localhost only) |
-| Kiwix | 8090 | HTTP | Wiki server (localhost only) |
-| Jellyfin | 8096 | HTTP | Media server (LAN accessible) |
-
-## Support
-
-- Dashboard version: See footer or `/api/cgi-bin/health.py`
-- Build timestamp: Check `index.html` header comment
-- Logs: `/var/log/nginx/access.log` and `error.log`
