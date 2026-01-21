@@ -51,41 +51,50 @@ const getConfig = () => {
     // false = use live backend data
     USE_MOCK_DATA: runtimeConfig.USE_MOCK_DATA !== undefined 
       ? runtimeConfig.USE_MOCK_DATA 
-      : (process.env.REACT_APP_USE_MOCK_DATA !== 'false'),
+      : (process.env.REACT_APP_USE_MOCK_DATA === 'true'),
     
-    // ========== Backend Endpoints ==========
+    // ========== Backend Endpoints (Production Pi) ==========
     // All CGI endpoints go through /api/cgi-bin/ proxy
     endpoints: {
-      health: '/api/cgi-bin/health.py',
-      metrics: '/api/cgi-bin/metrics.py',
-      sensors: '/api/cgi-bin/sensors.py',
-      backup: '/api/cgi-bin/backup.py',
-      keys: '/api/cgi-bin/keys.py',
-      keysync: '/api/cgi-bin/keysync.py',
-      dm: '/api/cgi-bin/dm.py',
-      gps: null, // Not configured - endpoint path unknown
-      // Hotspot
+      health: '/api/cgi-bin/health.py',     // Returns {status:"ok", ...}
+      metrics: '/api/cgi-bin/metrics.py',   // Returns CPU/mem/disk/etc
+      sensors: '/api/cgi-bin/sensors.py',   // May return {status:"error", error:"..."}
+      backup: '/api/cgi-bin/backup.py',     // Backup status
+      keys: '/api/cgi-bin/keys.py',         // Returns {ok:true, id:"anon", has:false}
+      keysync: '/api/cgi-bin/keysync.py',   // Key sync status
+      dm: '/api/cgi-bin/dm.py',             // Returns 403 {ok:false, err:"forbidden"} if not setup
+      mesh: '/api/cgi-bin/mesh.py',         // Returns {ok:true, mesh:"ready"}
+      gps: '/api/cgi-bin/gps.py',           // May return {status:"error", error:"gpspipe timeout..."}
+      // Hotspot - these may not exist on production Pi
       hotspotStatus: '/api/hotspot/status',
       hotspotToggle: '/api/hotspot/toggle',
       hotspotClients: '/api/hotspot/clients',
-      // Ally Communications
+      // Ally Communications - may not exist
       allyNodes: '/api/ally/nodes',
       allyChat: '/api/ally/chat',
     },
     
+    // ========== Kiwix Endpoints (via nginx /kiwix/) ==========
+    kiwix: {
+      base: '/kiwix',
+      catalog: '/kiwix/catalog/v2/entries',  // Returns Atom XML (OPDS)
+      search: '/kiwix/search',                // Returns HTML, use ?pattern=&limit=
+      // NOTE: /kiwix/suggest returns 404 - DO NOT USE
+    },
+    
     // ========== Polling Intervals (ms) ==========
     polling: {
-      healthCheck: 12000,      // 12 seconds for connection health
-      metrics: 3000,           // 3 seconds for system metrics
-      sensors: 5000,           // 5 seconds for BME680 sensors
-      community: 30000,        // 30 seconds for community updates
+      healthCheck: 15000,       // 15 seconds for connection health
+      metrics: 5000,            // 5 seconds for system metrics
+      sensors: 5000,            // 5 seconds for BME680 sensors
+      community: 30000,         // 30 seconds for community updates
     },
     
     // ========== Request Configuration ==========
     request: {
-      timeout: 5000,           // 5 second timeout
-      retryAttempts: 2,        // Retry twice on failure
-      retryDelay: 1000,        // 1 second between retries
+      timeout: 8000,            // 8 second timeout (Pi can be slow)
+      retryAttempts: 2,         // Retry twice on failure
+      retryDelay: 1000,         // 1 second between retries
     },
     
     // ========== Feature Flags ==========
@@ -94,9 +103,10 @@ const getConfig = () => {
       enableAnimations: true,
       enableHealthPolling: true,
       enableOfflineMode: true,
+      enableQuickAccess: true,  // SHTF Quick Access panel
       enableMockData: runtimeConfig.USE_MOCK_DATA !== undefined 
         ? runtimeConfig.USE_MOCK_DATA 
-        : (process.env.REACT_APP_USE_MOCK_DATA !== 'false'),
+        : (process.env.REACT_APP_USE_MOCK_DATA === 'true'),
     },
     
     // ========== Build Info ==========
