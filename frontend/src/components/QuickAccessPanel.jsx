@@ -128,51 +128,51 @@ const QuickAccessPanel = ({
   const stateConfig = getStateConfig();
   const StateIcon = stateConfig.icon;
   
-  // Quick access buttons configuration
+  // Quick access buttons configuration - minimal design with 1-word labels
   const quickActions = [
     {
       id: 'knowledge',
-      label: 'Knowledge Base',
-      sublabel: 'Offline Wiki',
+      label: 'Wiki',
       icon: BookOpen,
       color: 'cyan',
       status: serviceStatus.kiwix,
       onClick: onOpenKiwix || (() => window.open('/kiwix/', '_blank')),
       testId: 'quick-access-kiwix',
-      description: 'Search Wikipedia, guides, and references offline'
+      description: 'Search Wikipedia, guides, and references offline',
+      ariaLabel: 'Open offline knowledge base'
     },
     {
       id: 'status',
-      label: 'System Status',
-      sublabel: 'Health & Diagnostics',
+      label: 'Status',
       icon: Activity,
       color: 'purple',
       status: serviceStatus.api,
       onClick: onOpenStatus,
       testId: 'quick-access-status',
-      description: 'View CPU, memory, sensors, and service health'
+      description: 'View CPU, memory, sensors, and service health',
+      ariaLabel: 'View system status and health'
     },
     {
       id: 'hotspot',
-      label: 'WiFi Hotspot',
-      sublabel: 'Connect Devices',
+      label: 'WiFi',
       icon: Wifi,
       color: 'green',
       status: true, // Always show as available (instructions are static)
       onClick: onOpenHotspot,
       testId: 'quick-access-hotspot',
-      description: 'Instructions to connect phones and laptops'
+      description: 'Instructions to connect phones and laptops',
+      ariaLabel: 'WiFi hotspot connection guide'
     },
     {
       id: 'comms',
-      label: 'Communications',
-      sublabel: 'Mesh & Messages',
+      label: 'Comms',
       icon: Radio,
       color: 'orange',
       status: serviceStatus.api,
       onClick: onOpenComms,
       testId: 'quick-access-comms',
-      description: 'View network members and send messages'
+      description: 'View network members and send messages',
+      ariaLabel: 'Open communications hub'
     },
   ];
   
