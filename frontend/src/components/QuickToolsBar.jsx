@@ -539,33 +539,34 @@ export default function QuickToolsBar() {
   return (
     <>
       <div className="w-full relative" data-testid="quick-tools-bar">
-        {/* Single row with horizontal scroll on mobile - with proper padding to prevent cutoff */}
-        <div className="flex justify-start sm:justify-center gap-2 overflow-x-auto pb-2 scrollbar-thin px-4 -mx-4 sm:mx-0 sm:px-0">
-          {/* Left fade indicator for mobile */}
-          <div className="absolute left-0 top-0 bottom-2 w-4 bg-gradient-to-r from-background to-transparent pointer-events-none z-10 sm:hidden" />
+        {/* Container with proper overflow handling */}
+        <div className="relative">
+          {/* Left fade indicator for scroll hint */}
+          <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-background via-background/80 to-transparent pointer-events-none z-10 sm:hidden" />
           
-          {QUICK_TOOLS.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <button
-                key={tool.id}
-                onClick={() => handleToolClick(tool)}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl btn-apple whitespace-nowrap group flex-shrink-0 pointer-events-auto`}
-                title={tool.description}
-                data-testid={`tool-${tool.id}`}
-              >
-                <Icon className={`w-4 h-4 ${tool.color || 'text-primary'} group-hover:scale-110 transition-transform`} />
-                <span className="text-xs sm:text-sm font-medium">{tool.name}</span>
-              </button>
-            );
-          })}
+          {/* Scrollable container */}
+          <div className="flex justify-start sm:justify-center gap-2 overflow-x-auto pb-1 scrollbar-thin px-6 sm:px-0 snap-x">
+            {QUICK_TOOLS.map((tool) => {
+              const Icon = tool.icon;
+              return (
+                <button
+                  key={tool.id}
+                  onClick={() => handleToolClick(tool)}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-2 rounded-xl btn-apple whitespace-nowrap group flex-shrink-0 snap-start`}
+                  title={tool.description}
+                  data-testid={`tool-${tool.id}`}
+                  aria-label={tool.description}
+                >
+                  <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${tool.color || 'text-primary'} group-hover:scale-110 transition-transform`} />
+                  <span className="text-[11px] sm:text-xs font-medium">{tool.name}</span>
+                </button>
+              );
+            })}
+          </div>
           
-          {/* Right spacer to ensure last button isn't cut off */}
-          <div className="flex-shrink-0 w-4 sm:hidden" aria-hidden="true" />
+          {/* Right fade indicator for scroll hint */}
+          <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background via-background/80 to-transparent pointer-events-none z-10 sm:hidden" />
         </div>
-        
-        {/* Right fade indicator for mobile */}
-        <div className="absolute right-0 top-0 bottom-2 w-4 bg-gradient-to-l from-background to-transparent pointer-events-none z-10 sm:hidden" />
       </div>
       
       {/* Modals */}
