@@ -39,11 +39,12 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
   }, [health, t]);
 
   // Check if header would be too cluttered (mobile/tablet)
+  // Use 1200px breakpoint to accommodate longer translated text
   const [useCompactHeader, setUseCompactHeader] = React.useState(false);
 
   React.useEffect(() => {
     const checkWidth = () => {
-      setUseCompactHeader(window.innerWidth < 1024);
+      setUseCompactHeader(window.innerWidth < 1200);
     };
     
     checkWidth();
