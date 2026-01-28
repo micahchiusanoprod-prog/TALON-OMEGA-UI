@@ -235,7 +235,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
           )}
 
           {/* Right: Language + Connection + System Status + Admin + Theme */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
             {/* Language Selector */}
             <LanguageSelector compact={useCompactHeader} />
             
@@ -250,30 +250,30 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             {/* Admin Console Button - Clear text label */}
             <button
               onClick={() => setShowAdminConsole(true)}
-              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 hover:border-amber-500/50 transition-all shadow-sm"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 hover:border-amber-500/50 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
               title="Open Admin Console - Manage fleet, broadcasts, and system settings"
               data-testid="admin-console-btn"
             >
-              <Shield className="w-4 h-4 text-amber-400" />
-              <span className="text-xs sm:text-sm font-semibold">{t('nav.adminConsole')}</span>
+              <Shield className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <span className="text-xs font-semibold hidden sm:inline">{t('nav.adminConsole')}</span>
             </button>
             
             {/* Theme Toggle */}
             <button
               onClick={onToggleTheme}
-              className="glass px-2.5 sm:px-3 py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm flex items-center gap-1.5"
+              className="glass px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-lg hover:bg-secondary-hover transition-smooth text-sm font-medium shadow-sm flex items-center gap-1 whitespace-nowrap flex-shrink-0"
               title={theme === 'dark' ? t('theme.switchToLight') : t('theme.switchToDark')}
               data-testid="theme-toggle-btn"
             >
               {theme === 'dark' ? (
                 <>
                   <Sun className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">{t('theme.light')}</span>
+                  <span className="hidden lg:inline text-xs">{t('theme.light')}</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">{t('theme.dark')}</span>
+                  <span className="hidden lg:inline text-xs">{t('theme.dark')}</span>
                 </>
               )}
             </button>
