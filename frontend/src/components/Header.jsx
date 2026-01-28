@@ -78,64 +78,64 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
 
           {/* Center: Primary Nav Buttons (desktop) */}
           {!useCompactHeader && (
-            <div className="hidden md:flex items-center gap-2 flex-wrap">
+            <div className="hidden md:flex items-center gap-1.5 lg:gap-2 flex-1 justify-center min-w-0 overflow-x-auto scrollbar-thin">
               {/* LOGS Button */}
               <button
                 onClick={() => setShowLogs(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 hover:from-emerald-500/30 hover:to-cyan-500/30 hover:border-emerald-500/50 transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 hover:from-emerald-500/30 hover:to-cyan-500/30 hover:border-emerald-500/50 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
                 title="Open LOGS Analytics"
                 data-testid="logs-btn"
               >
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-semibold">{t('nav.logs')}</span>
+                <span className="text-xs lg:text-sm font-semibold">{t('nav.logs')}</span>
               </button>
               
               {/* Community Button */}
               <button
                 onClick={() => setShowCommunity(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 hover:from-violet-500/30 hover:to-fuchsia-500/30 hover:border-violet-500/50 transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 hover:from-violet-500/30 hover:to-fuchsia-500/30 hover:border-violet-500/50 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
                 title="Open Community Hub"
                 data-testid="community-btn"
               >
                 <Users className="w-4 h-4 text-violet-400" />
-                <span className="text-sm font-semibold">{t('nav.community')}</span>
+                <span className="text-xs lg:text-sm font-semibold">{t('nav.community')}</span>
               </button>
               
               {/* Help Center Button */}
               <button
                 onClick={() => setShowHelpCenter(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 hover:from-primary/30 hover:to-accent/30 hover:border-primary/50 transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 hover:from-primary/30 hover:to-accent/30 hover:border-primary/50 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
                 title="Open Help Center"
                 data-testid="help-center-btn"
               >
                 <BookOpen className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold">{t('nav.helpCenter')}</span>
+                <span className="text-xs lg:text-sm font-semibold">{t('nav.helpCenter')}</span>
               </button>
               
-              {/* Entertainment Button - NEW */}
+              {/* Entertainment Button */}
               <button
                 onClick={() => navigate('/entertainment')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-pink-500/20 to-orange-500/20 border border-pink-500/30 hover:from-pink-500/30 hover:to-orange-500/30 hover:border-pink-500/50 transition-all shadow-sm ${
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 to-orange-500/20 border border-pink-500/30 hover:from-pink-500/30 hover:to-orange-500/30 hover:border-pink-500/50 transition-all shadow-sm whitespace-nowrap flex-shrink-0 ${
                   location.pathname === '/entertainment' ? 'ring-2 ring-pink-500/50' : ''
                 }`}
                 title="Entertainment Hub"
                 data-testid="entertainment-btn"
               >
                 <Sparkles className="w-4 h-4 text-pink-400" />
-                <span className="text-sm font-semibold">Entertainment</span>
+                <span className="text-xs lg:text-sm font-semibold">Entertainment</span>
               </button>
               
               {/* Metrics Pills - Lower priority, hide on medium screens */}
-              <div className="hidden lg:flex items-center gap-2">
+              <div className="hidden xl:flex items-center gap-1.5 flex-shrink-0">
                 {metrics && metrics.cpu !== null && (
-                  <div className="metric-pill hover:bg-secondary">
+                  <div className="metric-pill hover:bg-secondary whitespace-nowrap">
                     <span className="text-muted-foreground">{t('metrics.cpu')}</span>
                     <span className="font-semibold">{metrics.cpu}%</span>
                   </div>
                 )}
                 
                 {metrics && metrics.temp !== null && (
-                  <div className="metric-pill hover:bg-secondary">
+                  <div className="metric-pill hover:bg-secondary whitespace-nowrap">
                     <span className="text-muted-foreground">{t('metrics.temp')}</span>
                     <span className="font-semibold">{metrics.temp}°C</span>
                   </div>
