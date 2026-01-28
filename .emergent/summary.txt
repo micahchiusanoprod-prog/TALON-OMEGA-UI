@@ -1,147 +1,188 @@
 <analysis>**original_problem_statement:**
-The user's primary goal is to implement a Master Global Search functionality for the OMEGA Dashboard, featuring sophisticated autosuggest, dynamic source-based ranking, and inline trust/provenance metadata.
+The user's initial goal was to build a Master Global Search for an OMEGA Dashboard. This evolved into a multi-phase project:
+-   **P0-P2:** Implement and validate search, enhance UI tiles with provenance data, and build Search Health and Data Health admin dashboards.
+-   **P3:** Prepare for Raspberry Pi deployment by creating a production build, configuring Nginx, and creating a deployment runbook.
+-   **Forensic Audit:** Conduct a full UI audit to inventory all components, map dependencies, and verify offline behavior.
+-   **Pi Production Build:** Create a final, offline-first production build with zero external dependencies, relative URLs, robust local service-based offline detection, fixes for UI dead ends, and a new Quick Access panel for SHTF-first usability.
 
-Following the search implementation, the project has evolved through several phases:
-1.  **P0 - Search Quality Validation:** Implement Kiwix article-level search, define ranking/capping logic, and create a validation test suite.
-2.  **P1 - UI Component Wiring & Health Panels:**
-    *   Apply , , and  components to all existing data tiles (Environment, Power, Comms, etc.).
-    *   Create a  panel in the Admin Console to monitor search-related services.
-    *   Perform a Search Quality Hardening pass to polish the user experience.
-3.  **P2 - Data Health Dashboard:** Create a comprehensive Data Health admin page summarizing the status of all critical data sources (APIs, sensors, etc.) with uptime visualizations and how to fix guides.
-4.  **P3 - Pi Deployment Preparation:** Create a production build (), configure Nginx for LAN access, verify degraded/offline behavior, and create a deployment runbook. The final step is to capture a full 4-mode screenshot-based evidence report for sign-off.
+The latest user request is to perform a final QA pass, fix a newly discovered bug related to the language selector, and make a design adjustment to the Quick Access panel.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The OMEGA dashboard application is feature-complete for the requested phases (P0, P1, P2, P3-prep). All major UI components and functionalities have been implemented and verified in the development environment.
+The agent has successfully created a Pi-ready, offline-first production build of the OMEGA Dashboard. This build is packaged in .
 
-- **Master Global Search:** A fully functional search bar with Kiwix article-level integration, dynamic ranking/capping, typo correction, and fallback for unavailable services.
-- **Data Tiles:** All data tiles (, , , , , , ) have been enhanced with , , and  components to show data source, trust level, and detailed views.
-- **Admin Console:** The admin console contains two key diagnostic panels:
-    - : Monitors the status of Kiwix and Jellyfin integrations.
-    - : A comprehensive dashboard showing the real-time status, latency, uptime, and fix instructions for all 8 core data services.
-- **Pi Deployment Package:** A production build has been created () containing the compiled application, an Nginx configuration file for LAN routing, and a detailed .
+Key features of this build include:
+-   All external dependencies (CDNs, analytics) have been removed, and all assets are bundled locally.
+-   The application is configured to use relative URLs (, ) for seamless proxying via Nginx.
+-   A new  has been added to the main dashboard for SHTF-first usability.
+-   Code has been updated to handle specific error responses from the Pi's backend services (e.g., sensor errors, GPS timeouts, 403 Forbidden on DMs).
+-   UI dead ends have been addressed with a new  component that provides clear user guidance.
+-   Comprehensive deployment documentation (, ) and a UI manifest have been created.
 
 **Last working item**:
-    - Last item agent was working: Capturing the final 4-mode (desktop/mobile x light/dark) screenshot evidence required by the user for P3 sign-off. The agent successfully captured the set for Desktop Dark mode and was about to proceed with the other modes.
-    - Status: IN PROGRESS
-    - Agent Testing Done: Y
-    - Which testing method agent to use? screenshot tool
-    - User Testing Done: N
+    - Last item agent was working: The user reported a bug and requested further changes. The agent acknowledged the new tasks and was about to begin investigating the first issue.
+    - Status: NOT STARTED
+    - Agent Testing Done: N
+    - Which testing method agent to use? The agent should first use the  to visually reproduce the bug across different viewports (desktop, mobile, tablet). After applying a fix, it should use the same tool to verify the fix and perform regression testing on the header.
+    - User Testing Done: Y
 
 **All Pending/In progress Issue list**:
-There are no known bugs or technical issues. The only pending item is the completion of the in-progress task.
+  - Issue 1:  Header layout breaks when language is changed to Spanish. (P0)
+  - Issue 2:  The Made with Emergent badge overlaps content in mobile views. (P2)
+  
+  Issues Detail:
+  - Issue 1: 
+     - Attempted fixes: None. This is a newly reported bug by the user.
+     - Next debug checklist: 
+        1.  Use the screenshot tool to capture the broken header layout in Spanish on both desktop and mobile views.
+        2.  Inspect  and the language selection logic.
+        3.  Check the CSS/Tailwind classes applied to the header buttons and container, looking for layout issues (e.g., flexbox wrapping, width constraints) that might be triggered by longer text from the translation.
+        4.  Adjust the CSS to ensure the header can accommodate longer button text without breaking the layout.
+     - Why fix this issue and what will be achieved with the fix? This is a direct user-reported bug that affects internationalization and usability. Fixing it will ensure the UI is robust across all supported languages.
+     - Status:  NOT STARTED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on other issue: No.
+  - Issue 2: 
+     - Attempted fixes: None. The agent observed this during a previous review but did not address it.
+     - Next debug checklist: 
+        1.  Inspect the CSS for the Made with Emergent badge.
+        2.  Add a  to the main content or adjust the badge's position/styling to prevent it from overlapping scrollable content, especially on mobile.
+     - Why fix this issue and what will be achieved with the fix? This will improve the UI polish and prevent the preview badge from obscuring application content.
+     - Status:  NOT STARTED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on other issue: No.
 
 **In progress Task List**:
-  - Task 1:  (P0) Complete P3 Final Screenshot Evidence Capture
- 
+  - Task 1:  Thoroughly test the application on mobile, tablet, and desktop. (P0)
+  - Task 2:  Make the Quick Access bar more minimal. (P1)
+
  Task Detail:
   - Task 1: 
-     - Where to resume: The agent needs to capture the required screenshots for the remaining three modes: Desktop Light, Mobile Dark, and Mobile Light. Each mode requires screenshots of:
-        a) Global Search results for a multi-source query (e.g., “medical”)
-        b) Admin Data Health page
-        c) Admin Search Health page
-        d) One degraded state banner (e.g., Kiwix down or Jellyfin missing key)
-     - What will be achieved with this? This will fulfill the user's final acceptance criteria for the P3 phase, providing the necessary evidence for sign-off before actual on-device deployment.
-     - Status:  IN PROGRESS
+     - Where to resume: Start a comprehensive QA pass, using the screenshot tool to check all pages, modals, and key interactions across different viewports (mobile, tablet, desktop) and themes (light, dark). This is a follow-up to the user's latest request for a final check.
+     - What will be achieved with this? This will ensure the application is stable and visually polished across all supported form factors before final user sign-off.
+     - Status:  NOT STARTED
      - Should Test frontend/backend/both after fix? frontend
-     - Blocked on something: No
+     - Blocked on something: Should be done after fixing the known issues (Issue 1 and 2).
+  - Task 2: 
+     - Where to resume: Review the current implementation of . Propose and implement a more minimalist design. This might involve using smaller icons, removing text labels in favor of tooltips, or reducing the panel's overall size.
+     - What will be achieved with this? This will address a direct design feedback request from the user.
+     - Status:  NOT STARTED
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on something: No.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks:**
-    *   **P3.4 - Final on-device acceptance (P0):** The user will perform final testing on a real Raspberry Pi device using the generated deployment package. The agent's role is to provide the artifacts and support any discovered issues.
-    *   **P3.5 - Runbook Hardening (P1):** The user wants the  to be hardened with exact copy/paste commands for all steps and verification that smoke tests work as expected.
+    *   **P3.4 - Final on-device acceptance (P0):** User will perform final testing on a real Raspberry Pi device.
+    *   **P3.5 - Runbook hardening (P1):** Harden  with more copy/paste commands.
 *   **Future Tasks:**
-    *   Full backend integration with live Pi endpoints (beyond the current routing and mock data).
-    *   Jellyfin search implementation (this is currently stubbed and will be enabled once the user provides a ).
-    *   Implement command execution for Commands found via search (currently a  feature).
+    *   Full backend integration with live Pi endpoints (beyond the current mocked/error-handled state).
+    *   Jellyfin search implementation (this is currently stubbed and pending a ).
+    *   Implement command execution for Commands found via search.
 
 **Completed work in this session**
-- **P0 - Search Quality Validation:** Integrated Kiwix article-level search, implemented ranking/capping, and created the validation report.
-- **P1.1 - Provenance/Trust/Disclosure:** Applied these components to all data tiles, including fixing two runtime JavaScript errors ( and  not defined) that caused a blank screen.
-- **P1.3 - Search Health Panel:** Created the Search Health tab in the Admin Console.
-- **P1.2 - Search Quality Hardening:** Completed a full QA pass on the search UI, capturing screenshots for all required states.
-- **P2.0 - Data Health Dashboard:** Implemented a comprehensive dashboard in the Admin Console for monitoring all 8 data sources with uptime graphs and fix instructions.
-- **P2.1 - Regression Pass:** Performed a full regression test on the search UI after all P1/P2 changes, confirming no functionality was broken.
-- **P3 - Pi Deployment Prep:**
-    - Successfully ran the yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. script to create a production artifact.
-    - Corrected the Nginx configuration to properly proxy  and  routes.
-    - Created a .
-    - Verified and captured screenshots of all degraded UI states (e.g., Kiwix down, Jellyfin not configured).
+-   **P3 Evidence Capture:** Captured and organized a complete 16-screenshot evidence set for P3 sign-off across Desktop/Mobile and Light/Dark modes.
+-   **Forensic UI Audit:** Conducted a comprehensive audit and produced the  report, a , and a zip of all screenshots.
+-   **Pi Production Build:**
+    -   Created a final, offline-first production build ().
+    -   Removed all external dependencies and refactored the app to use relative URLs.
+    -   Implemented a SHTF-first Quick Access panel ().
+    -   Addressed UI dead ends by creating robust error handlers () for specific backend error states.
+    -   Updated all relevant configuration () and UI components (, ).
+    -   Created comprehensive Pi deployment documentation (, ).
 
 **Earlier issues found/mentioned but not fixed**
-- None in this session.
+-   **AdminConsole.jsx Refactoring:** The file is large and complex. It was identified as an area for refactoring in the previous handover but remains unaddressed.
+-   **Quick tools row overflow:** The right edge of the quick tools row is cut off on some screen sizes, indicating a need for a better horizontal scroll indicator or layout adjustment.
 
 **Known issue recurrence from previous fork**
-- None.
+-   None.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend:** React, React Hooks (useState, useEffect, useMemo), Context API, Tailwind CSS.
-- **API Integration:**  with  for consuming REST APIs (Kiwix).
-- **UI State Management:** Graceful degradation for unavailable services, showing clear status indicators (, , ), loading states, and user guidance.
-- **Build Process:** Using  to override CRA configuration for a custom production build ().
-- **Deployment:** Generating a self-contained deployment package with Nginx configuration and an installation runbook.
+-   **Frontend:** React, React Hooks, Context API, Tailwind CSS.
+-   **Production Build Process:** Using  and custom scripts to create a bundled, offline-first application with no external dependencies.
+-   **Dynamic Configuration:** Using a  object in  to allow runtime configuration without rebuilding.
+-   **API Integration:** Using relative URLs for all API calls to support reverse proxy environments.
+-   **Robust Error Handling:** Gracefully handling specific API error responses (JSON errors, HTTP 403) and displaying user-friendly next actions.
+-   **Offline-First:** Architecture designed to function without a WAN connection, relying on local service health checks.
 
 **key DB schema**
-- No database is in use. All data is either mocked or fetched from stateless APIs.
+-   No database is in use.
 
 **changes in tech stack**
-- No new technologies were added in this session.
+-   None.
 
 **All files of reference**
-*   : Contains the implementation for the Search Health and Data Health dashboards.
-*   : The core file for all search functionality.
-*   : The reusable wrapper for adding provenance and disclosure to tiles.
-*   : The guide for deploying the application to the Pi.
-*   : The Nginx configuration for the Pi.
-*   : The main product requirements and progress tracking document.
-*   : The test plan for search quality.
+-   **/app/frontend/deploy/pi-build/OMEGA_PI_BUILD.zip**: The primary deliverable of the last phase.
+-   **/app/frontend/deploy/pi-build/README_PI_DEPLOY.md**: The deployment guide for the Pi.
+-   **/app/frontend/deploy/pi-build/INTEGRATION_CONTRACT.md**: The definitive API contract the UI expects.
+-   **/app/baseline_export/OMEGA_UI_FORENSIC_AUDIT.md**: The detailed UI audit report.
+-   **/app/frontend/src/components/Header.jsx**: The location of the language selector bug.
+-   **/app/frontend/src/components/QuickAccessPanel.jsx**: The component the user wants to be more minimal.
+-   **/app/frontend/src/components/Dashboard.jsx**: Where the  is integrated.
+-   **/app/frontend/src/config.js**: Defines API endpoints and feature flags.
 
 **Areas that need refactoring**:
-- The  file has grown significantly and now contains the implementation for Fleet Updates, Roster, Broadcast, Search Health, and Data Health. It could be beneficial to break down each tab's content into its own separate component file within a new  directory to improve maintainability.
+-    remains very large and could be broken down into smaller components for each admin tab, improving maintainability.
 
 **key api endpoints**
-- **Kiwix Search:**  (proxied via  in production).
-- **OMEGA Core API:** , , etc. (proxied via  to  in production).
+All endpoints are now relative.
+-   **Health/Metrics:** , 
+-   **Hardware:** ,  (Both can return JSON error objects on success)
+-   **Services:**  (Returns 403 if not configured), 
+-   **Kiwix Search:**  (Returns HTML, not JSON).  is not used.
+-   **Kiwix Health:**  (Used for health check)
 
 **Critical Info for New Agent**
-- You are in the final step of the P3 phase. Your immediate task is to complete the 4-mode screenshot evidence capture as detailed in the In progress Task List.
-- The user has provided extremely detailed, non-negotiable acceptance criteria for every phase. Follow them precisely.
-- Do not start any Future Tasks until the current P3 evidence capture is complete and signed off by the user.
-- The application is designed to be offline-first. A key requirement is that the UI must always degrade gracefully and provide clear guidance to the user when a service is unavailable.
+-   Your immediate priority is to address the user's latest feedback: fix the header layout bug when switching to Spanish, make the Quick Access panel more minimal, and perform a full QA pass.
+-   The application is now built for a specific production Pi environment. Refer to  for the exact API responses to expect, including error formats.
+-   Do not hardcode any URLs. The app must use relative paths (, ).
+-   The  is the primary method for visual testing and verification. Use it to check desktop, mobile, and tablet layouts.
+-   The final deliverable is an updated  file incorporating the fixes and changes.
 
 **documents and test reports created in this job**
-- 
-- 
--  (updated)
+-   
+-   
+-   
+-   
+-   
+-   
+-    (folder of screenshots)
+-    (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (Msg #274):** Signs off on the P2.1 regression pass and approves proceeding to P3 (Pi Deployment Prep) with detailed acceptance criteria for build, Nginx, offline verification, and runbook.
-2.  **Agent (Msg #275-298):** Executes P3 tasks: builds the Pi artifact, creates an improved Nginx config, creates a deployment runbook, and verifies all degraded UI states with screenshots. Finishes with a summary.
-3.  **User (Msg #299):** Approves the P3 prep completion. Defines the final acceptance phase: on-device validation and capturing a complete 4-mode screenshot evidence set for P3 sign-off. Re-iterates guardrails and provides a detailed list of required screenshots.
-4.  **Agent (Msg #300):** Acknowledges and begins the final evidence capture task.
-5.  **Agent (Msg #301-302):** Captures the first set of required screenshots for Desktop Dark mode.
+1.  **User:** Requested a full forensic UI audit of the application. (COMPLETED)
+2.  **Agent:** Performed the audit, creating a detailed report and screenshots. (COMPLETED)
+3.  **User:** Asked the agent to extract and present the key findings from the audit report. (COMPLETED)
+4.  **Agent:** Presented the sitemap, dead ends, dependency map, and other key artifacts. (COMPLETED)
+5.  **User:** Requested the creation of a Pi-ready, offline-first production build with specific requirements. (COMPLETED)
+6.  **Agent:** Implemented the changes and created the build package. (COMPLETED)
+7.  **User:** Provided a more precise set of production environment facts and requirements for the Pi build. (COMPLETED)
+8.  **Agent:** Re-built the application to match the exact specs and generated all documentation. (COMPLETED)
+9.  **User:** Reported a new bug where the header layout breaks when switching language to Spanish. (PENDING)
+10. **User:** Requested a final, thorough check of everything on the site (mobile, tablet), and asked for the Quick Access bar to be made more minimal. (PENDING)
 
 **Project Health Check:**
-*   **Broken:** None.
-*   **Mocked:** The core data for many tiles is still mocked, as the backend is not fully integrated. However, the UI correctly reflects the status of the (mocked) underlying services. Jellyfin and Commands are intentionally stubbed as  and .
+-   **Broken:** The header layout is broken when the language is changed.
+-   **Mocked:** While the UI is built to handle real API responses (including errors), the development environment itself still relies on some mocked data since it's not connected to a real Pi backend.
 
 **3rd Party Integrations**
-*   ****: Used for creating the Debug Bundle ZIP file.
-*   ****: Integrated for article-level knowledge base search, with graceful fallback.
+-   ****: Used internally for creating Debug Bundle ZIP files.
+-   ****: Integrated for article-level knowledge base search, now accessed via a relative  proxy path.
 
 **Testing status**
   - Testing agent used after significant changes: NO
   - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: None. Validation is done via manual checks and extensive use of the .
-  - Known regressions: None. A full regression pass was completed successfully.
+  - Test files created: None.
+  - Known regressions: The header layout issue is a new regression.
 
 **Credentials to test flow:**
 N/A. The application has no authentication.
 
 **What agent forgot to execute**
-The agent has been thorough and has not forgotten any requested tasks. The current work is the final step of a multi-phase user request.</analysis>
+- The agent previously identified minor UI polish issues (overlapping Made with Emergent badge, cut-off Quick Tools row) during its manual review but did not fix them. These are still pending.</analysis>

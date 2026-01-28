@@ -39,7 +39,7 @@
   "features_tested": {
     "hash_routing": {
       "status": "PASS",
-      "details": "URL correctly shows /#/ when using HashRouter - verified at https://omegasight.preview.emergentagent.com/#/"
+      "details": "URL correctly shows /#/ when using HashRouter - verified at https://global-search-hub-2.preview.emergentagent.com/#/"
     },
     "system_status_button": {
       "status": "PASS",
