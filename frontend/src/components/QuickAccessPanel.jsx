@@ -41,6 +41,34 @@ const QuickAccessPanel = ({
   const [serviceStatus, setServiceStatus] = useState({ api: null, kiwix: null });
   const [isChecking, setIsChecking] = useState(false);
   const [lastCheck, setLastCheck] = useState(null);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const buttonRefs = useRef([]);
+  
+  // Keyboard navigation handler
+  const handleKeyDown = useCallback((e) => {
+    const actionCount = 4; // Number of quick action buttons
+    
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setFocusedIndex(prev => (prev + 1) % actionCount);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setFocusedIndex(prev => (prev - 1 + actionCount) % actionCount);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setFocusedIndex(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setFocusedIndex(actionCount - 1);
+    }
+  }, []);
+  
+  // Focus the button when focusedIndex changes
+  useEffect(() => {
+    if (focusedIndex >= 0 && buttonRefs.current[focusedIndex]) {
+      buttonRefs.current[focusedIndex].focus();
+    }
+  }, [focusedIndex]);
   
   // Check local system health (WAN-independent)
   const checkLocalHealth = useCallback(async () => {
