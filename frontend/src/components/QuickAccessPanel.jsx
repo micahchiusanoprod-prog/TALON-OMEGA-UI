@@ -256,9 +256,14 @@ const QuickAccessPanel = ({
         </button>
       </div>
       
-      {/* Quick action grid - Compact touch-friendly buttons */}
-      <div className="grid grid-cols-4 gap-2">
-        {quickActions.map((action) => {
+      {/* Quick action grid - Compact touch-friendly buttons with keyboard nav */}
+      <div 
+        className="grid grid-cols-4 gap-2"
+        role="toolbar"
+        aria-label="Quick access actions"
+        onKeyDown={handleKeyDown}
+      >
+        {quickActions.map((action, index) => {
           const Icon = action.icon;
           const colors = colorClasses[action.color];
           const isAvailable = action.status !== false;
@@ -266,24 +271,34 @@ const QuickAccessPanel = ({
           return (
             <button
               key={action.id}
+              ref={el => buttonRefs.current[index] = el}
               onClick={action.onClick}
+              onFocus={() => setFocusedIndex(index)}
+              tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
               className={`
                 relative flex flex-col items-center justify-center p-2.5 rounded-lg border
                 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
-                hover:shadow-md ${colors.glow}
+                hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1
+                ${colors.glow}
                 ${colors.bg} ${colors.border}
                 ${!isAvailable ? 'opacity-60' : ''}
               `}
               data-testid={action.testId}
               title={action.description}
               aria-label={action.ariaLabel}
+              aria-describedby={`${action.id}-status`}
             >
               {/* Status indicator */}
-              <div className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${
-                isAvailable ? 'bg-green-400' : 'bg-red-400'
-              }`} />
+              <div 
+                id={`${action.id}-status`}
+                className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${
+                  isAvailable ? 'bg-green-400' : 'bg-red-400'
+                }`}
+                aria-hidden="true"
+              />
+              <span className="sr-only">{isAvailable ? 'Available' : 'Unavailable'}</span>
               
-              <Icon className={`w-5 h-5 mb-1 ${colors.icon}`} />
+              <Icon className={`w-5 h-5 mb-1 ${colors.icon}`} aria-hidden="true" />
               <span className="font-medium text-foreground text-xs">{action.label}</span>
             </button>
           );
