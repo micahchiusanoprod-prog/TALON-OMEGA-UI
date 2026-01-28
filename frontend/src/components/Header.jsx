@@ -77,9 +77,9 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             )}
           </div>
 
-          {/* Center: Primary Nav Buttons (desktop) */}
+          {/* Center: Primary Nav Buttons (desktop - only show above 1200px) */}
           {!useCompactHeader && (
-            <div className="hidden md:flex items-center gap-1.5 lg:gap-2 flex-1 justify-center min-w-0 overflow-x-auto scrollbar-thin">
+            <div className="hidden xl:flex items-center gap-1.5 2xl:gap-2 flex-1 justify-center min-w-0">
               {/* LOGS Button */}
               <button
                 onClick={() => setShowLogs(true)}
@@ -88,7 +88,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="logs-btn"
               >
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs lg:text-sm font-semibold">{t('nav.logs')}</span>
+                <span className="text-xs 2xl:text-sm font-semibold">{t('nav.logs')}</span>
               </button>
               
               {/* Community Button */}
@@ -99,7 +99,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="community-btn"
               >
                 <Users className="w-4 h-4 text-violet-400" />
-                <span className="text-xs lg:text-sm font-semibold">{t('nav.community')}</span>
+                <span className="text-xs 2xl:text-sm font-semibold">{t('nav.community')}</span>
               </button>
               
               {/* Help Center Button */}
@@ -110,7 +110,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="help-center-btn"
               >
                 <BookOpen className="w-4 h-4 text-primary" />
-                <span className="text-xs lg:text-sm font-semibold">{t('nav.helpCenter')}</span>
+                <span className="text-xs 2xl:text-sm font-semibold">{t('nav.helpCenter')}</span>
               </button>
               
               {/* Entertainment Button */}
@@ -123,11 +123,11 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                 data-testid="entertainment-btn"
               >
                 <Sparkles className="w-4 h-4 text-pink-400" />
-                <span className="text-xs lg:text-sm font-semibold">Entertainment</span>
+                <span className="text-xs 2xl:text-sm font-semibold">Entertainment</span>
               </button>
               
               {/* Metrics Pills - Lower priority, hide on medium screens */}
-              <div className="hidden xl:flex items-center gap-1.5 flex-shrink-0">
+              <div className="hidden 2xl:flex items-center gap-1.5 flex-shrink-0">
                 {metrics && metrics.cpu !== null && (
                   <div className="metric-pill hover:bg-secondary whitespace-nowrap">
                     <span className="text-muted-foreground">{t('metrics.cpu')}</span>
