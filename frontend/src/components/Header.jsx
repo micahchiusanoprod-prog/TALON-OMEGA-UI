@@ -145,47 +145,58 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
             </div>
           )}
 
-          {/* Mobile: Primary Nav with Overflow Menu */}
+          {/* Mobile/Tablet: Primary Nav with Overflow Menu (shown below 1200px) */}
           {useCompactHeader && (
-            <div className="flex md:hidden items-center gap-1.5 relative">
+            <div className="flex xl:hidden items-center gap-1 sm:gap-1.5 relative">
               {/* Primary buttons - always visible */}
               <button
                 onClick={() => setShowLogs(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 transition-all"
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 transition-all whitespace-nowrap"
                 title="Open LOGS Analytics"
                 data-testid="logs-btn-mobile"
               >
                 <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-[11px] font-semibold">{t('nav.logs')}</span>
+                <span className="text-[11px] sm:text-xs font-semibold">{t('nav.logs')}</span>
               </button>
               
               <button
                 onClick={() => setShowCommunity(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 transition-all"
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 transition-all whitespace-nowrap"
                 title="Open Community Hub"
                 data-testid="community-btn-mobile"
               >
                 <Users className="w-3.5 h-3.5 text-violet-400" />
-                <span className="text-[11px] font-semibold hidden xs:inline">{t('nav.community')}</span>
+                <span className="text-[11px] sm:text-xs font-semibold hidden sm:inline">{t('nav.community')}</span>
+              </button>
+              
+              {/* Help Center - visible on tablet */}
+              <button
+                onClick={() => setShowHelpCenter(true)}
+                className="hidden md:flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 transition-all whitespace-nowrap"
+                title="Help Center"
+                data-testid="help-center-btn-tablet"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-primary" />
+                <span className="text-xs font-semibold">{t('nav.help')}</span>
               </button>
               
               {/* Entertainment - visible on slightly larger mobile */}
               <button
                 onClick={() => navigate('/entertainment')}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 to-orange-500/20 border border-pink-500/30 transition-all ${
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 to-orange-500/20 border border-pink-500/30 transition-all whitespace-nowrap ${
                   location.pathname === '/entertainment' ? 'ring-2 ring-pink-500/50' : ''
                 }`}
                 title="Entertainment"
                 data-testid="entertainment-btn-mobile"
               >
                 <Sparkles className="w-3.5 h-3.5 text-pink-400" />
-                <span className="text-[11px] font-semibold hidden xs:inline">Fun</span>
+                <span className="text-[11px] sm:text-xs font-semibold hidden sm:inline">Fun</span>
               </button>
               
               {/* Overflow Menu Button */}
               <button
                 onClick={() => setShowOverflowMenu(!showOverflowMenu)}
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary/50 border border-border hover:bg-secondary transition-all"
+                className="flex items-center justify-center w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-secondary/50 border border-border hover:bg-secondary transition-all flex-shrink-0"
                 title="More options"
                 data-testid="overflow-menu-btn"
               >
@@ -198,7 +209,7 @@ export default function Header({ metrics, health, theme, onToggleTheme }) {
                   <div className="p-1">
                     <button
                       onClick={() => { setShowHelpCenter(true); setShowOverflowMenu(false); }}
-                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors text-left"
+                      className="md:hidden flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors text-left"
                       data-testid="overflow-help-center"
                     >
                       <BookOpen className="w-4 h-4 text-primary" />
