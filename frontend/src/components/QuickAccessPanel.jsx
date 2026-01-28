@@ -8,7 +8,7 @@
 // - /api/cgi-bin/health.py → {status:"ok"}
 // - /kiwix/ → HTML (Kiwix homepage)
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   BookOpen, 
   Wifi, 
