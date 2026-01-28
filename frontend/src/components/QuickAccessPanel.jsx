@@ -18,8 +18,7 @@ import {
   CheckCircle,
   XCircle,
   RefreshCw,
-  ExternalLink,
-  ArrowRight
+  ExternalLink
 } from 'lucide-react';
 
 // System health states (LOCAL service based, not WAN)
