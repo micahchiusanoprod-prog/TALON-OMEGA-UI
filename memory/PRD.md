@@ -113,11 +113,11 @@ sudo systemctl reload nginx
 **Degraded State:** Consistently using Option A (Kiwix down → "Kiwix Search Unavailable" banner)
 **Search UX:** No changes during P3 - autosuggest typing-state screenshots NOT required
 
-## Pi Deployment Package (NEW)
+## Pi Deployment Package (Updated: 2026-01-28)
 
-**Created:** 2026-01-21
+**Created:** 2026-01-21 (Updated: 2026-01-28)
 **Location:** `/app/frontend/deploy/pi-build/OMEGA_PI_BUILD.zip`
-**Size:** 2.3 MB
+**Size:** ~4.6 MB
 
 ### Package Contents
 - `build/` - Production React build (zero external dependencies)
@@ -131,7 +131,20 @@ sudo systemctl reload nginx
 - **Relative URLs** - `/api/*` and `/kiwix/*` via nginx proxy
 - **WAN-independent health checks** - LOCAL_OK / LOCAL_DEGRADED / LOCAL_DOWN
 - **Dead end elimination** - All unavailable states have actionable next steps
-- **Quick Access Panel** - Knowledge, Hotspot, Status, Comms in <10 seconds
+- **Quick Access Panel** - Minimal design with 1-word labels (Wiki, Status, WiFi, Comms)
+
+### Latest Updates (2026-01-28)
+1. **Header i18n Fix**: Fixed layout breaking when switching to Spanish
+   - Increased compact mode threshold to 1200px
+   - Added `whitespace-nowrap` and `flex-shrink-0` to nav buttons
+   - Improved responsive breakpoints
+2. **Quick Access Panel**: Made more minimal per user request
+   - 1-word labels: Wiki, Status, WiFi, Comms
+   - Smaller icons (w-5 h-5)
+   - Removed sublabels and arrow indicators
+   - Added aria-label for accessibility
+3. **Emergent Badge**: Adjusted positioning for mobile views
+4. **Quick Tools Bar**: Improved scroll handling and overflow indicators
 
 ## Next Steps (Future)
 - P3.4: On-device Pi acceptance testing
