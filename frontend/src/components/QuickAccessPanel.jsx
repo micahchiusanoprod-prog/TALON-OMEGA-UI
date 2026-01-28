@@ -205,30 +205,32 @@ const QuickAccessPanel = ({
   
   return (
     <div 
-      className={`rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-4 ${className}`}
+      className={`rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-3 ${className}`}
       data-testid="quick-access-panel"
     >
-      {/* Header with system state */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">⚡</span>
-          <h2 className="text-lg font-semibold text-foreground">Quick Access</h2>
+      {/* Compact header with system state */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-1.5">
+          <span className="text-base">⚡</span>
+          <h2 className="text-sm font-semibold text-foreground">Quick Access</h2>
         </div>
         
         <button
           onClick={checkLocalHealth}
           disabled={isChecking}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${stateConfig.bg} 
-            border border-border/30 transition-all hover:border-border/50`}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded-lg ${stateConfig.bg} 
+            border border-border/30 transition-all hover:border-border/50 text-xs`}
           data-testid="quick-access-status-btn"
+          aria-label="Check system health"
+          title="Click to refresh system status"
         >
-          <StateIcon className={`w-4 h-4 ${stateConfig.color} ${isChecking ? 'animate-spin' : ''}`} />
-          <span className={`text-sm ${stateConfig.color}`}>{stateConfig.text}</span>
+          <StateIcon className={`w-3 h-3 ${stateConfig.color} ${isChecking ? 'animate-spin' : ''}`} />
+          <span className={`${stateConfig.color}`}>{stateConfig.text}</span>
         </button>
       </div>
       
-      {/* Quick action grid - Large touch-friendly buttons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Quick action grid - Compact touch-friendly buttons */}
+      <div className="grid grid-cols-4 gap-2">
         {quickActions.map((action) => {
           const Icon = action.icon;
           const colors = colorClasses[action.color];
@@ -239,63 +241,61 @@ const QuickAccessPanel = ({
               key={action.id}
               onClick={action.onClick}
               className={`
-                relative flex flex-col items-center justify-center p-4 rounded-xl border
+                relative flex flex-col items-center justify-center p-2.5 rounded-lg border
                 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
-                hover:shadow-lg ${colors.glow}
+                hover:shadow-md ${colors.glow}
                 ${colors.bg} ${colors.border}
                 ${!isAvailable ? 'opacity-60' : ''}
               `}
               data-testid={action.testId}
               title={action.description}
+              aria-label={action.ariaLabel}
             >
               {/* Status indicator */}
-              <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${
+              <div className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${
                 isAvailable ? 'bg-green-400' : 'bg-red-400'
               }`} />
               
-              <Icon className={`w-8 h-8 mb-2 ${colors.icon}`} />
-              <span className="font-medium text-foreground text-sm text-center">{action.label}</span>
-              <span className="text-xs text-muted-foreground mt-0.5">{action.sublabel}</span>
-              
-              {/* Arrow indicator */}
-              <ArrowRight className="w-4 h-4 text-muted-foreground/50 absolute bottom-2 right-2" />
+              <Icon className={`w-5 h-5 mb-1 ${colors.icon}`} />
+              <span className="font-medium text-foreground text-xs">{action.label}</span>
             </button>
           );
         })}
       </div>
       
-      {/* Direct Kiwix link for fastest access */}
-      <div className="mt-4 flex items-center justify-center">
+      {/* Direct Kiwix link - more compact */}
+      <div className="mt-3 flex items-center justify-center">
         <a
           href="/kiwix/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 
-            border border-cyan-500/30 text-cyan-400 text-sm transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 
+            border border-cyan-500/30 text-cyan-400 text-xs transition-all"
           data-testid="quick-access-kiwix-direct"
+          aria-label="Open Kiwix library in new tab"
         >
-          <BookOpen className="w-4 h-4" />
-          <span>Open Kiwix Library Directly</span>
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>Open Kiwix Directly</span>
           <ExternalLink className="w-3 h-3" />
         </a>
       </div>
       
-      {/* System state warning banners */}
+      {/* System state warning banners - more compact */}
       {systemState === SYSTEM_STATE.LOCAL_DOWN && (
-        <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30">
-          <div className="flex items-start gap-3">
-            <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-red-400">Local Services Unavailable</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Cannot reach the OMEGA API or Kiwix. Check if services are running on the Pi.
-                Some features will show cached or demo data.
+        <div className="mt-3 p-2 rounded-lg bg-red-500/10 border border-red-500/30">
+          <div className="flex items-start gap-2">
+            <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-red-400">Services Unavailable</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                Cannot reach OMEGA API or Kiwix. Check if services are running.
               </p>
               <button
                 onClick={checkLocalHealth}
-                className="mt-2 text-xs text-red-400 hover:text-red-300 flex items-center gap-1"
+                className="mt-1 text-[10px] text-red-400 hover:text-red-300 flex items-center gap-1"
+                aria-label="Retry connection"
               >
-                <RefreshCw className="w-3 h-3" /> Retry Connection
+                <RefreshCw className="w-2.5 h-2.5" /> Retry
               </button>
             </div>
           </div>
@@ -303,25 +303,24 @@ const QuickAccessPanel = ({
       )}
       
       {systemState === SYSTEM_STATE.LOCAL_DEGRADED && (
-        <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-yellow-400">Partial Service</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {!serviceStatus.api && 'OMEGA API is unavailable. '}
-                {!serviceStatus.kiwix && 'Kiwix is unavailable. '}
-                Check System Status for details.
+        <div className="mt-3 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-yellow-400">Partial Service</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                {!serviceStatus.api && 'API unavailable. '}
+                {!serviceStatus.kiwix && 'Kiwix unavailable. '}
               </p>
             </div>
           </div>
         </div>
       )}
       
-      {/* Last check timestamp */}
+      {/* Last check timestamp - smaller */}
       {lastCheck && (
-        <p className="mt-3 text-xs text-muted-foreground/50 text-center">
-          Last checked: {lastCheck.toLocaleTimeString()}
+        <p className="mt-2 text-[10px] text-muted-foreground/50 text-center">
+          Last check: {lastCheck.toLocaleTimeString()}
         </p>
       )}
     </div>
