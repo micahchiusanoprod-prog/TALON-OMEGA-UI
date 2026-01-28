@@ -117,7 +117,7 @@ sudo systemctl reload nginx
 
 **Created:** 2026-01-21 (Updated: 2026-01-28)
 **Location:** `/app/frontend/deploy/pi-build/OMEGA_PI_BUILD.zip`
-**Size:** ~4.6 MB
+**Size:** ~547 KB (clean build, no source maps)
 
 ### Package Contents
 - `build/` - Production React build (zero external dependencies)
@@ -125,6 +125,7 @@ sudo systemctl reload nginx
 - `README_PI_DEPLOY.md` - Deployment guide with copy/paste commands
 - `INTEGRATION_CONTRACT.md` - Complete API specification
 - `UI_ELEMENT_MANIFEST.json` - Full UI element inventory
+- `index.pi.html` - Pi-specific index template
 
 ### Key Features
 - **Zero external CDN dependencies** - All CSS/JS bundled
@@ -143,8 +144,15 @@ sudo systemctl reload nginx
    - Smaller icons (w-5 h-5)
    - Removed sublabels and arrow indicators
    - Added aria-label for accessibility
+   - **NEW**: Keyboard navigation (arrow keys, Home, End)
+   - **NEW**: Focus ring indicators for accessibility
 3. **Emergent Badge**: Adjusted positioning for mobile views
 4. **Quick Tools Bar**: Improved scroll handling and overflow indicators
+
+### QA Verification Complete
+- Desktop (1920px): Dark/Light × English/Spanish ✅
+- Tablet (1024px): Dark/Light × English/Spanish ✅  
+- Mobile (375px): Dark/Light × English/Spanish ✅
 
 ## Next Steps (Future)
 - P3.4: On-device Pi acceptance testing
